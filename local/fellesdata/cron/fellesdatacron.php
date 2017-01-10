@@ -54,9 +54,11 @@ class FELLESDATA_CRON {
             $pluginInfo     = get_config('local_fellesdata');
 
             $suspicious_path = $CFG->dataroot . '/' . $pluginInfo->suspicious_path;
-            if (!file_exists($suspicious_path)) {
-                mkdir($suspicious_path);
-            }
+            if ($suspicious_path) {
+                if (!file_exists($suspicious_path)) {
+                    mkdir($suspicious_path);
+                }
+            }//if_suspucuous_path
             
             /* Import KS */
             $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START Import KS. ' . "\n";
@@ -494,7 +496,9 @@ class FELLESDATA_CRON {
             self::import_fs_user_competence_jr($pluginInfo);
 
             // Send suspicious notifications
-            suspicious::send_suspicious_notifications($pluginInfo);
+            if ($pluginInfo->suspicious_path) {
+                suspicious::send_suspicious_notifications($pluginInfo);
+            }//suspicious_path
         }catch (Exception $ex) {
             // Log
             $dbLog  = "Error: " . $ex->getMessage() . "\n" . "\n";
@@ -535,19 +539,26 @@ class FELLESDATA_CRON {
                 $pathFile = $CFG->dataroot . '/fellesdata/' . TRADIS_FS_USERS . '.txt';
                 if (file_exists($pathFile)) {
                     // First check if is a suspicious file
-                    if (!suspicious::check_for_suspicious_data(TRADIS_FS_USERS,$pathFile)) {
+                    if ($pluginInfo->suspicious_path) {
+                        if (!suspicious::check_for_suspicious_data(TRADIS_FS_USERS,$pathFile)) {
+                            // Get content
+                            $content = file($pathFile);
+
+                            FS::save_temporary_fellesdata($content,IMP_USERS);
+                        }else {
+                            // Mark file as suspicious
+                            $suspiciousPath = suspicious::mark_suspicious_file(TRADIS_FS_USERS,$pluginInfo);
+
+                            // Move file to the right folder
+                            copy($pathFile,$suspiciousPath);
+                            unlink($pathFile);
+                        }//if_suspicious
+                    }else {
                         // Get content
                         $content = file($pathFile);
 
                         FS::save_temporary_fellesdata($content,IMP_USERS);
-                    }else {
-                        // Mark file as suspicious
-                        $suspiciousPath = suspicious::mark_suspicious_file(TRADIS_FS_USERS,$pluginInfo);
-
-                        // Move file to the right folder
-                        copy($pathFile,$suspiciousPath);
-                        unlink($pathFile);
-                    }//if_suspicious
+                    }
                 }//if_exists
             }//if_fsResponse
         }catch (Exception $ex) {
@@ -593,19 +604,26 @@ class FELLESDATA_CRON {
                 $pathFile = $CFG->dataroot . '/fellesdata/' . TRADIS_FS_COMPANIES . '.txt';
                 if (file_exists($pathFile)) {
                     // First check if is a suspicious file
-                    if (!suspicious::check_for_suspicious_data(TRADIS_FS_COMPANIES,$pathFile)) {
+                    if ($pluginInfo->suspicious_path) {
+                        if (!suspicious::check_for_suspicious_data(TRADIS_FS_COMPANIES,$pathFile)) {
+                            // Get content
+                            $content = file($pathFile);
+
+                            FS::save_temporary_fellesdata($content,IMP_COMPANIES);
+                        }else {
+                            // Mark file as suspicious
+                            $suspiciousPath = suspicious::mark_suspicious_file(TRADIS_FS_COMPANIES,$pluginInfo);
+
+                            // Move file to the right folder
+                            copy($pathFile,$suspiciousPath);
+                            unlink($pathFile);
+                        }//if_suspicious
+                    }else {
                         // Get content
                         $content = file($pathFile);
 
                         FS::save_temporary_fellesdata($content,IMP_COMPANIES);
-                    }else {
-                        // Mark file as suspicious
-                        $suspiciousPath = suspicious::mark_suspicious_file(TRADIS_FS_COMPANIES,$pluginInfo);
-
-                        // Move file to the right folder
-                        copy($pathFile,$suspiciousPath);
-                        unlink($pathFile);
-                    }//if_suspicious
+                    }///if_suspicous_path
                 }//if_exists
             }//if_fsResponse
 
@@ -651,19 +669,26 @@ class FELLESDATA_CRON {
                 $pathFile = $CFG->dataroot . '/fellesdata/' . TRADIS_FS_JOBROLES . '.txt';
                 if (file_exists($pathFile)) {
                     // First check if is a suspicious file
-                    if (!suspicious::check_for_suspicious_data(TRADIS_FS_JOBROLES,$pathFile)) {
+                    if ($pluginInfo->suspicious_path) {
+                        if (!suspicious::check_for_suspicious_data(TRADIS_FS_JOBROLES,$pathFile)) {
+                            // Get content
+                            $content = file($pathFile);
+
+                            FS::save_temporary_fellesdata($content,IMP_JOBROLES);
+                        }else {
+                            // Mark file as suspicious
+                            $suspiciousPath = suspicious::mark_suspicious_file(TRADIS_FS_JOBROLES,$pluginInfo);
+
+                            // Move file to the right folder
+                            copy($pathFile,$suspiciousPath);
+                            unlink($pathFile);
+                        }//if_suspicious
+                    }else {
                         // Get content
                         $content = file($pathFile);
 
                         FS::save_temporary_fellesdata($content,IMP_JOBROLES);
-                    }else {
-                        // Mark file as suspicious
-                        $suspiciousPath = suspicious::mark_suspicious_file(TRADIS_FS_JOBROLES,$pluginInfo);
-
-                        // Move file to the right folder
-                        copy($pathFile,$suspiciousPath);
-                        unlink($pathFile);
-                    }//if_suspicious
+                    }//if_suspicious_path
                 }//if_exists
             }//if_fsResponse
         }catch (Exception $ex) {
@@ -704,19 +729,26 @@ class FELLESDATA_CRON {
                 $pathFile = $CFG->dataroot . '/fellesdata/' . TRADIS_FS_MANAGERS_REPORTERS . '.txt';
                 if (file_exists($pathFile)) {
                     // First check if is a suspicious file
-                    if (!suspicious::check_for_suspicious_data(TRADIS_FS_MANAGERS_REPORTERS,$pathFile)) {
+                    if ($pluginInfo->suspicious_path) {
+                        if (!suspicious::check_for_suspicious_data(TRADIS_FS_MANAGERS_REPORTERS,$pathFile)) {
+                            // Get content
+                            $content = file($pathFile);
+
+                            FS::save_temporary_fellesdata($content,IMP_MANAGERS_REPORTERS);
+                        }else {
+                            // Mark file as suspicious
+                            $suspiciousPath = suspicious::mark_suspicious_file(TRADIS_FS_MANAGERS_REPORTERS,$pluginInfo);
+
+                            // Move file to the right folder
+                            copy($pathFile,$suspiciousPath);
+                            unlink($pathFile);
+                        }//if_suspicious
+                    }else {
                         // Get content
                         $content = file($pathFile);
 
                         FS::save_temporary_fellesdata($content,IMP_MANAGERS_REPORTERS);
-                    }else {
-                        // Mark file as suspicious
-                        $suspiciousPath = suspicious::mark_suspicious_file(TRADIS_FS_MANAGERS_REPORTERS,$pluginInfo);
-
-                        // Move file to the right folder
-                        copy($pathFile,$suspiciousPath);
-                        unlink($pathFile);
-                    }//if_suspicious
+                    }//if_suspicious_path
                 }//if_exists
             }//if_fsResponse
         }catch (Exception $ex) {
@@ -759,19 +791,26 @@ class FELLESDATA_CRON {
                 $pathFile = $CFG->dataroot . '/fellesdata/' . TRADIS_FS_USERS_JOBROLES . '.txt';
                 if (file_exists($pathFile)) {
                     // First check if is a suspicious file
-                    if (!suspicious::check_for_suspicious_data(TRADIS_FS_USERS_JOBROLES,$pathFile)) {
+                    if ($pluginInfo->suspicious_path) {
+                        if (!suspicious::check_for_suspicious_data(TRADIS_FS_USERS_JOBROLES,$pathFile)) {
+                            // Get content
+                            $content = file($pathFile);
+
+                            FS::save_temporary_fellesdata($content,IMP_COMPETENCE_JR);
+                        }else {
+                            // Mark file as suspicious
+                            $suspiciousPath = suspicious::mark_suspicious_file(TRADIS_FS_USERS_JOBROLES,$pluginInfo);
+
+                            // Move file to the right folder
+                            copy($pathFile,$suspiciousPath);
+                            unlink($pathFile);
+                        }//if_suspicious
+                    }else {
                         // Get content
                         $content = file($pathFile);
 
                         FS::save_temporary_fellesdata($content,IMP_COMPETENCE_JR);
-                    }else {
-                        // Mark file as suspicious
-                        $suspiciousPath = suspicious::mark_suspicious_file(TRADIS_FS_USERS_JOBROLES,$pluginInfo);
-
-                        // Move file to the right folder
-                        copy($pathFile,$suspiciousPath);
-                        unlink($pathFile);
-                    }//if_suspicious
+                    }//if_suspicious_path
                 }//if_exists
             }//if_data
         }catch (Exception $ex) {
@@ -826,7 +865,7 @@ class FELLESDATA_CRON {
             }
 
             // Build url end point
-            $urlTradis = $pluginInfo->fs_point . '/tardis/fellesdata/' . $service . '?fromDate=' . $fromDate . '&toDate=' . $toDate;
+            $urlTradis = $pluginInfo->fs_point . '/' . $service . '?fromDate=' . $fromDate . '&toDate=' . $toDate;
 
             // Call web service
             $ch = curl_init($urlTradis);
@@ -1045,15 +1084,8 @@ class FELLESDATA_CRON {
                     // Synchronize only companies FS
                     FSKS_COMPANY::synchronize_companies_fs();
 
-                    // Companies to synchornize and emails
-                    list($toSynchronize,$toMail) = FSKS_COMPANY::companies_fs_to_synchronize();
-
-                    // Notification manual synchronization
-                    if ($notifyTo) {
-                        if ($toMail) {
-                            self::send_notifications(SYNC_COMP,$toMail,$notifyTo,$pluginInfo->fs_source);
-                        }//if_toMail
-                    }//if_notify
+                    // Companies to synchronize and emails
+                    $toSynchronize = FSKS_COMPANY::companies_fs_to_synchronize();
 
                     // Synchronize FS-KS companies
                     // Call webs service
@@ -1062,6 +1094,16 @@ class FELLESDATA_CRON {
                         $response   = self::process_ks_service($pluginInfo,KS_SYNC_FS_COMPANY,$params);
                         if ($response['error'] == '200') {
                             FSKS_COMPANY::synchronize_companies_ksfs($toSynchronize,$response['companies']);
+
+                            // Notification manual synchronization
+                            if ($notifyTo) {
+                                // Get companies to send notifications
+                                $toMail = FSKS_COMPANY::get_companiesfs_to_mail();
+                                
+                                if ($toMail) {
+                                    self::send_notifications(SYNC_COMP,$toMail,$notifyTo,$pluginInfo->fs_source);
+                                }//if_toMail
+                            }//if_notify
                         }else {
                             /* Log  */
                             $dbLog  .= "ERROR WS: " . $response['error'] . "\n\n";
