@@ -1335,11 +1335,13 @@ Class Approval {
             $time = time();
 
             // Send Mail
+            $lnkApprove = $infoMail->approve;
+            $lnkReject  = $infoMail->reject;
             foreach ($toManagers as $managerId => $info) {
                 // Approve and Reject links 
-                $infoMail->approve = '<a href="' . $infoMail->approve . '">' .
+                $infoMail->approve = '<a href="' . $lnkApprove. '">' .
                                      (string)new lang_string('approve_lnk','enrol_waitinglist',null,$info->lang) . '</br>';
-                $infoMail->reject = '<a href="' . $infoMail->reject . '">' .
+                $infoMail->reject = '<a href="' . $lnkReject . '">' .
                                      (string)new lang_string('reject_lnk','enrol_waitinglist',null,$info->lang) . '</br>';
 
                 // Mails For Managers
