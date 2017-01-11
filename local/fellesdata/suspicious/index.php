@@ -82,8 +82,7 @@ if (($suspiciousId) &&
     // No data --> From today until today
     $date = getdate(time());
     $from   = mktime(23, 0, 0, $date['mon'], $date['mday']-1, $date['year']);
-    $to     = $from + (3600*12);
-    $suspicious = suspicious::get_suspicious_files($from,$to);
+    $suspicious = suspicious::get_suspicious_files($from,$from);
 
     // Form
     $form = new suspicious_form(null,null);

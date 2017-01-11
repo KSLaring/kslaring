@@ -171,7 +171,7 @@ class suspicious {
 
             // New instance
             $instance = new stdClass();
-            $instance->file             = TRADIS_FS_USERS . '_' . $time . '.txt';
+            $instance->file             = $type . '_' . $time . '.txt';
             $instance->path             = $CFG->dataroot . '/' . $plugin->suspicious_path;
             $instance->detected         = $time;
             $instance->approved         = 0;
@@ -181,23 +181,23 @@ class suspicious {
 
             switch ($type) {
                 case TRADIS_FS_USERS:
-                    $instance->impfs = 'IMP_USERS';
+                    $instance->impfs = IMP_USERS;
 
                     break;
                 case TRADIS_FS_USERS_JOBROLES:
-                    $instance->impfs = 'IMP_COMPETENCE_JR';
+                    $instance->impfs = IMP_COMPETENCE_JR;
 
                     break;
                 case TRADIS_FS_MANAGERS_REPORTERS:
-                    $instance->impfs = 'IMP_MANAGERS_REPORTERS';
+                    $instance->impfs = IMP_MANAGERS_REPORTERS;
 
                     break;
                 case TRADIS_FS_JOBROLES:
-                    $instance->impfs = 'IMP_JOBROLES';
+                    $instance->impfs = IMP_JOBROLES;
 
                     break;
                 case TRADIS_FS_COMPANIES:
-                    $instance->impfs = 'IMP_COMPANIES';
+                    $instance->impfs = IMP_COMPANIES;
 
                     break;
             }//switch_type
@@ -458,7 +458,7 @@ class suspicious {
             // Search criteria
             $params = array();
             $params['from'] = $from;
-            $params['to']   = $to + (3600 * 12);
+            $params['to']   = $to + (3600 * 24);
 
             // Sql Instruction
             $sql = " SELECT fs.id,
@@ -505,31 +505,31 @@ class suspicious {
 
                     // Connected with
                     switch ($instance->impfs) {
-                        case IMP_SUSP_USERS:
+                        case IMP_USERS:
                             $info->file = TRADIS_FS_USERS;
                             $info->sync = get_string('sync_users','local_fellesdata');
 
                             break;
 
-                        case IMP_SUSP_COMPETENCE_JR:
+                        case IMP_COMPETENCE_JR:
                             $info->file = TRADIS_FS_USERS_JOBROLES;
                             $info->sync = get_string('sync_competence','local_fellesdata');
                             
                             break;
                         
-                        case IMP_SUSP_MANAGERS_REPORTERS:
+                        case IMP_MANAGERS_REPORTERS:
                             $info->file = TRADIS_FS_MANAGERS_REPORTERS;
                             $info->sync = get_string('sync_managers','local_fellesdata');
 
                             break;
 
-                        case IMP_SUSP_COMPANIES:
+                        case IMP_COMPANIES:
                             $info->file = TRADIS_FS_COMPANIES;
                             $info->sync = get_string('sync_company','local_fellesdata');
 
                             break;
 
-                        case IMP_SUSP_JOBROLES:
+                        case IMP_JOBROLES:
                             $info->file = TRADIS_FS_JOBROLES;
                             $info->sync = get_string('sync_jobroles','local_fellesdata');
 
