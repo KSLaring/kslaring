@@ -348,11 +348,11 @@ class FSKS_COMPANY {
 
                 if ($objCompany->imported) {
                     // Get Company
-                    $infoCompany        = $companiesFSKS[$objCompany->key];
+                    $infoCompany        = $companiesFSKS[$objCompany->fsId];
                     $infoCompany->ksId  = $objCompany->ksId;
 
                     // Synchronize Company
-                    self::synchronize_company_ksfs($infoCompany,$objCompany->key);
+                    self::synchronize_company_ksfs($infoCompany,$objCompany->fsId);
                 }//if_imported
             }//for_companiesFS
         }catch (Exception $ex) {
