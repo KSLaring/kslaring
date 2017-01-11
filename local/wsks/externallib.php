@@ -790,7 +790,7 @@ class local_wsks_external extends external_api {
         $jobRole        = new external_value(PARAM_TEXT,'Job Roles Id');
         $fsjobRoles     = new external_value(PARAM_TEXT,'FS job roles');
         $companyID      = new external_value(PARAM_INT,'Company Id');
-        $fsId           = new external_value(PARAM_INT,'FS Company Id');
+        $fsId           = new external_value(PARAM_TEXT,'FS Company Id');
         $level          = new external_value(PARAM_INT,'Level');
         $impKeys        = new external_value(PARAM_TEXT,'KEYS IMP FS JR');
         $action         = new external_value(PARAM_INT,'Action. Add/Update/Delete');
