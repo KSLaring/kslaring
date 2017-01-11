@@ -136,7 +136,7 @@ EOT;
             //'i/hide' => 'eye',
             'i/import' => 'upload',
             'i/lock' => 'lock',
-            'i/move_2d' => 'arrows',
+            //'i/move_2d' => 'arrows',
             'i/navigationitem' => 'circle',
             'i/outcomes' => 'magic',
             'i/publish' => 'globe',
