@@ -31,7 +31,7 @@ $json           = array();
 $data           = array();
 $infoCompany    = null;
 
-$context        = CONTEXT_SYSTEM::instance();
+$context        = context_system::instance();
 $url            = new moodle_url('/local/fellesdata/mapping/search.php');
 
 $PAGE->set_context($context);

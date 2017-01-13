@@ -28,8 +28,6 @@ function xmldb_local_fellesdata_upgrade($oldVersion) {
     $fldIndustryCode    = null;
     $fldADFS            = null;
     $fldUsersImp        = null;
-    $field              = null;
-    $table              = null;
 
     /* Get Manager  */
     $dbMan = $DB->get_manager();

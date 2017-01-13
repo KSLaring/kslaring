@@ -792,12 +792,16 @@ class FS_MAPPING {
         /* Variables    */
         $fsCompanies    = null;
         $total          = null;
+        $plugin         = null;
 
         try {
+            /* Plugin Info      */
+            $plugin     = get_config('local_fellesdata');
+
             /* Get Companies to Map */
-            $fsCompanies = self::GetFSCompaniesToMap($level,$sector,$notIn,$start,$length);
+            $fsCompanies = self::GetFSCompaniesToMap($plugin,$level,$sector,$notIn,$start,$length);
             /* Get Total    */
-            $total = self::GetTotalFSCompaniesToMap($level,$sector,$notIn);
+            $total = self::GetTotalFSCompaniesToMap($plugin,$level,$sector,$notIn);
 
             return array($fsCompanies,$total);
         }catch (Exception $ex) {
@@ -1235,6 +1239,7 @@ class FS_MAPPING {
 
 
     /**
+     * @param    Object $plugin     Plugin info. Settings
      * @param           $level
      * @param           $sector
      * @param           $notIn
@@ -1250,7 +1255,7 @@ class FS_MAPPING {
      * Description
      * Get companies to map
      */
-    private static function GetFSCompaniesToMap($level,$sector,$notIn,$start,$length) {
+    private static function GetFSCompaniesToMap($plugin,$level,$sector,$notIn,$start,$length) {
         /* Variables    */
         global $DB;
         $granpa         = false;
@@ -1270,11 +1275,11 @@ class FS_MAPPING {
             /* Get Level    */
             switch ($level) {
                 case FS_LE_2:
-                    $params['level'] = 2;
+                    $params['level'] = $plugin->map_two;
 
                     break;
                 case FS_LE_5;
-                    $params['level'] = 5;
+                    $params['level'] = $plugin->map_three;
                     $granpa = true;
 
                     break;
@@ -1417,20 +1422,21 @@ class FS_MAPPING {
     }//GetGranparentName
 
     /**
-     * @param           $level
-     * @param           $sector
-     * @param           $notIn
+     * @param       Object  $plugin
+     * @param               $level
+     * @param               $sector
+     * @param               $notIn
      *
-     * @return          int
-     * @throws          Exception
+     * @return              int
+     * @throws              Exception
      *
-     * @creationDate    09/06/2016
-     * @author          eFaktor     (fbv)
+     * @creationDate        09/06/2016
+     * @author              eFaktor     (fbv)
      *
      * Description
      * Get total companies to map
      */
-    private static function GetTotalFSCompaniesToMap($level,$sector,$notIn) {
+    private static function GetTotalFSCompaniesToMap($plugin,$level,$sector,$notIn) {
         /* Variables    */
         global $DB;
         $sql            = null;
@@ -1446,10 +1452,10 @@ class FS_MAPPING {
             /* Get Level    */
             switch ($level) {
                 case FS_LE_2:
-                    $params['level'] = 2;
+                    $params['level'] = $plugin->map_two;;
                     break;
                 case FS_LE_5;
-                    $params['level'] = 5;
+                    $params['level'] = $plugin->map_three;
                     break;
                 default:
                     $params['level'] = '-1';
