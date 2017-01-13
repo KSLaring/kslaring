@@ -54,7 +54,7 @@ function local_microlearning_extend_settings_navigation($settingsnav, $context) 
  * Description
  * Fix problem with the last execution and last cron
  */
-function local_microlearning_cron() {
+function local_microlearning_old_cron_old() {
     /* Variables    */
     global $DB;
     $pluginInfo     = null;
@@ -102,3 +102,32 @@ function local_microlearning_cron() {
     }
 
 }//function_cron
+
+/**
+ * Description
+ * Run the cron
+ *
+ * @throws          Exception
+ * @throws          dml_exception
+ */
+function microlearning_cron() {
+    /* Variables    */
+    $pluginInfo     = null;
+
+    /* Plugins Info */
+    $pluginInfo     = get_config('local_microlearning');
+
+    /* Check if the cron is Activate    */
+    if ($pluginInfo->micro_cron_active) {
+        require_once('mode/calendar/calendarcronlib.php');
+        require_once('mode/activity/activitycronlib.php');
+
+        // Run cron
+        Calendar_ModeCron::cron();
+        Activity_ModeCron::cron();
+
+        set_config('lastexecution', time(), 'local_microlearning');
+    }else {
+        mtrace('... Micro Learning Cron Disabled');
+    }
+}//microlearning_cron
