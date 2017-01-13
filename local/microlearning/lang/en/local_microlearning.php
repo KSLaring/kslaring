@@ -107,3 +107,5 @@ $string['micro_use_filter'] = 'Please use the filter';
 $string['alert_campaign']   = 'This campaign will remain deactivated while all its send options, for each delivery,will not have been defined.';
 
 $string['add_users'] = 'Add automatically new users';
+
+$string['crontask']             = 'Microlearning Cron Task';

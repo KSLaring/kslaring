@@ -25,7 +25,7 @@ if ($hassiteconfig) {
     $settings->add(new admin_setting_configselect('local_microlearning/micro_cron_active', new lang_string('active'),  '', 1, $options));
 
     //Time
-    $settings->add(new admin_setting_configtime('local_microlearning/micro_auto_time','micro_auto_time_minute', new lang_string('executeat'), '', array('h' => 0, 'm' => 0)));
+    //$settings->add(new admin_setting_configtime('local_microlearning/micro_auto_time','micro_auto_time_minute', new lang_string('executeat'), '', array('h' => 0, 'm' => 0)));
 
 
 }//if

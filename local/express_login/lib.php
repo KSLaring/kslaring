@@ -74,7 +74,7 @@ function local_express_login_extend_settings_navigation($settingsnav, $context) 
  * Description
  * Trigger the cron
  */
-function local_express_login_cron() {
+function local_express_login_old_cron_old() {
     /* Variables    */
     $pluginInfo     = null;
     $dateHour       = null;
@@ -99,3 +99,32 @@ function local_express_login_cron() {
         throw  $ex;
     }//try_catch
 }//local_express_login_cron
+
+
+/**
+ * Description
+ * Run the cron
+ *
+ * @throws          Exception
+ * @throws          dml_exception
+ */
+function express_login_cron() {
+    /* Variables    */
+    $pluginInfo     = null;
+
+    try {
+        mtrace("Cron Express Login Ini");
+        /* Plugin Info */
+        $pluginInfo     = get_config('local_express_login');
+
+        /* Trigger the Cron */
+        if ($pluginInfo->express_cron_active) {
+            require_once('cron/expresscron.php');
+            Express_Cron::cron();
+        }else {
+            mtrace("Cron Express Login Deactivated");
+        }//if_Activate
+    }catch (Exception $ex) {
+        throw  $ex;
+    }//try_catch
+}//express_login_cron

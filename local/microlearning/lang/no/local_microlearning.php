@@ -107,3 +107,5 @@ $string['micro_use_filter'] = 'Vennligst avgrens søket med et filter';
 $string['alert_campaign']   = 'Denne kampanjen vil stå som deaktivert siden alle utsendingsepostene med tilhørende aktiviteter ikke er definert ferdig ennå.';
 
 $string['add_users'] = 'Legg til nye brukere automatisk';
+
+$string['crontask']             = 'Microlearning Cron Task';
