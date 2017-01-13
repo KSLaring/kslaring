@@ -153,3 +153,11 @@ $string['max_suspicious_users']         = 'Maximum suspicious data connected wit
 $string['max_suspicious_competence']    = 'Maximum suspicious data connected with competence';
 $string['max_suspicious_rest']          = 'Maximum suspicious connected with the rest';
 
+$string['map_header']       = 'Mapping settings';
+$string['map_one']          = 'Level one';
+$string['map_one_desc']     = 'Mapping level one';
+$string['map_two']          = 'Level two';
+$string['map_two_desc']     = 'Mapping level two';
+$string['map_three']        = 'Level three';
+$string['map_three_desc']   = 'Mapping level three';
+

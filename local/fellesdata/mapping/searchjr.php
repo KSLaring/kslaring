@@ -30,7 +30,7 @@ $json           = array();
 $data           = array();
 $infoJR         = null;
 
-$context        = CONTEXT_SYSTEM::instance();
+$context        = context_system::instance();
 $url            = new moodle_url('/local/fellesdata/mapping/searchjr.php');
 
 $PAGE->set_context($context);

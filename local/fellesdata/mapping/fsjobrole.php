@@ -29,7 +29,7 @@ $infoJR         = null;
 $mapped         = null;
 $nomapped       = null;
 
-$context        = CONTEXT_SYSTEM::instance();
+$context        = context_system::instance();
 $url            = new moodle_url('/local/fellesdata/mapping/fsjobrole.php');
 
 $PAGE->set_context($context);

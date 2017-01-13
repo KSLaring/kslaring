@@ -90,4 +90,20 @@ if ($hassiteconfig) {
     $settings->add(new admin_setting_configselect('local_fellesdata/max_rest',
                                                   get_string('max_suspicious_rest', 'local_fellesdata'),
                                                   get_string('max_suspicious_rest', 'local_fellesdata'), 0,$options));
+
+    // Mapping levels
+    $settings->add(new admin_setting_heading('local_fellesdata_MAP_settings', '', get_string('map_header', 'local_fellesdata')));
+    $options = array('1','2','3','4','5','6','7','8','9','10');
+    // Level one
+    $settings->add(new admin_setting_configselect('local_fellesdata/map_one',
+                                                  get_string('map_one', 'local_fellesdata'),
+                                                  get_string('map_one_desc', 'local_fellesdata'), 0,$options));
+    // Level two
+    $settings->add(new admin_setting_configselect('local_fellesdata/map_two',
+                                                  get_string('map_two', 'local_fellesdata'),
+                                                  get_string('map_two_desc', 'local_fellesdata'), 1,$options));
+    // Level three
+    $settings->add(new admin_setting_configselect('local_fellesdata/map_three',
+                                                  get_string('map_three', 'local_fellesdata'),
+                                                  get_string('map_three_desc', 'local_fellesdata'), 2,$options));
 }//if_config

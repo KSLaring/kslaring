@@ -733,7 +733,7 @@ class FSKS_COMPANY {
                             fs.action
                      FROM   {fs_imp_company}	fs
                      WHERE	fs.action 	 != :add
-                        AND	fs.imported  = :imported ";
+                        AND	fs.imported   = :imported ";
 
             // Execute
             $rdo = $DB->get_records_sql($sql,$params);
