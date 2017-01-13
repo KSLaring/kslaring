@@ -1,0 +1,78 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_tag/accordiontaggroup
+
+    Displays one tag group in an accordion.
+
+    Classes required for JS:
+    * .taggroup Defines the taggroup
+    * #collapse-group-nameofgroup Define the accordion body id
+    * #group-nameofgroup Defines the tag group id
+    * .group-list Defines a tag group list in one accordion pane
+
+    Data attributes required for JS:
+    * data-toggle="collapse" Define the accordion body class
+    * data-parent="#taggroup-accordion" Define the accordion wrapper
+
+    Context variables required for this template:
+    * groupid string The tag group id »group-nameofgroup«
+    * groupname string The tag group name
+    * tagset array The set with tags in that group
+    ** id int The tag id
+    ** name string The tag name
+
+    Example context (json):
+    {
+      "groupid": 5,
+      "groupname": "Topic",
+      "tagset": [
+        {
+          "id": 3,
+          "name": "IT",
+        },
+        {
+          "id": 5,
+          "name": "Helse",
+        },
+        {
+          "id": 6,
+          "name": "Velferd",
+        }
+      ]
+    }
+}}
+<div class="taggroup accordion-group">
+    <div class="accordion-heading">
+        <a class="accordion-toggle" data-toggle="collapse" data-parent="#taggroup-accordion"
+           href="#collapse-{{{groupid}}}">
+            {{{groupname}}}
+        </a>
+    </div>
+    <div id="collapse-{{{groupid}}}" class="accordion-body collapse">
+        <div class="accordion-inner">
+            <ul id="{{{groupid}}}" class="itemList group-list list-unstyled">
+                {{#tagset}}
+                    <li id="tagid-{{{id}}}" class="item ui-sortable">
+                        {{#pix}}i/move_2d,core{{/pix}}
+                        {{{name}}}
+                    </li>
+                {{/tagset}}
+            </ul>
+        </div>
+    </div>
+</div>

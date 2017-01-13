@@ -15,27 +15,21 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Moodle's kommit theme, an example of how to make a Bootstrap theme
+ * Version details
  *
- * DO NOT MODIFY THIS THEME!
- * COPY IT FIRST, THEN RENAME THE COPY AND MODIFY IT INSTEAD.
- *
- * For full information about creating Moodle themes, see:
- * http://docs.moodle.org/dev/Themes_2.0
- *
- * @package    theme_kommit
+ * @package    block_course_tags
  * @copyright  2016 eFaktor
  * @author     Urs Hunkler {@link urs.hunkler@unodo.de}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die;
+defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = 2017011100;
-$plugin->release = '3.1.0 (Build: 2016122300)';
+$plugin->version = 2017011100;              // The current plugin version (Date: YYYYMMDDXX).
+$plugin->release = "3.1.0 (Build: 2016122000)"; // User-friendly version number.
 $plugin->maturity = MATURITY_STABLE;
-$plugin->requires = 2015111602;
-$plugin->component = 'theme_kommit';
+$plugin->component = 'block_course_tags';   // Full name of the plugin (used for diagnostics).
+$plugin->requires = 2016051900;             // Requires this Moodle version.
 $plugin->dependencies = array(
-    'theme_bootstrapbase' => 2015111600,
+        'local_tag' => 2017011100,
 );

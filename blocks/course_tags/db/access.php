@@ -15,27 +15,38 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Moodle's kommit theme, an example of how to make a Bootstrap theme
+ * Tags block caps.
  *
- * DO NOT MODIFY THIS THEME!
- * COPY IT FIRST, THEN RENAME THE COPY AND MODIFY IT INSTEAD.
- *
- * For full information about creating Moodle themes, see:
- * http://docs.moodle.org/dev/Themes_2.0
- *
- * @package    theme_kommit
+ * @package    block_course_tags
  * @copyright  2016 eFaktor
  * @author     Urs Hunkler {@link urs.hunkler@unodo.de}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die;
+defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = 2017011100;
-$plugin->release = '3.1.0 (Build: 2016122300)';
-$plugin->maturity = MATURITY_STABLE;
-$plugin->requires = 2015111602;
-$plugin->component = 'theme_kommit';
-$plugin->dependencies = array(
-    'theme_bootstrapbase' => 2015111600,
+$capabilities = array(
+
+    'block/course_tags:myaddinstance' => array(
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_SYSTEM,
+        'archetypes' => array(
+            'user' => CAP_ALLOW
+        ),
+
+        'clonepermissionsfrom' => 'moodle/my:manageblocks'
+    ),
+
+    'block/course_tags:addinstance' => array(
+        'riskbitmask' => RISK_SPAM | RISK_XSS,
+
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_BLOCK,
+        'archetypes' => array(
+            'editingteacher' => CAP_ALLOW,
+            'manager' => CAP_ALLOW
+        ),
+
+        'clonepermissionsfrom' => 'moodle/site:manageblocks'
+    ),
 );

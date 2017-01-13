@@ -15,27 +15,28 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Moodle's kommit theme, an example of how to make a Bootstrap theme
- *
- * DO NOT MODIFY THIS THEME!
- * COPY IT FIRST, THEN RENAME THE COPY AND MODIFY IT INSTEAD.
- *
- * For full information about creating Moodle themes, see:
- * http://docs.moodle.org/dev/Themes_2.0
- *
- * @package    theme_kommit
- * @copyright  2016 eFaktor
+ * @package    local
+ * @subpackage tag
+ * @copyright  2017 eFaktor
  * @author     Urs Hunkler {@link urs.hunkler@unodo.de}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die;
-
-$plugin->version = 2017011100;
-$plugin->release = '3.1.0 (Build: 2016122300)';
-$plugin->maturity = MATURITY_STABLE;
-$plugin->requires = 2015111602;
-$plugin->component = 'theme_kommit';
-$plugin->dependencies = array(
-    'theme_bootstrapbase' => 2015111600,
+$functions = array(
+    'local_tag_add_course_tags' => array(
+        'classname'       => 'local_tag\external\tag',
+        'methodname'      => 'add_course_tags',
+        'description'     => 'Add the given course tags',
+        'type'            => 'write',
+        'capabilities'    => 'moodle/site:config',
+        'ajax'            => true,
+    ),
+    'local_tag_group_tags' => array(
+        'classname'       => 'local_tag\external\tag',
+        'methodname'      => 'group_tags',
+        'description'     => 'Sort the tag list into the given group',
+        'type'            => 'write',
+        'capabilities'    => 'moodle/site:config',
+        'ajax'            => true,
+    ),
 );

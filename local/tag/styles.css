@@ -1,0 +1,52 @@
+.itemList {
+    border: 1px solid #ccc;
+    margin: 0 0 1.5em;
+    padding: .5em;
+}
+
+.itemList .item {
+    border: 1px solid #ccc;
+    list-style-type: none;
+    list-style-image: none;
+    padding: .5em;
+}
+
+.itemList.dd-initialized .item {
+    cursor: move;
+}
+
+.itemList.dd-initialized.ui-sortable-disabled .item {
+    cursor: inherit;
+}
+
+.itemList .ui-sortable-helper {
+    background-color: #fff;
+}
+
+.itemList .selected {
+    background-color: #fff;
+}
+
+body > .ui-sortable-helper,
+body > .ui-sortable-helper > li {
+    background-color: #fff;
+    border: 1px solid #eee;
+    box-sizing: border-box;
+    cursor: move;
+    display: block !important;
+    line-height: 1.5;
+    list-style-type: none;
+    list-style-image: none;
+    min-height: 2.5em;
+    padding: .5em;
+}
+
+.accordion-inner .itemList {
+    border: 0;
+    margin-bottom: 0;
+    padding: 0;
+}
+
+.accordion-toggle.mx-content-hover {
+    background-color: #ddd;
+}
