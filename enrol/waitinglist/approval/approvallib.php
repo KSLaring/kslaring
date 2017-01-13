@@ -422,29 +422,42 @@ Class Approval {
      * Description
      * Send reminders to the manager
      *
-     * @param           Object $user                user
-     * @param           Object $infoNotification    information to send
-     * @param           array  $toManagers          who receive the notifcation
+     * @param           Object  $user                user
+     * @param           Object  $infoNotification    information to send
+     * @param           int     $instanceId          Instance id enrolment method
+     * @param           array   $toManagers          Who receives the notification
      *
      * @throws          Exception
      *
      * @creationDate    29/12/2015
      * @author          eFaktor     (fbv)
      */
-    public static function send_reminder($user,&$infoNotification,$toManagers) {
+    public static function send_reminder($user,&$infoNotification,$instanceId,$toManagers) {
         /* Variables */
         global $SITE,$DB;
         $lnkApprove = null;
         $lnkReject  = null;
         $rdo        = null;
         $params     = null;
-
+        $company    = null;
 
         try {
             // Extra Info
             $infoNotification->user = fullname($user);
             $infoNotification->site = $SITE->shortname;
 
+            // Get company connected with user and enrolment method
+            $rdo = $DB->get_record('enrol_approval',array('userid' => $user->id,'waitinglistid' => $instanceId));
+            if ($rdo) {
+                $company = $rdo->companyid;
+            }
+
+            // Get info notification
+            self::get_infouser_notification_approved($user->id,$infoNotification,$instanceId,$company);
+
+            /**
+             * Add extra token to the action link
+             */
             // Action Tokens
             $params = array();
             $params['approvalid']   = $infoNotification->approvalid;
@@ -452,14 +465,12 @@ Class Approval {
             // Approve Token
             $params['action']       = APPROVED_ACTION;
             $rdo = $DB->get_record('enrol_approval_action',$params);
-            $lnkApprove =   $infoNotification->approve . '/' . $rdo->token;
-            $infoNotification->approve = '<a href="' . $lnkApprove . '">' . get_string('approve_lnk','enrol_waitinglist') . '</br>';
+            $infoNotification->approve = $infoNotification->approve . '/' . $rdo->token;
 
             // Reject Token
             $params['action']       = REJECTED_ACTION;
             $rdo = $DB->get_record('enrol_approval_action',$params);
-            $lnkReject  = $infoNotification->reject . '/' . $rdo->token;
-            $infoNotification->reject = '<a href="' . $lnkReject . '">' . get_string('reject_lnk','enrol_waitinglist') . '</br>';
+            $infoNotification->reject = $infoNotification->reject . '/' . $rdo->token;;
 
             // Send Mail
             self::send_notification_managers($infoNotification,$toManagers,true);
