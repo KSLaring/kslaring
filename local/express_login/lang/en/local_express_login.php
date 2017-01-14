@@ -97,3 +97,5 @@ $string['micro_message']          = '<p>We would like to inform you, that you ha
 
 $string['bulk_action']      = 'Generated Express Login';
 $string['bulk_succesful']   = 'The Express Login will be generated during the next 30 minutes.';
+
+$string['crontask']             = 'Express login cron task';

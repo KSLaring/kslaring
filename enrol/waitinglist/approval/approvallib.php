@@ -97,65 +97,48 @@ Class Approval {
     public static function managers_connected($userId,$three) {
         /* Variables */
         global $DB;
-        $sql            = null;
-        $rdo            = null;
-        $params         = null;
-        $myManagers     = array();
-        $infoManager    = null;
+        $sql        = null;
+        $rdo        = null;
+        $params     = null;
+        $managers   = array();
+        $info       = null;
 
         try {
-            // Search Criteria
+            // Search criteria
             $params = array();
             $params['user']     = $userId;
             $params['company']  = $three;
 
-            //  SQL Instruction
-            $sql = " SELECT DISTINCT 
-                                rm.managerid,
-                                CONCAT(co_two.name,'/',co.name) as 'company',
-                                u.lang
-                     FROM		{user_info_competence_data} 	uicd                       
-                        JOIN	{report_gen_companydata}		co 		ON 	co.id = uicd.companyid
-                        -- LEVEL TWO
-                        JOIN	{report_gen_company_relation}  	cr_two	ON 	cr_two.companyid 		= co.id
-                        JOIN	{report_gen_companydata}		co_two	ON 	co_two.id 				= cr_two.parentid
-                                                                        AND co_two.hierarchylevel 	= 2
-                        -- CHECK MANAGER LEVEL TWO/ LEVEL THREE
-                        JOIN	{report_gen_company_manager}  	rm		ON 	(
-                                                                             (rm.levelthree = uicd.companyid
-                                                                              AND 
-                                                                              rm.leveltwo = co_two.id)
-                                                                             OR 
-                                                                             (rm.leveltwo = co_two.id
-                                                                              AND
-                                                                              rm.levelthree IS NULL)
-                                                                             )
-                        JOIN    {user}                          	u   ON  u.id  = rm.managerid
-                     WHERE		uicd.userid 	= :user
-                        AND		uicd.companyid  = :company ";
-
-            // Execute
+            // First level three
+            $sql = self::get_sql_managers_company_user_by_level(3);
             $rdo = $DB->get_records_sql($sql,$params);
+            if (!$rdo) {
+                // Get level two
+                $sql = self::get_sql_managers_company_user_by_level(2);
+                $rdo = $DB->get_records_sql($sql,$params);
+            }
+
+            // Extract managers
             if ($rdo) {
                 foreach ($rdo as $instance) {
-                    if (array_key_exists($instance->managerid,$myManagers)) {
-                        $infoManager = $myManagers[$instance->managerid];
+                    if (array_key_exists($instance->managerid,$managers)) {
+                        $info = $managers[$instance->managerid];
                     }else {
-                        $infoManager = new stdClass();
-                        $infoManager->id        = $instance->managerid;
-                        $infoManager->lang      = $instance->lang;
-                        $infoManager->companies = array();
+                        $info = new stdClass();
+                        $info->id        = $instance->managerid;
+                        $info->lang      = $instance->lang;
+                        $info->companies = array();
                     }//if_manager_exists
 
                     // Add Company
-                    $infoManager->companies[] = $instance->company;
+                    $info->companies[] = $instance->company;
 
                     // Add Manager
-                    $myManagers[$instance->managerid] = $infoManager;
-                }//of_rdo
+                    $managers[$instance->managerid] = $info;
+                }//for_rdo
             }//if_rdo
 
-            return $myManagers;
+            return $managers;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -439,29 +422,42 @@ Class Approval {
      * Description
      * Send reminders to the manager
      *
-     * @param           Object $user                user
-     * @param           Object $infoNotification    information to send
-     * @param           array  $toManagers          who receive the notifcation
+     * @param           Object  $user                user
+     * @param           Object  $infoNotification    information to send
+     * @param           int     $instanceId          Instance id enrolment method
+     * @param           array   $toManagers          Who receives the notification
      *
      * @throws          Exception
      *
      * @creationDate    29/12/2015
      * @author          eFaktor     (fbv)
      */
-    public static function send_reminder($user,&$infoNotification,$toManagers) {
+    public static function send_reminder($user,&$infoNotification,$instanceId,$toManagers) {
         /* Variables */
         global $SITE,$DB;
         $lnkApprove = null;
         $lnkReject  = null;
         $rdo        = null;
         $params     = null;
-
+        $company    = null;
 
         try {
             // Extra Info
             $infoNotification->user = fullname($user);
             $infoNotification->site = $SITE->shortname;
 
+            // Get company connected with user and enrolment method
+            $rdo = $DB->get_record('enrol_approval',array('userid' => $user->id,'waitinglistid' => $instanceId));
+            if ($rdo) {
+                $company = $rdo->companyid;
+            }
+
+            // Get info notification
+            self::get_infouser_notification_approved($user->id,$infoNotification,$instanceId,$company);
+
+            /**
+             * Add extra token to the action link
+             */
             // Action Tokens
             $params = array();
             $params['approvalid']   = $infoNotification->approvalid;
@@ -469,14 +465,12 @@ Class Approval {
             // Approve Token
             $params['action']       = APPROVED_ACTION;
             $rdo = $DB->get_record('enrol_approval_action',$params);
-            $lnkApprove =   $infoNotification->approve . '/' . $rdo->token;
-            $infoNotification->approve = '<a href="' . $lnkApprove . '">' . get_string('approve_lnk','enrol_waitinglist') . '</br>';
+            $infoNotification->approve = $infoNotification->approve . '/' . $rdo->token;
 
             // Reject Token
             $params['action']       = REJECTED_ACTION;
             $rdo = $DB->get_record('enrol_approval_action',$params);
-            $lnkReject  = $infoNotification->reject . '/' . $rdo->token;
-            $infoNotification->reject = '<a href="' . $lnkReject . '">' . get_string('reject_lnk','enrol_waitinglist') . '</br>';
+            $infoNotification->reject = $infoNotification->reject . '/' . $rdo->token;;
 
             // Send Mail
             self::send_notification_managers($infoNotification,$toManagers,true);
@@ -937,6 +931,88 @@ Class Approval {
 
     /**
      * Description
+     * It builds sql to get all managers connected with a specific user and company
+     * for a given level
+     *
+     * @creationDate    10/01/17
+     * @author          eFaktor     (fbv)
+     *
+     * @param       int $level
+     *
+     * @return          null|string
+     * @throws          Exception
+     */
+    private static function get_sql_managers_company_user_by_level($level) {
+        /* Variables */
+        $sql = null;
+
+        try {
+            switch ($level) {
+                case 2:
+                    $sql = " SELECT   DISTINCT 
+                                          rm.managerid,
+                                          CONCAT(co_two.name,'/',co.name) as 'company',
+                                          u.lang
+                             FROM		  {user_info_competence_data} 		uicd                       
+                                JOIN	  {report_gen_companydata}			co 		ON  co.id 					= uicd.companyid
+                                -- LEVEL TWO
+                                JOIN	  {report_gen_company_relation}  	cr_two	ON 	cr_two.companyid 		= co.id
+                                JOIN	  {report_gen_companydata}			co_two	ON 	co_two.id 				= cr_two.parentid
+                                                                                    AND co_two.hierarchylevel 	= 2
+                                -- CHECK MANAGER LEVEL THREE
+                                JOIN	  {report_gen_company_manager}  	rm		ON 	rm.leveltwo 			= co_two.id
+                                                                                    AND (rm.levelthree 			IS NULL
+                                                                                         OR 
+                                                                                         rm.levelthree 			= 0)
+                                LEFT JOIN {report_gen_company_manager}      rmo		ON  rmo.managerid 			= rm.managerid 	
+                                                                                    AND rmo.levelone 			= rm.levelone
+                                                                                    AND (rmo.leveltwo			IS NULL
+                                                                                         OR 
+                                                                                         rmo.leveltwo 			= 0)
+                                JOIN      {user}                          	u   	ON  u.id  					= rm.managerid
+                             WHERE		  uicd.userid 	  = :user
+                                  AND	  uicd.companyid  = :company
+                                  AND 	  rmo.id IS NULL ";
+                    break;
+
+                case 3:
+                    $sql = " SELECT  DISTINCT
+                                          rm.managerid,
+                                          CONCAT(co_two.name,'/',co.name) as 'company',
+                                          u.lang,
+                                          rm.leveltwo,
+                                          rm.levelthree
+                             FROM		  {user_info_competence_data} 	  uicd                       
+                                JOIN	  {report_gen_companydata}		  co 		ON  co.id 					= uicd.companyid
+                                -- LEVEL TWO
+                                JOIN	  {report_gen_company_relation}   cr_two	ON 	cr_two.companyid 		= co.id
+                                JOIN	  {report_gen_companydata}		  co_two	ON 	co_two.id 				= cr_two.parentid
+                                                                                    AND co_two.hierarchylevel 	= 2
+                                -- CHECK MANAGER LEVEL THREE
+                                JOIN	  {report_gen_company_manager}    rm		ON 	rm.levelthree 			= uicd.companyid 
+                                LEFT JOIN {report_gen_company_manager}    rmo		ON  rmo.managerid 			= rm.managerid 	
+                                                                                    AND rmo.leveltwo 			= co_two.id
+                                                                                    AND (rmo.levelthree 		IS NULL
+                                                                                         OR 
+                                                                                         rmo.levelthree 		= 0)
+                                JOIN      {user}                        u   	    ON  u.id  					= rm.managerid 
+                              WHERE		  uicd.userid 	  = :user
+                                  AND	  uicd.companyid  = :company
+                                  AND  	  rmo.id IS NULL ";
+
+                    break;
+                default:
+                    $sql = null;
+            }//switch
+
+            return $sql;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//get_sql_managers_company_user_by_level
+
+    /**
+     * Description
      * Get the competence connected with the user
      *
      * @param           int     $userId     Id user
@@ -1170,54 +1246,67 @@ Class Approval {
                     break;
 
                 case 2:
-                    $sql = " SELECT		rm.id,
-                                        rm.managerid,
-                                        CONCAT(co_zero.name,'/',co_one.name,'/',co_two.name) as 'company',
-                                        u.lang
-                             FROM		{report_gen_company_manager}  rm
-                                JOIN	{user}						  u 		ON 	u.id 		            = rm.managerid
+                    $sql = " SELECT	DISTINCT	
+                                          rm.id,
+                                          rm.managerid,
+                                          CONCAT(co_zero.name,'/',co_one.name,'/',co_two.name) as 'company',
+                                          u.lang
+                             FROM		  {report_gen_company_manager}  rm
+                                JOIN	  {user}						u 		ON 	u.id 		            = rm.managerid
                                                                                 AND	u.deleted 	            = 0
                                 -- LEVEL ZERO
-                                JOIN 	{report_gen_companydata}	  co_zero	ON 	co_zero.id 				= rm.levelzero
+                                JOIN 	  {report_gen_companydata}	  	co_zero	ON 	co_zero.id 				= rm.levelzero
                                                                                 AND	co_zero.hierarchylevel 	= 0
                                 -- LEVEL ONE
-                                JOIN	{report_gen_companydata}	  co_one	ON	co_one.id				= rm.levelone
+                                JOIN	  {report_gen_companydata}	  	co_one	ON	co_one.id				= rm.levelone
                                                                                 AND	co_one.hierarchylevel	= 1
                                 -- LEVEL TWO
-                                JOIN	{report_gen_companydata}      co_two	ON	co_two.id				= rm.leveltwo
+                                JOIN	  {report_gen_companydata}      co_two	ON	co_two.id				= rm.leveltwo
                                                                                 AND co_two.hierarchylevel	= 2
-                             WHERE	    (rm.levelzero IN ($levelZero) 
-                                         AND 
-                                         rm.levelone IN ($levelOne) 
-                                         AND 
-                                         rm.leveltwo IN ($levelTwo)  
-                                         AND 
-                                         rm.levelthree IS NULL
-                                        )
-                             ORDER BY   rm.managerid ";
+                                LEFT JOIN {report_gen_company_manager}  rmo		ON  rmo.managerid 			= rm.managerid 	
+                                                                                AND rmo.levelone 			= rm.levelone
+                                                                                AND (rmo.leveltwo			IS NULL
+                                                                                     OR 
+                                                                                     rmo.leveltwo 			= 0)
+                             WHERE	      (rm.levelzero IN ($levelZero) 
+                                           AND 
+                                           rm.levelone IN ($levelOne) 
+                                           AND 
+                                           rm.leveltwo IN ($levelTwo)  
+                                           AND 
+                                           rm.levelthree IS NULL
+                                          )
+                                  AND 	  rmo.id IS NULL
+                             ORDER BY     rm.managerid ";
 
                     break;
 
                 case 3:
-                    $sql = " SELECT		rm.id,
-                                        rm.managerid,
-                                        CONCAT(co_zero.name,'/',co_one.name,'/',co_two.name,'/',co_tre.name) as 'company',
-                                        u.lang
-                             FROM		{report_gen_company_manager}  rm
-                                JOIN	{user}						  u 		ON 	u.id 		            = rm.managerid
+                    $sql = " SELECT   DISTINCT
+                                          rm.id,
+                                          rm.managerid,
+                                          CONCAT(co_zero.name,'/',co_one.name,'/',co_two.name,'/',co_tre.name) as 'company',
+                                          u.lang
+                             FROM		  {report_gen_company_manager}  rm
+                                JOIN	  {user}						u 		ON 	u.id 		            = rm.managerid
                                                                                 AND	u.deleted 	            = 0
                                 -- LEVEL ZERO
-                                JOIN 	{report_gen_companydata}	  co_zero	ON 	co_zero.id 				= rm.levelzero
+                                JOIN 	  {report_gen_companydata}	    co_zero	ON 	co_zero.id 				= rm.levelzero
                                                                                 AND	co_zero.hierarchylevel 	= 0
                                 -- LEVEL ONE
-                                JOIN	{report_gen_companydata}	  co_one	ON	co_one.id				= rm.levelone
+                                JOIN	  {report_gen_companydata}	    co_one	ON	co_one.id				= rm.levelone
                                                                                 AND	co_one.hierarchylevel	= 1
                                 -- LEVEL TWO
-                                JOIN	{report_gen_companydata}      co_two	ON	co_two.id				= rm.leveltwo
+                                JOIN	  {report_gen_companydata}      co_two	ON	co_two.id				= rm.leveltwo
                                                                                 AND co_two.hierarchylevel	= 2
                                 -- LEVEL THREE
-                                JOIN	{report_gen_companydata}	  co_tre    ON 	co_tre.id = rm.levelthree
+                                JOIN	  {report_gen_companydata}	    co_tre  ON 	co_tre.id = rm.levelthree
                                                                                 AND co_tre.hierarchylevel 	= 3
+                             	LEFT JOIN {report_gen_company_manager}  rmo		ON  rmo.managerid 			= rm.managerid 	
+														                        AND rmo.leveltwo 			= co_two.id
+														                        AND (rmo.levelthree 		IS NULL
+														                             OR 
+															                        rmo.levelthree 		= 0)
                              WHERE	    (rm.levelzero IN ($levelZero) 
                                          AND 
                                          rm.levelone IN ($levelOne) 
@@ -1335,11 +1424,13 @@ Class Approval {
             $time = time();
 
             // Send Mail
+            $lnkApprove = $infoMail->approve;
+            $lnkReject  = $infoMail->reject;
             foreach ($toManagers as $managerId => $info) {
                 // Approve and Reject links 
-                $infoMail->approve = '<a href="' . $infoMail->approve . '">' .
+                $infoMail->approve = '<a href="' . $lnkApprove. '">' .
                                      (string)new lang_string('approve_lnk','enrol_waitinglist',null,$info->lang) . '</br>';
-                $infoMail->reject = '<a href="' . $infoMail->reject . '">' .
+                $infoMail->reject = '<a href="' . $lnkReject . '">' .
                                      (string)new lang_string('reject_lnk','enrol_waitinglist',null,$info->lang) . '</br>';
 
                 // Mails For Managers

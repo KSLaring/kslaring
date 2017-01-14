@@ -777,7 +777,10 @@ class CourseTemplate {
     public static function SelfEnrolment($data,$action) {
         /* Variables */
         global $DB;
-        $instance = null;
+        $instance   = null;
+        $sql        = null;
+        $rdo        = null;
+        $params     = null;
 
         try {
             /* Data */
@@ -811,6 +814,34 @@ class CourseTemplate {
 
                     break;
             }//action
+
+            // Update to status = 1 the rest of enrolments
+            // Search criteria
+            $params = array();
+            $params['course']       = $data->id;
+            $params['enrol']        = 'self';
+            $params['enrol_doskom'] = 'wsdoskom';
+            $params['status']       = 0;
+
+            // SQL Instruction
+            $sql = " SELECT	e.id,
+                            e.status
+                     FROM	{enrol}	e
+                     WHERE	e.courseid = :course
+                        AND e.enrol   != :enrol
+                        AND e.enrol	  != :enrol_doskom
+                        AND e.status   = :status ";
+
+            // Execute
+            $rdo = $DB->get_records_sql($sql,$params);
+            if ($rdo) {
+                // update status
+                foreach ($rdo as $instance) {
+                    $instance->status = 1;
+
+                    $DB->update_record('enrol',$instance);
+                }//for_rdo
+            }//if_rdo
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -1108,12 +1139,14 @@ class CourseTemplate {
                 /* Course && Template */
                 $rdoTemplate->id        = $rdoCourse->id;
                 $rdoTemplate->courseid  = $courseId;
+                $rdoTemplate->status    = 0;
 
                 return $rdoTemplate;
             }else if ($rdoTemplate && !$rdoCourse) {
                 /* Template but no course   */
                 $rdoTemplate->id        = null;
                 $rdoTemplate->courseid  = $courseId;
+                $rdoTemplate->status    = 0;
 
                 return $rdoTemplate;
             }else {
@@ -1122,6 +1155,7 @@ class CourseTemplate {
                 $instance = new stdClass();
                 $instance->id               = null;
                 $instance->courseid         = $courseId;
+                $instance->status           = 0;
 
                 return $instance;
             }//if
