@@ -59,6 +59,13 @@
     color: #d8d8d8;
 }
 
+.link_suspicious_file_disabled {
+    pointer-events: none;
+    cursor: default;
+    margin-right: 25px;
+    color: black;
+}
+
 .link_suspicious {
     cursor: default;
     margin-right: 25px;

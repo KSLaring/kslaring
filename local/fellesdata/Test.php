@@ -25,11 +25,10 @@ $PAGE->set_url('/local/fellesdata/Test.php');
 /* Print Header */
 echo $OUTPUT->header();
 
-
-echo " TESTING FELLESDATA CRON " . "</br>";
-echo "Start ... " . "</br>";
-
 try {
+    echo " TESTING FELLESDATA CRON " . "</br>";
+    echo "Start ... " . "</br>";
+
     if (!isset($SESSION->manual)) {
         $SESSION->manual = true;
     }
@@ -38,8 +37,8 @@ try {
 
     if ($option) {
         if ($option == 20) {
-            echo "Sending suspicious notifications..." . "</br>";
-            
+           echo "Sending suspicious notifications..." . "</br>";
+
             // Send Notifications
             suspicious::send_suspicious_notifications($pluginInfo);
             // Send Reminder
@@ -55,7 +54,6 @@ try {
 }//try_catch
 
 echo "</br> Finish ... " . "</br>";
-
 
 /* Print Footer */
 echo $OUTPUT->footer();
