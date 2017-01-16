@@ -497,7 +497,10 @@ class FELLESDATA_CRON {
 
             // Send suspicious notifications
             if ($pluginInfo->suspicious_path) {
+                // Send Notifications
                 suspicious::send_suspicious_notifications($pluginInfo);
+                // Send Reminder
+                suspicious::send_suspicious_notifications($pluginInfo,true);
             }//suspicious_path
         }catch (Exception $ex) {
             // Log
@@ -1020,12 +1023,6 @@ class FELLESDATA_CRON {
                         }//if_Rdo
                     }
                 }//if_total
-            }else {
-                // Send remainder
-                suspicious::send_suspicious_notifications($pluginInfo,true);
-                
-                // Log
-                $dbLog .= ' Waiting approve or rejection of suspicious data' . "\n";
             }//if_synchronization
 
             // Log
@@ -1114,12 +1111,6 @@ class FELLESDATA_CRON {
                     /* Clean Table*/
                     //$DB->delete_records('fs_imp_company',array('imported' => '1'));
                 }//if_else
-            }else {
-                // Send reminder
-                suspicious::send_suspicious_notifications($pluginInfo,true);
-                
-                // Log
-                $dbLog .= ' Waiting approve or rejection of suspicious data' . "\n";
             }//if_synchronization
 
             // Log
@@ -1230,12 +1221,6 @@ class FELLESDATA_CRON {
                     // No jobroles to map
                     $dbLog .= " JR - No One to notify " . "\n";
                 }//if_notigyTo
-            }else {
-                // Send remainder
-                suspicious::send_suspicious_notifications($pluginInfo,true);
-                
-                // Log
-                $dbLog .= ' Waiting approve or rejection of suspicious data' . "\n";
             }//if_synchronization
             
             // Log
@@ -1302,13 +1287,7 @@ class FELLESDATA_CRON {
                         }//if_toSynchronize
                     }//for_rdo
                 }//if_totla
-            }else {
-                // send synchronization
-                suspicious::send_suspicious_notifications($pluginInfo,true);
-                
-                // Log
-                $dbLog .= ' Waiting approve or rejection of suspicious data' . "\n";
-            }
+            }//if_synchronization
 
             $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' Finish User Competence Synchronization . ' . "\n";
             error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
@@ -1433,12 +1412,6 @@ class FELLESDATA_CRON {
                         }//if_toSynchronize
                     }//for
                 }//if_total
-            }else {
-                // send remainder
-                suspicious::send_suspicious_notifications($pluginInfo,true);
-                
-                // Log
-                $dbLog .= ' Waiting approve or rejection of suspicious data' . "\n";
             }//if_synchronization
 
             // Log
