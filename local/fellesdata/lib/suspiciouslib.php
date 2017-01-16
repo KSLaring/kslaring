@@ -595,6 +595,54 @@ class suspicious {
         }//try_catch
     }//display_suspicious_table
 
+    /**
+     * Description
+     * Download the file connected with
+     *
+     * @creationDate    16/01/17
+     * @author          eFaktor     (fbv)
+     * 
+     * @param       int $suspicious     Suspicious id file
+     *
+     * @return          bool
+     * @throws          Exception
+     */
+    public static function download_suspicious_file($suspicious) {
+        /* Variables */
+        global $DB;
+        $path   = null;
+        $file   = null;
+        $name   = null;
+        $rdo    = null;
+        $export = null;
+        
+        try {
+            // Get the info from DB
+            $rdo = $DB->get_record('fs_suspicious',array('id' => $suspicious),'file,path');
+            if ($rdo) {
+                // Path file
+                $path = $rdo->path . '/' . $rdo->file;
+
+                $export = new csv_export_writer();
+                $export->set_filename($rdo->file);
+
+                // Open file and add the content
+                $file = fopen($path,'r');
+                while (($data = fgetcsv($file)) !== FALSE) {
+                    $export->add_data($data);
+                }
+
+                // Download file
+                $export->download_file();
+            }else {
+                return false;
+            }
+
+            return true;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//download_suspicious_file
 
     /***********/
     /* PRIVATE */
@@ -672,12 +720,19 @@ class suspicious {
      */
     private static function add_content_suspicious_table($suspicious) {
         /* Variables */
-        $content = '';
-        $urlApp = null;
-        $urlRej = null;
-        $class  = null;
+        $content    = '';
+        $urlFile    = null;
+        $lnkFile    = null;
+        $urlApp     = null;
+        $lnkApp     = null;
+        $urlRej     = null;
+        $lnkRej     = null;
+        $class      = null;
+        $classFile  = null;
 
         try {
+            // Url file to download
+            $urlFile = new moodle_url('/local/fellesdata/suspicious/index.php',array('csv' => 1));
             // Url approve
             $urlApp = new moodle_url('/local/fellesdata/suspicious/index.php',array('a' => 1));
             // Url reject
@@ -686,9 +741,24 @@ class suspicious {
             foreach ($suspicious as $info) {
                 $class  = '';
                 $content .= html_writer::start_tag('tr');
+                    // links enables or not
+                    if (!$info->toapprove) {
+                        $class      = 'link_suspicious_disabled';
+                        $classFile  = 'link_suspicious_file_disabled';
+                    }else if(!$info->toreject) {
+                        $class      = 'link_suspicious_disabled';
+                        $classFile  = 'link_suspicious_file_disabled';
+                    } else {
+                        $class      = 'link_suspicious';
+                        $classFile  = 'link_suspicious';
+                    }//if_to_approve
+
                     // File
                     $content .= html_writer::start_tag('td',array('class' => 'info'));
-                        $content .= $info->file;
+                        // url to download the file
+                        $urlFile->param('id',$info->id);
+                        $lnkFile = '<a href="' . $urlFile . '" class="' . $classFile . '">' . $info->file . "</a>";
+                        $content .= $lnkFile;
                     $content .= html_writer::end_tag('td');
                     // Waiting
                     $content .= html_writer::start_tag('td',array('class' => 'date'));
@@ -706,20 +776,10 @@ class suspicious {
                     $content .= html_writer::start_tag('td',array('class' => 'action'));
                         // Url approve
                         $urlApp->param('id',$info->id);
-                        if (!$info->toapprove) {
-                            $class = 'link_suspicious_disabled';
-                        }else {
-                            $class = 'link_suspicious';
-                        }//if_to_approve
                         $lnkApp = '<a href="' . $urlApp . '" class="' . $class . '">' . get_string('approve','local_fellesdata') . "</a>";
 
                         // Url reject
                         $urlRej->param('id',$info->id);
-                        if (!$info->toreject) {
-                            $class = 'link_suspicious_disabled';
-                        }else {
-                            $class = 'link_suspicious';
-                        }//if_to_approve
                         $lnkRej = '<a href="' . $urlRej . '" class="' . $class . '">' . get_string('reject','local_fellesdata') . "</a>";
 
                         $content .= $lnkApp . $lnkRej;

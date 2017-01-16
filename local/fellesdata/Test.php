@@ -25,11 +25,10 @@ $PAGE->set_url('/local/fellesdata/Test.php');
 /* Print Header */
 echo $OUTPUT->header();
 
-
+try {
 echo " TESTING FELLESDATA CRON " . "</br>";
 echo "Start ... " . "</br>";
 
-try {
     if (!isset($SESSION->manual)) {
         $SESSION->manual = true;
     }
@@ -55,7 +54,6 @@ try {
 }//try_catch
 
 echo "</br> Finish ... " . "</br>";
-
 
 /* Print Footer */
 echo $OUTPUT->footer();
