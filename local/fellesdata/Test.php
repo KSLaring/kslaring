@@ -37,7 +37,16 @@ try {
     $pluginInfo     = get_config('local_fellesdata');
 
     if ($option) {
-        FELLESDATA_CRON::cron_manual(true,$option);
+        if ($option == 20) {
+            echo "Sending suspicious notifications..." . "</br>";
+            
+            // Send Notifications
+            suspicious::send_suspicious_notifications($pluginInfo);
+            // Send Reminder
+            suspicious::send_suspicious_notifications($pluginInfo,true);
+        }else {
+            FELLESDATA_CRON::cron_manual(true,$option);
+        }
     }else {
         echo $pluginInfo->fs_days;
     }

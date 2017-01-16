@@ -310,7 +310,7 @@ class suspicious {
                 }//for_notify
 
                 // Update notifications as sent
-                self::update_as_sent($notifications,$remainder);
+                self::update_as_sent($notifications,$plugin,$remainder);
             }//if_notifications
         }catch (Exception $ex) {
             throw $ex;
@@ -938,7 +938,7 @@ class suspicious {
      * @creationDate    28/12/2016
      * @author          eFaktor     (fbv)
      *
-     * @param           $remainder      Remainder date
+     * @param           boolean $remainder      Remainder date
      * @return          array
      * @throws          Exception
      */
@@ -980,7 +980,7 @@ class suspicious {
 
             // Remainder
             if ($remainder) {
-                $params['remainder'] = $remainder;
+                $params['remainder'] = $time;
                 
                 $sql .= " AND fs.remainder <= :remainder";
             }else {
@@ -1020,15 +1020,18 @@ class suspicious {
      * @creationDate    28/12/2016
      * @author          eFaktor     (fbv)
      *
-     * @param       array $suspicious   Suspicious notifications
-     * @param             $remainder
+     * @param       array   $suspicious   Suspicious notifications
+     * @param       Object  Plugin info
+     * @param       boolean $remainder
      *
      * @throws            Exception
      */
-    private static function update_as_sent($suspicious,$remainder = null) {
+    private static function update_as_sent($suspicious,$plugin,$remainder = null) {
         /* Variables */
         global $DB;
         $instance = null;
+        $options  = null;
+        $toSend   = null;
 
         try {
             if ($suspicious) {
@@ -1041,6 +1044,11 @@ class suspicious {
                     }else {
                         $instance->notificationsent = time();
                     }
+
+                    // Update when it has to be sent the next remainder
+                    $options   = array('12','24','36','48');
+                    $toSend    = strtotime('+' . $options[$plugin->send_remainder] . ' hours');
+                    $instance->remainder = $toSend;
 
                     // Execute
                     $DB->update_record('fs_suspicious',$instance);
