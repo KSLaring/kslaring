@@ -484,6 +484,7 @@ class suspicious {
                 foreach ($rdo as $instance) {
                     // Info suspicious file
                     $info = new stdClass();
+                    $info->file     = $instance->file;
                     $info->id       = $instance->id;
                     $info->detected = userdate($instance->detected,'%d.%m.%Y', 99, false);
                     $info->sent     = userdate($instance->notificationsent,'%d.%m.%Y', 99, false);
@@ -506,19 +507,16 @@ class suspicious {
                     // Connected with
                     switch ($instance->impfs) {
                         case IMP_USERS:
-                            $info->file = TRADIS_FS_USERS;
                             $info->sync = get_string('sync_users','local_fellesdata');
 
                             break;
 
                         case IMP_COMPETENCE_JR:
-                            $info->file = TRADIS_FS_USERS_JOBROLES;
                             $info->sync = get_string('sync_competence','local_fellesdata');
                             
                             break;
                         
                         case IMP_MANAGERS_REPORTERS:
-                            $info->file = TRADIS_FS_MANAGERS_REPORTERS;
                             $info->sync = get_string('sync_managers','local_fellesdata');
 
                             break;
@@ -530,7 +528,6 @@ class suspicious {
                             break;
 
                         case IMP_JOBROLES:
-                            $info->file = TRADIS_FS_JOBROLES;
                             $info->sync = get_string('sync_jobroles','local_fellesdata');
 
                             break;
