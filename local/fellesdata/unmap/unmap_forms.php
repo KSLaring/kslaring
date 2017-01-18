@@ -151,7 +151,7 @@ class organizations_unmap_form extends moodleform {
             $form->addElement('html','<div class="unmap_process ">');
                 /* FS Company  */
                 $form->addElement('html','<div class="area_unmap_fs_left ' . $ro . '">');
-                    $form->addElement('html',$infoMapped->fsname);
+                    $form->addElement('html',$infoMapped->fscompany . ' - ' . $infoMapped->fsname);
                 $form->addElement('html','</div>');//area_left
 
                 /* Mapped With  */
