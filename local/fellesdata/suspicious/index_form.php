@@ -17,15 +17,17 @@ class suspicious_form extends moodleform {
         // Form
         $form               = $this->_form;
 
+        list($from,$to) = $this->_customdata;
+
         $form->addElement('header', 'header_filter', get_string('filter'));
         $form->setExpanded('header_filter',true);
         
         // Date selector - From
         $form->addElement('date_selector','date_from',get_string('from','local_fellesdata'));
-        $form->setDefault('date_from', 0);
+        $form->setDefault('date_from', $from);
         // Date selector - To
         $form->addElement('date_selector','date_to',get_string('to','local_fellesdata'));
-        $form->setDefault('date_to', 0);
+        $form->setDefault('date_to', $to);
         
         $this->add_action_buttons(false, get_string('search'));
     }//definition

@@ -561,13 +561,14 @@ class suspicious {
      * @author          eFaktor     (fbv)
      *
      * @param    array  $suspicious  Suspicious files
+     * @param    int    $from        Date from
+     * @param    int    $to          Date to    
      *
      * @return          string
      * @throws          Exception
      */
-    public static function display_suspicious_table($suspicious) {
+    public static function display_suspicious_table($suspicious,$from = 0, $to = 0) {
         /* Variables */
-        global $OUTPUT;
         $out = '';
 
         try {
@@ -578,7 +579,7 @@ class suspicious {
                         // Header
                         $out .= self::add_header_suspicious_table();
                         // Content
-                        $out .= self::add_content_suspicious_table($suspicious);
+                        $out .= self::add_content_suspicious_table($suspicious,$from,$to);
                     $out .= html_writer::end_tag('table');
                 $out .= html_writer::end_div();//block_suspicious_content
             }else {
@@ -713,12 +714,14 @@ class suspicious {
      * @creationDate      29/12/2016
      * @author            eFaktor   (fbv)
      *
-     * @param       array $suspicious   Suspicious files
+     * @param       array  $suspicious   Suspicious files
+     * @param       int    $from        Date from
+     * @param       int    $to          Date to
      *
-     * @return            string
-     * @throws            Exception
+     * @return             string
+     * @throws             Exception
      */
-    private static function add_content_suspicious_table($suspicious) {
+    private static function add_content_suspicious_table($suspicious,$from=0,$to=0) {
         /* Variables */
         $content    = '';
         $urlFile    = null;
@@ -737,7 +740,16 @@ class suspicious {
             $urlApp = new moodle_url('/local/fellesdata/suspicious/index.php',array('a' => 1));
             // Url reject
             $urlRej = new moodle_url('/local/fellesdata/suspicious/index.php',array('a' => 2));
-
+            
+            if ($from && $to) {
+                // Extra params to approve link
+                $urlApp->param('f',$from);
+                $urlApp->param('t',$to);
+                // Extra params to reject link
+                $urlRej->param('f',$from);
+                $urlRej->param('t',$to);
+            }
+            
             foreach ($suspicious as $info) {
                 $class  = '';
                 $content .= html_writer::start_tag('tr');
