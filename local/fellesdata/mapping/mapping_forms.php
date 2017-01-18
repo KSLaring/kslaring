@@ -173,7 +173,7 @@ class organization_map_form extends moodleform {
                 $form->addElement('html','<div class="matching_process ">');
                     /* To Match */
                     $form->addElement('html','<div class="area_left ">');
-                        $form->addElement('html',$fsCompany->name);
+                        $form->addElement('html',$fsCompany->fscompany . ' - ' . $fsCompany->name);
                     $form->addElement('html','</div>');//area_left
 
                     /* Possible Matches */

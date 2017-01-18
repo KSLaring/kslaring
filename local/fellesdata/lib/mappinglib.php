@@ -1292,6 +1292,7 @@ class FS_MAPPING {
             /* SQL Instruction  */
             $sql = " SELECT DISTINCT fs_imp.id,
                                      fs_imp.org_enhet_id    as 'fscompany',
+                                     fs_imp.org_nivaa,
                                      fs_imp.org_navn	    as 'name',
                                      fs_imp.org_enhet_over,
                                      fs_imp.privat,
@@ -1344,6 +1345,7 @@ class FS_MAPPING {
                     $infoCompany = new stdClass();
                     $infoCompany->id            = $instance->id;
                     $infoCompany->fscompany     = $instance->fscompany;
+                    $infoCompany->nivaa         = $instance->org_nivaa;
                     $infoCompany->name          = $instance->name;
                     $infoCompany->real_name     = $instance->name;
                     /* Get Name Granpa */
