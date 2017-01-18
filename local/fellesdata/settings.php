@@ -76,7 +76,7 @@ if ($hassiteconfig) {
                                                   get_string('suspicious_remainder', 'local_fellesdata'),
                                                   get_string('suspicious_remainder', 'local_fellesdata'),0, $options));
     // Maximum suspicious data for users
-    $options = array('10','25','50','100');
+    $options = array('5','10','20','40','50','75','100','125','150','175','200','250','300','400','500','600','700','800','900','1000');
     $settings->add(new admin_setting_configselect('local_fellesdata/max_users',
                                                   get_string('max_suspicious_users', 'local_fellesdata'),
                                                   get_string('max_suspicious_users', 'local_fellesdata'), 3,$options));
