@@ -484,6 +484,7 @@ class suspicious {
                 foreach ($rdo as $instance) {
                     // Info suspicious file
                     $info = new stdClass();
+                    $info->file     = $instance->file;
                     $info->id       = $instance->id;
                     $info->detected = userdate($instance->detected,'%d.%m.%Y', 99, false);
                     $info->sent     = userdate($instance->notificationsent,'%d.%m.%Y', 99, false);
@@ -506,19 +507,16 @@ class suspicious {
                     // Connected with
                     switch ($instance->impfs) {
                         case IMP_USERS:
-                            $info->file = TRADIS_FS_USERS;
                             $info->sync = get_string('sync_users','local_fellesdata');
 
                             break;
 
                         case IMP_COMPETENCE_JR:
-                            $info->file = TRADIS_FS_USERS_JOBROLES;
                             $info->sync = get_string('sync_competence','local_fellesdata');
                             
                             break;
                         
                         case IMP_MANAGERS_REPORTERS:
-                            $info->file = TRADIS_FS_MANAGERS_REPORTERS;
                             $info->sync = get_string('sync_managers','local_fellesdata');
 
                             break;
@@ -530,7 +528,6 @@ class suspicious {
                             break;
 
                         case IMP_JOBROLES:
-                            $info->file = TRADIS_FS_JOBROLES;
                             $info->sync = get_string('sync_jobroles','local_fellesdata');
 
                             break;
@@ -561,13 +558,14 @@ class suspicious {
      * @author          eFaktor     (fbv)
      *
      * @param    array  $suspicious  Suspicious files
+     * @param    int    $from        Date from
+     * @param    int    $to          Date to    
      *
      * @return          string
      * @throws          Exception
      */
-    public static function display_suspicious_table($suspicious) {
+    public static function display_suspicious_table($suspicious,$from = 0, $to = 0) {
         /* Variables */
-        global $OUTPUT;
         $out = '';
 
         try {
@@ -578,7 +576,7 @@ class suspicious {
                         // Header
                         $out .= self::add_header_suspicious_table();
                         // Content
-                        $out .= self::add_content_suspicious_table($suspicious);
+                        $out .= self::add_content_suspicious_table($suspicious,$from,$to);
                     $out .= html_writer::end_tag('table');
                 $out .= html_writer::end_div();//block_suspicious_content
             }else {
@@ -713,12 +711,14 @@ class suspicious {
      * @creationDate      29/12/2016
      * @author            eFaktor   (fbv)
      *
-     * @param       array $suspicious   Suspicious files
+     * @param       array  $suspicious   Suspicious files
+     * @param       int    $from        Date from
+     * @param       int    $to          Date to
      *
-     * @return            string
-     * @throws            Exception
+     * @return             string
+     * @throws             Exception
      */
-    private static function add_content_suspicious_table($suspicious) {
+    private static function add_content_suspicious_table($suspicious,$from=0,$to=0) {
         /* Variables */
         $content    = '';
         $urlFile    = null;
@@ -737,7 +737,16 @@ class suspicious {
             $urlApp = new moodle_url('/local/fellesdata/suspicious/index.php',array('a' => 1));
             // Url reject
             $urlRej = new moodle_url('/local/fellesdata/suspicious/index.php',array('a' => 2));
-
+            
+            if ($from && $to) {
+                // Extra params to approve link
+                $urlApp->param('f',$from);
+                $urlApp->param('t',$to);
+                // Extra params to reject link
+                $urlRej->param('f',$from);
+                $urlRej->param('t',$to);
+            }
+            
             foreach ($suspicious as $info) {
                 $class  = '';
                 $content .= html_writer::start_tag('tr');

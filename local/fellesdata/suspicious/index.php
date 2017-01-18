@@ -23,12 +23,16 @@ require_login();
 $action         = optional_param('a',0,PARAM_INT);
 $suspiciousId   = optional_param('id',0,PARAM_INT);
 $csv            = optional_param('csv',0,PARAM_INT);
+$date_from      = optional_param('f',0,PARAM_INT);
+$date_to        = optional_param('t',0,PARAM_INT);
 $url            = new moodle_url('/local/fellesdata/suspicious/index.php');
 $suspicious     = null;
 $error          = NONE_ERROR;
 $strMessage     = null;
 $name           = null;
 $out            = '';
+$from           = null;
+$to             = null;
 
 /* Start the page */
 $siteContext = context_system::instance();
@@ -87,6 +91,10 @@ if ($csv) {
         echo $OUTPUT->header();
 
         echo $OUTPUT->notification($strMessage, 'notifysuccess');
+        if ($date_from && $date_to) {
+            $url->param('t',$date_to);
+            $url->param('f',$date_from);
+        }
         echo $OUTPUT->continue_button($url);
 
         // Footer
@@ -95,11 +103,22 @@ if ($csv) {
         // get suspicious data to show
         // No data --> From today until today
         $date = getdate(time());
-        $from   = mktime(23, 0, 0, $date['mon'], $date['mday']-1, $date['year']);
-        $suspicious = suspicious::get_suspicious_files($from,$from);
+        if ($date_from) {
+            $from = $date_from;
+        }else {
+            $from   = mktime(23, 0, 0, $date['mon'], $date['mday']-1, $date['year']);
+        }
+        if ($date_to) {
+            $to = $date_to;
+        }else {
+            $to = $from;
+        }
+
+        $suspicious = suspicious::get_suspicious_files($from,$to);
+
 
         // Form
-        $form = new suspicious_form(null,null);
+        $form = new suspicious_form(null,array($date_from,$date_to));
         if($data = $form->get_data()) {
             // get data connected with the filter
             $suspicious = suspicious::get_suspicious_files($data->date_from,$data->date_to);
@@ -111,7 +130,14 @@ if ($csv) {
 
         $form->display();
 
-        echo suspicious::display_suspicious_table($suspicious);
+        if (isset($data->date_from)) {
+            $date_from = $data->date_from;
+        }
+        if (isset($data->date_to)) {
+            $date_to = $data->date_to;
+        }
+
+        echo suspicious::display_suspicious_table($suspicious,$date_from,$date_to);
 
         // Footer
         echo $OUTPUT->footer();
