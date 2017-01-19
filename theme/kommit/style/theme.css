@@ -275,6 +275,9 @@ h5,
 h6 {
   color: #7e7e7e;
 }
+.alert .close {
+  top: -14px;
+}
 .navbar-fixed-top,
 .navbar-fixed-bottom {
   position: relative;
@@ -1798,6 +1801,24 @@ a.disabled {
 #page-enrol-index.format-netcourse .mform .fitem_actionbuttons {
   background-color: inherit;
   margin: 0;
+}
+#page-admin-local-tag-edit_group_tags .itemList .ui-sortable-helper {
+  background-color: #fff;
+}
+#page-admin-local-tag-edit_group_tags .itemList .selected {
+  background-color: #fff;
+}
+#page-admin-local-tag-edit_group_tags #filter-tag,
+#page-admin-local-tag-edit_group_tags #add-tag {
+  margin-top: -1px;
+}
+body#page-admin-local-tag-edit_group_tags > .ui-sortable-helper {
+  background-color: #fff;
+  border: 1px solid #eee;
+}
+body#page-admin-local-tag-edit_group_tags > .ui-sortable-helper > li {
+  background-color: #fff;
+  border: 1px solid #eee;
 }
 .table-striped tbody > tr:nth-child(odd) > td,
 .table-striped tbody > tr:nth-child(odd) > th {
