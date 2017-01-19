@@ -75,7 +75,7 @@ class FELLESDATA_CRON {
 
             /* Synchronization Companies    */
             $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START Companies FS Synchronization. ' . "\n";
-            self::companies_fs_synchronization($pluginInfo,$fstExecution);
+            //self::companies_fs_synchronization($pluginInfo,$fstExecution);
 
             /* Job roles to Map/Synchronize */
             self::jobroles_fs_to_map($pluginInfo);
@@ -1330,7 +1330,7 @@ class FELLESDATA_CRON {
             $total = FSKS_USERS::get_total_users_competence_to_unmap();
             if ($total) {
                 // Get users competence that have to be unmapped
-                for ($i=0;$i<=$total;$i=$i+10) {
+                for ($i=0;$i<=$total;$i=$i+100) {
                     $toUnMap = FSKS_USERS::user_competence_to_unmap($start,$limit);
                     
                     // Call web service
