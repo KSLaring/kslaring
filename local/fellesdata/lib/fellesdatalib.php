@@ -905,11 +905,15 @@ class FSKS_COMPANY {
 
             // Synchronized
             if ($sync) {
-                $instance = new stdClass();
-                $instance->ORG_ENHET_ID     = $impKey;
-                $instance->imported         = 1;
+                //$instance = new stdClass();
+                //$instance->ORG_ENHET_ID     = $impKey;
+                //$instance->imported         = 1;
 
-                $DB->update_record('fs_imp_company',$instance);
+                $instance = $DB->get_record('fs_imp_company',array('ORG_ENHET_ID' => $impKey),'id,imported');
+                if ($instance) {
+                    $instance->imported = 1;
+                    $DB->update_record('fs_imp_company',$instance);
+                }
             }//if_sync
 
             // Commit
