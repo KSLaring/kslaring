@@ -1562,7 +1562,7 @@ class FSKS_USERS {
                     $infoUser = $toUnMap[$objCompetence->key];
 
                     // UnMap
-                    self::unmap_competence_fs($infoUser,$objCompetence->key);
+                    self::unmap_competence_fs($infoUser);
                 }//unmapped
             }//competenceUnMapped
         }catch (Exception $ex) {
@@ -2271,22 +2271,21 @@ class FSKS_USERS {
      * Un map competence from the user
      *
      * @param           $infoUser
-     * @param           $key
      * 
      * @throws          Exception
      * 
      * @creationDate    23/11/2016
      * @author          eFaktor     (fbv)
      */
-    private static function unmap_competence_fs($infoUser,$key) {
+    private static function unmap_competence_fs($infoUser) {
         /* Variables */
         global $DB;
         $params = null;
 
         try {
             // Delete record
-            $params = (Array)$infoUser;
-            $params['id'] = $key;
+            $params = array();
+            $params['id'] = $infoUser->key;
             $DB->delete_records('fs_users_competence',$params);
         }catch (Exception $ex) {
             throw $ex;
