@@ -358,6 +358,7 @@ class Slaves {
                  */
                 $lstDomains = self::GetDomains($serviceId);
                 if ($lstDomains) {
+
                     foreach ($lstDomains as $infoDomain) {
                         /**
                          * Update slave system
