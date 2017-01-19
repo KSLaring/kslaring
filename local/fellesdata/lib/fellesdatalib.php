@@ -480,7 +480,6 @@ class FSKS_COMPANY {
     }//companies_to_unmap
 
     /**
-     * @param           $toUnMap
      * @param           $unMapped
      *
      * @throws          Exception
@@ -491,7 +490,7 @@ class FSKS_COMPANY {
      * Description
      * Unmap companies
      */
-    public static function unmap_companies_ksfs($toUnMap,$unMapped) {
+    public static function unmap_companies_ksfs($unMapped) {
         /* Variables */
         global $DB;
         $infoCompany    = null;
@@ -504,10 +503,10 @@ class FSKS_COMPANY {
                 $objCompany = (Object)$company;
 
                 if ($objCompany->unmapped) {
-                    // Get Company
-                    $infoCompany        = $toUnMap[$objCompany->id];
-
                     // Unmap company
+                    echo "Company ID: " . $objCompany->id . "</br>";
+                    $infoCompany = new stdClass();
+                    $infoCompany->id = $objCompany->id;
                     $infoCompany->sync = 1;
                     $DB->update_record('ksfs_org_unmap',$infoCompany);
                 }//unmapped
