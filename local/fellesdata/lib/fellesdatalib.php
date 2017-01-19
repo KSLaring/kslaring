@@ -504,7 +504,6 @@ class FSKS_COMPANY {
 
                 if ($objCompany->unmapped) {
                     // Unmap company
-                    echo "Company ID: " . $objCompany->id . "</br>";
                     $infoCompany = new stdClass();
                     $infoCompany->id = $objCompany->id;
                     $infoCompany->sync = 1;
