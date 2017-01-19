@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+defined('MOODLE_INTERNAL') || die;
+
 /**
  * Moodle's Starter theme, an example of how to make a Bootstrap theme
  *
@@ -81,6 +83,10 @@ EOT;
         if (method_exists($courseformat, 'page_init')) {
             $courseformat->page_init($page);
         }
+    }
+
+    if ($page->pagetype === 'login-index') {
+        $page->requires->js_call_amd('theme_kommit/hideloginform', 'init');
     }
 }
 
