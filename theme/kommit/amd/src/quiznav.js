@@ -3,10 +3,13 @@ define(['jquery', 'core/log'], function ($, log) {
     "use strict";
 
     // For debugging.
-    window.$ = $;
+    // window.$ = $;
+    log.debug('KSL quiznav AMD');
 
     return {
         init: function () {
+            log.debug('KSL quiznav init');
+
             YUI().use('anim', 'node-event-simulate', function (Y) {
                 var nbl = Y.one("#mod_quiz_navblock"),
                     p = nbl.one("a.thispage"),
