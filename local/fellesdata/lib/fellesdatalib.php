@@ -1395,7 +1395,7 @@ class FSKS_USERS {
                     $infoUser = $toUnMap[$objCompetence->key];
 
                     // UnMap
-                    self::unmap_managerreporter_fs($infoUser,$objCompetence->key);
+                    self::unmap_managerreporter_fs($infoUser);
                 }//unmapped
             }//competenceUnMapped
         }catch (Exception $ex) {
@@ -1907,14 +1907,13 @@ class FSKS_USERS {
      * Unmap manager/reporter from the company
      *
      * @param           $infoUserFS
-     * @param           $fsKey
      * 
      * @throws          Exception
      * 
      * @creationDate    23/11/2016
      * @author          eFaktor     (fbv)
      */
-    private static function unmap_managerreporter_fs($infoUserFS,$fsKey) {
+    private static function unmap_managerreporter_fs($infoUserFS) {
         /* Variables */
         global $DB;
         $params = null;
@@ -1922,7 +1921,7 @@ class FSKS_USERS {
         try {
             // Search Criteria
             $params = array();
-            $params['id']               = $fsKey;
+            $params['id']               = $infoUserFS->key;
             $params['personalnumber']   = $infoUserFS->personalNumber;
             $params['companyid']        = $infoUserFS->fsId;
 

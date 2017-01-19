@@ -1330,7 +1330,7 @@ class FELLESDATA_CRON {
             $total = FSKS_USERS::get_total_users_competence_to_unmap();
             if ($total) {
                 // Get users competence that have to be unmapped
-                for ($i=0;$i<=$total;$i=$i+100) {
+                for ($i=0;$i<=$total;$i=$i+10) {
                     $toUnMap = FSKS_USERS::user_competence_to_unmap($start,$limit);
                     
                     // Call web service
