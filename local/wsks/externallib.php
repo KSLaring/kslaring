@@ -165,7 +165,7 @@ class local_wsks_external extends external_api {
      */
     public static function wsFSCompany_parameters() {
         /* Company Info */
-        $companyFSID            = new external_value(PARAM_TEXT,'Fellesdata Id');
+        $companyFSID            = new external_value(PARAM_INT,'Fellesdata Id');
         $companyKSID            = new external_value(PARAM_INT,'Company KS ID. Update and Delete');
         $companyName            = new external_value(PARAM_TEXT,'Company Name');
         $companyIndustryCode    = new external_value(PARAM_TEXT,'Industry Code');
@@ -218,7 +218,7 @@ class local_wsks_external extends external_api {
         $msgError   = new external_value(PARAM_TEXT,'Error Description');
 
         /* Companies */
-        $companyFSID    = new external_value(PARAM_TEXT,'Fellesdata Id');
+        $companyFSID    = new external_value(PARAM_INT,'Fellesdata Id');
         $companyKSID    = new external_value(PARAM_INT,'KS Company Id');
         $imported       = new external_value(PARAM_INT,'Imported');
         $key            = new external_value(PARAM_INT,'Key Id record imported');

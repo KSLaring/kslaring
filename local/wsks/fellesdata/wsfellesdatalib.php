@@ -1899,19 +1899,50 @@ class WS_FELLESDATA {
                     break;
                 case DELETE_ACTION:
                     if ($rdo) {
+                        $companyId = $rdo->id;
                         /* Delete  Company */
-                        /* Check there are none users connected with */
-                        $rdoEmployee = $DB->get_records('user_info_competence_data',array('companyid' => $companyInfo->ksId));
-                        if (!$rdoEmployee) {
-                            $companyId = $rdo->id;
-                            /* Delete Comapny   */
-                            $DB->delete_records('report_gen_companydata',array('id' => $companyInfo->ksId));
+                        $DB->delete_records('report_gen_companydata',array('id' => $companyInfo->ksId));
 
-                            /* Delete Relations */
-                            $DB->delete_records('report_gen_company_relation',array('companyid' => $companyInfo->ksId));
-                        }else {
-                            $companyId = 0;
-                        }//if_no_employees
+                        /* Delete Relations */
+                        $DB->delete_records('report_gen_company_relation',array('companyid' => $companyInfo->ksId));
+
+                        // Delete user_info_competence_data
+                        $DB->delete_records('user_info_competence_data',array('companyid' => $companyInfo->ksId));
+
+                        // Delete report_managers
+                        $DB->delete_records('report_gen_company_manager',array('levelthree' => $companyInfo->ksId));
+
+                        // Delete report_reporters
+                        $DB->delete_records('report_gen_company_reporter',array('levelthree' => $companyInfo->ksId));
+
+                        // Delete report_super_user
+                        $DB->delete_records('report_gen_super_user',array('levelthree' => $companyInfo->ksId));
+
+                        // Job roles
+                        $rdoJR = $DB->get_records('report_gen_jobrole_relation',array('levelthree' => $companyInfo->ksId));
+                        if ($rdoJR) {
+                            foreach ($rdoJR as $instance) {
+                                // Delete job role connected
+                                $jr = $instance->jobroleid;
+                                $DB->delete_records('report_gen_jobrole_relation',$instance);
+                                // If there is not any record more, then add as generic
+                                $rdoAux = $DB->get_record('report_gen_jobrole_relation',array('jobroleid' => $jr));
+                                if (!$rdoAux) {
+                                    $generic = new stdClass();
+                                    $generic->jobroleid = $jr;
+
+                                    // Execute
+                                    $DB->insert_record('report_gen_jobrole_relation',$generic);
+                                }//if_aux
+                            }//for_rdo
+                        }//if_rdo_jobrole
+
+                        /* Check there are none users connected with */
+                        //$rdoEmployee = $DB->get_records('user_info_competence_data',array('companyid' => $companyInfo->ksId));
+                        //if (!$rdoEmployee) {
+                        //}else {
+                        //    $companyId = 0;
+                        //}//if_no_employees
                     }//if_exists
 
                     break;
