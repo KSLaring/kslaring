@@ -28,6 +28,8 @@ function xmldb_local_fellesdata_upgrade($oldVersion) {
     $fldIndustryCode    = null;
     $fldADFS            = null;
     $fldUsersImp        = null;
+    $fldToken           = null;
+    $tblSuspicious      = null;
 
     /* Get Manager  */
     $dbMan = $DB->get_manager();
@@ -143,7 +145,19 @@ function xmldb_local_fellesdata_upgrade($oldVersion) {
             Fellesdata_Update::add_suspicious($dbMan);
             Fellesdata_Update::add_suspicious_action($dbMan);
         }//if_old_versin
-        
+
+        // Add token connected with the file
+        if ($oldVersion < 2017011802) {
+            /* Table        */
+            $tblSuspicious = new xmldb_table('fs_suspicious');
+
+            /* New Field    */
+            $fldToken = new xmldb_field('token',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,0, 'impfs');
+            if (!$dbMan->field_exists($tblSuspicious, $fldToken)) {
+                $dbMan->add_field($tblSuspicious, $fldToken);
+            }//if_not_exists
+        }//if_oldVersion
+
         return true;
     }catch (Exception $ex) {
         throw $ex;
@@ -540,6 +554,7 @@ class Fellesdata_Update {
             $tblSuspicious->add_field('path',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
             // impfs            - Type of imformation to import
             $tblSuspicious->add_field('impfs',XMLDB_TYPE_CHAR,'50',null, XMLDB_NOTNULL, null,null);
+            $tblSuspicious->add_field('token',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,0);
             // detected         - When the file was marked as suspicious
             $tblSuspicious->add_field('detected',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
             // approved         - Approved or not

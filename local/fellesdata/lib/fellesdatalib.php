@@ -480,7 +480,6 @@ class FSKS_COMPANY {
     }//companies_to_unmap
 
     /**
-     * @param           $toUnMap
      * @param           $unMapped
      *
      * @throws          Exception
@@ -491,7 +490,7 @@ class FSKS_COMPANY {
      * Description
      * Unmap companies
      */
-    public static function unmap_companies_ksfs($toUnMap,$unMapped) {
+    public static function unmap_companies_ksfs($unMapped) {
         /* Variables */
         global $DB;
         $infoCompany    = null;
@@ -504,10 +503,9 @@ class FSKS_COMPANY {
                 $objCompany = (Object)$company;
 
                 if ($objCompany->unmapped) {
-                    // Get Company
-                    $infoCompany        = $toUnMap[$objCompany->id];
-
                     // Unmap company
+                    $infoCompany = new stdClass();
+                    $infoCompany->id = $objCompany->id;
                     $infoCompany->sync = 1;
                     $DB->update_record('ksfs_org_unmap',$infoCompany);
                 }//unmapped
@@ -733,7 +731,7 @@ class FSKS_COMPANY {
                             fs.action
                      FROM   {fs_imp_company}	fs
                      WHERE	fs.action 	 != :add
-                        AND	fs.imported   = :imported ";
+                        AND	fs.imported  = :imported ";
 
             // Execute
             $rdo = $DB->get_records_sql($sql,$params);
@@ -905,11 +903,15 @@ class FSKS_COMPANY {
 
             // Synchronized
             if ($sync) {
-                $instance = new stdClass();
-                $instance->ORG_ENHET_ID     = $impKey;
-                $instance->imported         = 1;
+                //$instance = new stdClass();
+                //$instance->ORG_ENHET_ID     = $impKey;
+                //$instance->imported         = 1;
 
-                $DB->update_record('fs_imp_company',$instance);
+                $instance = $DB->get_record('fs_imp_company',array('ORG_ENHET_ID' => $impKey),'id,imported');
+                if ($instance) {
+                    $instance->imported = 1;
+                    $DB->update_record('fs_imp_company',$instance);
+                }
             }//if_sync
 
             // Commit
@@ -1391,7 +1393,7 @@ class FSKS_USERS {
                     $infoUser = $toUnMap[$objCompetence->key];
 
                     // UnMap
-                    self::unmap_managerreporter_fs($infoUser,$objCompetence->key);
+                    self::unmap_managerreporter_fs($infoUser);
                 }//unmapped
             }//competenceUnMapped
         }catch (Exception $ex) {
@@ -1558,7 +1560,7 @@ class FSKS_USERS {
                     $infoUser = $toUnMap[$objCompetence->key];
 
                     // UnMap
-                    self::unmap_competence_fs($infoUser,$objCompetence->key);
+                    self::unmap_competence_fs($infoUser);
                 }//unmapped
             }//competenceUnMapped
         }catch (Exception $ex) {
@@ -1903,14 +1905,13 @@ class FSKS_USERS {
      * Unmap manager/reporter from the company
      *
      * @param           $infoUserFS
-     * @param           $fsKey
      * 
      * @throws          Exception
      * 
      * @creationDate    23/11/2016
      * @author          eFaktor     (fbv)
      */
-    private static function unmap_managerreporter_fs($infoUserFS,$fsKey) {
+    private static function unmap_managerreporter_fs($infoUserFS) {
         /* Variables */
         global $DB;
         $params = null;
@@ -1918,7 +1919,7 @@ class FSKS_USERS {
         try {
             // Search Criteria
             $params = array();
-            $params['id']               = $fsKey;
+            $params['id']               = $infoUserFS->key;
             $params['personalnumber']   = $infoUserFS->personalNumber;
             $params['companyid']        = $infoUserFS->fsId;
 
@@ -2267,22 +2268,21 @@ class FSKS_USERS {
      * Un map competence from the user
      *
      * @param           $infoUser
-     * @param           $key
      * 
      * @throws          Exception
      * 
      * @creationDate    23/11/2016
      * @author          eFaktor     (fbv)
      */
-    private static function unmap_competence_fs($infoUser,$key) {
+    private static function unmap_competence_fs($infoUser) {
         /* Variables */
         global $DB;
         $params = null;
 
         try {
             // Delete record
-            $params = (Array)$infoUser;
-            $params['id'] = $key;
+            $params = array();
+            $params['id'] = $infoUser->key;
             $DB->delete_records('fs_users_competence',$params);
         }catch (Exception $ex) {
             throw $ex;

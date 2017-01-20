@@ -1103,7 +1103,7 @@ class FELLESDATA_CRON {
                             }//if_notify
                         }else {
                             /* Log  */
-                            $dbLog  .= "ERROR WS: " . $response['error'] . "\n\n";
+                            $dbLog  .= "ERROR WS: " . $response['message'] . "\n\n";
                             $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' Finish ERROR Companies FS/KS Synchronization . ' . "\n";
                         }//if_no_error
                     }//if_toSynchronize
@@ -1157,7 +1157,7 @@ class FELLESDATA_CRON {
                 if ($toUnMap) {
                     $response = self::process_ks_service($pluginInfo,$service,array('toUnMap' => $toUnMap));
                     if ($response['error'] == '200') {
-                        FSKS_COMPANY::unmap_companies_ksfs($toUnMap,$response['orgUnMapped']);
+                        FSKS_COMPANY::unmap_companies_ksfs($response['orgUnMapped']);
                     }else {
                         // Log
                         $dbLog  .= "ERROR WS: " . $response['error'] . "\n\n";

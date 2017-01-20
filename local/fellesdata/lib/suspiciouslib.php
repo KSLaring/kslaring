@@ -173,6 +173,7 @@ class suspicious {
             $instance = new stdClass();
             $instance->file             = $type . '_' . $time . '.txt';
             $instance->path             = $CFG->dataroot . '/' . $plugin->suspicious_path;
+            $instance->token            = self::generate_token($type);
             $instance->detected         = $time;
             $instance->approved         = 0;
             $instance->rejected         = 0;
@@ -207,7 +208,7 @@ class suspicious {
 
             // Approve action
             $instanceApprove = new stdClass();
-            $instanceApprove->token          = self::generate_token($type);
+            $instanceApprove->token          = self::generate_token($type,true);
             $instanceApprove->action         = 1;
             $instanceApprove->suspiciousid   = $instance->id;
             // Execute
@@ -215,7 +216,7 @@ class suspicious {
 
             // Reject action
             $instanceReject = new stdClass();
-            $instanceReject->token          = self::generate_token($type);
+            $instanceReject->token          = self::generate_token($type,true);
             $instanceReject->action         = 2;
             $instanceReject->suspiciousid   = $instance->id;
             // Execute
@@ -262,6 +263,9 @@ class suspicious {
         $strBodyEnd         = null;
 
         try {
+            // generate the token for old version
+            self::update_old_suspicious();
+
             // get notifications to sent
             $notifications = self::get_suspicious_notifications($remainder);
 
@@ -325,7 +329,7 @@ class suspicious {
      * @author          eFaktor     (fbv)
      *
      * @param   array   $args   Parameters from the action link
-     * @param   String  $error
+     * @param   int     $error
      *
      * @return          int
      * @throws          Exception
@@ -345,8 +349,6 @@ class suspicious {
             }else {
                 $error = ERR_PARAMS;
             }//if_else
-
-            return $error;
         }catch (Exception $ex) {
             $error = ERR_PROCESS;
             
@@ -354,6 +356,33 @@ class suspicious {
         }//try_catch
     }//check_action_link
 
+    /**
+     * Description
+     * Check if the link to download the file is correct
+     * 
+     * @creationDate    18/01/2017
+     * @author          eFaktor     (fbv)
+     * 
+     * @param   array   $args
+     * @param   int     $error
+     * 
+     * @throws          Exception
+     */
+    public static function check_download_link($args,&$error) {
+        try {
+            // Check params link
+            if (!self::check_lnk_download($args)) {
+                $error = ERR_PARAMS;
+            }else {
+                $error = NONE_ERROR; 
+            }//if_else
+        }catch (Exception $ex) {
+            $error = ERR_PROCESS;
+
+            throw $ex;
+        }//try_catch
+    }//check_download_link
+    
     /**
      * Description
      * Apply the action to the suspicious file
@@ -641,6 +670,8 @@ class suspicious {
             throw $ex;
         }//try_catch
     }//download_suspicious_file
+
+
 
     /***********/
     /* PRIVATE */
@@ -945,6 +976,43 @@ class suspicious {
         }//try_catch
     }//check_link
 
+
+    /**
+     * Description
+     * Check if the link to download the file is correct
+     * 
+     * @creationDate    18/01/2017
+     * @author          eFaktor     (fbv)
+     * 
+     * @param           array $args
+     * 
+     * @return                bool
+     * @throws                Exception
+     */
+    private static function check_lnk_download($args) {
+        /* Variables */
+        global $DB;
+        $rdo    = null;
+        $params = null;
+
+        try {
+            // Search criteria
+            $params = array();
+            $params['id']    = $args[1];
+            $params['token'] = $args[0];
+
+            // Execute
+            $rdo = $DB->get_record('fs_suspicious',$params);
+            if ($rdo) {
+                return true;
+            }else {
+                return false;
+            }//if_rdo
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//check_lnk_download
+    
     /**
      * Description
      * Check if the file connected exists
@@ -1002,6 +1070,36 @@ class suspicious {
 
     /**
      * Description
+     * Generate the token connected with the file for old version
+     *
+     * @creationDate    18/01/2017
+     * @author          eFaktor     (fbv)
+     *
+     * @throws          Exception
+     */
+    private static function update_old_suspicious() {
+        /* Variables */
+        global $DB;
+        $rdo = null;
+
+        try {
+            // Get old suspicious
+            $rdo = $DB->get_records('fs_suspicious',array('token' => 0),'id,token');
+            if ($rdo) {
+                foreach ($rdo as $instance) {
+                    $instance->token = self::generate_token('old');
+
+                    // Execute
+                    $DB->update_record('fs_suspicious',$instance);
+                }
+            }//if_rdo
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//update_token_old_version
+
+    /**
+     * Description
      * Get notifications to send
      *
      * @creationDate    28/12/2016
@@ -1014,12 +1112,13 @@ class suspicious {
     private static function get_suspicious_notifications($remainder = null) {
         /* Variables */
         global $DB, $CFG;
-        $sql        = null;
-        $rdo        = null;
-        $params     = null;
-        $suspicious = array();
-        $info       = null;
-        $time       = null;
+        $sql            = null;
+        $rdo            = null;
+        $params         = null;
+        $suspicious     = array();
+        $info           = null;
+        $time           = null;
+        $download       = null;
 
         try {
             // Local time
@@ -1033,6 +1132,7 @@ class suspicious {
             // Sql instruction
             $sql = " SELECT	  fs.id,
                               fs.file,
+                              fs.token,
                               fs.detected,
                               fs_app.token as 'approve',
                               fs_rej.token as 'reject'
@@ -1065,7 +1165,8 @@ class suspicious {
                 foreach ($rdo as $instance) {
                     $info = new stdClass();
                     $info->id       = $instance->id;
-                    $info->file     = $instance->file;
+                    $download       = $CFG->wwwroot . '/local/fellesdata/suspicious/download.php/'. $instance->token . '/' . $instance->id;
+                    $info->file     = $instance->file; //'<a href="' . $download . '">' . $instance->file . '</a>';
                     $info->marked   = userdate($instance->detected ,'%d.%m.%Y', 99, false);
                     $info->approve  = $CFG->wwwroot . '/local/fellesdata/suspicious/action.php/1/'. $instance->approve . '/' . $instance->id;
                     $info->reject   = $CFG->wwwroot . '/local/fellesdata/suspicious/action.php/2/'. $instance->reject . '/' . $instance->id;
@@ -1135,19 +1236,26 @@ class suspicious {
      * @creationDate    27/12/2016
      * @author          eFaktor     (fbv)
      *
-     * @param           $type
+     * @param                $type
+     * @param           bool $action     Action table
      * @return          bool|mixed|null|string
      *
      * @throws          Exception
      */
-    private static function generate_token($type) {
+    private static function generate_token($type,$action = false) {
         /* Variables        */
         global $DB,$CFG;
         $ticket = null;
         $token  = null;
         $remind = null;
+        $tbl    = null;
 
         try {
+            if ($action) {
+                $tbl = 'fs_suspicious_action';
+            }else {
+                $tbl = 'fs_suspicious';
+            }
             // Ticket - something long and unique
             $token  = uniqid(mt_rand(),1);
             $ticket = random_string() . $type . '_' . time() . '_' . $token . random_string();
@@ -1155,7 +1263,7 @@ class suspicious {
             $remind = str_replace('/','.',$remind);
 
             // Check if it already exists
-            while ($DB->record_exists('fs_suspicious_action',array('token' => $token))) {
+            while ($DB->record_exists($tbl,array('token' => $token))) {
                 // Ticket - something long and unique
                 $token  = uniqid(mt_rand(),1);
                 $ticket = random_string() . $type . '_' . time() . '_' . $token . random_string();
@@ -1167,7 +1275,7 @@ class suspicious {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//generate_token
+    }//generate_token_action
 
     /**
      * Description
