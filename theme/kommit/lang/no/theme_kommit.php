@@ -65,7 +65,7 @@ $string['region-side-post'] = 'Høyre';
 $string['region-side-pre'] = 'Venstre';
 
 
-// additional block regions
+// Additional block regions.
 $string['region-content-top'] = 'Innhold-topp';
 $string['region-top'] = 'Topp';
 $string['region-bottom'] = 'Bunn';
@@ -87,7 +87,7 @@ $string['resethome']    = 'Bruk standard startside';
 $string['readmore']      = 'Les mer';
 
 /* JS toggle admin login */
-$string['adminlogin']      = 'admin login';
+$string['adminlogin']      = 'Admin login';
 
 /* Hidden blocks area */
 $string['visibleadminonly'] = 'Blocks moved into the area below will only be seen by teachers and admins.';
