@@ -570,7 +570,7 @@ class FSKS_COMPANY {
 
 
             // Execute
-            $rdo = $DB->get_records_sql($sql,$params,0,1);
+            $rdo = $DB->get_records_sql($sql,$params,0,5);
             if ($rdo) {
                 foreach ($rdo as $instance) {
                     // Info Company
