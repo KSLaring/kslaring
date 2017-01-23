@@ -315,7 +315,7 @@ class FSKS_COMPANY {
             // New - Create
             self::get_new_companiesfs_to_synchronize($toSynchronize);
             // New - Update
-            self::get_update_companiesfs_to_synchronize($toSynchronize);
+            //self::get_update_companiesfs_to_synchronize($toSynchronize);
 
             return $toSynchronize;
         }catch (Exception $ex) {
