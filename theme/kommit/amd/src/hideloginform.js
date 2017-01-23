@@ -17,7 +17,8 @@ define(['jquery', 'core/log'], function ($, log) {
                     .attr("id", "collapseloginfields")
                     .addClass("collapse")
                     .wrap("<div style='text-align: center'></div>")
-                    .before("<div id='expandlogindfields'><a data-toggle='collapse' data-target='#collapseloginfields'>Administratorinnlogging</a></div>");
+                    .before("<div id='expandlogindfields'><a data-toggle='collapse' data-target='#collapseloginfields'>"
+                        + M.str.theme_kommit.adminlogin + "</a></div>");
                 $loginsub.find(".desc").insertBefore("#expandlogindfields");
             }
         }
