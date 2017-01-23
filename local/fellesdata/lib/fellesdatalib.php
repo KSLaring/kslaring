@@ -315,7 +315,7 @@ class FSKS_COMPANY {
             // New - Create
             self::get_new_companiesfs_to_synchronize($toSynchronize);
             // New - Update
-            //self::get_update_companiesfs_to_synchronize($toSynchronize);
+            self::get_update_companiesfs_to_synchronize($toSynchronize);
 
             return $toSynchronize;
         }catch (Exception $ex) {
@@ -570,7 +570,7 @@ class FSKS_COMPANY {
 
 
             // Execute
-            $rdo = $DB->get_records_sql($sql,$params,0,5);
+            $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 foreach ($rdo as $instance) {
                     // Info Company
