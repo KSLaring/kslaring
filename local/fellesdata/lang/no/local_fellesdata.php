@@ -84,80 +84,80 @@ $string['parent']               = 'Overordnet nivå';
 
 $string['to_connect']           = 'Arbeidssteder som skal mappes';
 
-$string['header_jobroles']      = 'Parent connected with';
-$string['jr_to_connect']        = 'Job roles to connect';
+$string['header_jobroles']      = 'Overordnet koblet med';
+$string['jr_to_connect']        = 'Jobbroller som skal mappes';
 
-$string['fellesdata_days']          = 'Import days';
+$string['fellesdata_days']          = 'Antall døgn å importere';
 $string['fellesdata_default_days']  = '4';
 
-$string['nav_unmap']                = 'Unmap';
-$string['nav_unmap_org']            = 'Unmap organizations';
-$string['header_unmap_fellesdata']  = 'Fellesdata Unmap';
-$string['unmap_opt']                = 'Unmap Options';
-$string['level_unmap']              = 'Level to unmap';
+$string['nav_unmap']                = 'Fjern mapping';
+$string['nav_unmap_org']            = 'Fjern org-elementer';
+$string['header_unmap_fellesdata']  = 'Fellesdata - Fjern mapping';
+$string['unmap_opt']                = 'Innstillinger for Fjern mapping';
+$string['level_unmap']              = 'Nivå hvor mapping skal fjernes';
 
-$string['to_unmapp']    = 'To Unmap';
-$string['mapped_with']  = 'Mapped with';
-$string['fs_company']   = 'FS Company';
-$string['none_unmapped']    = 'There is no company connected with the search';
-$string['no_selection'] = 'There is no company selected';
+$string['to_unmapp']    = 'Skal fjernes';
+$string['mapped_with']  = 'Mappet med';
+$string['fs_company']   = 'Fellesdata org-element';
+$string['none_unmapped']    = 'Det finnes ingen org-elementer som passer til søket';
+$string['no_selection'] = 'Det er ikke valgt noe org-element';
 
-$string['suspicious_header']        = 'Suspicious Data';
-$string['suspicious_folder']        = 'Suspicious data in';
-$string['suspicious_notification']  = 'Suspicious data notify by email to';
-$string['suspicious_remainder']     = 'Send remainder each';
+$string['suspicious_header']        = 'Mistenkelige import-data';
+$string['suspicious_folder']        = 'Mistenkelige import-data i';
+$string['suspicious_notification']  = 'Mistenkelige import-data skal rapporteres via e-post til';
+$string['suspicious_remainder']     = 'Send en påminnelse hver';
 
-$string['subj_suspicious']              = '{$a}: Integration TARDIS - KS. Suspicious Data ';
-$string['subj_suspicious_remainder']    = '{$a}: Integration TARDIS - KS. Suspicious Data. REMAINDER ';
-$string['body_suspicious']              =   '<p>We would like that the next files contain suspicious data: </p>
+$string['subj_suspicious']              = '{$a}: Integrasjon TARDIS - KS Læring. Mistenkelige import-data ';
+$string['subj_suspicious_remainder']    = '{$a}: Integrasjon TARDIS - KS Læring. Mistenkelige import-data: PÅMINNELSE ';
+$string['body_suspicious']              =   '<p>Det ser ut til at disse filene inneholder mistenkelige data som har flere slettinger enn varslingsverdiene som er satt:</p>
                                              </br>
                                              <ul>';
 $string['body_suspicious_end']          = '</ul>';
-$string['body_suspicious_middle']       = '<li><u><strong>{$a->file}</strong></u> marked as suspicious on <strong>{$a->marked}</strong>. To process: {$a->approve} To reject: {$a->reject} </li>';
+$string['body_suspicious_middle']       = '<li><u><strong>{$a->file}</strong></u> markert som mistenkelige importdata <strong>{$a->marked}</strong>. For å godkjenne: {$a->approve} For å nekte: {$a->reject} </li>';
 
-$string['approve']  = 'Approve';
-$string['reject']   = 'Reject';
+$string['approve']  = 'Godkjenn';
+$string['reject']   = 'Nekt';
 
-$string['approved'] = 'The file {$a} has been approved';
-$string['rejected'] = 'The file {$a} has been rejected';
+$string['approved'] = 'Filen {$a} er godkjent';
+$string['rejected'] = 'Filen {$a} er nektet og blir ikke importert';
 
-$string['err_params']   = 'Sorry, link no valid. Please, contact to administrator';
-$string['err_file']     = 'Sorry, file corrupt or no found it. Please, contact to administrator';
-$string['err_process']  = 'Sorry, there has been an error during the process. Please, try it later or contact to administrator';
+$string['err_params']   = 'Beklager, men linken er ikke gyldig. Vennligst kontakt administrator';
+$string['err_file']     = 'Beklager, filen er allerede behandlet eller fjernet. Vennligst kontakt administrator';
+$string['err_process']  = 'Beklager, men det har oppstått et problem under behandlingen. Vennligst prøv igjen senere eller kontakt administrator.';
 
-$string['from'] = 'From';
-$string['to']   = 'To';
+$string['from'] = 'Fra';
+$string['to']   = 'Til';
 
-$string['sync_users']           = 'Users accounts synchronization';
-$string['sync_competence']      = 'Users competence synchronization';
-$string['sync_company']         = 'Companies synchronization';
-$string['sync_jobroles']        = 'Job roles synchronization';
-$string['sync_managers']        = 'Managers synchronization';
+$string['sync_users']           = 'Synkronisering av brukerkontoer';
+$string['sync_competence']      = 'Synkronisering av brukeres arbeidssteder';
+$string['sync_company']         = 'Synkronisering av org-elementer';
+$string['sync_jobroles']        = 'Synkronisering av jobbroller';
+$string['sync_managers']        = 'Synkronisering av ledere på arbeidssteder';
 
-$string['status_app']   = 'Approved';
-$string['status_rej']   = 'Rejected';
-$string['status_wait']  = 'Waiting';
+$string['status_app']   = 'Godkjent';
+$string['status_rej']   = 'Avslått';
+$string['status_wait']  = 'Venter';
 
-$string['big_date'] = 'It cannot be bigger than the present date';
-$string['from_to']  = 'From date cannot be bigger than To date';
+$string['big_date'] = 'Datoen kan ikke være etter i dag.';
+$string['from_to']  = 'Fra-dato kan ikke være nyere enn Til-dato';
 
-$string['no_data'] = 'None suspicious data found';
+$string['no_data'] = 'Fant ingen mistenkelige import-data';
 
-$string['rpt_file']         = 'File';
-$string['rpt_since']        = 'Waiting since';
-$string['rpt_connected']    = 'Connected with';
+$string['rpt_file']         = 'Fil';
+$string['rpt_since']        = 'Ventet siden';
+$string['rpt_connected']    = 'Koblet med';
 $string['rpt_status']       = 'Status';
-$string['rpt_act']          = 'Action';
+$string['rpt_act']          = 'Handling';
 
-$string['max_suspicious_users']         = 'Maximum suspicious data connected with users';
-$string['max_suspicious_competence']    = 'Maximum suspicious data connected with competence';
-$string['max_suspicious_rest']          = 'Maximum suspicious connected with the rest';
+$string['max_suspicious_users']         = 'Maksgrense for mistenkelige verdier koblet med brukere';
+$string['max_suspicious_competence']    = 'Maksgrense for mistenkelige verdier koblet med brukeres arbeidssteder';
+$string['max_suspicious_rest']          = 'Maksgrense for mistenkelige verdier for resten av importfilene';
 
-$string['map_header']       = 'Mapping settings';
-$string['map_one']          = 'Level one';
-$string['map_one_desc']     = 'Mapping level one';
-$string['map_two']          = 'Level two';
-$string['map_two_desc']     = 'Mapping level two';
-$string['map_three']        = 'Level three';
-$string['map_three_desc']   = 'Mapping level three';
+$string['map_header']       = 'Mappingsinnstillinger';
+$string['map_one']          = 'KS Læring L1';
+$string['map_one_desc']     = 'TARDIS mapping til KS Læring L1';
+$string['map_two']          = 'KS Læring L2';
+$string['map_two_desc']     = 'TARDIS mapping til KS Læring L2';
+$string['map_three']        = 'KS Læring L3';
+$string['map_three_desc']   = 'TARDIS mapping til KS Læring L3';
 
