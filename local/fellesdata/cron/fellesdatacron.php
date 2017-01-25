@@ -60,6 +60,26 @@ class FELLESDATA_CRON {
                 }
             }//if_suspucuous_path
             
+            /*
+             * Unmap process
+             * 1 - Unmap user competence
+             * 2 - Unmap managers reporters
+             * 3 - Unmap organizations
+             */
+            if (!$fstExecution) {
+                /* Unmap user competence    */
+                $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START  UNMAP User competence. ' . "\n";
+                self::unmap_user_competence($pluginInfo,KS_UNMAP_USER_COMPETENCE);
+
+                /* Unmap Managers           */
+                $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START  UNMAP Manager/Reporter. ' . "\n";
+                self::unmap_managers_reporters($pluginInfo,KS_MANAGER_REPORTER);
+
+                /* Unmap organizations      */
+                $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START  UNMAP Organizations. ' . "\n";
+                self::unmap_organizations($pluginInfo,KS_UNMAP_COMPANY);
+            }//fstExecution_tounmap
+            
             /* Import KS */
             $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START Import KS. ' . "\n";
             self::import_ks($pluginInfo);
@@ -94,26 +114,6 @@ class FELLESDATA_CRON {
                 $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START Users Competence to delete FS Synchronization. ' . "\n";
                 self::user_competence_synchronization($pluginInfo,KS_USER_COMPETENCE,true);
            }
-
-            /*
-             * Unmap process
-             * 1 - Unmap user competence
-             * 2 - Unmap managers reporters
-             * 3 - Unmap organizations
-             */
-            if (!$fstExecution) {
-                /* Unmap user competence    */
-                $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START  UNMAP User competence. ' . "\n";
-                self::unmap_user_competence($pluginInfo,KS_UNMAP_USER_COMPETENCE);
-
-                /* Unmap Managers           */
-                $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START  UNMAP Manager/Reporter. ' . "\n";
-                self::unmap_managers_reporters($pluginInfo,KS_MANAGER_REPORTER);
-
-                /* Unmap organizations      */
-                $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START  UNMAP Organizations. ' . "\n";
-                self::unmap_organizations($pluginInfo,KS_UNMAP_COMPANY);
-            }//fstExecution_tounmap
 
             /* Log  */
             $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH FELLESDATA CRON . ' . "\n";

@@ -117,6 +117,15 @@ class FS_UnMap {
             /* Execute */
             $DB->delete_records('fs_company',$params);
 
+            /**
+             * Update fs_imp_company as imported = 0
+             */
+            $rdo = $DB->get_record('fs_imp_company',array('ORG_ENHET_ID' => $infoOrg->fscompany),'id,imported');
+            if ($rdo) {
+                $rdo->imported = 0;
+                $DB->update_record('fs_imp_company',$rdo);
+            }
+
             /* Commit   */
             $trans->allow_commit();
         }catch (Exception $ex) {
