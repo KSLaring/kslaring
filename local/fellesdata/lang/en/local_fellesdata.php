@@ -162,3 +162,6 @@ $string['map_two_desc']     = 'Mapping level two';
 $string['map_three']        = 'Level three';
 $string['map_three_desc']   = 'Mapping level three';
 
+$string['downloaded']       = 'The file <strong>{$a}</strong> has been downloaded';
+$string['to_download']      = 'Click on <strong>{$a}</strong> to download the file';
+

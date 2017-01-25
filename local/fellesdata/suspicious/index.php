@@ -34,6 +34,11 @@ $out            = '';
 $from           = null;
 $to             = null;
 
+/* Guess USer -- Logout */
+if (isguestuser($USER)) {
+    require_logout();
+}//if_guestuser
+
 /* Start the page */
 $siteContext = context_system::instance();
 
@@ -115,7 +120,6 @@ if ($csv) {
         }
 
         $suspicious = suspicious::get_suspicious_files($from,$to);
-
 
         // Form
         $form = new suspicious_form(null,array($date_from,$date_to));

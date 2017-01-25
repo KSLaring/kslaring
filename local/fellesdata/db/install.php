@@ -180,6 +180,7 @@ class Fellesdata_Install {
             $tblSuspicious->add_field('path',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
             // impfs            - Type of imformation to import
             $tblSuspicious->add_field('impfs',XMLDB_TYPE_CHAR,'50',null, XMLDB_NOTNULL, null,null);
+            $tblSuspicious->add_field('token',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,0);
             // detected         - When the file was marked as suspicious
             $tblSuspicious->add_field('detected',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
             // approved         - Approved or not
