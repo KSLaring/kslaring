@@ -104,6 +104,9 @@ class suspicious {
             // Get plugin info
             $plugin = get_config('local_fellesdata');
 
+            // Max deletec actions
+            $options = array('5','10','20','40','50','75','100','125','150','175','200','250','300','400','500','600','700','800','900','1000');
+
             // Get content
             $content = file_get_contents($file);
 
@@ -112,19 +115,19 @@ class suspicious {
             if ($delete) {
                 switch ($type) {
                     case TRADIS_FS_USERS:
-                        if ($delete >= $plugin->max_users) {
+                        if ($delete >= $options[$plugin->max_users]) {
                             $suspicious = true;
                         }//if_suspicious
 
                         break;
                     case TRADIS_FS_USERS_JOBROLES:
-                        if ($delete >= $plugin->max_comp) {
+                        if ($delete >= $options[$plugin->max_comp]) {
                             $suspicious = true;
                         }//if_suspicious
 
                         break;
                     default:
-                        if ($delete >= $plugin->max_rest) {
+                        if ($delete >= $options[$plugin->max_rest]) {
                             $suspicious = true;
                         }//if_suspicious
 
@@ -621,6 +624,50 @@ class suspicious {
             throw $ex;
         }//try_catch
     }//display_suspicious_table
+
+    /**
+     * Description
+     * Display the link to download the file
+     * 
+     * @creationDate    25/01/2017
+     * @author          eFaktor     (fbv)
+     * 
+     * @param           integer $suspicious Id file
+     * 
+     * @return                  string
+     * @throws                  Exception
+     */
+    public static function display_download_link($suspicious) {
+        /* Variables */
+        $out = '';
+        $lnk    = null;
+        $url    = null;
+        
+        try {
+            $out .= html_writer::start_div('block_suspicious');
+                if ($suspicious) {
+                    // Name file
+                    $name = suspicious::get_name($suspicious);
+                    
+                    // Download lnk
+                    $url = new moodle_url('/local/fellesdata/suspicious/download.php',array('id' => $suspicious,'csv' => 1));
+                    $lnk = '<a href="' . $url . '">' . $name . '</a>';
+                    $out .= html_writer::start_div('block_suspicious_content');
+                            $out .= get_string('to_download','local_fellesdata',$lnk);
+                    $out .= html_writer::end_div();//block_suspicious_content
+                }else {
+                    //no data
+                    $out .= html_writer::start_div('block_suspicious_content');
+                        $out .= '<h5>' . get_string('no_data','local_fellesdata'). '</h5>';
+                    $out .= html_writer::end_div();//block_suspicious_content
+                }//if_suspicious
+            $out .= html_writer::end_div();//block_suspicious
+
+            return $out;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//display_download_file
 
     /**
      * Description
@@ -1166,7 +1213,7 @@ class suspicious {
                     $info = new stdClass();
                     $info->id       = $instance->id;
                     $download       = $CFG->wwwroot . '/local/fellesdata/suspicious/download.php/'. $instance->token . '/' . $instance->id;
-                    $info->file     = $instance->file; //'<a href="' . $download . '">' . $instance->file . '</a>';
+                    $info->file     = '<a href="' . $download . '">' . $instance->file . '</a>';
                     $info->marked   = userdate($instance->detected ,'%d.%m.%Y', 99, false);
                     $info->approve  = $CFG->wwwroot . '/local/fellesdata/suspicious/action.php/1/'. $instance->approve . '/' . $instance->id;
                     $info->reject   = $CFG->wwwroot . '/local/fellesdata/suspicious/action.php/2/'. $instance->reject . '/' . $instance->id;
