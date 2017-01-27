@@ -67,12 +67,12 @@ if ($fileOpt) {
     file_prepare_standard_filemanager($course, 'overviewfiles', $fileOpt, $contextCourse, 'course', 'overviewfiles', 0);
 }
 
-if (!CourseTemplate::HasCorrectPermissions()) {
+if (!CourseTemplate::has_correct_permissions()) {
     print_error('nopermissions', 'error', '', 'block/frikomport:view');
 }//if_Has_not_permissions
 
 /* Category Name */
-$category = CourseTemplate::GetCategoryName($course->category);
+$category = CourseTemplate::get_category_name($course->category);
 
 /* Form */
 $form = new ct_settings_form(null, array($course,$category,$editorOpt,$courseTemplate));

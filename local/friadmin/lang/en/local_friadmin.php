@@ -257,3 +257,19 @@ $string['current_noed_teachers']            = 'Current no editing teachers';
 $string['current_noed_teachers_matching']   = 'Current no editing teachers matching';
 
 $string['noed_teachers']                    = 'No Editing Teachers';
+
+$string['msg_teacher']      = '{$a->site}: Teacher in course {$a->course}';
+$string['body_teacher']     = '<p>We would like to inform you that you have just been assigned as a teacher for the course {$a->course}</p>
+                               </br>
+                               <p>This is an automatic generated email from {$a->site} and you cannot answer this email.</p>';
+$string['body_unteacher']   = '<p>We would lik to inform you that you you have just been unassigned as a teacher for the course {$a->course}</p>
+                               </br>
+                               <p>This is an automatic generated email from {$a->site} and you cannot answer this email.</p>';
+
+$string['msg_instructor']   = '{$a->site}: Course instructor in course {$a->course}';
+$string['body_instructor']  = '<p>We would like to inform you that you have just been assigned as a course instructor for the course {$a->course}</p>
+                               </br>
+                               <p>This is an automatic generated email from {$a->site} and you cannot answer this email.</p>';
+$string['body_uninstructor'] = '<p>We would like to inform you that you have just been unassigned as a course instructor for the course {$a->course}</p>
+                                </br>
+                                <p>This is an automatic generated email from {$a->site} and you cannot answer this email.</p>';
