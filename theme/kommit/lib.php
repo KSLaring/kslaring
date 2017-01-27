@@ -86,6 +86,7 @@ EOT;
     }
 
     if ($page->pagetype === 'login-index') {
+        $page->requires->string_for_js('adminlogin', 'theme_kommit');
         $page->requires->js_call_amd('theme_kommit/hideloginform', 'init');
     }
 }

@@ -209,17 +209,20 @@ define(['core/ajax', 'theme_bootstrapbase/bootstrap', 'jquery', 'jqueryui', 'cor
         };
 
         /**
-         * Filter the list of not grouped tags.
+         * Filter in all tag lists.
          */
         var handleFilterList = function () {
-            var filtertext = $filterfield.val();
+            var filtertext = $filterfield.val(),
+                $taggroupaccordion = $('#taggroup-accordion');
 
             log.debug('»' + filtertext + '«');
 
             $itemList0.find('.hidden').removeClass('hidden');
+            $taggroupaccordion.find('.hidden').removeClass('hidden');
 
             if (filtertext !== undefined && filtertext !== '') {
                 $itemList0.find('li:not(:contains("' + filtertext + '"))').addClass('hidden');
+                $taggroupaccordion.find('li:not(:contains("' + filtertext + '"))').addClass('hidden');
             }
         };
 

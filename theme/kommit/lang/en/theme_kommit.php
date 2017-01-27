@@ -133,7 +133,7 @@ $string['resethome'] = 'Reset to default page';
 $string['readmore'] = 'Read more';
 
 /* JS toggle admin login */
-$string['adminlogin'] = 'admin login';
+$string['adminlogin'] = 'Admin login';
 
 /* Hidden blocks area */
 $string['visibleadminonly'] = 'Blocks moved into the area below will only be seen by teachers and admins.';

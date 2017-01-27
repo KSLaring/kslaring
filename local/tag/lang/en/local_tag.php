@@ -44,6 +44,6 @@ $string['waitdragdrop'] = 'Drag & Drop may take a momemt until it is initialized
 $string['readydragdrop'] = 'it is initialized now.';
 $string['editgrouptags_taggroups'] = 'Tag groups';
 $string['editgrouptags_tagnogroups'] = 'Tags in no group';
-$string['editgrouptags_filterlist'] = 'Filter tag list';
+$string['editgrouptags_filterlist'] = 'Filter tags in all lists';
 $string['editgrouptags_notagsinlist'] = 'No tags submitted.';
 $string['editgrouptags_menuentry'] = 'Edit meta group tags';

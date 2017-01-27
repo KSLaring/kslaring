@@ -3,7 +3,12 @@
 }
 
 .block_course_tags .meta-group-tags h4 {
+    font-size: 1.1em;
     margin-bottom: 0;
+}
+
+.block_course_tags .unlist li {
+    margin-bottom: .5em;
 }
 
 .block_course_tags .footer {
@@ -12,6 +17,15 @@
 
 #page-blocks-course_tags-settags #region-main {
     margin-bottom: 1em;
+}
+
+#page-blocks-course_tags-settags #taggroup-accordion .unlist li {
+    margin-bottom: .5em;
+}
+
+#page-blocks-course_tags-settags #taggroup-accordion .unlist li span[data-value="1"] .smallicon {
+   height: 24px;
+   width: 24px;
 }
 
 #page-admin-setting-blocksettingcourse_tags .itemlist-wrapper,
