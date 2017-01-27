@@ -63,14 +63,14 @@ if ($form->is_cancelled()) {
         /* Add Teachers     */
         if (!empty($data->add_sel)) {
             if (isset($data->addselect)) {
-                CourseTemplate::AssignTeacher($courseId,$data->addselect,true);
+                CourseTemplate::assign_teacher($courseId,$data->addselect,true);
             }//if_addselect
         }//if_add
 
         /* Remove Teachers  */
         if (!empty($data->remove_sel)) {
             if (isset($data->removeselect)) {
-                CourseTemplate::UnassignTeacher($courseId,$data->removeselect,true);
+                CourseTemplate::unassign_teacher($courseId,$data->removeselect,true);
             }//if_removeselect
         }//if_remove
     }//if_continues
@@ -84,7 +84,7 @@ echo $OUTPUT->heading($strSubTitle,3);
 $form->display();
 
 /* Initialise Selectors */
-CourseTemplate::Init_Teachers_Selectors($addSearch,$removeSearch,$courseId,1);
+CourseTemplate::init_teachers_selectors($addSearch,$removeSearch,$courseId,1);
 
 /* Footer   */
 echo $OUTPUT->footer();

@@ -1128,7 +1128,7 @@ class CourseLocations {
      * Description
      * Get the sectors names split by comma
      */
-    private static function Get_SectorsName($sectors) {
+    private static function get_sectors_name($sectors) {
         /* Variables    */
         global $DB;
         $sectorsName    = null;
@@ -1151,7 +1151,7 @@ class CourseLocations {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//Get_SectorsName
+    }//get_sectors_name
 
     /**
      * @param           $sort

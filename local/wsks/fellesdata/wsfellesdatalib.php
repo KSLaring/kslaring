@@ -668,6 +668,7 @@ class WS_FELLESDATA {
                     }//if_Rdo
                 }//if_unmmaped
             }//if_infoUSer
+            
 
             /* Commit */
             $trans->allow_commit();

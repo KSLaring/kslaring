@@ -64,7 +64,7 @@ switch ($course->format) {
     case 'classroom_frikomport':
         if ($waitinglist) {
             /* Get Enrol Instance */
-            $instance   = CourseTemplate::GetEnrolInstance($courseId,$courseTemplate,$course->format);
+            $instance   = CourseTemplate::get_enrol_instance($courseId,$courseTemplate,$course->format);
             $form       = new ct_enrolment_settings_form(null,array($courseId,$waitinglist,$instance,$courseTemplate));
         }else {
             $form = new ct_enrolment_form(null,array($courseId,$courseTemplate));
@@ -74,7 +74,7 @@ switch ($course->format) {
     case 'elearning_frikomport':
     case 'netcourse':
         /* Get Enrol Instance */
-        $instance   = CourseTemplate::GetEnrolInstance($courseId,$courseTemplate,$course->format);
+        $instance   = CourseTemplate::get_enrol_instance($courseId,$courseTemplate,$course->format);
         $form       = new ct_self_enrolment_settings_form(null,array($courseId,$instance,$courseTemplate));
 
         break;
@@ -91,10 +91,10 @@ if ($form->is_cancelled()) {
             if ($waitinglist) {
                 if ($data->instanceid) {
                     /* Update   */
-                    CourseTemplate::UpdateWaitingEnrolment($data);
+                    CourseTemplate::update_waiting_enrolment($data);
                 }else {
                     /* New      */
-                    CourseTemplate::CreateWaitingEnrolment($data);
+                    CourseTemplate::create_waiting_enrolment($data);
                 }
                 redirect($returnUrl);
             }
@@ -107,7 +107,7 @@ if ($form->is_cancelled()) {
                 $action = 'add';
             }
             /* Update /Create Instance */
-            CourseTemplate::SelfEnrolment($data,$action);
+            CourseTemplate::self_enrolment($data,$action);
 
             redirect($returnUrl);
 

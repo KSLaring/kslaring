@@ -32,7 +32,7 @@ class ct_enrolment_teachers_form extends moodleform {
         $form->setExpanded('teachers',true);
         $form->addElement('html','<div class="userselector" id="addselect_wrapper">');
             /* Left.    Existing Teachers      */
-            $schoices   = CourseTemplate::FindTeachers_Selectors($course,$removeSearch);
+            $schoices   = CourseTemplate::find_teachers_selectors($course,$removeSearch);
 
             $form->addElement('html','<div class="sel_users_left">');
                 $form->addElement('selectgroups','removeselect', '',$schoices,'multiple size="20" id="removeselect"');
@@ -55,7 +55,7 @@ class ct_enrolment_teachers_form extends moodleform {
             $form->addElement('html','</div>');//sel_users_buttons
 
             /* Right.   Potential Teachers     */
-            $achoices   = CourseTemplate::FindPotentialTeachers_Selector($course,$addSearch);
+            $achoices   = CourseTemplate::find_potential_teachers_selector($course,$addSearch);
             $form->addElement('html','<div class="sel_users_right">');
                 $form->addElement('selectgroups','addselect', '',$achoices,'multiple size="20" id="addselect"');
                     $form->addElement('text','addselect_searchtext',get_string('search'),'id="addselect_searchtext"');
@@ -96,7 +96,7 @@ class ct_enrolment_noed_teachers_form extends moodleform {
         $form->setExpanded('noed_teachers',true);
         $form->addElement('html','<div class="userselector" id="addselect_wrapper">');
         /* Left.    Existing Teachers      */
-        $schoices   = CourseTemplate::FindNoEdTeachers_Selectors($course,$removeSearch);
+        $schoices   = CourseTemplate::find_noed_teachers_selectors($course,$removeSearch);
 
         $form->addElement('html','<div class="sel_users_left">');
         $form->addElement('selectgroups','removeselect', '',$schoices,'multiple size="20" id="removeselect"');
@@ -119,7 +119,7 @@ class ct_enrolment_noed_teachers_form extends moodleform {
         $form->addElement('html','</div>');//sel_users_buttons
 
         /* Right.   Potential Teachers     */
-        $achoices   = CourseTemplate::FindNoEdPotentialTeachers_Selector($course,$addSearch);
+        $achoices   = CourseTemplate::find_noed_potential_teachers_selector($course,$addSearch);
         $form->addElement('html','<div class="sel_users_right">');
         $form->addElement('selectgroups','addselect', '',$achoices,'multiple size="20" id="addselect"');
         $form->addElement('text','addselect_searchtext',get_string('search'),'id="addselect_searchtext"');
