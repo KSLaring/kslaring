@@ -20,21 +20,21 @@ require_once($CFG->libdir.'/formslib.php');
 
 class enrol_wsdoskom_edit_form extends moodleform {
     function definition() {
+        // Variables
         global $OUTPUT,$SESSION;
+        $mycompanies      = null;
+        $m_form         = $this->_form;
+        $isntance       = null;
+        $plugin         = null;
+        $context        = null;
 
-        $m_form = $this->_form;
-
-        list($instance, $plugin, $context) = $this->_customdata;
-
-        /* Company List         */
-        $company_lst    = WS_DOSKOM::getCompanyList();
+        list($instance, $plugin, $context,$company_lst,$mycompanies) = $this->_customdata;
 
         /* Selected Companies   */
         $schoices       = array();
         $schoices[0]    = get_string('not_sel_company','enrol_wsdoskom');
         /* Available Companies  */
-        $achoices       = null;
-        $achoices       = $company_lst;
+        $achoices       = array();
         $achoices[0]    = get_string('sel_company','enrol_wsdoskom');
 
         $m_form->addElement('header', 'header', get_string('pluginname', 'enrol_wsdoskom'));
@@ -76,41 +76,25 @@ class enrol_wsdoskom_edit_form extends moodleform {
         /* SELECTOR COMPANIES   */
         $m_form->addElement('header', 'header_company', get_string('company', 'enrol_wsdoskom'));
 
-        /* REMOVE ALL COMPANIES */
-        if (isset($SESSION->removeAll) && $SESSION->removeAll) {
-            $schoices       = array();
-            $schoices[0]    = get_string('not_sel_company','enrol_wsdoskom');
-            $achoices       = $company_lst;
-            $achoices[0]    = get_string('sel_company','enrol_wsdoskom');
-        }//if_remove_all
-
-        /* ADD ALL COMPANIES    */
-        if (isset($SESSION->addAll) && $SESSION->addAll) {
-            $schoices       = $company_lst;
-            $schoices[0]    = get_string('selected_company','enrol_wsdoskom');
-            $achoices       = array();
-            $achoices[0]    = get_string('sel_company','enrol_wsdoskom');
-        }//if_remove_all
-
-        /* Companies Selected   */
-        if (isset($SESSION->selCompanies) && $SESSION->selCompanies) {
-            $schoices       = array();
-            $schoices[0]    = get_string('selected_company','enrol_wsdoskom');
-
-            foreach ($SESSION->selCompanies as $company) {
+        // Build selectors
+        if ($mycompanies) {
+            foreach ($mycompanies as $company => $value) {
                 if (isset($company_lst[$company])) {
                     $schoices[$company] = $company_lst[$company];
-                    unset($achoices[$company]);
                 }
             }
-        }//if_selCompanies
+            $schoices[0]            = get_string('selected_company','enrol_wsdoskom');
 
-        /* Available companies  */
-        if (isset($SESSION->Companies) && $SESSION->Companies) {
-            foreach ($SESSION->Companies as $company) {
-                $achoices[$company] = $company_lst[$company];
+        }
+        if ($company_lst) {
+            foreach ($company_lst as $company => $value) {
+                if (!isset($mycompanies[$company])) {
+                    $achoices[$company] = $value;    
+                }
             }
-        }//if_addCompanies
+            $achoices[0]            = get_string('sel_company','enrol_wsdoskom');
+        }
+
 
         /* Companies Connected to the Enrolment Method  */
         $m_form->addElement('html','<div class="wsdoskom_company">');
@@ -177,11 +161,6 @@ class enrol_wsdoskom_edit_form extends moodleform {
                     }
                 }
             }//if_end_date
-
-            /* Sel Companies */
-            if (!isset($SESSION->selCompanies) || !$SESSION->selCompanies) {
-                $errors['scompanies'] = get_string('required');
-            }//sel_activities
         }//if_submit_create_instance
 
 

@@ -21,12 +21,12 @@ require_once ('../../local/doskom/wsDOSKOMlib.php');
 //require_once('locallib.php');
 
 /* PARAMS */
-$courseid   = required_param('courseid', PARAM_INT);
+$courseid       = required_param('courseid', PARAM_INT);
 /* Current Instance */
-$instanceid = optional_param('id', 0, PARAM_INT);
-
-$course     = $DB->get_record('course', array('id'=>$courseid), '*', MUST_EXIST);
-$context    = context_course::instance($course->id, MUST_EXIST);
+$instanceid     = optional_param('id', 0, PARAM_INT);
+$mycompanies    = null;
+$course         = $DB->get_record('course', array('id'=>$courseid), '*', MUST_EXIST);
+$context        = context_course::instance($course->id, MUST_EXIST);
 
 require_login($course);
 require_capability('enrol/wsdoskom:config', $context);
@@ -45,6 +45,7 @@ $plugin_config  = get_config('enrol_wsdoskom');
 $plugin         = enrol_get_plugin('wsdoskom');
 $company_lst    = null;
 $instance       = null;
+$tosave         = null;
 
 if ($instanceid) {
     $instance = $DB->get_record('enrol', array('courseid'=>$course->id, 'enrol'=>'wsdoskom', 'id'=>$instanceid), '*', MUST_EXIST);
@@ -56,90 +57,82 @@ if ($instanceid) {
     $instance->id               = null;
     $instance->courseid         = $course->id;
     $instance->customint1       = 0;
+    $instance->company          = 0;
+
+    $fields = array(
+        'status'        =>  0,
+        'company'       =>  0,
+        'customint3'    =>  0);
+
+    $instance->id = $plugin->add_instance($course,$field);
 }
 
-/* Available Companies  */
-if (!isset($SESSION->Companies)) {
-    $SESSION->Companies = array();
-}//companies
-
-/* Selected Companies   */
-if (!isset($SESSION->selCompanies)) {
-    $SESSION->selCompanies = array();
-}//selCompanies
 
 
-if ($instanceid) {
-    if (!isset($SESSION->selCompanies)) {
-        $SESSION->selCompanies = array();
-    }//selCompanies
-    if ($instance->company) {
-        $aux_company = explode(',',$instance->company);
-        foreach ($aux_company as $company) {
-            $SESSION->selCompanies[$company] = $company;
-        }
-    }
-}//if_instance_company
-
-/* Add all companies    */
-if (!isset($SESSION->addAll)) {
-    $SESSION->addAll = false;
-}//id_addAll
-
-/* Remove Companies */
-if (!isset($SESSION->removeAll)) {
-    $SESSION->removeAll = false;
-}//if_removeAll
-
-/* Company List */
-$company_lst            = WS_DOSKOM::getCompanyList();
+/* Company List         */
+$company_lst    = WS_DOSKOM::getCompanyList();
+// Companies connected with enrolment
+$mycompanies = array_flip(explode(',',$instance->company));
 
 /* FORM */
-$m_form = new enrol_wsdoskom_edit_form(NULL, array($instance, $plugin_config, $context));
+$m_form = new enrol_wsdoskom_edit_form(NULL, array($instance, $plugin_config, $context,$company_lst,$mycompanies));
 if ($m_form->is_cancelled()) {
-    unset($SESSION->addAll);
-    unset($SESSION->removeAll);
-    unset($SESSION->selCompanies);
-    unset($SESSION->Companies);
-
     redirect($return);
 }else if ($data = $m_form->get_data()) {
-    $SESSION->addAll    = false;
-    $SESSION->removeAll = false;
-
     /* Add All companies        */
     if (isset($data->add_all) && ($data->add_all)) {
-        $SESSION->addAll        = true;
-        $SESSION->selCompanies = array();
-        $SESSION->Companies = array();
+        $tosave = $company_lst;
+        unset($tosave[0]);
+        unset($tosave[' ']);
+        $instance->company        = implode(',',array_keys($tosave));
+        $DB->update_record('enrol', $instance);
 
-        $m_form = new enrol_wsdoskom_edit_form(NULL, array($instance, $plugin_config, $context));
+        $m_form = new enrol_wsdoskom_edit_form(NULL, array($instance, $plugin_config, $context,$company_lst,$company_lst));
     }//add_all_companies
 
     /* Remove all companies     */
     if (isset($data->remove_all) && ($data->remove_all)) {
-        $SESSION->removeAll     = true;
-        $SESSION->selCompanies = array();
-        $SESSION->Companies = array();
+        $instance->company        = 0;
+        $DB->update_record('enrol', $instance);
 
-        $m_form = new enrol_wsdoskom_edit_form(NULL, array($instance, $plugin_config, $context));
+        $m_form = new enrol_wsdoskom_edit_form(NULL, array($instance, $plugin_config, $context,$company_lst,null));
     }//remove_all_companies
 
     /* Add selected companies   */
     if (isset($data->add_sel) && ($data->add_sel)) {
-        foreach($data->acompanies as $key=>$value) {
-            $SESSION->selCompanies[$value] = $value;
+        if (isset($data->acompanies) && $data->acompanies) {
+            foreach($data->acompanies as $key=>$value) {
+                $mycompanies[$value] = $value;
+            }
+            $tosave = $mycompanies;
+            unset($tosave[0]);
+            unset($tosave[' ']);
+            $instance->company        = implode(',',array_keys($tosave));
+            $DB->update_record('enrol', $instance);
         }
-        $m_form = new enrol_wsdoskom_edit_form(NULL, array($instance, $plugin_config, $context));
+        
+        $m_form = new enrol_wsdoskom_edit_form(NULL, array($instance, $plugin_config, $context,$company_lst,$mycompanies));
     }//if_add_companies
 
     /* Remove selected companies    */
     if (isset($data->remove_sel) && ($data->remove_sel)) {
-        foreach($data->scompanies as $key=>$value) {
-            unset($SESSION->selCompanies[$value]);
-            $SESSION->Companies[$value] = $value;
+        if (isset($data->scompanies) && $data->scompanies) {
+            foreach($data->scompanies as $key=>$value) {
+                unset($mycompanies[$value]);
+            }
+            if ($mycompanies) {
+                $tosave = $mycompanies;
+                unset($tosave[0]);
+                unset($tosave[' ']);
+                $instance->company        = implode(',',array_keys($tosave));
+            }else {
+                $instance->company = 0;
+            }
+
+            $DB->update_record('enrol', $instance);
         }
-        $m_form = new enrol_wsdoskom_edit_form(NULL, array($instance, $plugin_config, $context));
+
+        $m_form = new enrol_wsdoskom_edit_form(NULL, array($instance, $plugin_config, $context,$company_lst,$mycompanies));
     }//if_remove_companies
 
     /* Create Instance  */
@@ -150,7 +143,6 @@ if ($m_form->is_cancelled()) {
 
             $instance->status         = $data->status;
             $instance->name           = $data->name;
-            $instance->company        = implode(',',$SESSION->selCompanies);
             $instance->customint3     = $data->participants;
             $instance->roleid         = $data->roleid;
             $instance->enrolperiod    = $data->enrolperiod;
@@ -163,24 +155,7 @@ if ($m_form->is_cancelled()) {
             if ($reset) {
                 $context->mark_dirty();
             }
-        }else {
-            /* Insert Instance */
-            $fields = array('status'        =>  $data->status,
-                            'name'          =>  $data->name,
-                            'company'       =>  implode(',',$SESSION->selCompanies),
-                            'customint3'    =>  $data->participants,
-                            'roleid'        =>  $data->roleid,
-                            'enrolperiod'   =>  $data->enrolperiod,
-                            'enrolstartdate'=>  $data->enrolstartdate,
-                            'enrolenddate'  =>  $data->enrolenddate);
-
-            $plugin->add_instance($course, $fields);
         }//if_else_instance
-
-        unset($SESSION->addAll);
-        unset($SESSION->removeAll);
-        unset($SESSION->selCompanies);
-        unset($SESSION->Companies);
 
         redirect($return);
     }//if_button_submission_next
