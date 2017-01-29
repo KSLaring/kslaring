@@ -477,9 +477,12 @@ class local_doskom_external extends external_api {
      * Get the historical completion courses.
      */
     public static function wsGetAccomplishedCourses($criteria) {
+        /* Variables */
+        $log = null;
+        
         /* Parameter Validation */
         $params = self::validate_parameters(self::wsGetAccomplishedCourses_parameters(), array('criteria' => $criteria));
-
+        
         /* Execute  */
         $result     = array();
         $result['error']        = 200;
@@ -487,8 +490,12 @@ class local_doskom_external extends external_api {
         $result['courses']      = array();
 
         try {
-            $result['courses'] = WS_DOSKOM::getHistoricalCoursesCompletion($criteria,$result);
+            list($result['courses'],$log) = WS_DOSKOM::getHistoricalCoursesCompletion($criteria,$result);
 
+            if ($log) {
+                WS_DOSKOM::update_log_historical($log);
+            }//if_log
+            
             return $result;
         }catch (Exception $ex) {
             if ($result['error'] == '200') {
