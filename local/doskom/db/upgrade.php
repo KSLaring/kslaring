@@ -21,6 +21,8 @@ function xmldb_local_doskom_upgrade($oldVersion) {
     $table      = null;
     $fldUser    = null;
     $fldToken   = null;
+    $tblLog     = null;
+    
     $dbMan  = $DB->get_manager();
     
     try {
@@ -54,6 +56,32 @@ function xmldb_local_doskom_upgrade($oldVersion) {
                 $DB->insert_record('company_data',$instance);
             }
         }//if_oldVersion
+        
+        if ($oldVersion < 2017012902) {
+            // create table for log to dossier 
+            $tblLog = new xmldb_table('log_doskom_completions');
+            if (!$dbMan->table_exists($tblLog)) {
+                // create able
+                // Id --> primary key
+                $tblLog->add_field('id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
+                // company
+                $tblLog->add_field('company',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
+                // course
+                $tblLog->add_field('course',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
+                // user
+                $tblLog->add_field('user',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
+                // completion
+                $tblLog->add_field('completion',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
+                // timesent
+                $tblLog->add_field('timesent',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
+
+                /* Adding keys  */
+                $tblLog->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+
+                // Create table
+                $dbMan->create_table($tblLog);
+            }
+        }//$oldVersion
         
         return true;
     }catch (Exception $ex) {

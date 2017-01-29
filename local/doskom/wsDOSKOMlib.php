@@ -223,12 +223,18 @@ class WS_DOSKOM {
         /* Variables    */
         global $DB;
         $historical = array();
-
+        $log        = array();
+        $infoLog    = null;
+        $time       = null;
+        
         try {
-            /* First the List courses   */
+            // Local time
+            $time = time();
+            
+            // first get courses
             $rdo_courses = self::get_courses_company_to_complete($criteria['companyId']);
             if ($rdo_courses) {
-                /* SQL Instruction */
+                // Get sql instruction
                 $sql = self::get_sql_users_completions_in_period($criteria['dateFrom'],$criteria['dateTo'],$criteria['companyId']);
                 foreach ($rdo_courses as $course) {
                     $courses = array();
@@ -236,7 +242,7 @@ class WS_DOSKOM {
                     $courses['courseName']  = $course->fullname;
                     $courses['users']       = array();
 
-                    /* Users have been completed    */
+                    // Users have been completed
                     $rdo_users = $DB->get_records_sql($sql,array('course' => $course->id));
                     if ($rdo_users) {
                         $users = array();
@@ -247,17 +253,28 @@ class WS_DOSKOM {
                             $user->completionDate   = $instance->completiondate;
 
                             $users[$instance->id] = $user;
+                            
+                            // Log
+                            $infoLog = new stdClass();
+                            $infoLog->company       = $criteria['companyId'];
+                            $infoLog->course        = $course->id;
+                            $infoLog->user          = $instance->secret;
+                            $infoLog->completion    = $instance->completiondate;
+                            $infoLog->timesent      = $time;
+                            
+                            // Add to the log
+                            $log[] = $infoLog;
                         }//for_users
 
                         if ($users) {
                             $courses['users'] = $users;
-                            $historical[] = $courses;
+                            $historical[]     = $courses;
                         }
                     }//if_rdo_users
                 }//for_each_courses
             }//if_rdo_courses
 
-            return $historical;
+            return array($historical,$log);
         }catch (Exception $ex) {
             $result['error']        = 409;
             $result['msg_error']    = $ex->getMessage() . ' - ' . " -- Function: Historical Course COmpletion";
@@ -265,6 +282,30 @@ class WS_DOSKOM {
         }//try_catch
     }//getHistoricalCoursesCompletion
 
+    /**
+     * Description
+     * Save log of historical completions sent to dossier
+     * 
+     * @creationDate        29/01/2017
+     * @author              eFaktor     (fbv)
+     * 
+     * @param       array $log
+     * 
+     * @throws            Exception
+     */
+    public static function update_log_historical($log) {
+        /* Variables */
+        global $DB;
+        
+        try {
+            foreach ($log as $instance) {
+                $DB->insert_record('log_doskom_completions',$instance);
+            }
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//update_log_historical
+    
     /**
      * @param           $user_id
      * @param           $ticket
