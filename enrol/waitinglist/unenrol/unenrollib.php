@@ -196,45 +196,70 @@ Class Unenrol_Waiting {
     public static function Can_Unenrol($userId,$courseId,$waitingId) {
         /* Variables */
         global $DB;
-        $sql    = null;
-        $rdo    = null;
-        $params = null;
+        $sql        = null;
+        $rdo        = null;
+        $params     = null;
+        $canenrol = false;
 
         try {
-            /* Criteria */
+            // Search criteria
             $params = array();
             $params['course']   = $courseId;
             $params['wait']     = $waitingId;
             $params['user']     = $userId;
 
-            /* SQL Instruction */
-            $sql = " SELECT       ew.id,
-                                  ew.unenrolenddate 
-                     FROM         {enrol_waitinglist_method} ew
-                        JOIN      {user_enrolments}	         ue ON  ue.enrolid 	= ew.waitinglistid
-                                                                AND ue.status	= 0
-                                                                AND ue.userid	= :user
-                        LEFT JOIN {course_completions}      cc  ON  cc.course	= ew.courseid
-                                                                AND cc.userid	= ue.userid
-                                                                AND (cc.timecompleted IS NULL
-                                                                     OR
-                                                                     cc.timecompleted = 0
-                                                                    )
-                     WHERE        ew.courseid      = :course
-                          AND     ew.waitinglistid = :wait
-                          AND     ew.methodtype  like '%self%'";
+            // SQL instruction
+            $sql = " SELECT  DISTINCT 
+                                  ewq.id,
+                                  ew.unenrolenddate,
+                                  ewq.methodtype,
+                                  ewq.queueno
+                    FROM          {enrol_waitinglist_queue} 	ewq
+                        JOIN      {user_enrolments}	            ue 		ON  ue.enrolid 			= ewq.waitinglistid
+                                                                        AND ue.status			= 0
+                                                                        AND ue.userid			= ewq.userid
+                        JOIN	  {enrol_waitinglist_method}	ew		ON	ew.waitinglistid 	= ewq.waitinglistid
+                                                                        AND ew.courseid			= ewq.courseid
+                                                                        AND ew.status 			= 1
+                        LEFT JOIN {course_completions}      	cc  	ON  cc.course			= ew.courseid
+                                                                        AND cc.userid			= ue.userid
+                                                                        AND (cc.timecompleted IS NULL
+                                                                             OR
+                                                                             cc.timecompleted = 0
+                                                                             )
+                    WHERE       ewq.courseid      	= :course
+                        AND     ewq.waitinglistid 	= :wait
+                        AND		ewq.userid			= :user ";
 
             /* Execute */
-            $rdo = $DB->get_record_sql($sql,$params);
+            $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
-                if ($rdo->unenrolenddate != 0 and $rdo->unenrolenddate < time()) {
-                    return false;
-                }else {
-                    return true;
+                foreach ($rdo as $instance) {
+                    switch ($instance->methodtype) {
+                        case 'unnamedbulk':
+                            if ($instance->queueno != '99999') {
+                                $canenrol = false;
+                            }else {
+                                $canenrol = true;
+                            }
+
+                            break;
+
+                        default:
+                            if ($instance->unenrolenddate != 0 and $instance->unenrolenddate < time()) {
+                                $canenrol = false;
+                            }else {
+                                $canenrol = true;
+                            }
+                            break;
+                    }//switch_methodtype
                 }
+
             }else {
-                return false;
+                $canenrol = false;
             }
+
+            return $canenrol;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
