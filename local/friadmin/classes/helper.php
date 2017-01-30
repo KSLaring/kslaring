@@ -876,8 +876,9 @@ class local_friadmin_helper {
             // Update waitinglist when users are not included
             if (!$withusers) {
                 enrol_waitinglist_plugin::update_restored_instance($cid,$courseid);
+                // Other enrolment methods dfferent to waiting list
+                self::update_restored_instance($cid,$courseid);
             }
-
 
             return array($courseid, $error);
         } catch (Exception $ex) {
@@ -885,6 +886,104 @@ class local_friadmin_helper {
         }//try_catch
     }//restore_course
 
+    /**
+     * Description
+     * Restore all instance connected with the differents enrolment methods
+     * after the course has been duplicated
+     *
+     * @creationDate        30/01/2017
+     * @author              eFaktor     (fbv)
+     *
+     * @param       integer $oldcourse
+     * @param       integer $courseid
+     *
+     * @throws              Exception
+     */
+    private static function update_restored_instance($oldcourse,$courseid) {
+        /* Variables */
+        global $DB;
+        $rdo        = null;
+        $rdoOld     = null;
+        $sql        = null;
+        $sqlWhere   = null;
+        $sqlNew     = null;
+        $params     = null;
+        
+        try {
+            // Search criteria
+            $params = array();
+            $params['enrol'] = 'waitinglist';
+
+            // Sql Instruction
+            $sql = " SELECT e.*
+                     FROM   {enrol} e
+                     WHERE  e.enrol != :enrol ";
+
+            // Old course
+            $params['course'] = $oldcourse;
+            $sqlWhere = " AND e.courseid = :course ";
+            // Execute
+            $rdoOld = $DB->get_records_sql($sql . $sqlWhere,$params);
+            if ($rdoOld) {
+                foreach ($rdoOld as $instance) {
+                    // New course
+                    $params['course']       = $courseid;
+                    $params['other_enrol']  = $instance->enrol;
+
+                    // Add criterias
+                    $sqlWhere = " AND e.courseid = :course 
+                                  AND e.enrol    = :other_enrol ";
+
+                    // Build new sql
+                    $sqlNew = $sql . $sqlWhere;
+
+                    // Execute
+                    $rdo = $DB->get_record_sql($sqlNew,$params);
+                    if ($rdo) {
+                        // Update
+                        $rdo->status            = $instance->status;
+                        $rdo->sortorder         = $instance->sortorder;
+                        $rdo->name              = $instance->name;
+                        $rdo->enrolperiod       =  $instance->enrolperiod;
+                        $rdo->enrolstartdate    = $instance->enrolstartdate;
+                        $rdo->enrolenddate      = $instance->enrolenddate;
+                        $rdo->expirynotify      = $instance->expirynotify;
+                        $rdo->expirythreshold   = $instance->expirythreshold;
+                        $rdo->notifyall         = $instance->notifyall;
+                        $rdo->password          = $instance->password;
+                        $rdo->cost              = $instance->cost;
+                        $rdo->currency          = $instance->currency;
+                        $rdo->roleid            = $instance->roleid;
+                        $rdo->customint1        = $instance->customint1;
+                        $rdo->customint2        = $instance->customint2;
+                        $rdo->customint3        = $instance->customint3;
+                        $rdo->customint4        = $instance->customint4;
+                        $rdo->customint5        = $instance->customint5;
+                        $rdo->customint6        = $instance->customint6;
+                        $rdo->customint7        = $instance->customint7;
+                        $rdo->customint8        = $instance->customint8;
+                        $rdo->customchar1       = $instance->customchar1;
+                        $rdo->customchar2       = $instance->customchar2;
+                        $rdo->customchar3       = $instance->customchar3;
+                        $rdo->customdec1        = $instance->customdec1;
+                        $rdo->customdec2        = $instance->customdec2;
+                        $rdo->customtext1       = $instance->customtext1;
+                        $rdo->customtext2       = $instance->customtext2;
+                        $rdo->customtext3       = $instance->customtext3;
+                        $rdo->customtext4       = $instance->customtext4;
+                        $rdo->company           = $instance->company;
+
+                        // Execute
+                        $DB->update_record('enrol',$rdo);
+                    }//if_rdo
+                }//for_rdoOld
+            }//if_rdoOld
+
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//update_restored_instance
+    
     /**
      * Get the newest file in the file area.
      *
