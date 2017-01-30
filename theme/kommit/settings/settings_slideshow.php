@@ -54,7 +54,7 @@ $temp->add($setting);
 $name = $themename . '/numberofslides';
 $title = get_string('numberofslides', 'theme_kommit');
 $description = get_string('numberofslides_desc', 'theme_kommit');
-$default = 4;
+$default = 2;
 $choices = array(
     1 => '1',
     2 => '2',
