@@ -886,6 +886,19 @@ class local_friadmin_helper {
         }//try_catch
     }//restore_course
 
+    /**
+     * Description
+     * Restore all instance connected with the differents enrolment methods
+     * after the course has been duplicated
+     *
+     * @creationDate        30/01/2017
+     * @author              eFaktor     (fbv)
+     *
+     * @param       integer $oldcourse
+     * @param       integer $courseid
+     *
+     * @throws              Exception
+     */
     private static function update_restored_instance($oldcourse,$courseid) {
         /* Variables */
         global $DB;
