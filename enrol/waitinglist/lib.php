@@ -1606,8 +1606,11 @@ class enrol_waitinglist_plugin extends enrol_plugin {
                 $rdo->enrolperiod                                   = $rdoOld->enrolperiod  ;
                 $rdo->expirynotify                                  = $rdoOld->expirynotify;
                 $rdo->notifyall                                     = $rdoOld->notifyall;
+
+                $rdo->{ENROL_WAITINGLIST_FIELD_CUTOFFDATE}          = $rdoOld->{ENROL_WAITINGLIST_FIELD_CUTOFFDATE};
                 $rdo->{ENROL_WAITINGLIST_FIELD_SENDWELCOMEMESSAGE}  = $rdoOld->{ENROL_WAITINGLIST_FIELD_SENDWELCOMEMESSAGE};
                 $rdo->{ENROL_WAITINGLIST_FIELD_SENDWAITLISTMESSAGE} = $rdoOld->{ENROL_WAITINGLIST_FIELD_SENDWAITLISTMESSAGE};
+                $rdo->{ENROL_WAITINGLIST_FIELD_WELCOMEMESSAGE}      = $rdoOld->{ENROL_WAITINGLIST_FIELD_WELCOMEMESSAGE};
                 $rdo->{ENROL_WAITINGLIST_FIELD_MAXENROLMENTS}       = $rdoOld->{ENROL_WAITINGLIST_FIELD_MAXENROLMENTS};
                 $rdo->{ENROL_WAITINGLIST_FIELD_WAITLISTSIZE}        = $rdoOld->{ENROL_WAITINGLIST_FIELD_WAITLISTSIZE};
                 $rdo->expirythreshold                               = $rdoOld->expirythreshold;
@@ -1615,10 +1618,9 @@ class enrol_waitinglist_plugin extends enrol_plugin {
                 $rdo->{ENROL_WAITINGLIST_FIELD_APPROVAL}            = $rdoOld->{ENROL_WAITINGLIST_FIELD_APPROVAL};
                 $rdo->{ENROL_WAITINGLIST_FIELD_INTERNAL_PRICE}      = $rdoOld->{ENROL_WAITINGLIST_FIELD_INTERNAL_PRICE};
                 $rdo->{ENROL_WAITINGLIST_FIELD_EXTERNAL_PRICE}      = $rdoOld->{ENROL_WAITINGLIST_FIELD_EXTERNAL_PRICE};
-                
+
                 // Execute
                 $DB->update_record('enrol',$rdo);
-
 
                 // Update Submethods
                 foreach(self::get_method_names() as $methodtype){
