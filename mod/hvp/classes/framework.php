@@ -1123,7 +1123,7 @@ class framework implements \H5PFrameworkInterface {
         return (int) $DB->get_field_sql(
                 "SELECT COUNT(id)
                    FROM {hvp}
-                  WHERE filtered LIKE ''");
+                  WHERE " . $DB->sql_compare_text('filtered') . " = ''");
     }
 
     /**
@@ -1226,5 +1226,22 @@ class framework implements \H5PFrameworkInterface {
      * Implements afterExportCreated
      */
     public function afterExportCreated() {
+    }
+
+    /**
+     * Implements hasPermission
+     * @method hasPermission
+     * @param  [H5PPermission]        $permission
+     * @param  [int]        $contentId
+     * @return boolean
+     */
+    public function hasPermission($permission, $content_id = NULL) {
+        switch ($permission) {
+            case \H5PPermission::DOWNLOAD_H5P:
+                global $DB;
+                $context = \context_course::instance($DB->get_field('hvp', 'course', array('id' => $content_id)));
+                return has_capability('mod/hvp:getexport', $context);
+        }
+        return FALSE;
     }
 }
