@@ -50,10 +50,14 @@ a.btn.active {
   font-size: .5em;
 }
 .top-border {
-  border-bottom-color: #0060a5;
+  border-bottom-color: #00aef0;
 }
 .header-background {
+  background: #fff;
+}
+.ailaring-background-image {
   background: #fff url([[pix:theme|element-blue]]) 100% 50% no-repeat;
+  height: 100px;
 }
 .logo-area {
   float: left;
