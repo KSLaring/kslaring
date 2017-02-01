@@ -82,8 +82,8 @@
     float: right;
     //margin-right: 15px;
     padding: 10px 10px;
-    margin-top: 8px;
-    margin-bottom: 8px;
+    margin-top: 3px;
+    margin-bottom: 3px;
     background-color: @kommitBlueLight;
     background-image: none;
     border: 1px solid transparent;
@@ -188,13 +188,10 @@
     }
 
     .nav-collapse {
-        &.active,
-        &.in {
-            float: right;
+        float: right;
 
-            @media only screen and (max-width: (@narrowWidth - 1)) {
-                    float: none;
-                }
+        @media only screen and (max-width: (@narrowWidth - 1)) {
+            float: none;
         }
     }
 
