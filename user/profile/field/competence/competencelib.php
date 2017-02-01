@@ -374,7 +374,7 @@ class Competence {
 
         try {
             // Get private companies from Bergen
-            $private = self::get_private_bergen();
+            //$private = self::get_private_bergen();
 
             // Research Criteria
             $params = array();
@@ -1130,7 +1130,7 @@ class Competence {
             $sql = " SELECT  id 
                      FROM 	 {report_gen_companydata}
                      WHERE	 industrycode = 1201
-                        AND	 public       = 0 ";
+                        AND	 public       = 1 ";
 
             // Execute
             $rdo = $DB->get_records_sql($sql);
