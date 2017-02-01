@@ -53,10 +53,9 @@ a.btn.active {
   border-bottom-color: #00aef0;
 }
 .header-background {
-  background: #fff;
+  background: #fff url([[pix:theme|element-blue]]) 100% 50% no-repeat;
 }
 .ailaring-background-image {
-  background: #fff url([[pix:theme|element-blue]]) 100% 50% no-repeat;
   height: 100px;
 }
 .logo-area {
@@ -75,11 +74,6 @@ a.btn.active {
   margin: 0;
   padding: 0;
 }
-@media (max-width: 859px) {
-  .logo-area {
-    margin-top: 1.5em;
-  }
-}
 @media (max-width: 767px) {
   .logo-area {
     margin-left: 20px;
@@ -89,9 +83,18 @@ a.btn.active {
 }
 @media (max-width: 519px) {
   .logo-area {
-    margin-top: .7em;
     margin-bottom: .5em;
   }
+}
+.header-right {
+  background: inherit;
+}
+.header-right .muni-logo {
+  padding: 15px 0;
+}
+.header-right .muni-logo img {
+  width: auto;
+  max-height: 70px;
 }
 .navbar-inner {
   background-color: #4c4f55 !important;

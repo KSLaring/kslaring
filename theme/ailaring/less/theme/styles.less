@@ -3,11 +3,10 @@
 }
 
 .header-background {
-    background: @white;
+    background: @white url(~"[[pix:theme|element-blue]]") 100% 50% no-repeat;
 }
 
 .ailaring-background-image {
-    background: @white url(~"[[pix:theme|element-blue]]") 100% 50% no-repeat;
     height: 100px;
 }
 
@@ -28,17 +27,29 @@
         padding: 0;
     }
 
-    @media (max-width: 859px) {
-        margin-top: 1.5em;
-    }
+    //@media (max-width: 859px) {
+    //    margin-top: 1.5em;
+    //}
     @media (max-width: (@mediumWidth - 1)) {
         margin-left: 20px;
         margin-right: 20px;
         max-width: inherit;
     }
     @media (max-width: 519px) {
-        margin-top: .7em;
         margin-bottom: .5em;
+    }
+}
+
+.header-right {
+    background: inherit;
+
+    .muni-logo {
+        padding: 15px 0;
+
+        img {
+            width: auto;
+            max-height: 70px;
+        }
     }
 }
 
