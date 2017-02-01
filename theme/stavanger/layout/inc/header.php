@@ -48,6 +48,7 @@ if ($loggedin) {
 
                 <div class="navbar-menues">
                     <?php echo $OUTPUT->navbar_button(); ?>
+                    <?php echo $OUTPUT->user_menu(); ?>
 
                     <?php if (!$loggedin) : ?>
                         <div class="navbar-text"><?php echo $OUTPUT->login_info() ?></div>
@@ -55,7 +56,6 @@ if ($loggedin) {
 
                     <div id="moodle-navbar" class="nav-collapse collapse">
                         <?php echo $OUTPUT->custom_menu(); ?>
-                        <?php echo $OUTPUT->user_menu(); ?>
                     </div>
                 </div>
             </div>
