@@ -337,8 +337,8 @@ h6 {
   position: relative;
   float: right;
   padding: 10px 10px;
-  margin-top: 8px;
-  margin-bottom: 8px;
+  margin-top: 3px;
+  margin-bottom: 3px;
   background-color: #00aef0;
   background-image: none;
   border: 1px solid transparent;
@@ -442,13 +442,11 @@ h6 {
     float: none;
   }
 }
-.navbar-menues .nav-collapse.active,
-.navbar-menues .nav-collapse.in {
+.navbar-menues .nav-collapse {
   float: right;
 }
 @media only screen and (max-width: 639px) {
-  .navbar-menues .nav-collapse.active,
-  .navbar-menues .nav-collapse.in {
+  .navbar-menues .nav-collapse {
     float: none;
   }
 }
