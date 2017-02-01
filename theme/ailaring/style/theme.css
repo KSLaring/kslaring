@@ -95,6 +95,7 @@ a.btn.active {
 .header-right .muni-logo img {
   width: auto;
   max-height: 70px;
+  max-width: 350px;
 }
 .navbar-inner {
   background-color: #4c4f55 !important;
