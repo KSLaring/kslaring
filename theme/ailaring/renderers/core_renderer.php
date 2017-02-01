@@ -1,5 +1,5 @@
 <?php
-// This file is part of Moodle - http://moodle.org/
+// This file is part of the custom Moodle Bootstrap theme
 //
 // Moodle is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -14,28 +14,16 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+defined('MOODLE_INTERNAL') || die;
+
 /**
- * Moodle's kommit theme, an example of how to make a Bootstrap theme
+ * Renderers to align Moodle's HTML with that expected by kommit
  *
- * DO NOT MODIFY THIS THEME!
- * COPY IT FIRST, THEN RENAME THE COPY AND MODIFY IT INSTEAD.
- *
- * For full information about creating Moodle themes, see:
- * http://docs.moodle.org/dev/Themes_2.0
- *
- * @package    theme_kommit
- * @copyright  2016 eFaktor
+ * @package    theme_ailaring
+ * @copyright  2016
  * @author     Urs Hunkler {@link urs.hunkler@unodo.de}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+class theme_ailaring_core_renderer extends theme_kommit_core_renderer {
 
-defined('MOODLE_INTERNAL') || die;
-
-$plugin->version = 2017013000;
-$plugin->release = '3.1.0 (Build: 2017013000)';
-$plugin->maturity = MATURITY_STABLE;
-$plugin->requires = 2015111602;
-$plugin->component = 'theme_kommit';
-$plugin->dependencies = array(
-    'theme_bootstrapbase' => 2015111600,
-);
+}

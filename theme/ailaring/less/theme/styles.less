@@ -1,0 +1,98 @@
+.top-border {
+    border-bottom-color: @kommitBlueLight;
+}
+
+.header-background {
+    background: @white;
+}
+
+.ailaring-background-image {
+    background: @white url(~"[[pix:theme|element-blue]]") 100% 50% no-repeat;
+    height: 100px;
+}
+
+.logo-area {
+    float: left;
+    height: 48px;
+    margin: 1em 0;
+    padding: 0;
+    width: auto;
+
+    .logo {
+        display: block;
+    }
+    h1 {
+        color: @ailaringBlue;
+        line-height: .7;
+        margin: 0;
+        padding: 0;
+    }
+
+    @media (max-width: 859px) {
+        margin-top: 1.5em;
+    }
+    @media (max-width: (@mediumWidth - 1)) {
+        margin-left: 20px;
+        margin-right: 20px;
+        max-width: inherit;
+    }
+    @media (max-width: 519px) {
+        margin-top: .7em;
+        margin-bottom: .5em;
+    }
+}
+
+.navbar-inner {
+    background-color: @ailaringGrayDark !important;
+    border-color: @ailaringGrayDark;
+}
+
+#page-footer {
+    background: @ailaringGrayDark;
+    border-top: 0;
+    color: @white;
+    padding-bottom: 1em;
+
+    @media (min-width: 560px) and (max-width: 767px) {
+        margin-right: -20px;
+        margin-left: -20px;
+        padding-right: 0;
+        width: auto;
+    }
+
+    @media (max-width: 559px) {
+        margin-right: -20px;
+        margin-left: -20px;
+        padding-right: .5em;
+        padding-left: .5em;
+        width: auto;
+    }
+
+    #page-footer-inner {
+        max-width: inherit;
+    }
+    .footer-text-container {
+        text-align: center;
+    }
+}
+
+#sub-footer {
+    .text {
+        color: @grayMid;
+        padding: 1em 0 .5em;
+    }
+    .returntorole {
+        clear: both;
+        color: @grayMid;
+        margin: 1em 0;
+    }
+    .help-link {
+        padding: .7em 0 0;
+
+        a {
+            float: right;
+            display: table-cell;
+            text-align: center;
+        }
+    }
+}
