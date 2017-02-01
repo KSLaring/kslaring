@@ -496,6 +496,7 @@ class WS_FELLESDATA {
     public static function UnMap_Companies($toUnMap,&$result) {
         /* Variables */
         global $DB,$CFG;
+        $trans          = null;
         $unmapped       = null;
         $orgUnMapped    = array();
         $info           = null;
@@ -503,19 +504,24 @@ class WS_FELLESDATA {
         $objOrg         = null;
         $dbLog          = null;
 
+        // Begin transaction
+        $trans = $DB->start_delegated_transaction();
+
         try {
-            /* Log  */
+            // Log
             $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START Un-Map companies . ' . "\n";
 
-            /**
-             * Unmap company --> delete company
-             */
+            // unmap company --> delete company
             if ($toUnMap) {
                 foreach ($toUnMap as $infoOrg) {
-                    /* Convert to object */
+                    // Convert to object
                     $objOrg = (Object)$infoOrg;
 
+                    // Delete from report_gen_companydata
                     $unmapped = $DB->delete_records('report_gen_companydata',array('id' => $objOrg->kscompany));
+                    // Delete from mdl_report_gen_company_relation
+                    $DB->delete_records('report_gen_company_relation',array('companyid' => $objOrg->kscompany));
+
                     if ($unmapped) {
                         $info = new stdClass();
                         $info->unmapped     = true;
@@ -533,7 +539,14 @@ class WS_FELLESDATA {
             /* Log  */
             $dbLog .= ' FINISH Un-Map companies . ' . "\n";
             error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+
+            // Commmit
+            $trans->allow_commit();
         }catch (Exception $ex) {
+            // Rollback
+            $trans->rollback($ex);
+
+            // Error
             $result['error']        = 409;
             $result['message']      = $ex->getMessage();
             $result['orgUnMapped']  = $orgUnMapped;
