@@ -346,7 +346,7 @@ class manager_company_structure_form extends moodleform {
 
         /* Deactivate levels    */
         if ($level) {
-            $form->disabledIf('btn-' . REPORT_MANAGER_DELETE_SELECTED . $level,COMPANY_STRUCTURE_LEVEL . ($level - 1),'eq',0);
+            $form->disabledIf(COMPANY_STRUCTURE_LEVEL . $level ,COMPANY_STRUCTURE_LEVEL . ($level - 1),'eq',0);
         }//if_elvel
 
 
