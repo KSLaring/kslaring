@@ -480,3 +480,5 @@ $string['no_out_completed']     = 'No one expires  during the next {$a}';
 $string['tracker_on_wait']      = "On standby";
 $string['unwaitconfirm']        = 'Do you really want to cancel the user enrol request "{$a->user}" for the  course "{$a->course}"?';
 $string['exit_unwait']          = 'Your enrol request has been canceled';
+
+$string['mapped_with']          = 'Mapped with TARDIS';

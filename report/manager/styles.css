@@ -1,3 +1,13 @@
+.label_mapped_display {
+    display: inline-block;
+    margin-left: 275px;
+}
+.label_mapped_hidden {
+    display: inline-block;
+    margin-left: 275px;
+    visibility: hidden;
+}
+
 .line_rpt {
     border: 0;
     border-top: 1px solid #CCCCCC;
@@ -980,6 +990,15 @@ a.lnk_disabled {
 }
 
 @media (max-width: 767px) {
+    .label_mapped_display {
+        display: inline-block;
+        margin-left: 275px;
+    }
+    .label_mapped_hidden {
+        display: inline-block;
+        margin-left: 275px;
+        visibility: hidden;
+    }
     .sel_users_left,
     .sel_activities_left {
         float: none;

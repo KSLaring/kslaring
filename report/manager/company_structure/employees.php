@@ -17,6 +17,7 @@ define('AJAX_SCRIPT', true);
 
 require_once('../../../config.php');
 require_once('company_structurelib.php');
+require_once('../managerlib.php');
 
 /* PARAMS   */
 $levelThree     = optional_param('levelThree',0,PARAM_TEXT);
@@ -70,6 +71,9 @@ if ($deleteAll) {
     $data           =  array('users' => array());
     $data['users']  = $employeesInfo;
 }//if_delete
+
+$extra = CompetenceManager::get_extra_info_company($levelThree);
+$data['extra'] = $extra;
 
 /* Encode and Send */
 $json[] = $data;

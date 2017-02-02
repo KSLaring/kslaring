@@ -60,6 +60,17 @@ var level_structure = {
     /** Stores any in-progress remote requests. */
     iotransactions : {},
 
+    tardis_two:     null,
+    tardis_three:   null,
+
+    public_zero:    Y.one('#id_public_0'),
+    public_one:     Y.one('#id_public_1'),
+    public_two:     Y.one('#id_public_2'),
+    public_three:   Y.one('#id_public_3'),
+
+    mapped_two:     Y.one('#mapped_2'),
+    mapped_three:   Y.one('#mapped_3'),
+
     /**
      * Initialises the user selector object
      * @constructor
@@ -82,6 +93,17 @@ var level_structure = {
         }else if (this.outcomeLst) {
             this.levelThree.on('change', this.Load_Outcomes, this);
         }
+        // Clean  info
+        this.tardis_two     = 0;
+        this.tardis_three   = 0;
+        this.public_zero.set('checked',0);
+        this.public_one.set('checked',0);
+        this.public_two.set('checked',0);
+        this.public_three.set('checked',0);
+        this.mapped_two.removeClass('label_mapped_display');
+        this.mapped_two.addClass('label_mapped_hidden');
+        this.mapped_three.removeClass('label_mapped_display');
+        this.mapped_three.addClass('label_mapped_hidden');
 
         this.ActivateDeactivateActionButtons();
     },
@@ -89,7 +111,19 @@ var level_structure = {
     Activate_LevelOne : function(e) {
         var parent  = this.levelZero.get('value');
         var level   = 1;
-        
+
+        // Clean tardis info
+        this.tardis_two     = 0;
+        this.tardis_three   = 0;
+        this.public_zero.set('checked',0);
+        this.public_one.set('checked',0);
+        this.public_two.set('checked',0);
+        this.public_three.set('checked',0);
+        this.mapped_two.removeClass('label_mapped_display');
+        this.mapped_two.addClass('label_mapped_hidden');
+        this.mapped_three.removeClass('label_mapped_display');
+        this.mapped_three.addClass('label_mapped_hidden');
+
         //  Trigger an ajax search after a delay.
         this.cancel_timeout();
         this.timeoutid  = Y.later(this.querydelay * 1000, e, function(obj){obj.send_query(false,parent,level)}, this);
@@ -99,6 +133,17 @@ var level_structure = {
         var parent      = this.levelOne.get('value');
         var level       = 2;
 
+        // Clean tardis info
+        this.tardis_two     = 0;
+        this.tardis_three   = 0;
+        this.public_one.set('checked',0);
+        this.public_two.set('checked',0);
+        this.public_three.set('checked',0);
+        this.mapped_two.removeClass('label_mapped_display');
+        this.mapped_two.addClass('label_mapped_hidden');
+        this.mapped_three.removeClass('label_mapped_display');
+        this.mapped_three.addClass('label_mapped_hidden');
+
         //  Trigger an ajax search after a delay.
         this.cancel_timeout();
         this.timeoutid = Y.later(this.querydelay * 1000, e, function(obj){obj.send_query(false,parent,level)}, this);
@@ -107,12 +152,28 @@ var level_structure = {
     Activate_LevelThree : function(e) {
         var parent  = this.levelTwo.get('value');
         var level   = 3;
+
+        // Clean tardis info
+        this.tardis_two     = 0;
+        this.tardis_three   = 0;
+        this.public_two.set('checked',0);
+        this.public_three.set('checked',0);
+        this.mapped_two.removeClass('label_mapped_display');
+        this.mapped_two.addClass('label_mapped_hidden');
+        this.mapped_three.removeClass('label_mapped_display');
+        this.mapped_three.addClass('label_mapped_hidden');
+
         //  Trigger an ajax search after a delay.
         this.cancel_timeout();
         this.timeoutid = Y.later(this.querydelay * 1000, e, function(obj){obj.send_query(false,parent,level)}, this);
     },
 
     Load_Employees : function (e) {
+        // Clean info
+        this.public_three.set('checked',0);
+        this.mapped_three.removeClass('label_mapped_display');
+        this.mapped_three.addClass('label_mapped_hidden');
+
         //  Trigger an ajax search after a delay.
         this.cancel_timeout();
         this.timeoutid = Y.later(this.querydelay * 1000, e, function(obj){obj.send_query_employees(false)}, this);
@@ -194,8 +255,10 @@ var level_structure = {
      */
     output_options : function(data) {
         var level;
+        var copublic;
         var dataSelector;
         var companies;
+        var extra;
         var index;
         var indexCompany;
         var infoCompany;
@@ -256,7 +319,27 @@ var level_structure = {
                 }
             });
 
+            // Extra information from parent
+            extra = dataSelector.extra;
+            if (extra) {
+                copublic = extra.public == '1' ? 1 : 0;
+                switch (level) {
+                    case 'level_1':
 
+                        this.public_zero.set('checked',copublic);
+                        break;
+
+                    case 'level_2':
+                        this.public_one.set('checked',copublic);
+                        break;
+
+                    case 'level_3':
+                        this.public_two.set('checked',copublic);
+                        this.tardis_two = extra.tardis;
+
+                        break;
+                }
+            }
         }//for_level
     },
 
@@ -427,6 +510,7 @@ var level_structure = {
      */
     output_optionsEmployees : function(data) {
         var index;
+        var copublic;
         var dataEmployees;
         var employees;
         var indexEmpl;
@@ -452,6 +536,14 @@ var level_structure = {
                 var option = Y.Node.create('<option value="' + user.id + '">' + user.name + '</option>');
 
                 this.employeeLst.append(option);
+            }
+
+            // Extra information from parent
+            extra = dataEmployees.extra;
+            if (extra) {
+                copublic = extra.public == '1' ? 1 : 0;
+                this.tardis_three = extra.tardis;
+                this.public_three.set('checked',copublic);
             }
         }//for_level
     },
@@ -591,11 +683,21 @@ var level_structure = {
                 }else {
                     Y.one('#id_btn-managers_selected2').removeAttribute('disabled');
                     Y.one('#id_btn-reporters_selected2').removeAttribute('disabled');
-                    Y.one('#id_btn-rename_selected2').removeAttribute('disabled');
-                    Y.one('#id_btn-delete_selected2').removeAttribute('disabled');
-                    Y.one('#id_btn-move_selected2').removeAttribute('disabled');
                     Y.one('#id_btn-add_item3').removeAttribute('disabled');
-                }
+                    if (this.tardis_two == 1) {
+                        Y.one('#id_btn-rename_selected2').setAttribute('disabled','disabled');
+                        Y.one('#id_btn-delete_selected2').setAttribute('disabled','disabled');
+                        Y.one('#id_btn-move_selected2').setAttribute('disabled','disabled');
+                        this.mapped_two.removeClass('label_mapped_hidden');
+                        this.mapped_two.addClass('label_mapped_display');
+                    }else {
+                        Y.one('#id_btn-rename_selected2').removeAttribute('disabled');
+                        Y.one('#id_btn-delete_selected2').removeAttribute('disabled');
+                        Y.one('#id_btn-move_selected2').removeAttribute('disabled');
+                        this.mapped_two.removeClass('label_mapped_display');
+                        this.mapped_two.addClass('label_mapped_hidden');
+                    }//Tardis
+                }//levelTwo
 
                 /* Level Three  */
                 if (this.levelThree.get('value') == 0) {
@@ -609,12 +711,22 @@ var level_structure = {
                 }else {
                     Y.one('#id_btn-managers_selected3').removeAttribute('disabled');
                     Y.one('#id_btn-reporters_selected3').removeAttribute('disabled');
-                    Y.one('#id_btn-rename_selected3').removeAttribute('disabled');
-                    Y.one('#id_btn-delete_selected3').removeAttribute('disabled');
                     Y.one('#id_btn-delete_employees3').removeAttribute('disabled');
                     Y.one('#id_btn-delete_all_employees3').removeAttribute('disabled');
-                    Y.one('#id_btn-move_selected3').removeAttribute('disabled');
-                }
+                    if (this.tardis_three == 1) {
+                        Y.one('#id_btn-rename_selected3').setAttribute('disabled','disabled');
+                        Y.one('#id_btn-delete_selected3').setAttribute('disabled','disabled');
+                        Y.one('#id_btn-move_selected3').setAttribute('disabled','disabled');
+                        this.mapped_three.removeClass('label_mapped_hidden');
+                        this.mapped_three.addClass('label_mapped_display');
+                    }else {
+                        Y.one('#id_btn-rename_selected3').removeAttribute('disabled');
+                        Y.one('#id_btn-delete_selected3').removeAttribute('disabled');
+                        Y.one('#id_btn-move_selected3').removeAttribute('disabled');
+                        this.mapped_three.removeClass('label_mapped_display');
+                        this.mapped_three.addClass('label_mapped_hidden');
+                    }//tardis
+                }//levelThree
             }
         }//ifbtnActions
     },
@@ -726,13 +838,23 @@ var level_structure = {
                     Y.one('#id_btn-delete_selected2').setAttribute('disabled','disabled');
                     Y.one('#id_btn-add_item3').setAttribute('disabled','disabled');
                 }else {
-                    Y.one('#id_btn-rename_selected2').removeAttribute('disabled');
-                    Y.one('#id_btn-delete_selected2').removeAttribute('disabled');
-                    Y.one('#id_btn-move_selected2').removeAttribute('disabled');
                     Y.one('#id_btn-managers_selected2').removeAttribute('disabled');
                     Y.one('#id_btn-reporters_selected2').removeAttribute('disabled');
                     Y.one('#id_btn-add_item3').removeAttribute('disabled');
-                }
+                    if (this.tardis_two == 1) {
+                        Y.one('#id_btn-rename_selected2').setAttribute('disabled','disabled');
+                        Y.one('#id_btn-delete_selected2').setAttribute('disabled','disabled');
+                        Y.one('#id_btn-move_selected2').setAttribute('disabled','disabled');
+                        this.mapped_two.removeClass('label_mapped_hidden');
+                        this.mapped_two.addClass('label_mapped_display');
+                    }else {
+                        Y.one('#id_btn-rename_selected2').removeAttribute('disabled');
+                        Y.one('#id_btn-delete_selected2').removeAttribute('disabled');
+                        Y.one('#id_btn-move_selected2').removeAttribute('disabled');
+                        this.mapped_two.removeClass('label_mapped_display');
+                        this.mapped_two.addClass('label_mapped_hidden');
+                    }//tardis
+                }//leveltwo
             }else {
                 if (!accessThree && this.levelTwo.get('value') != 0) {
                     Y.one('#id_btn-managers_selected2').removeAttribute('disabled');
@@ -741,7 +863,7 @@ var level_structure = {
                     Y.one('#id_btn-managers_selected2').setAttribute('disabled','disabled');
                     Y.one('#id_btn-reporters_selected2').setAttribute('disabled','disabled');
                 }
-            }
+            }//accessTwo
 
             /* Activate buttons level Three */
             if (accessThree == 0) {
@@ -760,12 +882,22 @@ var level_structure = {
                 }else {
                     Y.one('#id_btn-managers_selected3').removeAttribute('disabled');
                     Y.one('#id_btn-reporters_selected3').removeAttribute('disabled');
-                    Y.one('#id_btn-rename_selected3').removeAttribute('disabled');
-                    Y.one('#id_btn-delete_selected3').removeAttribute('disabled');
-                    Y.one('#id_btn-move_selected3').removeAttribute('disabled');
                     Y.one('#id_btn-delete_employees3').removeAttribute('disabled');
                     Y.one('#id_btn-delete_all_employees3').removeAttribute('disabled');
-                }
+                    if (this.tardis_three == 1) {
+                        Y.one('#id_btn-rename_selected3').setAttribute('disabled','disabled');
+                        Y.one('#id_btn-delete_selected3').setAttribute('disabled','disabled');
+                        Y.one('#id_btn-move_selected3').setAttribute('disabled','disabled');
+                        this.mapped_three.removeClass('label_mapped_hidden');
+                        this.mapped_three.addClass('label_mapped_display');
+                    }else {
+                        Y.one('#id_btn-rename_selected3').removeAttribute('disabled');
+                        Y.one('#id_btn-delete_selected3').removeAttribute('disabled');
+                        Y.one('#id_btn-move_selected3').removeAttribute('disabled');
+                        this.mapped_three.removeClass('label_mapped_display');
+                        this.mapped_three.addClass('label_mapped_hidden');
+                    }//tardis
+                }//levelThree
             }else {
                 if (this.levelThree.get('value') != 0) {
                     Y.one('#id_btn-managers_selected3').removeAttribute('disabled');
@@ -778,7 +910,7 @@ var level_structure = {
                     Y.one('#id_btn-delete_employees3').setAttribute('disabled','disabled');
                     Y.one('#id_btn-delete_all_employees3').setAttribute('disabled','disabled');
                 }
-            }
+            }//accessThree
         }
     },
 

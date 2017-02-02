@@ -26,6 +26,7 @@ function xmldb_report_manager_upgrade($old_version) {
     $tblOutcomeExpiration   = null;
     $tblCompetencyImport    = null;
     $fieldJRMatch           = null;
+    $fieldMapped            = null;
 
     try {
         /* Manager  */
@@ -85,6 +86,18 @@ function xmldb_report_manager_upgrade($old_version) {
         if ($old_version < 2016060602) {
             CompetenceManager_Update::UpdateInvoiceDataCompany($db_man);
         }
+
+        // Add mapped with (source) field
+        if ($old_version < 2017020100) {
+            $tblCompanyData = new xmldb_table('report_gen_companydata');
+
+            /* Mapped   */
+            $fieldMapped = new xmldb_field ('mapped',XMLDB_TYPE_CHAR,'50',null, null,null,null,'public');
+            if (!$db_man->field_exists($tblCompanyData, $fieldMapped)) {
+                $db_man->add_field($tblCompanyData, $fieldMapped);
+            }//if_exists
+        }
+
         return true;
     }catch (Exception $ex) {
         throw $ex;

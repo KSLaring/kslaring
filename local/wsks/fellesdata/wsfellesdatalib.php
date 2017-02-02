@@ -17,6 +17,7 @@ define('DELETE_ACTION',2);
 
 define('MANAGER','manager');
 define('REPORTER','reporter');
+define('MAPPED_TARDIS','TARDIS');
 
 class WS_FELLESDATA {
     /**********/
@@ -1854,6 +1855,7 @@ class WS_FELLESDATA {
             $instanceCompany->postnr            = $companyInfo->postnr;
             $instanceCompany->poststed          = $companyInfo->poststed;
             $instanceCompany->epost             = $companyInfo->epost;
+            $instanceCompany->mapped            = MAPPED_TARDIS;
 
             /* Invoice Data */
             $instanceCompany->modified          = $time;

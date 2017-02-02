@@ -175,7 +175,6 @@ class CompetenceManager_Install {
             $tblCompanyData->add_field('hierarchylevel',XMLDB_TYPE_INTEGER,'2',null, XMLDB_NOTNULL,null,null);
             /* Public           --> Not Null    */
             $tblCompanyData->add_field('public',XMLDB_TYPE_INTEGER,'1',null, null,null,null);
-
             /* ansvar   */
             $tblCompanyData->add_field('ansvar',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
             /* tjeneste */
@@ -192,7 +191,8 @@ class CompetenceManager_Install {
             $tblCompanyData->add_field('poststed',XMLDB_TYPE_CHAR,'50',null, XMLDB_NOTNULL, null,null);
             /* epost    */
             $tblCompanyData->add_field('epost',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
-
+            /* Mapped   */
+            $tblCompanyData->add_field('mapped',XMLDB_TYPE_CHAR,'50',null, XMLDB_NOTNULL,null,null);
             /* modified         (Not null)          */
             $tblCompanyData->add_field('modified',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL,null,null);
 
