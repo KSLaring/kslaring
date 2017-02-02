@@ -105,6 +105,7 @@ class manager_company_structure_form extends moodleform {
      */
     function AddLevel($level,&$form,$level_import,$myCompanies){
         /* Variables    */
+        global $SESSION;
         $header_ID      = 'header_level_' . $level;
         $header_Label   = get_string(REPORT_MANAGER_COMPANY_STRUCTURE_LEVEL, 'report_manager', $level);
 
@@ -137,6 +138,13 @@ class manager_company_structure_form extends moodleform {
                 $unlink_btn = ' lnk_disabled';
             }
 
+            // Public or private
+            $form->addElement('checkbox', 'public_' . $level,'',get_string('public', 'report_manager'),'disabled');
+
+            // Mapped with
+            $label = "<label id=mapped_" . $level . " class='label_mapped_hidden'>" . get_string('mapped_with','report_manager') . "</label>";
+            $form->addElement('html',$label);
+        
             /* Add Action Buttons   */
             $this->AddActionButtons($level,$form,$unlink_btn);
         $form->addElement('html', '</div>');

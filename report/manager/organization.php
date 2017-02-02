@@ -35,7 +35,7 @@ $IsReporter     = null;
 
 $json           = array();
 $data           = array();
-$infoCompany    = null;
+$info           = null;
 
 $context        = context_system::instance();
 $url            = new moodle_url('/report/manager/organization.php');
@@ -147,18 +147,23 @@ $data['clean'] = $toClean;
 if ($parent) {
     $options = CompetenceManager::GetCompanies_LevelList($level,$parent,$myLevelAccess);
 }else {
+    // First element of the list
     $options[0] = get_string('select_level_list','report_manager');
 }//if_parent
 
 foreach ($options as $companyId => $company) {
+
     /* Info Company */
-    $infoCompany            = new stdClass;
-    $infoCompany->id        = $companyId;
-    $infoCompany->name      = $company;
+    $info            = new stdClass;
+    $info->id        = $companyId;
+    $info->name      = $company;
 
     /* Add Company*/
-    $data['items'][$infoCompany->name] = $infoCompany;
+    $data['items'][$info->name] = $info;
 }
+
+$extra = CompetenceManager::get_extra_info_company($parent);
+$data['extra'] = $extra;
 
 /* Encode and Send */
 $json[] = $data;

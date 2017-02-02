@@ -488,3 +488,5 @@ $string['no_out_completed']     = 'Det er ingen som utløper neste {$a}';
 $string['tracker_on_wait']      = "På venteliste";
 $string['unwaitconfirm']        = 'Ønsker du virkelig å fjerne deg fra ventelisten for kurset "{$a->course}"?';
 $string['exit_unwait']          = 'Ventelisteoppføringen dn har blitt slettet';
+
+$string['mapped_with']          = 'Mapped with TARDIS';

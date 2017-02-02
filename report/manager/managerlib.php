@@ -65,6 +65,8 @@ define('INVALID_FILE_NAME','invalid_field_name');
 define('DUPLICATE_FIELD_NAME','duplicate_field_name');
 define('NON_ERROR','non_error');
 
+define('ORG_MAPPED_TARDIS','TARDIS');
+
 if (!defined('MAX_BULK_USERS')) {
     define('MAX_BULK_USERS', 2000);
 }
@@ -1083,6 +1085,45 @@ class CompetenceManager {
             throw $ex;
         }//try_catch
     }//Get_Companies_LevelList
+
+    /**
+     * Description
+     * Get extra information about the company.
+     * If the company is connected with tardis, public,...
+     * 
+     * @creationDate    02/02/2017
+     * @author          eFaktor     (fbv)
+     * 
+     * @param           $company
+     * 
+     * @return          null|stdClass
+     * @throws          Exception
+     */
+    public static function get_extra_info_company($company) {
+        /* Variables */
+        global $DB;
+        $rdo    = null;
+        $extra  = null;
+        
+        try {
+            $rdo = $DB->get_record('report_gen_companydata',array('id' => $company),'id,name,public,mapped');
+            if ($rdo) {
+                $extra = new stdClass();
+                $extra->id      = $rdo->id;
+                $extra->name    = $rdo->name;
+                $extra->public  = $rdo->public;
+                if ($rdo->mapped == ORG_MAPPED_TARDIS) {
+                    $extra->tardis = 1;
+                }else {
+                    $extra->tardis = 0;
+                }
+            }//if_rdo
+            
+            return $extra;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//get_extra_info_company
 
     /**
      * @param           $company
