@@ -11,6 +11,8 @@ $strtitle = get_string('headertitle', 'theme_ailaring');
 $loggedin = isloggedin();
 $loggedinclass = ' not-loggedin';
 if ($loggedin) {
+    /* Get the municipality connected with the user */
+    $municipality = Municipality::municipality_ExitsMuni_User($USER->id);
     $loggedinclass = ' loggedin';
 }
 ?>
@@ -23,8 +25,18 @@ if ($loggedin) {
         <div class="ailaring-background-image clearfix">
             <div class="logo-area">
                 <a class="logo" href="<?php echo $CFG->wwwroot; ?>">
-                    <img class="logo" alt="Arbeid og inkludering logo" src="<?php echo $OUTPUT->pix_url('ailaring_logo', 'theme'); ?>"/>
+                    <img class="logo" alt="Arbeid og inkludering logo"
+                         src="<?php echo $OUTPUT->pix_url('ailaring_logo', 'theme'); ?>"/>
                 </a>
+            </div>
+
+            <div class="header-right">
+                <?php
+                if ($municipality) {
+                    echo '<div class="muni-logo">
+                        <img alt="' . $municipality->name . '" src="' . $municipality->logo . '"/></div>';
+                }
+                ?>
             </div>
         </div>
     </div>
@@ -39,6 +51,7 @@ if ($loggedin) {
 
                 <div class="navbar-menues">
                     <?php echo $OUTPUT->navbar_button(); ?>
+                    <?php echo $OUTPUT->user_menu(); ?>
 
                     <?php if (!$loggedin) : ?>
                         <div class="navbar-text"><?php echo $OUTPUT->login_info() ?></div>
@@ -46,7 +59,6 @@ if ($loggedin) {
 
                     <div id="moodle-navbar" class="nav-collapse collapse">
                         <?php echo $OUTPUT->custom_menu(); ?>
-                        <?php echo $OUTPUT->user_menu(); ?>
                     </div>
                 </div>
             </div>
