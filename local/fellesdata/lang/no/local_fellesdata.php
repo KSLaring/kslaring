@@ -161,6 +161,6 @@ $string['map_two_desc']     = 'TARDIS mapping til KS Læring L2';
 $string['map_three']        = 'KS Læring L3';
 $string['map_three_desc']   = 'TARDIS mapping til KS Læring L3';
 
-$string['downloaded']       = 'The file <strong>{$a}</strong> has been downloaded';
-$string['to_download']      = 'Click on <strong>{$a}</strong> to download the file';
+$string['downloaded']       = 'Filen <strong>{$a}</strong> er lasted ned';
+$string['to_download']      = 'Klikk på <strong>{$a}</strong> for å laste ned filen';
 
