@@ -1638,7 +1638,6 @@ class FSKS_USERS {
 
             // Info Account
             if (!$rdoUser) {
-                echo "2";
                 // Create new Account
                 $infoUser = new stdClass();
                 if ($userFS->adfs) {
@@ -1661,7 +1660,6 @@ class FSKS_USERS {
                 $infoUser->calendartype = $CFG->calendartype;
                 $infoUser->mnethostid   = $CFG->mnet_localhost_id;
             }else {
-                echo "1";
                 $userId = $rdoUser->id;
                 // Two merge accounts
                 if ($userFS->adfs) {
