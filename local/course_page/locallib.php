@@ -214,7 +214,7 @@ class course_page  {
                         JOIN	{role_assignments}		ra		ON		ra.userid 		= u.id
                                                                 AND     ra.contextid    = :context_id
                         JOIN	{role}					r		ON		r.id 			= ra.roleid
-                                                                AND		r.archetype 	IN ('teacher','editingteacher')
+                                                                AND		r.archetype 	IN ('teacher')
 
                      WHERE		u.deleted = 0
                         AND     u.id NOT IN ($notIn)
@@ -269,7 +269,7 @@ class course_page  {
                         JOIN	{role_assignments}		ra		ON		ra.userid 		= u.id
                                                                 AND     ra.contextid    = :context_id
                         JOIN	{role}					r		ON		r.id 			= ra.roleid
-                                                                AND		r.archetype 	IN ('teacher','editingteacher')
+                                                                AND		r.archetype 	IN ('editingteacher')
 
                      WHERE		u.deleted = 0
                      ORDER BY 	ra.timemodified,u.firstname, u.lastname

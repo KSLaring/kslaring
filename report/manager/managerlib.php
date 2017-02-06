@@ -330,6 +330,71 @@ class CompetenceManager {
     }//Init_Organization_Structure
 
     /**
+     * Description
+     * Init and call javascript with company structure
+     *
+     * @creationDate    06/02/2017
+     * @author          eFaktor     (fbv)
+     *
+     * @param           $selector
+     * @param           $employeeSel
+     * @param           $outcomeSel
+     * @param           $superUser
+     * @param           $myAccess
+     * @param           $btnActions
+     *
+     * @throws          Exception
+     */
+    public static function init_company_structure($selector,$employeeSel,$outcomeSel,$superUser,$myAccess,$btnActions) {
+        /* Variables    */
+        global $PAGE;
+        $options        = null;
+        $hash           = null;
+        $jsModule       = null;
+        $name           = null;
+        $path           = null;
+        $requires       = null;
+        $strings        = null;
+        $grpOne         = null;
+        $grpTwo         = null;
+        $grpThree       = null;
+        $sp             = null;
+        $delEmployees   = null;
+
+        try {
+            /* Initialise variables */
+            $name       = 'level_structure';
+            $path       = '/report/manager/js/structure.js';
+            $requires   = array('node', 'event-custom', 'datasource', 'json', 'moodle-core-notification');
+            $grpThree   = array('none', 'moodle');
+            $strings    = array($grpThree);
+
+            /* Initialise js module */
+            $jsModule = array('name'        => $name,
+                'fullpath'    => $path,
+                'requires'    => $requires,
+                'strings'     => $strings
+            );
+
+            $sp = ($superUser ? 1 : 0);
+
+            /* Window Confirm parameters    */
+            $delEmployees = array();
+            $delEmployees['title']      = get_string('del_title','report_manager');
+            $delEmployees['question']   = get_string('delete_all_employees','report_manager');
+            $delEmployees['yes']        = get_string('del_yes','report_manager');
+            $delEmployees['no']         = get_string('del_no','report_manager');
+            $PAGE->requires->js_init_call('M.core_user.init_organization',
+                array($selector,$employeeSel,$outcomeSel,$sp,$myAccess,$btnActions,$delEmployees),
+                false,
+                $jsModule
+            );
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//Init_company_Structure
+
+    /**
      * @param           $selector
      * @param           $jrSelector
      * @param           $rptLevel
