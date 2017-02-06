@@ -846,22 +846,30 @@ class local_course_page_renderer extends plugin_renderer_base {
         $out .= html_writer::start_tag('div',array('class' => 'manager chp-block clearfix'));
             /* Main Manager */
             $user = course_page::get_courses_manager($course_id);
-                if ($user) {
-                    $user->description = file_rewrite_pluginfile_urls($user->description, 'pluginfile.php',
-                                                                      context_user::instance($user->id)->id, 'user', 'profile', null);
+            if ($user) {
+                $user->description = file_rewrite_pluginfile_urls($user->description, 'pluginfile.php',
+                                                                  context_user::instance($user->id)->id, 'user', 'profile', null);
                 $url_user = new moodle_url('/user/profile.php',array('id' => $user->id));
 
                 $out .= '<h5 class="title_coordinator chp-title">' . get_string('home_coordinater','local_course_page') . '</h5>';
                 $out .= '<div class="user_profile chp-content clearfix">';
-                    $out .= '<div class="user_picture">' . $OUTPUT->user_picture($user, array('size'=>150)) . '</div>';
-                    $out .= '<div class="user"><a href="' . $url_user . '">' . fullname($user) . '</a>';
+                    $out .= '<div class="user_picture">';
+                        $out .= $OUTPUT->user_picture($user, array('size'=>150));
+                    $out .= '</div>';//div_user_picture
 
-                    $urlMessage = new moodle_url('/message/index.php',array('id' => $user->id));
-                    $lnkMessage = "<a href='". $urlMessage."'>" . get_string('messageselectadd') . "</a>";
-                    $out .= '<div class="extra_home chp-content">'. $lnkMessage  . '</div>';
-                    $out .= '<div class="extra_coordinator">' . $user->description . '</div>'  . '</div>';
-                $out .= '</div>';
-                }//if_user
+                    $out .= '<div class="user">';
+                        $out .= '<a href="' . $url_user . '">' . fullname($user) . '</a>';
+                        $urlMessage = new moodle_url('/message/index.php',array('id' => $user->id));
+                        $lnkMessage = "<a href='". $urlMessage."'>" . get_string('messageselectadd') . "</a>";
+                        $out .= '<div class="extra_home chp-content">';
+                            $out .= $lnkMessage;
+                        $out .= '</div>';
+                        $out .= '<div class="extra_coordinator">';
+                            $out .= $user->description;
+                        $out .= '</div>';
+                    $out .= '</div>';//div_user
+                $out .= '</div>';//div_user_profile
+            }//if_user
 
             /* Teachers */
             if ($user) {
