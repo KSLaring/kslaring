@@ -168,18 +168,19 @@ class FS_UnMap {
             $params['level'] = $level;
 
             /* SQL Instruction  */
-            $sql = " SELECT	fs.id,
-                            fs.companyid 							as 'fscompany',
-                            fs.name,
-                            ks.companyid 							as 'kscompany',
-                            CONCAT(ks.industrycode,' - ',ks.name) 	as 'ksname',
-                            fs.new
-                     FROM			{fs_company}		fs
-                        JOIN		{ksfs_company}	    ksfs 	ON	ksfs.fscompany 	= fs.companyid
-                        JOIN		{ks_company}		ks		ON  ks.companyid 	= ksfs.kscompany
+            $sql = " SELECT	  DISTINCT
+                                  fs.id,
+                                  fs.companyid 							as 'fscompany',
+                                  fs.name,
+                                  ks.companyid 							as 'kscompany',
+                                  CONCAT(ks.industrycode,' - ',ks.name) 	as 'ksname',
+                                  fs.new
+                     FROM		  {fs_company}		fs
+                        JOIN	  {ksfs_company}	ksfs 	ON	ksfs.fscompany 	= fs.companyid
+                        JOIN	  {ks_company}		ks		ON  ks.companyid 	= ksfs.kscompany
                         -- NOT UNMAPPED
-                        LEFT JOIN	{ksfs_org_unmap}	un		ON	un.kscompany 	= ks.companyid
-                                                                AND un.fscompany 	= ksfs.fscompany
+                        LEFT JOIN {ksfs_org_unmap}	un		ON	un.kscompany 	= ks.companyid
+                                                            AND un.fscompany 	= ksfs.fscompany
                      WHERE 	fs.level = :level
                         AND un.id IS NULL";
 

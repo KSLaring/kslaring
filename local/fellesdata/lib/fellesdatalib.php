@@ -648,11 +648,11 @@ class FSKS_COMPANY {
                               fs_imp.action
                      FROM	  {fs_company}		fs
                         JOIN  {fs_imp_company}	fs_imp 	ON 	fs_imp.org_enhet_id = fs.companyid
-                                                            AND fs_imp.imported = :imported
+                                                        AND fs_imp.imported     = :imported
                         -- INFO KS
-                        JOIN  {ksfs_company}	    fk 		ON 	fk.fscompany 	= fs.companyid
+                        JOIN  {ksfs_company}	fk 		ON 	fk.fscompany 	    = fs.companyid
                         -- INFO PARENT
-                        JOIN  {ks_company}		ks_pa	ON 	ks_pa.companyid = fk.kscompany
+                        JOIN  {ks_company}		ks_pa	ON 	ks_pa.companyid     = fk.kscompany
                      WHERE	  fs.new 			= :new
                         AND   fs.synchronized   = :synchronized ";
 
@@ -1638,7 +1638,6 @@ class FSKS_USERS {
 
             // Info Account
             if (!$rdoUser) {
-                echo "2";
                 // Create new Account
                 $infoUser = new stdClass();
                 if ($userFS->adfs) {
@@ -1661,7 +1660,6 @@ class FSKS_USERS {
                 $infoUser->calendartype = $CFG->calendartype;
                 $infoUser->mnethostid   = $CFG->mnet_localhost_id;
             }else {
-                echo "1";
                 $userId = $rdoUser->id;
                 // Two merge accounts
                 if ($userFS->adfs) {
