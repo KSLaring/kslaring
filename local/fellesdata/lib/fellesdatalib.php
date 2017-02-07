@@ -582,14 +582,14 @@ class FSKS_COMPANY {
                     $infoCompany->level         = $instance->level;
                     $infoCompany->parent        = $instance->parent;
                     $infoCompany->public        = $instance->public;
-                    $infoCompany->ansvar        = ($instance->ansvar    ? $instance->ansvar     : '');
-                    $infoCompany->tjeneste      = ($instance->tjeneste  ? $instance->tjeneste   : '');
-                    $infoCompany->adresseOne    = ($instance->adresse1  ? $instance->adresse1   : '');
-                    $infoCompany->adresseTwo    = ($instance->adresse2  ? $instance->adresse2   : '');
-                    $infoCompany->adresseThree  = ($instance->adresse3  ? $instance->adresse3   : '');
-                    $infoCompany->postnr        = ($instance->postnr    ? $instance->postnr     : '');
-                    $infoCompany->poststed      = ($instance->poststed  ? $instance->poststed   : '');
-                    $infoCompany->epost         = ($instance->epost     ? $instance->epost      : '');
+                    $infoCompany->ansvar        = ($instance->ansvar    ? $instance->ansvar     : '0');
+                    $infoCompany->tjeneste      = ($instance->tjeneste  ? $instance->tjeneste   : '0');
+                    $infoCompany->adresseOne    = ($instance->adresse1  ? $instance->adresse1   : '0');
+                    $infoCompany->adresseTwo    = ($instance->adresse2  ? $instance->adresse2   : '0');
+                    $infoCompany->adresseThree  = ($instance->adresse3  ? $instance->adresse3   : '0');
+                    $infoCompany->postnr        = ($instance->postnr    ? $instance->postnr     : '0');
+                    $infoCompany->poststed      = ($instance->poststed  ? $instance->poststed   : '0');
+                    $infoCompany->epost         = ($instance->epost     ? $instance->epost      : '0');
                     $infoCompany->action        = ADD;
 
                     // Add Company
