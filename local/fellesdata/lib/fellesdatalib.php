@@ -313,7 +313,7 @@ class FSKS_COMPANY {
             // Companies to Synchronize between FS and KS
 
             // New - Create
-            //self::get_new_companiesfs_to_synchronize($toSynchronize);
+            self::get_new_companiesfs_to_synchronize($toSynchronize);
             // New - Update
             self::get_update_companiesfs_to_synchronize($toSynchronize);
 
