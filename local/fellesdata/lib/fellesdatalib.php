@@ -563,11 +563,10 @@ class FSKS_COMPANY {
                                   fs.poststed,
                                   fs.epost
                      FROM		  {fs_company}	  fs
-                        LEFT JOIN {ks_company}	  ks 	ON ks.companyid     = fs.parent
+                        JOIN      {ks_company}	  ks 	ON ks.companyid     = fs.parent
                         LEFT JOIN {ksfs_company}  ks_fs	ON ks_fs.fscompany 	= fs.companyid
                      WHERE	      fs.synchronized = :synchronized
-                          AND	  fs.new 		  = :new 
-                          AND     ks_fs.id IS NULL ";
+                          AND	  fs.new 		  = :new  ";
 
 
             // Execute
