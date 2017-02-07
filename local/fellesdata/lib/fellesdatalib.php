@@ -313,7 +313,7 @@ class FSKS_COMPANY {
             // Companies to Synchronize between FS and KS
 
             // New - Create
-            self::get_new_companiesfs_to_synchronize($toSynchronize);
+            //self::get_new_companiesfs_to_synchronize($toSynchronize);
             // New - Update
             self::get_update_companiesfs_to_synchronize($toSynchronize);
 
@@ -563,10 +563,11 @@ class FSKS_COMPANY {
                                   fs.poststed,
                                   fs.epost
                      FROM		  {fs_company}	  fs
-                        JOIN	  {ks_company}	  ks 	ON ks.companyid     = fs.parent
+                        LEFT JOIN {ks_company}	  ks 	ON ks.companyid     = fs.parent
                         LEFT JOIN {ksfs_company}  ks_fs	ON ks_fs.fscompany 	= fs.companyid
                      WHERE	      fs.synchronized = :synchronized
-                          AND	  fs.new 		  = :new ";
+                          AND	  fs.new 		  = :new 
+                          AND     ks_fs.id IS NULL ";
 
 
             // Execute
@@ -648,11 +649,11 @@ class FSKS_COMPANY {
                               fs_imp.action
                      FROM	  {fs_company}		fs
                         JOIN  {fs_imp_company}	fs_imp 	ON 	fs_imp.org_enhet_id = fs.companyid
-                                                            AND fs_imp.imported = :imported
+                                                        AND fs_imp.imported     = :imported
                         -- INFO KS
-                        JOIN  {ksfs_company}	    fk 		ON 	fk.fscompany 	= fs.companyid
+                        JOIN  {ksfs_company}	fk 		ON 	fk.fscompany 	    = fs.companyid
                         -- INFO PARENT
-                        JOIN  {ks_company}		ks_pa	ON 	ks_pa.companyid = fk.kscompany
+                        JOIN  {ks_company}		ks_pa	ON 	ks_pa.companyid     = fk.kscompany
                      WHERE	  fs.new 			= :new
                         AND   fs.synchronized   = :synchronized ";
 
