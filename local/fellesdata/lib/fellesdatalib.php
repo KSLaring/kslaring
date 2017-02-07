@@ -582,14 +582,14 @@ class FSKS_COMPANY {
                     $infoCompany->level         = $instance->level;
                     $infoCompany->parent        = $instance->parent;
                     $infoCompany->public        = $instance->public;
-                    $infoCompany->ansvar        = trim(($instance->ansvar    ? $instance->ansvar     : ''));
-                    $infoCompany->tjeneste      = trim(($instance->tjeneste  ? $instance->tjeneste   : ''));
-                    $infoCompany->adresseOne    = trim(($instance->adresse1  ? $instance->adresse1   : ''));
-                    $infoCompany->adresseTwo    = trim(($instance->adresse2  ? $instance->adresse2   : ''));
-                    $infoCompany->adresseThree  = trim(($instance->adresse3  ? $instance->adresse3   : ''));
-                    $infoCompany->postnr        = trim(($instance->postnr    ? $instance->postnr     : ''));
-                    $infoCompany->poststed      = trim(($instance->poststed  ? $instance->poststed   : ''));
-                    $infoCompany->epost         = trim(($instance->epost     ? $instance->epost      : ''));
+                    $infoCompany->ansvar        = ($instance->ansvar    ? $instance->ansvar     : '');
+                    $infoCompany->tjeneste      = ($instance->tjeneste  ? $instance->tjeneste   : '');
+                    $infoCompany->adresseOne    = ($instance->adresse1  ? $instance->adresse1   : '');
+                    $infoCompany->adresseTwo    = ($instance->adresse2  ? $instance->adresse2   : '');
+                    $infoCompany->adresseThree  = ($instance->adresse3  ? $instance->adresse3   : '');
+                    $infoCompany->postnr        = ($instance->postnr    ? $instance->postnr     : '');
+                    $infoCompany->poststed      = ($instance->poststed  ? $instance->poststed   : '');
+                    $infoCompany->epost         = ($instance->epost     ? $instance->epost      : '');
                     $infoCompany->action        = ADD;
 
                     // Add Company
