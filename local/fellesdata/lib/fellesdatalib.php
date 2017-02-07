@@ -315,7 +315,7 @@ class FSKS_COMPANY {
             // New - Create
             self::get_new_companiesfs_to_synchronize($toSynchronize);
             // New - Update
-            self::get_update_companiesfs_to_synchronize($toSynchronize);
+            //self::get_update_companiesfs_to_synchronize($toSynchronize);
 
             return $toSynchronize;
         }catch (Exception $ex) {
@@ -566,7 +566,9 @@ class FSKS_COMPANY {
                         JOIN      {ks_company}	  ks 	ON ks.companyid     = fs.parent
                         LEFT JOIN {ksfs_company}  ks_fs	ON ks_fs.fscompany 	= fs.companyid
                      WHERE	      fs.synchronized = :synchronized
-                          AND	  fs.new 		  = :new  ";
+                          AND	  fs.new 		  = :new
+                          AND     fs.tjeneste IS NOT NULL   
+                     ";
 
 
             // Execute

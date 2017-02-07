@@ -59,7 +59,7 @@ class FELLESDATA_CRON {
                     mkdir($suspicious_path);
                 }
             }//if_suspucuous_path
-            
+
             /*
              * Unmap process
              * 1 - Unmap user competence
@@ -95,7 +95,7 @@ class FELLESDATA_CRON {
 
             /* Synchronization Companies    */
             $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START Companies FS Synchronization. ' . "\n";
-            self::companies_fs_synchronization($pluginInfo,$fstExecution);
+            //self::companies_fs_synchronization($pluginInfo,$fstExecution);
 
             /* Job roles to Map/Synchronize */
             self::jobroles_fs_to_map($pluginInfo);
@@ -1088,24 +1088,33 @@ class FELLESDATA_CRON {
                     // Call webs service
                     if ($toSynchronize) {
                         $params     = array('companiesFS' => $toSynchronize);
-                        $response   = self::process_ks_service($pluginInfo,KS_SYNC_FS_COMPANY,$params);
-                        if ($response['error'] == '200') {
-                            FSKS_COMPANY::synchronize_companies_ksfs($toSynchronize,$response['companies']);
+                        //$response   = self::process_ks_service($pluginInfo,KS_SYNC_FS_COMPANY,$params);
+                        $dbLog .= $response . "\n\n";
 
-                            // Notification manual synchronization
-                            if ($notifyTo) {
-                                // Get companies to send notifications
-                                $toMail = FSKS_COMPANY::get_companiesfs_to_mail();
-                                
-                                if ($toMail) {
-                                    self::send_notifications(SYNC_COMP,$toMail,$notifyTo,$pluginInfo->fs_source);
-                                }//if_toMail
-                            }//if_notify
+                        if ($response) {
+                            if ($response['error'] == '200') {
+                                FSKS_COMPANY::synchronize_companies_ksfs($toSynchronize,$response['companies']);
+
+                                // Notification manual synchronization
+                                if ($notifyTo) {
+                                    // Get companies to send notifications
+                                    $toMail = FSKS_COMPANY::get_companiesfs_to_mail();
+
+                                    if ($toMail) {
+                                        self::send_notifications(SYNC_COMP,$toMail,$notifyTo,$pluginInfo->fs_source);
+                                    }//if_toMail
+                                }//if_notify
+                            }else {
+                                /* Log  */
+                                $dbLog  .= "ERROR WS: " . $response['message'] . "\n\n";
+                                $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' Finish ERROR Companies FS/KS Synchronization . ' . "\n";
+                            }//if_no_error
                         }else {
                             /* Log  */
-                            $dbLog  .= "ERROR WS: " . $response['message'] . "\n\n";
+                            $dbLog  .= "ERROR NUL OBJECT " . "\n\n";
                             $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' Finish ERROR Companies FS/KS Synchronization . ' . "\n";
-                        }//if_no_error
+                        }
+
                     }//if_toSynchronize
 
                     /* Clean Table*/
