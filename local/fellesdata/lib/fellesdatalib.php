@@ -585,20 +585,20 @@ class FSKS_COMPANY {
                     $infoCompany->level         = $instance->level;
                     $infoCompany->parent        = $instance->parent;
                     $infoCompany->public        = $instance->public;
-                    $infoCompany->ansvar        = '1';//($instance->ansvar    ? $instance->ansvar     : '0');
-                    $infoCompany->tjeneste      = '1';//($instance->tjeneste  ? $instance->tjeneste   : '0');
-                    $infoCompany->adresseOne    = '1';//($instance->adresse1  ? $instance->adresse1   : '0');
-                    $infoCompany->adresseTwo    = '1';//($instance->adresse2  ? $instance->adresse2   : '0');
-                    $infoCompany->adresseThree  = '1';//($instance->adresse3  ? $instance->adresse3   : '0');
-                    $infoCompany->postnr        = '1';//($instance->postnr    ? $instance->postnr     : '0');
-                    $infoCompany->poststed      = '1';//($instance->poststed  ? $instance->poststed   : '0');
-                    $infoCompany->epost         = '1';//($instance->epost     ? $instance->epost      : '0');
+                    $infoCompany->ansvar        = ($instance->ansvar    ? $instance->ansvar     : '0');
+                    $infoCompany->tjeneste      = ($instance->tjeneste  ? $instance->tjeneste   : '0');
+                    $infoCompany->adresseOne    = ($instance->adresse1  ? $instance->adresse1   : '0');
+                    $infoCompany->adresseTwo    = ($instance->adresse2  ? $instance->adresse2   : '0');
+                    $infoCompany->adresseThree  = ($instance->adresse3  ? $instance->adresse3   : '0');
+                    $infoCompany->postnr        = ($instance->postnr    ? $instance->postnr     : '0');
+                    $infoCompany->poststed      = ($instance->poststed  ? $instance->poststed   : '0');
+                    $infoCompany->epost         = ($instance->epost     ? $instance->epost      : '0');
                     $infoCompany->action        = ADD;
 
                     // Add Company
                     $toSynchronize[$instance->companyid] = $infoCompany;
 
-                    echo $instance->id . " - " . $instance->companyid . "</br>";
+                    echo  $instance->id . " - " . $instance->companyid . " --> " . ($instance->tjeneste  ? $instance->tjeneste   : '0') . "</br>";
                 }//for_rdo
             }//if_rdo
         }catch (Exception $ex) {
