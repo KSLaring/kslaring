@@ -315,7 +315,7 @@ class FSKS_COMPANY {
             // New - Create
             self::get_new_companiesfs_to_synchronize($toSynchronize);
             // New - Update
-            //self::get_update_companiesfs_to_synchronize($toSynchronize);
+            self::get_update_companiesfs_to_synchronize($toSynchronize);
 
             return $toSynchronize;
         }catch (Exception $ex) {
@@ -567,7 +567,6 @@ class FSKS_COMPANY {
                         LEFT JOIN {ksfs_company}  ks_fs	ON ks_fs.fscompany 	= fs.companyid
                      WHERE	      fs.synchronized = :synchronized
                           AND	  fs.new 		  = :new
-                          LIMIT 0,25
                      ";
 
 
@@ -596,8 +595,6 @@ class FSKS_COMPANY {
 
                     // Add Company
                     $toSynchronize[$instance->companyid] = $infoCompany;
-
-                    echo  $instance->id . " - " . $instance->companyid . " --> " . ($instance->tjeneste  ? $instance->tjeneste   : '0') . "</br>";
                 }//for_rdo
             }//if_rdo
         }catch (Exception $ex) {

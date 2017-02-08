@@ -95,7 +95,7 @@ class FELLESDATA_CRON {
 
             /* Synchronization Companies    */
             $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START Companies FS Synchronization. ' . "\n";
-            //self::companies_fs_synchronization($pluginInfo,$fstExecution);
+            self::companies_fs_synchronization($pluginInfo,$fstExecution);
 
             /* Job roles to Map/Synchronize */
             self::jobroles_fs_to_map($pluginInfo);
