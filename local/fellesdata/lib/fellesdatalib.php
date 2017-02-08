@@ -563,10 +563,11 @@ class FSKS_COMPANY {
                                   fs.poststed,
                                   fs.epost
                      FROM		  {fs_company}	  fs
-                        JOIN	  {ks_company}	  ks 	ON ks.companyid     = fs.parent
+                        JOIN      {ks_company}	  ks 	ON ks.companyid     = fs.parent
                         LEFT JOIN {ksfs_company}  ks_fs	ON ks_fs.fscompany 	= fs.companyid
                      WHERE	      fs.synchronized = :synchronized
-                          AND	  fs.new 		  = :new ";
+                          AND	  fs.new 		  = :new
+                     ";
 
 
             // Execute
@@ -582,14 +583,14 @@ class FSKS_COMPANY {
                     $infoCompany->level         = $instance->level;
                     $infoCompany->parent        = $instance->parent;
                     $infoCompany->public        = $instance->public;
-                    $infoCompany->ansvar        = trim(($instance->ansvar    ? $instance->ansvar     : ''));
-                    $infoCompany->tjeneste      = trim(($instance->tjeneste  ? $instance->tjeneste   : ''));
-                    $infoCompany->adresseOne    = trim(($instance->adresse1  ? $instance->adresse1   : ''));
-                    $infoCompany->adresseTwo    = trim(($instance->adresse2  ? $instance->adresse2   : ''));
-                    $infoCompany->adresseThree  = trim(($instance->adresse3  ? $instance->adresse3   : ''));
-                    $infoCompany->postnr        = trim(($instance->postnr    ? $instance->postnr     : ''));
-                    $infoCompany->poststed      = trim(($instance->poststed  ? $instance->poststed   : ''));
-                    $infoCompany->epost         = trim(($instance->epost     ? $instance->epost      : ''));
+                    $infoCompany->ansvar        = ($instance->ansvar    ? $instance->ansvar     : ' ');
+                    $infoCompany->tjeneste      = ($instance->tjeneste  ? $instance->tjeneste   : ' ');
+                    $infoCompany->adresseOne    = ($instance->adresse1  ? $instance->adresse1   : ' ');
+                    $infoCompany->adresseTwo    = ($instance->adresse2  ? $instance->adresse2   : ' ');
+                    $infoCompany->adresseThree  = ($instance->adresse3  ? $instance->adresse3   : ' ');
+                    $infoCompany->postnr        = ($instance->postnr    ? $instance->postnr     : ' ');
+                    $infoCompany->poststed      = ($instance->poststed  ? $instance->poststed   : ' ');
+                    $infoCompany->epost         = ($instance->epost     ? $instance->epost      : ' ');
                     $infoCompany->action        = ADD;
 
                     // Add Company
