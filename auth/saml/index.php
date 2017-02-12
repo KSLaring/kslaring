@@ -255,7 +255,7 @@ define('SAML_INTERNAL', 1);
          * Check if it is the first access. Then the user has to check and update his/her profile
          */
         require_once('../../local/first_access/locallib.php');
-        if (FirstAccess::HasToUpdate_Profile($USER->id)) {
+        if (FirstAccess::has_to_update_profile($USER->id)) {
             redirect(new moodle_url('/local/first_access/index.php',array('id'=>$USER->id)));
             die();
         }else {

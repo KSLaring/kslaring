@@ -25,17 +25,17 @@ class first_access_form extends moodleform {
         $newfield       = null;
         $infoUser       = null;
 
-        /* Form         */
+        // Form
         $form   = $this->_form;
 
         $userId = $this->_customdata;
         $infoUser = get_complete_user_data('id',$userId);
 
-        /* Generic Header   */
+        // Header
         $form->addElement('header', 'generic', get_string('general'));
         $form->setExpanded('generic',true);
 
-        /* First Name       */
+        // Firstname
         $form->addElement('text','firstname',get_string('firstname'),'maxlength="100" size="30"');
         $form->addRule('firstname','required','required', null, 'client');
         $form->setType('firstname',PARAM_TEXT);
@@ -43,7 +43,7 @@ class first_access_form extends moodleform {
             $form->setDefault('firstname',$infoUser->firstname);
         }//first_name
 
-        /* Surname          */
+        // Lastname
         $form->addElement('text','lastname',get_string('lastname'),'maxlength="100" size="30"');
         $form->addRule('lastname','required','required',null,'client');
         $form->setType('lastname',PARAM_TEXT);
@@ -51,7 +51,7 @@ class first_access_form extends moodleform {
             $form->setDefault('lastname',$infoUser->lastname);
         }//surname
 
-        /* Email Address    */
+        // Email address
         $form->addElement('text','email',get_string('email'),'maxlength="100" size="30"');
         $form->addRule('email','required','required',null,'client');
         $form->setType('email',PARAM_TEXT);
@@ -59,15 +59,20 @@ class first_access_form extends moodleform {
             $form->setDefault('email',$infoUser->email);
         }//email
 
-        /* City             */
-        $form->addElement('text','city',get_string('city'),'maxlength="100" size="30"');
-        $form->addRule('city','required','required',null,'client');
-        $form->setType('city',PARAM_TEXT);
-        if ($infoUser->city) {
-            $form->setDefault('city',$infoUser->city);
-        }//city
+        /**
+         * Remove city
+         *
+         * @updateDate  12/02/2017
+         * @author      eFaktor     (fbv)
+         */
+        //$form->addElement('text','city',get_string('city'),'maxlength="100" size="30"');
+        //$form->addRule('city','required','required',null,'client');
+        //$form->setType('city',PARAM_TEXT);
+        //if ($infoUser->city) {
+        //    $form->setDefault('city',$infoUser->city);
+        //}//city
 
-        /* Country          */
+        // Country
         $countries = get_string_manager()->get_list_of_countries();
         $countries = array('' => get_string('selectacountry') . '...') + $countries;
         $form->addElement('select','country',get_string('selectacountry'),$countries);
@@ -79,11 +84,12 @@ class first_access_form extends moodleform {
             }
         }//country
 
-        /* County / Kommune - Header    */
+        // Header - County/kommune
         $form->addElement('header', 'muni', get_string('header_muni', 'local_first_access'));
         $form->setExpanded('muni',true);
-        /* County / Kommune */
-        $muniProfile = FirstAccess::GetMunicipalityProfile();
+
+        // Kommune
+        $muniProfile = FirstAccess::get_municipality_profile();
         if ($muniProfile) {
             require_once($CFG->dirroot.'/user/profile/lib.php');
             require_once($CFG->dirroot . '/user/profile/field/'.$muniProfile->datatype.'/field.class.php');
@@ -97,7 +103,7 @@ class first_access_form extends moodleform {
         $form->setType('id', PARAM_INT);
         $form->setDefault('id',$userId);
 
-        /* Add Actions Buttons */
+        // Action buttons
         $this->add_action_buttons(false, get_string('btn_save','local_first_access'));
     }//definition
 
