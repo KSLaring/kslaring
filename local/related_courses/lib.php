@@ -26,9 +26,8 @@ function local_related_courses_extend_settings_navigation($settingsnav, $context
     }
 
     if ($settingnode = $settingsnav->find('courseadmin', navigation_node::TYPE_COURSE)) {
-
         $str_title = get_string('title', 'local_related_courses');
-        $url = new moodle_url('/local/related_courses/related_courses.php',array('id' => $PAGE->course->id,));
+        $url = new moodle_url('/local/related_courses/related_courses.php',array('id' => $PAGE->course->id));
         $related_courses = navigation_node::create($str_title,
             $url,
             navigation_node::TYPE_SETTING,'related_courses',

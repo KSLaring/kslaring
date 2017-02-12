@@ -165,7 +165,7 @@ class local_wsks_external extends external_api {
      */
     public static function wsFSCompany_parameters() {
         /* Company Info */
-        $companyFSID            = new external_value(PARAM_INT,'Fellesdata Id');
+        $companyFSID            = new external_value(PARAM_TEXT,'Fellesdata Id');
         $companyKSID            = new external_value(PARAM_INT,'Company KS ID. Update and Delete');
         $companyName            = new external_value(PARAM_TEXT,'Company Name');
         $companyIndustryCode    = new external_value(PARAM_TEXT,'Industry Code');
@@ -218,7 +218,7 @@ class local_wsks_external extends external_api {
         $msgError   = new external_value(PARAM_TEXT,'Error Description');
 
         /* Companies */
-        $companyFSID    = new external_value(PARAM_INT,'Fellesdata Id');
+        $companyFSID    = new external_value(PARAM_TEXT,'Fellesdata Id');
         $companyKSID    = new external_value(PARAM_INT,'KS Company Id');
         $imported       = new external_value(PARAM_INT,'Imported');
         $key            = new external_value(PARAM_INT,'Key Id record imported');
@@ -683,7 +683,7 @@ class local_wsks_external extends external_api {
     public static function wsManagerReporter_parameters() {
         /* Manager Reporter Info */
         $personalNumber = new external_value(PARAM_TEXT,'Personal Number');
-        $fsId           = new external_value(PARAM_INT,'FS Company Id');
+        $fsId           = new external_value(PARAM_TEXT,'FS Company Id');
         $companyID      = new external_value(PARAM_INT,'Company Id KS');
         $level          = new external_value(PARAM_INT,'Level');
         $priority       = new external_value(PARAM_INT,'prioritet');
@@ -790,7 +790,7 @@ class local_wsks_external extends external_api {
         $jobRole        = new external_value(PARAM_TEXT,'Job Roles Id');
         $fsjobRoles     = new external_value(PARAM_TEXT,'FS job roles');
         $companyID      = new external_value(PARAM_INT,'Company Id');
-        $fsId           = new external_value(PARAM_INT,'FS Company Id');
+        $fsId           = new external_value(PARAM_TEXT,'FS Company Id');
         $level          = new external_value(PARAM_INT,'Level');
         $impKeys        = new external_value(PARAM_TEXT,'KEYS IMP FS JR');
         $action         = new external_value(PARAM_INT,'Action. Add/Update/Delete');

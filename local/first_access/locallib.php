@@ -15,6 +15,10 @@
 
 class FirstAccess {
     /**
+     * Description
+     * Check if the user has to update his/her profile
+     * Exclude the DOSKOM users - 14/04/2015
+     *
      * @static
      * @param           $user_id
      * @return          bool
@@ -23,52 +27,47 @@ class FirstAccess {
      * @creationDate    10/11/2014
      * @author          eFaktor     (fbv)
      *
-     * Description
-     * Check if the user has to update his/her profile
-     *
      * @updateDate      14/04/2015
      * @author          eFaktor         (fbv)
-     *
-     * Description
-     * Exclude the DOSKOM users
      */
-    public static function HasToUpdate_Profile($user_id) {
+    public static function has_to_update_profile($user_id) {
         /* Variables    */
         global $CFG;
-        $updateProfile      = false;
-        $userDoskom         = false;
+        $updateProfile      = null;
+        $userDoskom         = null;
 
         try {
-            /* Exclude DOSKOM Users */
+            // Exclude DOSKOM users
             if (file_exists($CFG->dirroot.'/local/doskom')) {
-                $userDoskom = self::IsDoskomUser($user_id);
+                $userDoskom = self::is_doskom_user($user_id);
             }
 
+            // user Doskom excluded
             if ($userDoskom) {
                 $updateProfile = false;
             }else {
-                /* Check First Access   */
-                if (self::IsFirstAccess($user_id)) {
+                // Check first access
+                if (self::is_first_access($user_id)) {
                     $updateProfile = true;
                 }else {
-                    /* Completed User Profile    */
-                    if (self::HasCompleted_AllUserProfile($user_id)) {
-                        /* Completed all Extra Profile  */
-                        if (self::HasCompleted_AllExtraProfile($user_id)) {
-                            /* Completed Competence Profile */
-                            if (self::HasCompleted_CompetenceProfile($user_id)) {
-                                /* No to update */
+                    // User profile completed
+                    if (self::has_completed_all_user_profile($user_id)) {
+                        // Completed all extra user profile
+                        if (self::has_completed_all_extra_profile($user_id)) {
+                            // Completed competence profile
+                            if (self::has_completed_competence_profile($user_id)) {
+                                // no to update
                                 $updateProfile = false;
                             }else {
-                                /* To Update    */
+                                // to update
                                 $updateProfile = true;
                             }//if_competenceProfile
                         }else {
-                            /* To Update    */
+                            // to update
                             $updateProfile = true;
                         }//if_else_AllExtraProfile
                     }else {
-                        /* To Update    */
+                        // to update
                         $updateProfile = true;
                     }//if_else_allUseProfile
                 }//if_first_access
@@ -78,21 +77,22 @@ class FirstAccess {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//HasToUpdate_Profile
+    }//has_to_update_profile
 
     /**
-     * @param           $userId
-     * @return          bool
-     * @throws          Exception
-     *
-     * @creationDate    14/10/2015
-     * @author          eFaktor     (fbv)
-     *
      * Description
      * Check if the user has completed all his/her profile
      * username, firstname, lastname and email
+     *
+     * @param           integer $userId
+     *
+     * @return                  bool
+     * @throws                  Exception
+     *
+     * @creationDate    14/10/2015
+     * @author          eFaktor     (fbv)
      */
-    public static function HasCompleted_AllUserProfile($userId) {
+    public static function has_completed_all_user_profile($userId) {
         /* Variables    */
         global $DB;
         $rdo    = null;
@@ -100,11 +100,11 @@ class FirstAccess {
         $sql    = null;
 
         try {
-            /* Search Criteria  */
+            // Search criteria
             $params = array();
             $params['user'] = $userId;
 
-            /* SQL Instruction  */
+            // SQL Instruction
             $sql = " SELECT		u.*
                      FROM		{user}	u
                      WHERE		u.id = :user
@@ -114,32 +114,33 @@ class FirstAccess {
                         AND		(u.email     IS NOT NULL	AND		u.email		!= '') ";
 
 
-            /* Execute  */
+            // Execute
             $rdo = $DB->get_record_sql($sql,$params);
             if ($rdo) {
-                /* All user profile completed   */
+                // All completed
                 return true;
             }else {
-                /* Not Completed    */
+                // No completed
                 return false;
             }//if_else
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//HasCompleted_AllUserProfile
+    }//has_completed_all_user_profile
 
     /**
-     * @param           $userId
-     * @return          bool
-     * @throws          Exception
+     * Description
+     * Check if the user has completed all the extra profile fields that are compulsory
+     *
+     * @param           integer $userId
+     *
+     * @return                  bool
+     * @throws                  Exception
      *
      * @creationDate    14/10/2015
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Check if the user has completed all the extra profile fields that are compulsory
      */
-    public static function HasCompleted_AllExtraProfile($userId) {
+    public static function has_completed_all_extra_profile($userId) {
         /* Variables    */
         global $DB;
         $params         = null;
@@ -148,17 +149,17 @@ class FirstAccess {
         $extraProfile   = null;
 
         try {
-            /* First Check if there are extra profile fields to update  */
-            $extraProfile = self::Get_ExtraProfileFields();
+            // First check, it there are extra profile fields to update
+            $extraProfile = self::get_extra_profile_fields();
             if ($extraProfile) {
-                /* Check if has completed all extra profile */
-                /* Search Criteria  */
+                // Check if has completed all extra profile
+                // Search criteria
                 $params = array();
                 $params['user']         = $userId;
                 $params['required']     = 1;
                 $params['competence']   = 'competence';
 
-                /* SQL Instruction  */
+                // SQL Isntruction
                 $sql = " SELECT 	GROUP_CONCAT(DISTINCT uid.fieldid ORDER BY uid.fieldid SEPARATOR ',') as 'completed'
                          FROM		{user_info_data}	uid
                             JOIN	{user_info_field}	uif	  ON 	uif.id 			= uid.fieldid
@@ -171,150 +172,154 @@ class FirstAccess {
                 $rdo = $DB->get_record_sql($sql,$params);
                 if ($rdo) {
                     if ($rdo->completed == $extraProfile) {
-                        /* All Completed    */
+                        // All completed
                         return true;
                     }else {
-                        /* Not Completed    */
+                        // No completed
                         return false;
                     }
                 }else {
-                    /* Not completed    */
+                    // No completed
                     return false;
                 }//if_else_rdo
             }else {
-                /* There is nothing to update   */
+                // There is nothing to update
                 return true;
             }//if_extraProfile
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//HasCompleted_AllExtraProfile
+    }//has_completed_all_extra_profile
 
     /**
-     * @param           $userId
-     * @return          bool
-     * @throws          Exception
+     * Description
+     * Check if the users has completed his/her competence profile
+     *
+     * @param           integer $userId
+     *
+     * @return                  bool
+     * @throws                  Exception
      *
      * @creationDate    14/10/2015
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Check if the users has completed his/her competence profile
      */
-    public static function HasCompleted_CompetenceProfile($userId) {
+    public static function has_completed_competence_profile($userId) {
         /* Variables    */
         global $DB;
         $rdo    = null;
 
         try {
-            /* First check if exist competence profile to update    */
+            // First check if exist competence profile to update
             $rdo = $DB->get_record('user_info_field',array('datatype' => 'competence'),'id');
             if ($rdo) {
-                /* Check if user has completed  */
+                // Check if user has completed
                 $rdo = $DB->get_records('user_info_competence_data',array('userid' => $userId),'id');
                 if ($rdo) {
-                    /* Completed    */
+                    // Completed
                     return true;
                 }else {
-                    /* Not Completed    */
+                    // Not completed
                     return false;
                 }//if_else
             }else {
-                /* Nothing to complete  */
+                // Nothing to complete
                 return true;
             }//if_else
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//HasCompleted_CompetenceProfile
+    }//has_completed_competence_profile
 
     /**
+     * Description
+     * Get the structure for the municipality extra user profile
+     *
      * @return          mixed
      * @throws          Exception
      *
      * @creationDate    18/06/2015
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get the structure for the municipality extra user profile
      */
-    public static function GetMunicipalityProfile() {
+    public static function get_municipality_profile() {
         /* Variables    */
         global $DB;
         $muniProfile = null;
         $params      = null;
 
         try {
-            /* Search Criteria  */
+            // Search criteria
             $params = array();
             $params['datatype'] = 'municipality';
 
-            /* Execute  */
+            // Execute
             $muniProfile = $DB->get_record('user_info_field',$params);
 
             return $muniProfile;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//GetMunicipalityProfile
+    }//get_municipality_profile
 
     /**
+     * Description
+     * Update user profile
+     * Remove city          (12/02/17)
+     *
      * @param           $data
      * @throws          Exception
      *
      * @creationDate    18/06/2015
      * @author          eFaktor     (fbv)
      *
-     * Description
-     * Update user profile
+     * @updateDate      12/02/2017
+     * @author          eFaktor     (fbv)
      */
-    public static function Update_UserProfile($data) {
+    public static function update_user_profile($data) {
         /* Variables    */
         global $DB;
         $userInfo    = null;
 
         try {
-            /* Info to Update   */
+            // Data to update
             $userInfo = new stdClass();
             $userInfo->id           = $data->id;
             $userInfo->firstname    = $data->firstname;
             $userInfo->lastname     = $data->lastname;
             $userInfo->email        = $data->email;
-            $userInfo->city         = $data->city;
             $userInfo->timemodified = time();
             if (isset($data->country) && ($data->country)) {
                 $userInfo->country      = $data->country;
             }//if_data_country
 
-            /* Execute  */
+            // Execute
             $DB->update_record('user',$userInfo);
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//Update_UserProfile
+    }//update_user_profile
 
     /*********************/
     /* PRIVATE FUNCTIONS */
     /*********************/
 
     /**
+     * Description
+     * Check if the user comes from DOSKOM
+     *
      * @param           $user_id
      * @return          bool
      * @throws          Exception
      *
      * @creationDate    14/04/2015
      * @author          eFaktor         (fbv)
-     *
-     * Description
-     * Check if the user comes from DOSKOM
      */
-    private static function IsDoskomUser($user_id) {
+    private static function is_doskom_user($user_id) {
         /* Variables    */
         global $DB;
         $rdo = null;
 
         try {
-            /* Execute  */
+            // Execute
             $rdo = $DB->get_record('user',array('id' => $user_id),'source');
             if ($rdo) {
                 if (strtoupper($rdo->source == 'KOMMIT')) {
@@ -328,9 +333,12 @@ class FirstAccess {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//IsDoskomUser
+    }//is_doskom_user
 
     /**
+     * Description
+     * Check if it's the first time that the user log in.
+     *
      * @static
      * @param           $user_id
      * @return          bool
@@ -338,17 +346,14 @@ class FirstAccess {
      *
      * @creationDate    10/11/2014
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Check if it's the first time that the user log in.
      */
-    private static function IsFirstAccess($user_id) {
+    private static function is_first_access($user_id) {
         /* Variables    */
         global $DB;
         $rdo = null;
 
         try {
-            /* Execute  */
+            // Execute
             $rdo = $DB->get_record('user',array('id' => $user_id),'firstaccess,lastaccess,lastlogin');
             if ($rdo) {
                 if (($rdo->firstaccess == $rdo->lastaccess) && (!$rdo->lastlogin)) {
@@ -362,19 +367,19 @@ class FirstAccess {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//IsFirstAccess
+    }//is_first_access
 
     /**
+     * Description
+     * Get all extra profile fields that are compulsory
+     *
      * @return          null
      * @throws          Exception
      *
      * @creationDate    14/10/2015
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get all extra profile fields that are compulsory
      */
-    private static function Get_ExtraProfileFields() {
+    private static function get_extra_profile_fields() {
         /* Variables    */
         global $DB;
         $params = null;
@@ -382,18 +387,18 @@ class FirstAccess {
         $rdo    = null;
 
         try {
-            /* Search Criteria  */
+            // Search criteria
             $params = array();
             $params['required']     = 1;
             $params['competence']   = 'competence';
 
-            /* SQL Instruction  */
+            // SQL Isntruction
             $sql = " SELECT		GROUP_CONCAT(DISTINCT id ORDER BY id SEPARATOR ',') as 'obligatory'
                      FROM		{user_info_field}
                      WHERE		required  = :required
                         AND		datatype != :competence ";
 
-            /* Execute  */
+            // Execute
             $rdo = $DB->get_record_sql($sql,$params);
             if ($rdo) {
                 return $rdo->obligatory;
@@ -403,5 +408,5 @@ class FirstAccess {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//Get_ExtraProfileFields
+    }//get_extra_profile_fields
 }//FirstAccess

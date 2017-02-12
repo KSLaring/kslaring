@@ -36,8 +36,8 @@ echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('welcome_title','local_first_access'));
 
 /* Check if it only remains to update the competence profile */
-if (FirstAccess::HasCompleted_AllUserProfile($userId) && FirstAccess::HasCompleted_AllExtraProfile($userId)) {
-    if (!FirstAccess::HasCompleted_CompetenceProfile($userId)) {
+if (FirstAccess::has_completed_all_user_profile($userId) && FirstAccess::has_completed_all_extra_profile($userId)) {
+    if (!FirstAccess::has_completed_competence_profile($userId)) {
         $urlProfile = $urlCompetence;
     }//if_CompletedCompetenceProfile
 

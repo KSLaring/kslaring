@@ -35,12 +35,12 @@ if ($form->is_cancelled()) {
     redirect($CFG->wwwroot);
 }else if ($data = $form->get_data()){
     /* Save generic data    */
-    FirstAccess::Update_UserProfile($data);
+    FirstAccess::update_user_profile($data);
     // Save custom profile fields data.
     profile_save_data($data);
 
     /* Check if it still remains to update competence profile */
-    if (!FirstAccess::HasCompleted_CompetenceProfile($data->id)) {
+    if (!FirstAccess::has_completed_competence_profile($data->id)) {
         $redirect = new moodle_url('/user/profile/field/competence/competence.php',array('id' => $data->id));
     }//if_CompletedCompetenceProfile
 
