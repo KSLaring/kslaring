@@ -583,14 +583,14 @@ class FSKS_COMPANY {
                     $infoCompany->level         = $instance->level;
                     $infoCompany->parent        = $instance->parent;
                     $infoCompany->public        = $instance->public;
-                    $infoCompany->ansvar        = ($instance->ansvar    ? $instance->ansvar     : ' ');
-                    $infoCompany->tjeneste      = ($instance->tjeneste  ? $instance->tjeneste   : ' ');
-                    $infoCompany->adresseOne    = ($instance->adresse1  ? $instance->adresse1   : ' ');
-                    $infoCompany->adresseTwo    = ($instance->adresse2  ? $instance->adresse2   : ' ');
-                    $infoCompany->adresseThree  = ($instance->adresse3  ? $instance->adresse3   : ' ');
-                    $infoCompany->postnr        = ($instance->postnr    ? $instance->postnr     : ' ');
-                    $infoCompany->poststed      = ($instance->poststed  ? $instance->poststed   : ' ');
-                    $infoCompany->epost         = ($instance->epost     ? $instance->epost      : ' ');
+                    $infoCompany->ansvar        = ($instance->ansvar    ? $instance->ansvar     : NULL);
+                    $infoCompany->tjeneste      = ($instance->tjeneste  ? $instance->tjeneste   : NULL);
+                    $infoCompany->adresseOne    = ($instance->adresse1  ? $instance->adresse1   : NULL);
+                    $infoCompany->adresseTwo    = ($instance->adresse2  ? $instance->adresse2   : NULL);
+                    $infoCompany->adresseThree  = ($instance->adresse3  ? $instance->adresse3   : NULL);
+                    $infoCompany->postnr        = ($instance->postnr    ? $instance->postnr     : NULL);
+                    $infoCompany->poststed      = ($instance->poststed  ? $instance->poststed   : NULL);
+                    $infoCompany->epost         = ($instance->epost     ? $instance->epost      : NULL);
                     $infoCompany->action        = ADD;
 
                     // Add Company
@@ -671,7 +671,10 @@ class FSKS_COMPANY {
                     $infoCompany->parent        = $instance->parent;
                     $infoCompany->public        = $instance->public;
                     $infoCompany->ansvar        = ($instance->ansvar    ? $instance->ansvar     : ' ');
-                    $infoCompany->tjeneste      = ($instance->tjeneste  ? $instance->tjeneste   : ' ');
+                    if ($instance->tjeneste) {
+                        $infoCompany->tjeneste = " ";
+                    }
+                    //$infoCompany->tjeneste      = ($instance->tjeneste  ? $instance->tjeneste   : ' ');
                     $infoCompany->adresseOne    = ($instance->adresse1  ? $instance->adresse1   : ' ');
                     $infoCompany->adresseTwo    = ($instance->adresse2  ? $instance->adresse2   : ' ');
                     $infoCompany->adresseThree  = ($instance->adresse3  ? $instance->adresse3   : ' ');
@@ -967,15 +970,14 @@ class FSKS_COMPANY {
                         $rdoCompany->privat         = $companyFS->privat;
                         $rdoCompany->ansvar         = $companyFS->ansvar;
                         $rdoCompany->tjeneste       = $companyFS->tjeneste;
-                        $rdoCompany->adresse1       = $companyFS->adresse1;
-                        $rdoCompany->adresse2       = $companyFS->adresse2;
-                        $rdoCompany->adresse3       = $companyFS->adresse3;
+                        $rdoCompany->adresse1       = $companyFS->adresseOne;
+                        $rdoCompany->adresse2       = $companyFS->adresseTwo;
+                        $rdoCompany->adresse3       = $companyFS->adresseThree;
                         $rdoCompany->postnr         = $companyFS->postnr;
                         $rdoCompany->poststed       = $companyFS->poststed;
                         $rdoCompany->epost          = $companyFS->epost;
                         $rdoCompany->synchronized   = 0;
                         $rdoCompany->timemodified   = $time;
-
                         // Execute
                         $DB->update_record('fs_company',$rdoCompany);
 
