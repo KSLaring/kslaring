@@ -554,14 +554,14 @@ class FSKS_COMPANY {
                                   ks.industrycode,
                                   fs.parent,
                                   IF(fs.privat,0,1)               as 'public',
-                                  IF(fs.ansvar,fs.ansvar,0)       as 'ansvar',
-                                  IF(fs.tjeneste,fs.tjeneste,0)   as 'tjeneste',
-                                  IF(fs.adresse1,fs.adresse1,0)   as 'adresse1',
-                                  IF(fs.adresse2,fs.adresse2,0)   as 'adresse2',
-                                  IF(fs.adresse3,fs.adresse3,0)   as 'adresse3',
-                                  IF(fs.postnr,fs.postnr,0)       as 'postnr',
-                                  IF(fs.poststed,fs.poststed,0)   as 'poststed',
-                                  IF(fs.epost,fs.epost,0)         as 'epost'
+                                  fs.ansvar,
+                                  fs.tjeneste,
+                                  fs.adresse1,
+                                  fs.adresse2,
+                                  fs.adresse3,
+                                  fs.postnr,
+                                  fs.poststed,
+                                  fs.epost
                      FROM		  {fs_company}	  fs
                         JOIN      {ks_company}	  ks 	ON ks.companyid     = fs.parent
                         LEFT JOIN {ksfs_company}  ks_fs	ON ks_fs.fscompany 	= fs.companyid
@@ -584,6 +584,11 @@ class FSKS_COMPANY {
                     $infoCompany->parent        = $instance->parent;
                     $infoCompany->public        = $instance->public;
                     $infoCompany->ansvar        = ($instance->ansvar    ? $instance->ansvar     : 'NULL');
+                    if ($instance->tjeneste) {
+                        echo "hola" . "</br>";
+                    }else {
+                        echo "NULL" ."</br>";
+                    }
                     $infoCompany->tjeneste      = ($instance->tjeneste  ? $instance->tjeneste   : 'NULL');
                     $infoCompany->adresseOne    = ($instance->adresse1  ? $instance->adresse1   : 'NULL');
                     $infoCompany->adresseTwo    = ($instance->adresse2  ? $instance->adresse2   : 'NULL');
