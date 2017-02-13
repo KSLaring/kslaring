@@ -30,6 +30,8 @@ function xmldb_enrol_invoice_install() {
     $table_invoice->add_field('id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
     /* Userid           --> Foreign Key --> User Table      */
     $table_invoice->add_field('userid',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
+    //Companyid
+    $table_invoice->add_field('companyid',XMLDB_TYPE_INTEGER,'10',null, null, null,null);
     /* Courseid         --> Foreign Key --> Courses Table   */
     $table_invoice->add_field('courseid',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
     /* userenrolid         --> Foreign Key --> User Enrolments Table   */

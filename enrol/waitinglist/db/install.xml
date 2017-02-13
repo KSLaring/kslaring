@@ -4,132 +4,157 @@
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
   <TABLES>
-    <TABLE NAME="enrol_waitinglist_method" COMMENT="enrol_waitinglist_method table">
-      <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="waitinglistid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="methodtype" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="maxseats" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="emailalert" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="cost" TYPE="char" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="currency" TYPE="char" LENGTH="3" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="roleid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="password" TYPE="char" LENGTH="50" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="status" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="customint1" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="customint2" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="customint3" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="customint4" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="customint5" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="customtext1" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="customtext2" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="customtext3" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="customtext4" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="customint6" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="customint7" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="customint8" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="customchar1" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="customchar2" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="customchar3" TYPE="char" LENGTH="1333" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="customdec1" TYPE="number" LENGTH="12" NOTNULL="false" SEQUENCE="false" DECIMALS="7"/>
-        <FIELD NAME="customdec2" TYPE="number" LENGTH="12" NOTNULL="false" SEQUENCE="false" DECIMALS="7"/>
-        <FIELD NAME="customdec3" TYPE="number" LENGTH="12" NOTNULL="false" SEQUENCE="false" DECIMALS="7"/>
-        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-      </FIELDS>
-	  <KEYS>
-        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-      </KEYS>
-    </TABLE>
-    <TABLE NAME="enrol_waitinglist_queue" COMMENT="enrol_waitinglist_queue table">
-      <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="waitinglistid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="queueno" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="methodtype" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="seats" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="allocseats" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-		<FIELD NAME="confirmedseats" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-		<FIELD NAME="enroledseats" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-		<FIELD NAME="offqueue" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="customint1" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="customint2" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="customint3" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="3" SEQUENCE="false"/>
-        <FIELD NAME="customtext1" TYPE="char" LENGTH="255" NOTNULL="false"  SEQUENCE="false"/>
-        <FIELD NAME="customtext2" TYPE="char" LENGTH="255" NOTNULL="false"  SEQUENCE="false"/>
-        <FIELD NAME="customtext3" TYPE="char" LENGTH="255" NOTNULL="false"  SEQUENCE="false"/>
-        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-      </FIELDS>
-	  <KEYS>
-        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-      </KEYS>
-    </TABLE>
-	<TABLE NAME="enrol_waitinglist_methoddata" COMMENT="enrol_waitinglist_method table">
-      <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="waitinglistid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="methodtype" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="customint1" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="customint2" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="customint3" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="customint4" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="customint5" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="customtext1" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="customtext2" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="customtext3" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="customtext4" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="customtext5" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
-        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-      </FIELDS>
-	  <KEYS>
-        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-      </KEYS>
-    </TABLE>
-              <TABLE NAME="enrol_approval" COMMENT="enrol_approval table">
-        <FIELDS>
-            <FIELD NAME="id"                TYPE="int"  LENGTH="10"  NOTNULL="true"  SEQUENCE="true"/>
-            <FIELD NAME="userid"            TYPE="int"  LENGTH="10"  NOTNULL="true"  SEQUENCE="false"/>
-            <FIELD NAME="courseid"          TYPE="int"  LENGTH="10"  NOTNULL="true"  SEQUENCE="false"/>
-            <FIELD NAME="token"             TYPE="char" LENGTH="100" NOTNULL="false" SEQUENCE="false"/>
-            <FIELD NAME="userenrolid"       TYPE="int"  LENGTH="10"  NOTNULL="false" SEQUENCE="false"/>
-            <FIELD NAME="waitinglistid"     TYPE="int"  LENGTH="10"  NOTNULL="false" SEQUENCE="false"/>
-            <FIELD NAME="methodtype"        TYPE="char" LENGTH="25"  NOTNULL="false" SEQUENCE="false"/>
-            <FIELD NAME="arguments"         TYPE="text"              NOTNULL="false" SEQUENCE="false"/>
-            <FIELD NAME="seats"             TYPE="int"  LENGTH="10"  NOTNULL="false" SEQUENCE="false"/>
-            <FIELD NAME="approved"          TYPE="int"  LENGTH="1"   NOTNULL="true"  SEQUENCE="false" DEFAULT="0"/>
-            <FIELD NAME="rejected"          TYPE="int"  LENGTH="1"   NOTNULL="true"  SEQUENCE="false" DEFAULT="0"/>
-            <FIELD NAME="onwait"            TYPE="int"  LENGTH="1"   NOTNULL="true"  SEQUENCE="false" DEFAULT="0"/>
-            <FIELD NAME="unenrol"           TYPE="int"  LENGTH="1"   NOTNULL="true"  SEQUENCE="false" DEFAULT="0"/>
-            <FIELD NAME="timecreated"       TYPE="int"  LENGTH="10"  NOTNULL="true"  SEQUENCE="false"/>
-            <FIELD NAME="timesent"          TYPE="int"  LENGTH="10"  NOTNULL="false" SEQUENCE="false"/>
-            <FIELD NAME="timereminder"      TYPE="int"  LENGTH="10"  NOTNULL="false" SEQUENCE="false"/>
-            <FIELD NAME="timemodified"      TYPE="int"  LENGTH="10"  NOTNULL="false" SEQUENCE="false"/>
-        </FIELDS>
-        <KEYS>
-            <KEY NAME="primary"     TYPE="primary" FIELDS="id"/>
-            <KEY NAME="fk_user"     TYPE="foreign" FIELDS="userid"      REFTABLE="user"     REFFIELDS="id"/>
-            <KEY NAME="fk_course"   TYPE="foreign" FIELDS="courseid"    REFTABLE="course"   REFFIELDS="id"/>
-        </KEYS>
-    </TABLE>
+      <TABLE NAME="enrol_waitinglist_method" COMMENT="enrol_waitinglist_method table">
+          <FIELDS>
+              <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+              <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+              <FIELD NAME="waitinglistid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+              <FIELD NAME="methodtype" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
+              <FIELD NAME="maxseats" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+              <FIELD NAME="emailalert" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+              <FIELD NAME="cost" TYPE="char" LENGTH="20" NOTNULL="false" SEQUENCE="false"/>
+              <FIELD NAME="currency" TYPE="char" LENGTH="3" NOTNULL="false" SEQUENCE="false"/>
+              <FIELD NAME="roleid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+              <FIELD NAME="password" TYPE="char" LENGTH="50" NOTNULL="false" SEQUENCE="false"/>
+              <FIELD NAME="status" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+              <FIELD NAME="unenrolenddate" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="0" SEQUENCE="false"/>
+              <FIELD NAME="customint1" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+              <FIELD NAME="customint2" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+              <FIELD NAME="customint3" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+              <FIELD NAME="customint4" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+              <FIELD NAME="customint5" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+              <FIELD NAME="customtext1" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+              <FIELD NAME="customtext2" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+              <FIELD NAME="customtext3" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+              <FIELD NAME="customtext4" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+              <FIELD NAME="customint6" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+              <FIELD NAME="customint7" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+              <FIELD NAME="customint8" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+              <FIELD NAME="customchar1" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
+              <FIELD NAME="customchar2" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false"/>
+              <FIELD NAME="customchar3" TYPE="char" LENGTH="1333" NOTNULL="false" SEQUENCE="false"/>
+              <FIELD NAME="customdec1" TYPE="number" LENGTH="12" NOTNULL="false" SEQUENCE="false" DECIMALS="7"/>
+              <FIELD NAME="customdec2" TYPE="number" LENGTH="12" NOTNULL="false" SEQUENCE="false" DECIMALS="7"/>
+              <FIELD NAME="customdec3" TYPE="number" LENGTH="12" NOTNULL="false" SEQUENCE="false" DECIMALS="7"/>
+              <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+              <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+          </FIELDS>
+          <KEYS>
+              <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+          </KEYS>
+      </TABLE>
 
-    <TABLE NAME="enrol_approval_action" COMMENT="enrol_approval_action table">
-        <FIELDS>
-            <FIELD NAME="id"            SEQUENCE="true"     TYPE="int"  LENGTH="10"  NOTNULL="true"/>
-            <FIELD NAME="approvalid"    SEQUENCE="false"    TYPE="int"  LENGTH="10"  NOTNULL="true"/>
-            <FIELD NAME="token"         SEQUENCE="false"    TYPE="char" LENGTH="100" NOTNULL="false" />
-            <FIELD NAME="action"        SEQUENCE="false"    TYPE="int"  LENGTH="2"   NOTNULL="true"   DEFAULT="0"/>
-        </FIELDS>
-        <KEYS>
-            <KEY NAME="primary"     TYPE="primary" FIELDS="id"/>
-            <KEY NAME="fk_approval" TYPE="foreign" FIELDS="approvalid"  REFTABLE="enrol_approval" REFFIELDS="id"/>
-        </KEYS>
-    </TABLE>
+      <TABLE NAME="enrol_waitinglist_queue" COMMENT="enrol_waitinglist_queue table">
+          <FIELDS>
+              <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+              <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+              <FIELD NAME="waitinglistid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+              <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+              <FIELD NAME="companyid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+              <FIELD NAME="queueno" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+              <FIELD NAME="methodtype" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
+              <FIELD NAME="seats" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+              <FIELD NAME="allocseats" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+              <FIELD NAME="confirmedseats" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+              <FIELD NAME="enroledseats" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+              <FIELD NAME="offqueue" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+              <FIELD NAME="customint1" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+              <FIELD NAME="customint2" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+              <FIELD NAME="customint3" TYPE="int" LENGTH="10" NOTNULL="false" DEFAULT="3" SEQUENCE="false"/>
+              <FIELD NAME="customtext1" TYPE="char" LENGTH="255" NOTNULL="false"  SEQUENCE="false"/>
+              <FIELD NAME="customtext2" TYPE="char" LENGTH="255" NOTNULL="false"  SEQUENCE="false"/>
+              <FIELD NAME="customtext3" TYPE="char" LENGTH="255" NOTNULL="false"  SEQUENCE="false"/>
+              <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+              <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+          </FIELDS>
+          <KEYS>
+              <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+          </KEYS>
+      </TABLE>
+      
+      <TABLE NAME="enrol_waitinglist_methoddata" COMMENT="enrol_waitinglist_method table">
+          <FIELDS>
+              <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+              <FIELD NAME="courseid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+              <FIELD NAME="waitinglistid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+              <FIELD NAME="methodtype" TYPE="text" NOTNULL="true" SEQUENCE="false"/>
+              <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+              <FIELD NAME="customint1" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+              <FIELD NAME="customint2" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+              <FIELD NAME="customint3" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+              <FIELD NAME="customint4" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+              <FIELD NAME="customint5" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+              <FIELD NAME="customtext1" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+              <FIELD NAME="customtext2" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+              <FIELD NAME="customtext3" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+              <FIELD NAME="customtext4" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+              <FIELD NAME="customtext5" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+              <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+              <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+          </FIELDS>
+          <KEYS>
+              <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+          </KEYS>
+      </TABLE>
+      
+      <TABLE NAME="enrol_approval" COMMENT="enrol_approval table">
+          <FIELDS>
+              <FIELD NAME="id"                TYPE="int"  LENGTH="10"  NOTNULL="true"  SEQUENCE="true"/>
+              <FIELD NAME="userid"            TYPE="int"  LENGTH="10"  NOTNULL="true"  SEQUENCE="false"/>
+              <FIELD NAME="companyid"         TYPE="int"  LENGTH="10"  NOTNULL="false" SEQUENCE="false"/>
+              <FIELD NAME="courseid"          TYPE="int"  LENGTH="10"  NOTNULL="true"  SEQUENCE="false"/>
+              <FIELD NAME="token"             TYPE="char" LENGTH="100" NOTNULL="false" SEQUENCE="false"/>
+              <FIELD NAME="userenrolid"       TYPE="int"  LENGTH="10"  NOTNULL="false" SEQUENCE="false"/>
+              <FIELD NAME="waitinglistid"     TYPE="int"  LENGTH="10"  NOTNULL="false" SEQUENCE="false"/>
+              <FIELD NAME="methodtype"        TYPE="char" LENGTH="25"  NOTNULL="false" SEQUENCE="false"/>
+              <FIELD NAME="arguments"         TYPE="text"              NOTNULL="false" SEQUENCE="false"/>
+              <FIELD NAME="seats"             TYPE="int"  LENGTH="10"  NOTNULL="false" SEQUENCE="false"/>
+              <FIELD NAME="approved"          TYPE="int"  LENGTH="1"   NOTNULL="true"  SEQUENCE="false" DEFAULT="0"/>
+              <FIELD NAME="rejected"          TYPE="int"  LENGTH="1"   NOTNULL="true"  SEQUENCE="false" DEFAULT="0"/>
+              <FIELD NAME="onwait"            TYPE="int"  LENGTH="1"   NOTNULL="true"  SEQUENCE="false" DEFAULT="0"/>
+              <FIELD NAME="unenrol"           TYPE="int"  LENGTH="1"   NOTNULL="true"  SEQUENCE="false" DEFAULT="0"/>
+              <FIELD NAME="timecreated"       TYPE="int"  LENGTH="10"  NOTNULL="true"  SEQUENCE="false"/>
+              <FIELD NAME="timesent"          TYPE="int"  LENGTH="10"  NOTNULL="false" SEQUENCE="false"/>
+              <FIELD NAME="timereminder"      TYPE="int"  LENGTH="10"  NOTNULL="false" SEQUENCE="false"/>
+              <FIELD NAME="timemodified"      TYPE="int"  LENGTH="10"  NOTNULL="false" SEQUENCE="false"/>
+          </FIELDS>
+          <KEYS>
+              <KEY NAME="primary"     TYPE="primary" FIELDS="id"/>
+              <KEY NAME="fk_user"     TYPE="foreign" FIELDS="userid"      REFTABLE="user"     REFFIELDS="id"/>
+              <KEY NAME="fk_course"   TYPE="foreign" FIELDS="courseid"    REFTABLE="course"   REFFIELDS="id"/>
+          </KEYS>
+      </TABLE>
+
+      <TABLE NAME="enrol_approval_action" COMMENT="enrol_approval_action table">
+          <FIELDS>
+              <FIELD NAME="id"            SEQUENCE="true"     TYPE="int"  LENGTH="10"  NOTNULL="true"/>
+              <FIELD NAME="approvalid"    SEQUENCE="false"    TYPE="int"  LENGTH="10"  NOTNULL="true"/>
+              <FIELD NAME="token"         SEQUENCE="false"    TYPE="char" LENGTH="100" NOTNULL="false" />
+              <FIELD NAME="action"        SEQUENCE="false"    TYPE="int"  LENGTH="2"   NOTNULL="true"   DEFAULT="0"/>
+          </FIELDS>
+          <KEYS>
+              <KEY NAME="primary"     TYPE="primary" FIELDS="id"/>
+              <KEY NAME="fk_approval" TYPE="foreign" FIELDS="approvalid"  REFTABLE="enrol_approval" REFFIELDS="id"/>
+          </KEYS>
+      </TABLE>
+        
+      <TABLE NAME="enrol_waitinglist_unenrol" COMMENT="enrol_waitinglist_unenrol table">
+          <FIELDS>
+              <FIELD NAME="id"            SEQUENCE="true"     TYPE="int"  LENGTH="10"  NOTNULL="true"/>
+              <FIELD NAME="waitingid"     SEQUENCE="false"    TYPE="int"  LENGTH="10"  NOTNULL="true"/>
+              <FIELD NAME="courseid"      SEQUENCE="false"    TYPE="int"  LENGTH="10"  NOTNULL="true"/>
+              <FIELD NAME="tokenco"       SEQUENCE="false"    TYPE="char" LENGTH="100" NOTNULL="true"/>
+              <FIELD NAME="userid"        SEQUENCE="false"    TYPE="int"  LENGTH="10"  NOTNULL="true"/>
+              <FIELD NAME="tokenus"       SEQUENCE="false"    TYPE="char" LENGTH="100" NOTNULL="true"/>
+              <FIELD NAME="timecreated"   SEQUENCE="false"    TYPE="int"  LENGTH="10"  NOTNULL="true"/>
+          </FIELDS>
+          <KEYS>
+              <KEY NAME="primary"     TYPE="primary" FIELDS="id"/>
+              <KEY NAME="fk_waiting"  TYPE="foreign" FIELDS="waitingid"  REFTABLE="enrol"  REFFIELDS="id"/>
+              <KEY NAME="fk_course"   TYPE="foreign" FIELDS="courseid"   REFTABLE="course" REFFIELDS="id"/>
+              <KEY NAME="fk_user"     TYPE="foreign" FIELDS="userid"     REFTABLE="user"   REFFIELDS="id"/>
+          </KEYS>
+      </TABLE>
   </TABLES>
+    
 </XMLDB>
