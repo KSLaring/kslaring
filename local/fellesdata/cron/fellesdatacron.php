@@ -1079,7 +1079,7 @@ class FELLESDATA_CRON {
                     }//if_notify
                 }else {
                     // Synchronize only companies FS
-                    FSKS_COMPANY::synchronize_companies_fs();
+                    //FSKS_COMPANY::synchronize_companies_fs();
 
                     // Companies to synchronize and emails
                     $toSynchronize = FSKS_COMPANY::companies_fs_to_synchronize();
