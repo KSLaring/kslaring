@@ -142,7 +142,7 @@ function xmldb_enrol_waitinglist_upgrade($oldversion) {
             }//if_table_exists
         }//if_oldVersion
 
-        if ($oldversion < 2016091200) {
+        if ($oldversion < 2017021204) {
             // Add company field
             $table = new xmldb_table('enrol_waitinglist_queue');
             $field = new xmldb_field('companyid', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, null, null, '0', 'userid');
@@ -153,10 +153,10 @@ function xmldb_enrol_waitinglist_upgrade($oldversion) {
             }
 
             // Dataform savepoint reached.
-            upgrade_plugin_savepoint(true, 2016091200, 'enrol','waitinglist');
+            //upgrade_plugin_savepoint(true, 2016091200, 'enrol','waitinglist');
         }//if_old_version
 
-        if ($oldversion < 2016091202) {
+        if ($oldversion < 2017021204) {
             // Add company field
             $table = new xmldb_table('enrol_approval');
             $field = new xmldb_field('companyid', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, null, null, '0', 'userid');
@@ -167,10 +167,10 @@ function xmldb_enrol_waitinglist_upgrade($oldversion) {
             }
 
             // Dataform savepoint reached.
-            upgrade_plugin_savepoint(true, 2016091202, 'enrol','waitinglist');
+            //upgrade_plugin_savepoint(true, 2016091202, 'enrol','waitinglist');
         }//if_old_version
 
-        if ($oldversion < 2016091400) {
+        if ($oldversion < 2017021204) {
             // Add company field
             $table = new xmldb_table('enrol_invoice');
             $field = new xmldb_field('companyid', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, null, null, '0', 'userid');
@@ -181,10 +181,10 @@ function xmldb_enrol_waitinglist_upgrade($oldversion) {
             }
 
             // Dataform savepoint reached.
-            upgrade_plugin_savepoint(true, 2016091400, 'enrol','waitinglist');
+            //upgrade_plugin_savepoint(true, 2016091400, 'enrol','waitinglist');
         }//if_old_version
 
-        if ($oldversion < 2016093000) {
+        if ($oldversion < 2017021204) {
             /* New Table    */
             $tblUnenrol = new xmldb_table('enrol_waitinglist_unenrol');
 
@@ -216,7 +216,7 @@ function xmldb_enrol_waitinglist_upgrade($oldversion) {
             }//if_table_exists
         }
 
-        if ($oldversion < 2016101702) {
+        if ($oldversion < 2017021204) {
             $table       = new xmldb_table('enrol_waitinglist_method');
             $fldEnrolEnd = new xmldb_field('unenrolenddate', XMLDB_TYPE_INTEGER, '10', null, null, null, '0', 'status');
 
