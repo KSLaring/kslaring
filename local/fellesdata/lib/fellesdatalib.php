@@ -585,11 +585,13 @@ class FSKS_COMPANY {
                     $infoCompany->public        = $instance->public;
                     $infoCompany->ansvar        = ($instance->ansvar    ? $instance->ansvar     : 'NULL');
                     if ($instance->tjeneste) {
-                        echo "hola" . "</br>";
+                        $infoCompany->tjeneste = $instance->tjeneste;
+                        echo $instance->id . " --> hola --> " . $infoCompany->tjeneste . "</br>";
                     }else {
-                        echo "NULL" ."</br>";
+                        $infoCompany->tjeneste = " ";
+                        echo $instance->id . " --> NULL --> " . $infoCompany->tjeneste . "</br>";
                     }
-                    $infoCompany->tjeneste      = ($instance->tjeneste  ? $instance->tjeneste   : 'NULL');
+                    //$infoCompany->tjeneste      = ($instance->tjeneste  ? $instance->tjeneste   : 'NULL');
                     $infoCompany->adresseOne    = ($instance->adresse1  ? $instance->adresse1   : 'NULL');
                     $infoCompany->adresseTwo    = ($instance->adresse2  ? $instance->adresse2   : 'NULL');
                     $infoCompany->adresseThree  = ($instance->adresse3  ? $instance->adresse3   : 'NULL');
