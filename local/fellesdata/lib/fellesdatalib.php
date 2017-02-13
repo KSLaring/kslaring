@@ -315,7 +315,7 @@ class FSKS_COMPANY {
             // New - Create
             self::get_new_companiesfs_to_synchronize($toSynchronize);
             // New - Update
-            self::get_update_companiesfs_to_synchronize($toSynchronize);
+            //self::get_update_companiesfs_to_synchronize($toSynchronize);
 
             return $toSynchronize;
         }catch (Exception $ex) {
@@ -588,7 +588,7 @@ class FSKS_COMPANY {
                         $infoCompany->tjeneste = $instance->tjeneste;
                         echo $instance->id . " --> hola --> " . $infoCompany->tjeneste . "</br>";
                     }else {
-                        $infoCompany->tjeneste = " ";
+                        $infoCompany->tjeneste = "NULL";
                         echo $instance->id . " --> NULL --> " . $infoCompany->tjeneste . "</br>";
                     }
                     //$infoCompany->tjeneste      = ($instance->tjeneste  ? $instance->tjeneste   : 'NULL');
