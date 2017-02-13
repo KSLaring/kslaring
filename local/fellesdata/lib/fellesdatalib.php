@@ -315,7 +315,7 @@ class FSKS_COMPANY {
             // New - Create
             self::get_new_companiesfs_to_synchronize($toSynchronize);
             // New - Update
-            //self::get_update_companiesfs_to_synchronize($toSynchronize);
+            self::get_update_companiesfs_to_synchronize($toSynchronize);
 
             return $toSynchronize;
         }catch (Exception $ex) {
@@ -583,14 +583,14 @@ class FSKS_COMPANY {
                     $infoCompany->level         = $instance->level;
                     $infoCompany->parent        = $instance->parent;
                     $infoCompany->public        = $instance->public;
-                    $infoCompany->ansvar        = ($instance->ansvar    ? $instance->ansvar     : 'null');
-                    $infoCompany->tjeneste      = ($instance->tjeneste  ? $instance->tjeneste   : 'null');
-                    $infoCompany->adresseOne    = ($instance->adresse1  ? $instance->adresse1   : 'null');
-                    $infoCompany->adresseTwo    = ($instance->adresse2  ? $instance->adresse2   : 'null');
-                    $infoCompany->adresseThree  = ($instance->adresse3  ? $instance->adresse3   : 'null');
-                    $infoCompany->postnr        = ($instance->postnr    ? $instance->postnr     : 'null');
-                    $infoCompany->poststed      = ($instance->poststed  ? $instance->poststed   : 'null');
-                    $infoCompany->epost         = ($instance->epost     ? $instance->epost      : 'null');
+                    $infoCompany->ansvar        = ($instance->ansvar    ? $instance->ansvar     : '     ');
+                    $infoCompany->tjeneste      = ($instance->tjeneste  ? $instance->tjeneste   : '     ');
+                    $infoCompany->adresseOne    = ($instance->adresse1  ? $instance->adresse1   : '     ');
+                    $infoCompany->adresseTwo    = ($instance->adresse2  ? $instance->adresse2   : '     ');
+                    $infoCompany->adresseThree  = ($instance->adresse3  ? $instance->adresse3   : '     ');
+                    $infoCompany->postnr        = ($instance->postnr    ? $instance->postnr     : '     ');
+                    $infoCompany->poststed      = ($instance->poststed  ? $instance->poststed   : '     ');
+                    $infoCompany->epost         = ($instance->epost     ? $instance->epost      : '     ');
                     $infoCompany->action        = ADD;
 
                     // Add Company
@@ -670,14 +670,14 @@ class FSKS_COMPANY {
                     $infoCompany->level         = $instance->level;
                     $infoCompany->parent        = $instance->parent;
                     $infoCompany->public        = $instance->public;
-                    $infoCompany->ansvar        = ($instance->ansvar    ? $instance->ansvar     : 'NULL');
-                    $infoCompany->tjeneste      = ($instance->tjeneste  ? $instance->tjeneste   : 'NULL');
-                    $infoCompany->adresseOne    = ($instance->adresse1  ? $instance->adresse1   : 'NULL');
-                    $infoCompany->adresseTwo    = ($instance->adresse2  ? $instance->adresse2   : 'NULL');
-                    $infoCompany->adresseThree  = ($instance->adresse3  ? $instance->adresse3   : 'NULL');
-                    $infoCompany->postnr        = ($instance->postnr    ? $instance->postnr     : 'NULL');
-                    $infoCompany->poststed      = ($instance->poststed  ? $instance->poststed   : 'NULL');
-                    $infoCompany->epost         = ($instance->epost     ? $instance->epost      : 'NULL');
+                    $infoCompany->ansvar        = ($instance->ansvar    ? $instance->ansvar     : '     ');
+                    $infoCompany->tjeneste      = ($instance->tjeneste  ? $instance->tjeneste   : '     ');
+                    $infoCompany->adresseOne    = ($instance->adresse1  ? $instance->adresse1   : '     ');
+                    $infoCompany->adresseTwo    = ($instance->adresse2  ? $instance->adresse2   : '     ');
+                    $infoCompany->adresseThree  = ($instance->adresse3  ? $instance->adresse3   : '     ');
+                    $infoCompany->postnr        = ($instance->postnr    ? $instance->postnr     : '     ');
+                    $infoCompany->poststed      = ($instance->poststed  ? $instance->poststed   : '     ');
+                    $infoCompany->epost         = ($instance->epost     ? $instance->epost      : '     ');
                     $infoCompany->action        = $instance->action;
 
                     // Add Company
@@ -745,14 +745,14 @@ class FSKS_COMPANY {
                     $infoCompany->name          = $instance->name;
                     $infoCompany->fs_parent     = $instance->fs_parent;
                     $infoCompany->privat        = $instance->privat;
-                    $infoCompany->ansvar        = ($instance->ansvar    ? $instance->ansvar     : 'NULL');
-                    $infoCompany->tjeneste      = ($instance->tjeneste  ? $instance->tjeneste   : 'NULL');
-                    $infoCompany->adresseOne    = ($instance->adresse1  ? $instance->adresse1   : 'NULL');
-                    $infoCompany->adresseTwo    = ($instance->adresse2  ? $instance->adresse2   : 'NULL');
-                    $infoCompany->adresseThree  = ($instance->adresse3  ? $instance->adresse3   : 'NULL');
-                    $infoCompany->postnr        = ($instance->postnr    ? $instance->postnr     : 'NULL');
-                    $infoCompany->poststed      = ($instance->poststed  ? $instance->poststed   : 'NULL');
-                    $infoCompany->epost         = ($instance->epost     ? $instance->epost      : 'NULL');
+                    $infoCompany->ansvar        = ($instance->ansvar    ? $instance->ansvar     : '     ');
+                    $infoCompany->tjeneste      = ($instance->tjeneste  ? $instance->tjeneste   : '     ');
+                    $infoCompany->adresseOne    = ($instance->adresse1  ? $instance->adresse1   : '     ');
+                    $infoCompany->adresseTwo    = ($instance->adresse2  ? $instance->adresse2   : '     ');
+                    $infoCompany->adresseThree  = ($instance->adresse3  ? $instance->adresse3   : '     ');
+                    $infoCompany->postnr        = ($instance->postnr    ? $instance->postnr     : '     ');
+                    $infoCompany->poststed      = ($instance->poststed  ? $instance->poststed   : '     ');
+                    $infoCompany->epost         = ($instance->epost     ? $instance->epost      : '     ');
                     $infoCompany->action        = $instance->action;
 
                     // Add company
