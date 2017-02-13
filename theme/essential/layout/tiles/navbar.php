@@ -23,6 +23,9 @@
  * @copyright   2013 Julian Ridden
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+defined('MOODLE_INTERNAL') || die;
+
 ?>
     <nav id="essentialnavbar" role="navigation" class="moodle-has-zindex<?php echo ($oldnavbar) ? ' oldnavbar' : '';  echo ($haslogo) ? ' logo' : ' nologo';?>">
         <div class="navbar">
@@ -54,25 +57,15 @@
                         </div>
                     </div>
                         <div id='essentialmenus' class="nav-collapse collapse pull-<?php echo ($left) ? 'left' : 'right'; ?>">
-                            <div id="custom_menu_language">
-                                <?php echo $OUTPUT->custom_menu_language(); ?>
-                            </div>
-                            <div id="custom_menu_courses">
-                                <?php echo $OUTPUT->custom_menu_courses(); ?>
-                            </div>
-                            <?php if ($colourswitcher) { ?>
-                                <div id="custom_menu_themecolours">
-                                    <?php echo $OUTPUT->custom_menu_themecolours(); ?>
-                                </div>
-<?php
-}
-?>
-                            <div id="custom_menu">
-                                <?php echo $OUTPUT->custom_menu(); ?>
-                            </div>
-                            <div id="custom_menu_activitystream">
-                                <?php echo $OUTPUT->custom_menu_activitystream(); ?>
-                            </div>
+                            <?php
+                            echo $OUTPUT->custom_menu_language();
+                            echo $OUTPUT->custom_menu_courses();
+                            if ($colourswitcher) {
+                                echo $OUTPUT->custom_menu_themecolours();
+                            }
+                            echo $OUTPUT->custom_menu();
+                            echo $OUTPUT->custom_menu_activitystream();
+                            ?>
                         </div>
                     </div>
                 </div>

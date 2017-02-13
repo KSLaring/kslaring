@@ -27,6 +27,8 @@
 
 namespace theme_essential\output;
 
+defined('MOODLE_INTERNAL') || die;
+
 use block_contents;
 use block_move_target;
 use coding_exception;
@@ -238,6 +240,21 @@ class core_renderer extends \core_renderer {
     }
 
     /**
+     * Outputs the page top header.
+     *
+     * @return string the HTML to output or nothing.
+     */
+    public function page_top_header() {
+        $html = '';
+        // This is where we output the user information that would otherwise be missing on the page.
+        if (($this->page->pagelayout == 'mypublic') && ($this->page->context->contextlevel == CONTEXT_USER)) {
+            $html = $this->context_header();
+        }
+
+        return $html;
+    }
+
+    /**
      * Outputs the course title.
      *
      * @return string the HTML to output.
@@ -315,6 +332,29 @@ class core_renderer extends \core_renderer {
             }
 
             $content .= '<div class="bor"></div>';
+        }
+
+        return $content;
+    }
+
+    /**
+     * Returns course-specific information to be output immediately above content on any course page
+     * (for the current course)
+     *
+     * @param bool $onlyifnotcalledbefore output content only if it has not been output before
+     * @return string
+     */
+    public function course_content_header($onlyifnotcalledbefore = false) {
+        $content = parent::course_content_header($onlyifnotcalledbefore);
+
+        if ($this->page->pagelayout == 'mydashboard') {
+            if (\theme_essential\toolbox::course_content_search()) {
+                $content .= '<div class="courseitemsearch">';
+                $content .= '<div><p>'.get_string('findcoursecontent', 'theme_essential').'</p></div>';
+                $content .= '<div id="courseitemsearchresults">';
+                $content .= '<input type="text" name="courseitemsearch" id="courseitemsearch" disabled="disabled">';
+                $content .= '</div></div>';
+            }
         }
 
         return $content;
@@ -423,11 +463,11 @@ class core_renderer extends \core_renderer {
             $courseformatsettings = $courseformat->get_format_options();
 
             $sectionname = $courseformat->get_section_name($this->page->cm->sectionnum);
-            $sectionnamelen = mb_strlen($sectionname);
+            $sectionnamelen = \core_text::strlen($sectionname);
             if ($sectionnamelen !== false) {
                 $sectionnamelimit = \theme_essential\toolbox::get_setting('returntosectiontextlimitfeature');
                 if (($sectionnamelimit) && ($sectionnamelen > $sectionnamelimit)) {
-                    $sectionname = mb_substr($sectionname, 0, $sectionnamelimit, 'UTF-8').'...';
+                    $sectionname = \core_text::substr($sectionname, 0, $sectionnamelimit).'...';
                 }
             }
 
@@ -450,7 +490,7 @@ class core_renderer extends \core_renderer {
     /**
      * Defines the Moodle custom_menu
      * @param string $custommenuitems
-     * @return render_custom_menu for $custommenu
+     * @return string Rendered custom menu.
      */
     public function custom_menu($custommenuitems = '') {
         global $CFG;
@@ -459,7 +499,7 @@ class core_renderer extends \core_renderer {
             $custommenuitems = $CFG->custommenuitems;
         }
         $custommenu = new custom_menu($custommenuitems, current_language());
-        return $this->render_custom_menu($custommenu);
+        return $this->render_the_custom_menu($custommenu, 'custom_menu', true);
     }
 
     /**
@@ -513,11 +553,19 @@ class core_renderer extends \core_renderer {
                 $content .= $this->getfontawesomemarkup('caret-right');
             }
             $content .= '</a>';
-            $content .= '<ul class="dropdown-menu">';
+            if ($level == 1) {
+                $content .= '<div class="dropdown-menu">';
+                $content .= '<ul>';
+            } else {
+                $content .= '<ul class="dropdown-menu">';
+            }
             foreach ($menunode->get_children() as $menunode) {
                 $content .= $this->render_custom_menu_item($menunode, 0);
             }
             $content .= '</ul>';
+            if ($level == 1) {
+                $content .= '</div>';
+            }
         } else {
             // Also, if the node's text matches '####', add a class so we can treat it as a divider.
             $content = '';
@@ -544,7 +592,7 @@ class core_renderer extends \core_renderer {
 
     /**
      * Outputs the language menu
-     * @return custom_menu object
+     * @return string Rendered custom menu.
      */
     public function custom_menu_language() {
         global $CFG;
@@ -573,7 +621,7 @@ class core_renderer extends \core_renderer {
                     array('lang' => $langtype)), $langname);
             }
         }
-        return $this->render_custom_menu($langmenu);
+        return $this->render_the_custom_menu($langmenu, 'custom_menu_language');
     }
 
     protected static function timeaccesscompare($a, $b) {
@@ -604,7 +652,7 @@ class core_renderer extends \core_renderer {
 
     /**
      * Outputs the courses menu
-     * @return custom_menu object
+     * @return string Rendered custom menu.
      */
     public function custom_menu_courses() {
         global $CFG;
@@ -637,11 +685,11 @@ class core_renderer extends \core_renderer {
             $branchurl = new moodle_url('#');
             $branchsort = 200;
 
-            $branch = $coursemenu->add($branchlabel, $branchurl, $branchtitle, $branchsort);
+            $coursemenubranch = $coursemenu->add($branchlabel, $branchurl, $branchtitle, $branchsort);
 
             $hometext = get_string('myhome');
             $homelabel = html_writer::tag('span', $this->getfontawesomemarkup('home').html_writer::tag('span', ' '.$hometext));
-            $branch->add($homelabel, new moodle_url('/my/index.php'), $hometext);
+            $coursemenubranch->add($homelabel, new moodle_url('/my/index.php'), $hometext);
 
             // Retrieve courses and add them to the menu when they are visible.
             $numcourses = 0;
@@ -727,50 +775,123 @@ class core_renderer extends \core_renderer {
                 }
             }
 
+            $mycoursescatsubmenu = \theme_essential\toolbox::get_setting('mycoursescatsubmenu');
             if ($courses) {
                 $mycoursesmax = \theme_essential\toolbox::get_setting('mycoursesmax');
                 if (!$mycoursesmax) {
                     $mycoursesmax = PHP_INT_MAX;
                 }
-                foreach ($courses as $course) {
-                    if ($course->visible) {
-                        $branchtitle = format_string($course->shortname);
-                        $branchurl = new moodle_url('/course/view.php', array('id' => $course->id));
-                        $enrolledclass = '';
-                        if (!empty($course->timestart)) {
-                            $enrolledclass .= ' class="onlyenrolled"';
+                if ($mycoursescatsubmenu) {
+                    $enablecategoryicon = \theme_essential\toolbox::get_setting('enablecategoryicon');
+                    $defaultcategoryicon = \theme_essential\toolbox::get_setting('defaultcategoryicon');
+                    $enablecustomcategoryicon = \theme_essential\toolbox::get_setting('enablecustomcategoryicon');
+                    $mycoursescatsubmenucats = array();
+                    $mycoursescatsubmenucatsnumcourses = array();
+                    $categoriestoplist = false;
+
+                    $categorieslist = \theme_essential\toolbox::get_categories_list();
+                    foreach ($categorieslist as $category) {
+                        if (empty($categoriestoplist[$category->id])) {
+                            $categoriestoplist[$category->id] = new \stdClass;
+                            if (!empty($category->parents)) {
+                                // Sub-category and the last entry in the array is the top.
+                                $categoriestoplist[$category->id]->topid = $category->parents[(count($category->parents) - 1)];
+                            } else {
+                                // We are a top level category.
+                                $categoriestoplist[$category->id]->topid = $category->id;
+                                $categoriestoplist[$category->id]->name = $categorieslist[$category->id]->name;
+                            }
                         }
-                        $branchlabel = '<span'.$enrolledclass.'>'.$this->getfontawesomemarkup('graduation-cap').format_string($course->fullname).'</span>';
-                        $branch->add($branchlabel, $branchurl, $branchtitle);
-                        $numcourses += 1;
-                    } else if (has_capability('moodle/course:viewhiddencourses', context_course::instance($course->id)) && $hasdisplayhiddenmycourses) {
-                        $branchtitle = format_string($course->shortname);
-                        $enrolledclass = '';
-                        if (!empty($course->timestart)) {
-                            $enrolledclass .= ' onlyenrolled';
-                        }
-                        $branchlabel = '<span class="dimmed_text'.$enrolledclass.'">'.$this->getfontawesomemarkup('eye-slash').
-                            format_string($course->fullname) . '</span>';
-                        $branchurl = new moodle_url('/course/view.php', array('id' => $course->id));
-                        $branch->add($branchlabel, $branchurl, $branchtitle);
-                        $numcourses += 1;
                     }
-                    if ($numcourses == $mycoursesmax) {
-                        break;
+                }
+                foreach ($courses as $course) {
+                    if (!$mycoursescatsubmenu) {
+                        if ($this->custom_menu_courses_add_course($coursemenubranch, $course, $hasdisplayhiddenmycourses)) {
+                            $numcourses += 1;
+                        }
+                        if ($numcourses == $mycoursesmax) {
+                            break;
+                        }
+                    } else {
+                        if (empty($mycoursescatsubmenucats[$categoriestoplist[$course->category]->topid])) {
+                            $cattext = format_string($categoriestoplist[$categoriestoplist[$course->category]->topid]->name);
+                            $caticon = '';
+                            if ($enablecategoryicon) {
+                                if ($enablecustomcategoryicon) {
+                                    $caticon = \theme_essential\toolbox::get_setting('categoryicon'.$categoriestoplist[$course->category]->topid);
+                                } else {
+                                    $caticon = $defaultcategoryicon;
+                                }
+                            } else {
+                                $caticon = 'folder-open';
+                            }
+                            $catlabel = html_writer::tag('span', $this->getfontawesomemarkup($caticon).html_writer::tag('span', ' '.$cattext));
+                            $mycoursescatsubmenucats[$categoriestoplist[$course->category]->topid] = $coursemenubranch->add($catlabel, new moodle_url('#'), $cattext);
+                            $mycoursescatsubmenucatsnumcourses[$categoriestoplist[$course->category]->topid] = 0;
+                        }
+                        if ($mycoursescatsubmenucatsnumcourses[$categoriestoplist[$course->category]->topid] < $mycoursesmax) {
+                            // Only add if we are within the course limit.
+                            if ($this->custom_menu_courses_add_course($mycoursescatsubmenucats[$categoriestoplist[$course->category]->topid],
+                                    $course, $hasdisplayhiddenmycourses)) {
+                                $mycoursescatsubmenucatsnumcourses[$categoriestoplist[$course->category]->topid] += 1;
+                            }
+                        }
+                    }
+                }
+                if ($mycoursescatsubmenu) {
+                    // Tally.
+                    foreach ($mycoursescatsubmenucatsnumcourses as $catcoursenum) {
+                        $numcourses += $catcoursenum;
                     }
                 }
             }
-            if ($numcourses == 0 || empty($courses)) {
+            if ($numcourses == 0) {
                 $noenrolments = get_string('noenrolments', 'theme_essential');
-                $branch->add('<em>' . $noenrolments . '</em>', new moodle_url('#'), $noenrolments);
+                $coursemenubranch->add('<em>' . $noenrolments . '</em>', new moodle_url('#'), $noenrolments);
             }
+            return $this->render_the_custom_menu($coursemenu, 'custom_menu_courses', $mycoursescatsubmenu);
         }
-        return $this->render_custom_menu($coursemenu);
+
+        return '';
+    }
+
+    /**
+     * Renders menu items for the custom_menu
+     * @param custom_menu_item $branch Menu branch to add the course to.
+     * @param stdClass $course Course to use.
+     * @param boodlean $hasdisplayhiddenmycourses Display hidden courses.
+     * @return boolean $courseadded if the course was added to the branch.
+     */
+    public function custom_menu_courses_add_course($branch, $course, $hasdisplayhiddenmycourses) {
+        $courseadded = false;
+        if ($course->visible) {
+            $branchtitle = format_string($course->shortname);
+            $branchurl = new moodle_url('/course/view.php', array('id' => $course->id));
+            $enrolledclass = '';
+            if (!empty($course->timestart)) {
+                $enrolledclass .= ' class="onlyenrolled"';
+            }
+            $branchlabel = '<span'.$enrolledclass.'>'.$this->getfontawesomemarkup('graduation-cap').format_string($course->fullname).'</span>';
+            $branch->add($branchlabel, $branchurl, $branchtitle);
+            $courseadded = true;
+        } else if (has_capability('moodle/course:viewhiddencourses', context_course::instance($course->id)) && $hasdisplayhiddenmycourses) {
+            $branchtitle = format_string($course->shortname);
+            $enrolledclass = '';
+            if (!empty($course->timestart)) {
+                $enrolledclass .= ' onlyenrolled';
+            }
+            $branchlabel = '<span class="dimmed_text'.$enrolledclass.'">'.$this->getfontawesomemarkup('eye-slash').
+                format_string($course->fullname) . '</span>';
+            $branchurl = new moodle_url('/course/view.php', array('id' => $course->id));
+            $branch->add($branchlabel, $branchurl, $branchtitle);
+            $courseadded = true;
+        }
+        return $courseadded;
     }
 
     /**
      * Outputs the alternative colours menu
-     * @return custom_menu object
+     * @return string Rendered custom menu.
      */
     public function custom_menu_themecolours() {
         $colourmenu = new custom_menu();
@@ -806,12 +927,12 @@ class core_renderer extends \core_renderer {
                 }
             }
         }
-        return $this->render_custom_menu($colourmenu);
+        return $this->render_the_custom_menu($colourmenu, 'custom_menu_themecolours');
     }
 
     /**
      * Outputs the Activity Stream menu
-     * @return custom_menu object
+     * @return string Rendered custom menu.
      */
     public function custom_menu_activitystream() {
         if (!isguestuser()) {
@@ -849,10 +970,21 @@ class core_renderer extends \core_renderer {
                             array('id' => $this->page->course->id)));
                     }
                 }
-                return $this->render_custom_menu($activitystreammenu);
+                return $this->render_the_custom_menu($activitystreammenu, 'custom_menu_activitystream');
             }
         }
         return '';
+    }
+
+    protected function render_the_custom_menu(custom_menu $custommenu, $id, $usessubmenus = false, $additionalclasses = '') {
+        if (\theme_essential\toolbox::get_setting('dropdownmenuscroll')) {
+            if ($usessubmenus) {
+                $additionalclasses .= ' dropdownsubmenuscroll';
+            } else {
+                $additionalclasses .= ' dropdownmenuscroll';
+            }
+        }
+        return '<div id="'.$id.'" class="custom_menu'.$additionalclasses.'">'.$this->render_custom_menu($custommenu).'</div>';
     }
 
     private function get_course_activities() {
@@ -1048,7 +1180,7 @@ class core_renderer extends \core_renderer {
                 $message->smallmessage = html_to_text($message->smallmessage);
             }
             if (strlen($message->smallmessage) > 18) {
-                $messagecontent->text = substr($message->smallmessage, 0, 15) . '...';
+                $messagecontent->text = \core_text::substr($message->smallmessage, 0, 15) . '...';
             } else {
                 $messagecontent->text = $message->smallmessage;
             }
@@ -1139,13 +1271,14 @@ class core_renderer extends \core_renderer {
         if (\theme_essential\toolbox::get_setting('displayeditingmenu')) {
             if ($this->page->user_allowed_editing()) {
                 $menu = new custom_menu();
-                $buttontoadd = true; // Only set to false when cannot determine what the URL / params should be for a page type.
                 $pagetype = $this->page->pagetype;
                 if (strpos($pagetype, 'admin-setting') !== false) {
                     $pagetype = 'admin-setting'; // Deal with all setting page types.
-                } else if ((strpos($pagetype, 'mod') !== false) &&
-                    ((strpos($pagetype, 'edit') !== false) || (strpos($pagetype, 'view') !== false))) {
-                    $pagetype = 'mod-edit-view'; // Deal with all mod edit / view page types.
+                } else if ((strpos($pagetype, 'mod-') !== false) &&
+                    ((strpos($pagetype, 'edit') !== false) ||
+                    (strpos($pagetype, 'view') !== false) ||
+                    (strpos($pagetype, '-mod') !== false))) {
+                    $pagetype = 'mod-edit-view'; // Deal with all mod edit / view / -mod page types.
                 } else if (strpos($pagetype, 'mod-data-field') !== false) {
                     $pagetype = 'mod-data-field'; // Deal with all mod data field page types.
                 } else if (strpos($pagetype, 'mod-lesson') !== false) {
@@ -1176,7 +1309,12 @@ class core_renderer extends \core_renderer {
                     case 'course-search':
                     case 'mod-resource-mod':
                     case 'tag-search':
-                        $buttontoadd = false;
+                        $url = new moodle_url('/tag/search.php');
+                        if ($this->page->user_is_editing()) {
+                            $url->param('edit', 'off');
+                        } else {
+                            $url->param('edit', 'on');
+                        }
                     break;
                     case 'mod-data-field':
                     case 'mod-edit-view':
@@ -1218,24 +1356,18 @@ class core_renderer extends \core_renderer {
                         }
                     break;
                 }
-                if ($buttontoadd) {
-                    $url->param('sesskey', sesskey());
-                    if ($this->page->user_is_editing()) {
-                        $editstring = get_string('turneditingoff');
-                        $iconclass = 'power-off';
-                    } else {
-                        $editstring = get_string('turneditingon');
-                        $iconclass = 'edit';
-                    }
-                    $edit = $this->getfontawesomemarkup($iconclass, array('fa-fw'));
-                    $menu->add($edit, $url, $editstring);
-                    $html = $this->render_custom_menu($menu);
 
-                    if (\theme_essential\toolbox::get_setting('hidedefaulteditingbutton')) {
-                        // Unset button on page.
-                        $this->page->set_button('');
-                    }
+                $url->param('sesskey', sesskey());
+                if ($this->page->user_is_editing()) {
+                    $editstring = get_string('turneditingoff');
+                    $iconclass = 'power-off';
+                } else {
+                    $editstring = get_string('turneditingon');
+                    $iconclass = 'edit';
                 }
+                $edit = $this->getfontawesomemarkup($iconclass, array('fa-fw'));
+                $menu->add($edit, $url, $editstring);
+                $html = $this->render_custom_menu($menu);
             }
         }
         return $html;
@@ -1250,13 +1382,15 @@ class core_renderer extends \core_renderer {
     protected function render_user_picture(\user_picture $userpicture) {
         if ($this->page->pagetype == 'mod-forum-discuss') {
             $userpicture->size = 1;
+        } else if ((empty($userpicture->size)) || ($userpicture->size != 64)) {
+            $userpicture->size = 72;
         }
         return parent::render_user_picture($userpicture);
     }
 
     /**
      * Outputs the user menu.
-     * @return custom_menu object
+     * @return string Rendered custom menu.
      */
     public function custom_menu_user() {
         // Die if executed during install.
@@ -1595,6 +1729,7 @@ class core_renderer extends \core_renderer {
             'chapter' => 'file',
             'docs' => 'question-circle',
             'generate' => 'gift',
+            'help' => 'question-circle-o',
             'i/marker' => 'lightbulb-o',
             'i/delete' => 'times-circle',
             'i/dragdrop' => 'arrows',
@@ -1677,20 +1812,32 @@ class core_renderer extends \core_renderer {
      */
 
     public function edit_button(moodle_url $url) {
-        $url->param('sesskey', sesskey());
-        if ($this->page->user_is_editing()) {
-            $url->param('edit', 'off');
-            $btn = 'btn-danger';
-            $title = get_string('turneditingoff');
-            $icon = 'power-off';
-        } else {
-            $url->param('edit', 'on');
-            $btn = 'btn-success';
-            $title = get_string('turneditingon');
-            $icon = 'edit';
+        $havebutton = true;
+        $html = '';
+        if ($this->page->user_allowed_editing()) {
+            if ((\theme_essential\toolbox::get_setting('displayeditingmenu')) &&
+                (\theme_essential\toolbox::get_setting('hidedefaulteditingbutton'))) {
+                // No button.
+                $havebutton = false;
+            }
+            if ($havebutton) {
+                $url->param('sesskey', sesskey());
+                if ($this->page->user_is_editing()) {
+                    $url->param('edit', 'off');
+                    $btn = 'btn-danger';
+                    $title = get_string('turneditingoff');
+                    $icon = 'power-off';
+                } else {
+                    $url->param('edit', 'on');
+                    $btn = 'btn-success';
+                    $title = get_string('turneditingon');
+                    $icon = 'edit';
+                }
+                $icon = $this->getfontawesomemarkup($icon, array('fa-fw'));
+                $html .= html_writer::tag('a', $icon.$title, array('href' => $url, 'class' => 'btn '.$btn, 'title' => $title));
+            }
         }
-        $icon = $this->getfontawesomemarkup($icon, array('fa-fw'));
-        return html_writer::tag('a', $icon.$title, array('href' => $url, 'class' => 'btn '.$btn, 'title' => $title));
+        return $html;
     }
 
     public function render_social_network($socialnetwork) {
@@ -1706,10 +1853,12 @@ class core_renderer extends \core_renderer {
                 $icon = 'windows';
             }
             $socialhtml = html_writer::start_tag('li');
+            $socialnetworklabel = get_string($socialnetwork, 'theme_essential');
             $socialhtml .= html_writer::start_tag('button', array('type' => "button",
                 'class' => 'socialicon ' . $socialnetwork,
                 'onclick' => "window.open('".\theme_essential\toolbox::get_setting($socialnetwork)."')",
-                'title' => get_string($socialnetwork, 'theme_essential'),
+                'title' => $socialnetworklabel,
+                'aria-label' => $socialnetworklabel,
             ));
             $socialhtml .= $this->getfontawesomemarkup($icon);
             $socialhtml .= html_writer::start_span('sr-only').html_writer::end_span();
@@ -1730,32 +1879,58 @@ class core_renderer extends \core_renderer {
      * @param string $region The region to get HTML for.
      * @param array $classes array of classes for the tag.
      * @param string $tag Tag to use.
-     * @param int $footer if > 0 then this is a footer block specifying the number of blocks per row, max of '4'.
+     * @param boolean/string/int $blocksperrowsetting If not false or an int for the blocks per row,
+     *                                                then use the setting name to get the blocks per row.
      * @return string HTML.
      */
-    public function essential_blocks($region, $classes = array(), $tag = 'aside', $footer = 0) {
-        $displayregion = $this->page->apply_theme_region_manipulations($region);
-        $classes = (array) $classes;
-        $classes[] = 'block-region';
-
-        $attributes = array(
-            'id' => 'block-region-' . preg_replace('#[^a-zA-Z0-9_\-]+#', '-', $displayregion),
-            'class' => join(' ', $classes),
-            'data-blockregion' => $displayregion,
-            'data-droptarget' => '1'
-        );
-
-        if ($this->page->blocks->region_has_content($displayregion, $this)) {
-            if ($footer > 0) {
-                $attributes['class'] .= ' footer-blocks';
-                $editing = $this->page->user_is_editing();
-                if ($editing) {
-                    $attributes['class'] .= ' footer-edit';
+    public function essential_blocks($region, $classes = array(), $tag = 'aside', $blocksperrowsetting = false) {
+        if ($this->page->blocks->is_known_region($region)) {
+            $classes = (array) $classes;
+            $classes[] = 'block-region';
+            if ($blocksperrowsetting !== false) {
+                if (is_int($blocksperrowsetting)) {
+                    $blocksperrow = $blocksperrowsetting;
+                } else {
+                    $blocksperrow = \theme_essential\toolbox::get_setting($blocksperrowsetting);
                 }
-                $output = html_writer::tag($tag,
-                    $this->essential_blocks_for_region($displayregion, $footer, $editing), $attributes);
             } else {
-                $output = html_writer::tag($tag, $this->blocks_for_region($displayregion), $attributes);
+                $blocksperrow = false;
+            }
+            $attributes = array(
+                'id' => 'block-region-' . preg_replace('#[^a-zA-Z0-9_\-]+#', '-', $region),
+                'class' => join(' ', $classes),
+                'data-blockregion' => $region,
+                'data-droptarget' => '1'
+            );
+
+            $regioncontent = '';
+            $editing = $this->page->user_is_editing();
+            if ($editing) {
+                $regioncontent .= html_writer::tag('span', html_writer::tag('span', get_string('region-'.$region, 'theme_essential')),
+                    array('class' => 'regionname'));
+            }
+
+            if ($this->page->blocks->region_has_content($region, $this)) {
+                if ($blocksperrow !== false) {
+                    $attributes['class'] .= ' rowblock-blocks';
+                    if ($editing) {
+                        $attributes['class'] .= ' rowblock-edit';
+                    }
+                    $regioncontent .= $this->essential_blocks_for_region($region, $blocksperrow, $editing);
+                    $output = html_writer::tag($tag, $regioncontent, $attributes);
+                } else {
+                    $regioncontent .= $this->blocks_for_region($region);
+                    $output = html_writer::tag($tag, $regioncontent, $attributes);
+                }
+            } else {
+                if ($editing) {
+                    if ($blocksperrow !== false) {
+                        $attributes['class'] .= ' rowblock-blocks rowblock-edit';
+                    }
+                    $output = html_writer::tag($tag, $regioncontent, $attributes);
+                } else {
+                    $output = '';
+                }
             }
         } else {
             $output = '';
@@ -1850,7 +2025,7 @@ class core_renderer extends \core_renderer {
                     $output .= $this->block($bc, $region);
                     $lastblock = $bc->title;
                 } else if ($bc instanceof block_move_target) {
-                    $output .= $this->block_move_target($bc, $zones, $lastblock);
+                    $output .= $this->block_move_target($bc, $zones, $lastblock, $region);
                 } else {
                     throw new coding_exception('Unexpected type of thing ('.get_class($bc).') found in list of block contents.');
                 }
@@ -1948,8 +2123,11 @@ class core_renderer extends \core_renderer {
         $output = parent::standard_footer_html();
         $output .= html_writer::start_tag('div', array ('class' => 'themecredit')).
             get_string('credit', 'theme_essential',
-            array('name' => html_writer::link('https://moodle.org/plugins/theme_essential', 'Essential', array('target' => '_blank')))).
-            html_writer::link('//about.me/gjbarnard', 'Gareth J Barnard', array('target' => '_blank')).html_writer::end_tag('div');
+            array('name' => html_writer::link('https://moodle.org/plugins/theme_essential', 'Essential', array(
+                'target' => '_blank',
+                'title' => get_string('download', 'theme_essential'))))).
+            html_writer::link('//about.me/gjbarnard', 'Gareth J Barnard', array(
+                'target' => '_blank', 'title' => get_string('aboutme', 'theme_essential'))).html_writer::end_tag('div');
 
         return $output;
     }
@@ -1964,7 +2142,7 @@ class core_renderer extends \core_renderer {
             $url .= \theme_essential\toolbox::get_setting('marketing'.$spot.'buttontext', true);
             $url .= '</a>';
         }
-        $edit = $this->essential_edit_button('theme_essential_frontpage');
+        $edit = $this->essential_edit_button('frontpage');
         if ((!empty($url)) || (!empty($edit))) {
             $o = '<div class="marketing-buttons">'.$url.$edit.'</div>';
         }
@@ -1972,13 +2150,55 @@ class core_renderer extends \core_renderer {
         return $o;
     }
 
-    public function essential_edit_button($section) {
+    /**
+     * Generates the edit button markup.
+     *
+     * Ensure that the 'essential_edit_button_settingspage' method has the 'keys' and values for the sections
+     * in the settings.php file of the theme that the layout and tile files call this method for.
+     *
+     * @param string $sectionkey settings section key.
+     * @param string $buttontext optional button text.
+     * @return string or null of not needed.
+     */
+    public function essential_edit_button($sectionkey, $buttontext = null) {
         global $CFG;
         if ($this->page->user_is_editing() && is_siteadmin()) {
+            $themesectionkey = $this->essential_edit_button_settingspage($sectionkey);
+            if (is_null($buttontext)) {
+                $buttontext = get_string('edit');
+            }
             $url = preg_replace("(https?:)", "", $CFG->wwwroot . '/admin/settings.php?section=');
-            return '<a class="btn btn-success" href="'.$url.$section.'">'.get_string('edit').'</a>';
+            return '<a class="btn btn-success" href="'.$url.$themesectionkey.'">'.$buttontext.'</a>';
         }
         return null;
+    }
+
+
+    /**
+     * Finds the setting section for the given section key.
+     *
+     * This must match the ones in the settings.php file of the theme that the layout and tile files
+     * call the 'essential_edit_button' method for.
+     *
+     * @param string $sectionkey settings section key.
+     * @return string or false if not found.
+     */
+    protected function essential_edit_button_settingspage($sectionkey) {
+        $themesectionkey = false;
+
+        switch ($sectionkey) {
+            case 'frontpage':
+                $themesectionkey = 'theme_essential_frontpage';
+            break;
+            case 'footer':
+                $themesectionkey = 'theme_essential_footer';
+            break;
+            case 'slideshow':
+                $themesectionkey = 'theme_essential_slideshow';
+            break;
+        }
+
+        return $themesectionkey;
     }
 
     public function get_title($location) {
@@ -2019,12 +2239,12 @@ class core_renderer extends \core_renderer {
                 case 3:
                     $title = '<h1 id="smalltitle">'.format_string($SITE->fullname, true,
                                     array('context' => context_course::instance(SITEID))).'</h2>';
-                    $title .= '<h2 id="subtitle">'.strip_tags($SITE->summary).'</h3>';
+                    $title .= '<h2 id="subtitle">'.format_text($SITE->summary).'</h3>';
                     break;
                 case 4:
                     $title = '<h1 id="smalltitle">'.format_string($SITE->shortname, true,
                                     array('context' => context_course::instance(SITEID))).'</h2>';
-                    $title .= '<h2 id="subtitle">'.strip_tags($SITE->summary).'</h3>';
+                    $title .= '<h2 id="subtitle">'.format_text($SITE->summary).'</h3>';
                     break;
                 default:
                     break;

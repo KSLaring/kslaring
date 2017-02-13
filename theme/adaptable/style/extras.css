@@ -102,6 +102,143 @@ ul.teachers {
     padding-left: 35px;
 }
 
+/* Messages */
+.messaging-area-container .messaging-area .contacts-area .contacts .contact.selected {
+    background-color: #E9EBEB;
+    color: #333333;
+}
+
+.messaging-area-container .messaging-area .contacts-area .contacts .contact.selected .information .lastmessage {
+    color: #333333;
+}
+
+.messaging-area-container .messaging-area .contacts-area .contacts .contact:hover .information .lastmessage {
+    color: #333333;
+}
+
+.messaging-area-container .messaging-area .contacts-area .tabs .tab.selected {
+    color: [[setting:maincolor]];
+}
+
+.messaging-area-container .messaging-area .contacts-area .tabs .tab {
+    background-color: transparent;
+}
+
+.messaging-area-container .messaging-area .messages-area .messages .message .content.right {
+    background-color: #dcf8c6;
+    border-radius: 5px;
+    border: 1px solid #c0c0c0;
+    box-shadow: 2px 2px 1px 0px rgba(0,0,0,0.2);
+}
+
+.messaging-area-container .messaging-area .messages-area .messages .message .content.left {
+    background-color: #ffffff;
+    border-radius: 5px;
+    border: 1px solid #c0c0c0;
+    box-shadow: 2px 2px 1px 0px rgba(0,0,0,0.2);
+}
+
+.messaging-area-container .messaging-area .contacts-area .contacts .contact:hover {
+    background-color: #e9ebeb;
+    color: #333333;
+}
+
+.messaging-area-container .messaging-area .messages-area .messages .message .content .text p {
+    font-size: 1.2em;
+}
+
+.messaging-area-container .messaging-area .messages-area .messages .message .content .timesent {
+    color: #808080;
+    float: right;
+    font-size: 1em;
+}
+
+.messaging-area-container .messaging-area .messages-area .messages {
+    background-color: #ece5dd;
+}
+
+.messaging-area-container .messaging-area .messages-area .response {
+    padding: 0 10px 9px;
+}
+
+.information .lastmessage,
+.information .lastmessage:hover {
+    color: #e9ebeb;
+}
+
+.msg-title,
+.msg-sender,
+.msg-time {
+    color: [[setting:fontcolor]];
+}
+
+.msg-time {
+    float: right;
+    font-size: 1em;
+}
+
+.messaging-area-container .messaging-area .messages-area .messages-header .name-container .status {
+    font-size: 12px;
+    font-weight: normal;
+    line-height: 16px;
+}
+
+.messaging-area-container .messaging-area .messages-area .messages-header .btn {
+    height: 25px;
+    line-height: 25px;
+    padding: 0 5px;
+    width: auto;
+    color: [[setting:linkcolor]] !important;
+    background: none !important;
+    border: 0;
+    box-shadow: none;
+font-size: 18px;
+}
+
+.messaging-area-container .messaging-area .messages-area .messages-header .btn .messages-delete,
+.messaging-area-container .messaging-area .messages-area .messages-header .btn .cancel-messages-delete {
+    height: 25px;
+    line-height: 25px;
+    padding: 0 5px;
+    width: auto;
+    font-size: 14px;
+}
+
+.messaging-area-container .messaging-area .messages-area .response {
+    border-top: none;
+}
+
+.messaging-area-container .messaging-area .messages-area .messages .blocktime {
+    color: [[setting:maincolor]];
+    font-weight: bold;
+    font-size: 16px;
+    background-color:rgba(255, 255, 255, 0.6);
+    border-radius: 4px;
+}
+
+.messaging-area-container .messaging-area .contacts-area .tabs .tab {
+    color: [[setting:linkcolor]];
+}
+
+.messaging-area-container .messaging-area .contacts-area .tabs .tab:hover {
+    color: [[setting:linkhover]];
+}
+
+.messaging-area-container .messaging-area .messages-area .messages-header .actions {
+    font-weight: normal;
+    padding-right: 15px;
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+
+.messaging-area-container .status .online-text {
+    color: #009688;
+}
+
+.messages-area .actions a:hover {
+    text-decoration: none;
+}
 
 /* forum */
 .forumpost .maincontent .left {
@@ -227,10 +364,6 @@ textarea#page-mod-forum-discuss .discussioncontrols .discussioncontrol.movediscu
   float: left;
 }
 
-.forumpost {
-  background-color: transparent;
-}
-
 #page-mod-forum-discuss .forumpost .row .left.picture img, #page-site-index .forumpost .row .left.picture img {
     border: 5px solid #FFFFFF;
     border-radius: 270px;
@@ -308,16 +441,6 @@ textarea#page-mod-forum-discuss .discussioncontrols .discussioncontrol.movediscu
   padding-right: 5px;
 }
 
-.usermendrop {
-/*	font-size: 115%; */
-}
-
-.usermendrop span {
-  font-size: [[setting:topmenufontsize]];
-    padding-right: 5px;
-    height: 30px;
-}
-
 .dropdown-menu.usermen > li > a:hover, .dropdown-menu.usermen > li > a:active {
   background: #eee;
   background-color: #eee;
@@ -336,8 +459,6 @@ textarea#page-mod-forum-discuss .discussioncontrols .discussioncontrol.movediscu
   text-align: left;
   background-color: #ffffff;
   background-clip: padding-box;
-  border: 1px solid #cccccc;
-  border: 1px solid rgba(0, 0, 0, 0.2);
   border-radius: 6px;
   -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
   box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
@@ -430,9 +551,6 @@ textarea#page-mod-forum-discuss .discussioncontrols .discussioncontrol.movediscu
   font-size: 14px;
   font-weight: normal;
   line-height: 18px;
-  background-color: #f7f7f7;
-  border-bottom: 1px solid #ebebeb;
-  border-radius: 5px 5px 0 0;
 }
 #newmessageoverlay #usermessage {
   padding: 9px 14px;
@@ -644,7 +762,7 @@ textarea#page-mod-forum-discuss .discussioncontrols .discussioncontrol.movediscu
     font-size: 105%;
 }
 
-/*new ticker */
+/* news ticker */
 #ticker, #ticker_container {
   font-size: 16px;
 }

@@ -24,6 +24,8 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+defined('MOODLE_INTERNAL') || die;
+
 require_once(\theme_essential\toolbox::get_tile_file('additionaljs'));
 require_once(\theme_essential\toolbox::get_tile_file('pagesettings'));
 
@@ -83,7 +85,7 @@ if ($devicetype !== 'mobile' and $devicetype !== 'tablet') {
 <div id="page" class="container-fluid">
 
     <header id="page-header" class="clearfix">
-        <?php require_once(\theme_essential\toolbox::get_tile_file('pagenavbar'));
+        <?php require_once(\theme_essential\toolbox::get_tile_file('pagetopheader'));
         echo $OUTPUT->page_heading(); ?>
         <div id="course-header">
             <?php echo $OUTPUT->course_header(); ?>

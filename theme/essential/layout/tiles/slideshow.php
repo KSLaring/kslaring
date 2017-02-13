@@ -24,6 +24,8 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+defined('MOODLE_INTERNAL') || die;
+
 $numberofslides = \theme_essential\toolbox::showslider();
 
 if ($numberofslides) {
@@ -58,7 +60,7 @@ if ($numberofslides) {
     <div class="row-fluid">
         <div class="span12">
             <div id="essentialCarousel" class="carousel slide" data-interval="<?php echo $slideinterval;?>">
-                <?php echo $OUTPUT->essential_edit_button('theme_essential_slideshow');?>
+                <?php echo $OUTPUT->essential_edit_button('slideshow');?>
                 <ol class="carousel-indicators">
                     <?php echo \theme_essential\toolbox::render_indicators($numberofslides); ?>
                 </ol>

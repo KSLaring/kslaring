@@ -62,12 +62,13 @@
     }
     h1#smalltitle {
         font-size: 2em;
-        padding-top: 12px;
         line-height: 20px;
+        padding-top: 12px;
     }
     h2#subtitle {
         font-size: 1em;
         line-height: 20px;
+        padding-top: 6px;
     }
 
     a.textlogo {
@@ -86,6 +87,12 @@
     .btn-icon {
         float: right;
         right: 10px;
+    }
+
+    #essentialicons {
+        button {
+            margin: 0 0 0 5px;
+        }
     }
 
     a.logo {
@@ -113,6 +120,12 @@
         left: 10px;
     }
 
+    #essentialicons {
+        button {
+            margin: 0 5px 0 0;
+        }
+    }
+
     a.logo {
         float: right;
         background-position: right center;
@@ -138,7 +151,7 @@
 
 @media (min-width: @navbarCollapseDesktopWidth) {
     #page-header div.titlearea {
-        height: 57px;
+        height: 64px;
     }
 }
 
@@ -175,6 +188,43 @@
     #mobileapps {
         margin-left: 5px;
         padding-left: 5px;
+    }
+}
+
+#page-header {
+    &.logo {
+        #socialnetworks,
+        #mobileapps {
+            height: ~"[[setting:logoheight]]";
+            max-height: ~"[[setting:logoheight]]";
+        }
+    }
+    &.nologo {
+        #socialnetworks,
+        #mobileapps {
+            height: 52px;
+            max-height: 52px;
+        }
+    }
+}
+
+
+@media (min-width: @navbarCollapseDesktopWidth) {
+    #page-header {
+        &.logo {
+            #socialnetworks,
+            #mobileapps {
+                height: ~"[[setting:logoheight]]";
+                max-height: ~"[[setting:logoheight]]";
+            }
+        }
+        &.nologo {
+            #socialnetworks,
+            #mobileapps {
+                height: 64px;
+                max-height: 64px;
+            }
+        }
     }
 }
 
@@ -266,8 +316,11 @@ ul.socials {
 }
 
 @media (min-width: 768px) {
-    .loggedin #page-header.oldnavbar #essentialicons {
+    .dir-ltr.loggedin #page-header.oldnavbar #essentialicons {
         right: 132px;
+    }
+    .dir-rtl.loggedin #page-header.oldnavbar #essentialicons {
+        left: 132px;
     }
 }
 

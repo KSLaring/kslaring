@@ -18,8 +18,9 @@
  * Version details
  *
  * @package    theme_adaptable
- * @copyright  2015 Jeremy Hopkins (Coventry University)
- * @copyright  2015 Fernando Acedo (3-bits.com)
+ * @copyright  2015-2017 Jeremy Hopkins (Coventry University)
+ * @copyright  2015-2017 Fernando Acedo (3-bits.com)
+ * @copyright  2015-2016 Others
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
  */
@@ -27,16 +28,15 @@
 
 // Load libraries.
 require_once($CFG->dirroot.'/blocks/course_overview/locallib.php');
-require_once($CFG->dirroot .'/course/renderer.php');
-require_once($CFG->libdir. '/coursecatlib.php');
+require_once($CFG->dirroot.'/course/renderer.php');
+require_once($CFG->libdir.'/coursecatlib.php');
+require_once($CFG->dirroot.'/message/lib.php');
 
-/**
- * @copyright 2015 Jeremy Hopkins (Coventry University)
- * @copyright 2015 Fernando Acedo (3-bits.com)
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- *
- * Core renderers for Adaptable theme based on BCU Theme
+
+/******************************************************************************************
+ * Core renderers for Adaptable theme
  */
+
 class theme_adaptable_core_renderer extends core_renderer {
     /** @var custom_menu_item language The language menu if created */
     protected $language = null;
@@ -178,7 +178,7 @@ class theme_adaptable_core_renderer extends core_renderer {
     }
 
     /**
-     * Returns formatted alert message for ticker
+     * Returns formatted alert message
      *
      * @param string $text message text
      * @param string $type alert type
@@ -253,6 +253,30 @@ class theme_adaptable_core_renderer extends core_renderer {
                 break;
         }
         return $alerticonglobal;
+    }
+
+    /**
+     * Returns html to render Development version alert message in the header
+     *
+     * @return string
+     */
+    public function get_dev_alert() {
+        global $CFG;
+        $output = '';
+
+        if (get_config('theme_adaptable', 'version') < '2016121200') {
+                $output .= '<div id="beta"><h3>';
+                $output .= get_string('beta', 'theme_adaptable');
+                $output .= '</h3></div>';
+        }
+
+        if ($CFG->version < 2015111600) {
+                $output .= '<div id="beta"><center><h3>';
+                $output .= get_string('deprecated', 'theme_adaptable');
+                $output .= '</h3></center></div>';
+        }
+
+        return $output;
     }
 
     /**
@@ -428,16 +452,20 @@ EOT;
      */
     protected function render_user_menu(custom_menu $menu) {
         global $PAGE, $CFG, $USER, $DB, $OUTPUT;
+
         $addlangmenu = true;
         $addmessagemenu = true;
+        $messagecount = 0;
 
+        // Let's add the Message item in the left.
         if (!isloggedin() || isguestuser()) {
             $addmessagemenu = false;
         }
+
         if (!$CFG->messaging || !$PAGE->theme->settings->enablemessagemenu) {
             $addmessagemenu = false;
         } else {
-            // Check whether or not the "popup" message output is enabled
+            // Check whether or not the "popup" message output is enabled.
             // This is after we check if messaging is enabled to possibly save a DB query.
             $popup = $DB->get_record('message_processors', array('name' => 'popup'));
             if (!$popup) {
@@ -446,55 +474,70 @@ EOT;
         }
 
         if ($addmessagemenu) {
-            $messages = $this->get_user_messages();
-            $messagecount = count($messages);
+            // Moodle 3.1 or older.
+            if  ($CFG->version < 2016120500) {
+                $messages = $this->get_user_messages();
+                $messagecount = count($messages);
+            } else {
+                // Moodle 3.2 (New messenger view).
+                $messagecount = message_count_unread_messages();
+            }
+
             // Edit by Matthew Anguige, only display unread popover when unread messages are waiting.
             if ($messagecount > 0) {
+                // If got some message then we add the badge with the pending messages number and no link to the messages page.
                 $messagemenu = $menu->add('<i class="fa fa-envelope"> </i>' . get_string('messages', 'message') .' '.
-                '<span class="badge">' . $messagecount . '</span>', new moodle_url('#'), get_string('messages', 'message'), 9999);
+                '<span class="badge">' . $messagecount . '</span>', new moodle_url('/message/index.php'), get_string('messages', 'message'), 9999);
             } else {
+                // if no pending messages we add only a link to the messages page in the menu.
                 $messagemenu = $menu->add('<i class="fa fa-envelope"> </i>' . get_string('messages', 'message'),
                                             new moodle_url('/message/index.php'), get_string('messages', 'message'), 9999);
             }
 
-            foreach ($messages as $message) {
-                if (!isset($message->from) || !isset($message->from->id) || !isset($message->from->firstname)) {
-                    continue;
-                }
-                // Following if to be removed once we are happy with check above correctly limits messages.
-                if (!isset($message->from)) {
-                    $url = $OUTPUT->pix_url('u/f2');
-                    $attributes = array(
-                        'src' => $url
-                    );
-                    $senderpicture = html_writer::empty_tag('img', $attributes);
-                } else {
-                    $senderpicture = new user_picture($message->from);
-                    $senderpicture->link = false;
-                    $senderpicture = $this->render($senderpicture);
-                }
+            if  ($CFG->version < 2016120500) {
+                // In Moodle 3.1 we display the messages in a pop-up (Not yet in 3.2).
+                foreach ($messages as $message) {
+                    if (!isset($message->from) || !isset($message->from->id) || !isset($message->from->firstname)) {
+                        continue;
+                    }
+                    // Following if to be removed once we are happy with check above correctly limits messages.
+                    if (!isset($message->from)) {
+                        $url = $OUTPUT->pix_url('u/f2');
+                        $attributes = array(
+                            'src' => $url
+                        );
+                        $senderpicture = html_writer::empty_tag('img', $attributes);
+                    } else {
+                        $senderpicture = new user_picture($message->from);
+                        $senderpicture->link = false;
+                        $senderpicture = $this->render($senderpicture);
+                    }
 
-                $messagecontent = $senderpicture;
-                $messagecontent .= html_writer::start_tag('span', array('class' => 'msg-body'));
-                $messagecontent .= html_writer::start_tag('span', array('class' => 'msg-title'));
-                $messagecontent .= html_writer::tag('span', $message->from->firstname . ': ', array('class' => 'msg-sender'));
-                $messagecontent .= $message->text;
-                $messagecontent .= html_writer::end_tag('span');
-                $messagecontent .= html_writer::start_tag('span', array('class' => 'msg-time'));
-                $messagecontent .= html_writer::tag('i', '', array('class' => 'icon-time'));
-                $messagecontent .= html_writer::tag('span', $message->date);
-                $messagecontent .= html_writer::end_tag('span');
+                    // Let's go to create the message to show in the screen.
+                    $messagecontent = $senderpicture;
+                    $messagecontent .= html_writer::start_tag('span', array('class' => 'msg-body'));
+                    $messagecontent .= html_writer::start_tag('span', array('class' => 'msg-title'));
+                    $messagecontent .= html_writer::tag('span', $message->from->firstname . ': ', array('class' => 'msg-sender'));
+                    $messagecontent .= $message->text;
+                    $messagecontent .= html_writer::end_tag('span');
+                    $messagecontent .= html_writer::start_tag('span', array('class' => 'msg-time'));
+                    $messagecontent .= html_writer::tag('i', '', array('class' => 'icon-time'));
+                    $messagecontent .= html_writer::tag('span', $message->date);
+                    $messagecontent .= html_writer::end_tag('span');
 
-                $messagemenu->add($messagecontent, new moodle_url('/message/index.php', array('user1' => $USER->id,
+                    $messagemenu->add($messagecontent, new moodle_url('/message/index.php', array('user1' => $USER->id,
                         'user2' => $message->from->id)));
+                }
             }
         }
 
+        // Let's go to create the lang menu if available.
         $langs = get_string_manager()->get_list_of_translations();
         if (count($langs) < 2 || empty($CFG->langmenu) || ($this->page->course != SITEID and !empty($this->page->course->lang))) {
             $addlangmenu = false;
         }
 
+        // And finally let's go to add the custom usermenus.
         $content = html_writer::start_tag('ul', array('class' => 'usermenu2 nav navbar-nav navbar-right'));
         foreach ($menu->get_children() as $item) {
             $content .= $this->render_custom_menu_item($item, 1);
@@ -533,40 +576,33 @@ EOT;
      * @return array
      */
     protected function get_user_messages() {
-        global $USER, $DB;
+        global $PAGE, $USER, $DB, $CFG;
+
         $messagelist = array();
+        $newmessages = 0;
 
-        $newmessagesql = "SELECT id, smallmessage, useridfrom, useridto, timecreated, fullmessageformat, notification
-                           FROM {message}
-                           WHERE useridto = :userid
-                           AND useridfrom > 2
-                           AND notification <> 1";
+        if ($CFG->version < 2016120500) {
+            // Moodle 3.1 or older.
+            $newmessagesql = "SELECT id, smallmessage, useridfrom, useridto, timecreated, fullmessageformat, notification
+                              FROM {message}
+                              WHERE useridto = :userid
+                              AND notification <> 1";
 
-        $newmessages = $DB->get_records_sql($newmessagesql, array('userid' => $USER->id));
+            if ($PAGE->theme->settings->filteradminmessages) {
+                $newmessagesql .= " AND useridfrom > 2";
 
-        foreach ($newmessages as $message) {
-            $messagelist[] = $this->process_message($message);
-        }
-
-        $showoldmessages = (empty($this->page->theme->settings->showoldmessages)) ? 0 : $this->page->theme->settings->showoldmessages;
-        if ($showoldmessages) {
-            $maxmessages = 5;
-            $readmessagesql = "SELECT id, smallmessage, useridfrom, useridto, timecreated, fullmessageformat, notification
-                                 FROM {message_read}
-                                WHERE useridto = :userid
-                                AND useridfrom > 2
-                                AND notification <> 1
-                             ORDER BY timecreated DESC
-                                LIMIT $maxmessages";
-
-            $readmessages = $DB->get_records_sql($readmessagesql, array('userid' => $USER->id));
-
-            foreach ($readmessages as $message) {
-                $messagelist[] = $this->process_message($message);
+                $newmessages = $DB->get_records_sql($newmessagesql, array('userid' => $USER->id));
             }
-        }
 
-        return $messagelist;
+            return $messagelist;
+        } else {
+            // Moodle 3.2 or newer.
+            $newmessages = $DB->count_records_select('message',
+                                                     'useridto = [$USER->id] AND timeusertodeleted = 0 AND notification = 0',
+                                                     [$USER->id],
+                                                     "COUNT(DISTINCT(useridfrom))");
+            return $newmessages;
+        }
     }
 
     /**
@@ -577,6 +613,7 @@ EOT;
      */
     protected function process_message($message) {
         global $DB, $USER;
+
         $messagecontent = new stdClass();
         if ($message->notification || $message->useridfrom < 1) {
             $messagecontent->text = $message->smallmessage;
@@ -680,13 +717,14 @@ EOT;
      * @return string
      */
     public function get_news_ticker() {
-        global $PAGE;
+        global $PAGE, $OUTPUT;
         $retval = '';
 
         if (!isset($PAGE->theme->settings->enabletickermy)) {
             $PAGE->theme->settings->enabletickermy = 0;
         }
 
+        // Display ticker if possible.
         if ((!empty($PAGE->theme->settings->enableticker) &&
         $PAGE->theme->settings->enableticker &&
         $PAGE->bodyid == "page-site-index") ||
@@ -697,6 +735,9 @@ EOT;
             for ($i = 1; $i <= $tickercount; $i++) {
                 $textfield = 'tickertext' . $i;
                 $profilefield = 'tickertext' . $i . 'profilefield';
+
+                format_text($textfield, FORMAT_HTML);
+
                 $access = true;
 
                 if (!empty($PAGE->theme->settings->$profilefield)) {
@@ -709,23 +750,28 @@ EOT;
                 if ($access) {
                     $msg .= $PAGE->theme->settings->$textfield;
                 }
-            }
-            $msg = preg_replace('#\<[\/]{0,1}(p|ul|div|pre|blockquote)\>#', '', $msg);
-            if ($msg == '') {
-                $msg = '<li>' . get_string('tickerdefault', 'theme_adaptable') . '</li>';
+
+                $msg = preg_replace('#\<[\/]{0,1}(p|ul|div|pre|blockquote)\>#', '', $msg);
+                if ($msg == '') {
+                    $msg = '<li>' . get_string('tickerdefault', 'theme_adaptable') . '</li>';
+                }
+
+                $retval .= '<div id="ticker-wrap" class="clearfix container">';
+                $retval .= '<div class="pull-left" id="ticker-announce">';
+                $retval .= get_string('ticker', 'theme_adaptable');
+                $retval .= '</div>';
+                $retval .= '<ul id="ticker">';
+                $retval .= format_text($PAGE->theme->settings->$textfield, FORMAT_HTML, array('trusted' => true));
             }
 
-            $retval .= '<div id="ticker-wrap" class="clearfix container">';
-            $retval .= '<div class="pull-left" id="ticker-announce">';
-            $retval .= get_string('ticker', 'theme_adaptable');
-            $retval .= '</div>';
-            $retval .= '<ul id="ticker">';
-            $retval .= $msg;
+            $retval .= $OUTPUT->get_setting($msg, 'format_html');
             $retval .= '</ul>';
             $retval .= '</div>';
         }
+
         return $retval;
     }
+
 
     /**
      * Renders block regions on front page
@@ -762,7 +808,7 @@ EOT;
 
                     // Moodle does not seem to like numbers in region names so using letter instead.
                     $blockcount ++;
-                    $block = 'frnt-market-' .  chr(96 + $blockcount);
+                    $block = 'frnt-market-' . chr(96 + $blockcount);
 
                     if ($adminediting) {
                         $retval .= '<span style="padding-left: 10px;"> ' . '' . '</span>';
@@ -810,7 +856,8 @@ EOT;
                     $blockcount ++;
                     $fieldname = $settingname . $blockcount;
                     if (isset($PAGE->theme->settings->$fieldname)) {
-                         $retval .= $OUTPUT->get_setting($fieldname, 'format_html');
+                        // Add HTML format.
+                        $retval .= $OUTPUT->get_setting($fieldname, 'format_html');
                     }
                     $retval .= '</div>';
                 }
@@ -882,9 +929,11 @@ EOT;
                     $footercontent = 'footer' . $blockcount . 'content';
                     if (!empty($PAGE->theme->settings->$footercontent)) {
                         $output .= '<div class="left-col span' . $val . '">';
-                        $output .= '<h3 title="' . $OUTPUT->get_setting($footerheader, 'format_text') . '">';
-                        $output .= $OUTPUT->get_setting($footerheader, 'format_text');
-                        $output .= '</h3>';
+                        if (!empty($PAGE->theme->settings->$footerheader)) {
+                            $output .= '<h3>';
+                            $output .= $OUTPUT->get_setting($footerheader, 'format_text');
+                            $output .= '</h3>';
+                        }
                         $output .= $OUTPUT->get_setting($footercontent, 'format_html');
                         $output .= '</div>';
                     }
@@ -1003,11 +1052,17 @@ EOT;
 
             // Text / Icon home.
             if ($i++ == 0) {
-                if ($PAGE->theme->settings->breadcrumbhome == 'icon') {
-                    $breadcrumbs = html_writer::link(new moodle_url('/'),
+                $breadcrumbs .= '<li>';
+
+                if (get_config('theme_adaptable', 'enablehome') && get_config('theme_adaptable', 'enablemyhome')) {
+                    $breadcrumbs = html_writer::tag('i', '', array('class' => 'fa fa-folder-open-o fa-lg'));
+                } else if (get_config('theme_adaptable', 'breadcrumbhome') == 'icon') {
+                    $breadcrumbs .= html_writer::link(new moodle_url('/'),
                                    html_writer::tag('i', '', array('class' => 'fa fa-home fa-lg')));
+                    $breadcrumbs .= '</li>';
                 } else {
-                    $breadcrumbs = html_writer::link(new moodle_url('/'), get_string('home'));
+                    $breadcrumbs .= html_writer::link(new moodle_url('/'), get_string('home'));
+                    $breadcrumbs .= '</li>';
                 }
                 continue;
             }
@@ -1179,8 +1234,7 @@ EOT;
                     foreach ($sortedcourses as $course) {
                         if (!$course->visible && $mysitesvisibility == 'includehidden') {
                             if (empty($parent)) {
-                                $parent = $branch->add($icon . $trunc =
-                                    rtrim(mb_strimwidth(format_string(get_string('hiddencourses', 'theme_adaptable')),
+                                $parent = $branch->add($icon . $trunc = rtrim(mb_strimwidth(format_string(get_string('hiddencourses', 'theme_adaptable')),
                                         0, $mysitesmaxlengthhidden)) . '...',
                                         new moodle_url('#'), '', 2000);
                             }
@@ -1387,12 +1441,13 @@ EOT;
             }
         } else {
             if ($display == 'custom') {
-                // Custom title.
+                // Custom title using html output to allow multi-lang.
                 if (!empty($PAGE->theme->settings->sitetitletext)) {
                     $header = theme_adaptable_remove_site_fullname($PAGE->theme->settings->sitetitletext);
+                    $sitetitlehtml = $PAGE->theme->settings->sitetitletext;
                     $PAGE->set_heading($header);
 
-                    $retval .= '<div id="sitetitle">' . $PAGE->theme->settings->sitetitletext . '</div>';
+                    $retval .= '<div id="sitetitle">' . format_text($sitetitlehtml, FORMAT_HTML) . '</div>';
                 }
             }
         }
@@ -1696,28 +1751,32 @@ EOT;
         $addlangmenu = true;
         $langs = get_string_manager()->get_list_of_translations();
         if (count($langs) < 2
-            or empty($CFG->langmenu)
-            or ($this->page->course != SITEID and !empty($this->page->course->lang))
-        ) {
-            $addlangmenu = false;
+            || empty($CFG->langmenu)
+            || ($this->page->course != SITEID
+            && !empty($this->page->course->lang))) {
+                $addlangmenu = false;
         }
 
         if ($addlangmenu) {
             $strlang = get_string('language');
             $currentlang = current_language();
+
             if (isset($langs[$currentlang])) {
                 $currentlang = $langs[$currentlang];
             } else {
                 $currentlang = $strlang;
             }
+
             $this->language = $langmenu->add('<i class="fa fa-globe fa-lg"></i><span class="langdesc">'.$currentlang.'</span>',
-                    new moodle_url('#'), $strlang, 100);
+                                             new moodle_url('#'), $strlang, 10000);
+
             foreach ($langs as $langtype => $langname) {
                 $this->language->add($langname, new moodle_url($this->page->url, array('lang' => $langtype)), $langname);
             }
         }
         return $this->render_custom_menu($langmenu);
     }
+
 
     /**
      * Returns html for custom menu
@@ -1761,7 +1820,7 @@ EOT;
             return '';
         }
 
-        $content = '<ul class="nav">';
+        $content = '<ul class="nav navbar-nav">';
         foreach ($menu->get_children() as $item) {
             $content .= $this->render_custom_menu_item($item, 1);
         }
@@ -1896,12 +1955,12 @@ EOT;
     }
 }
 
-/**
+/******************************************************************************************
  * @copyright 2015 Jeremy Hopkins (Coventry University)
  * @copyright 2015 Fernando Acedo (3-bits.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
- * Course renderers for Adaptable theme based on BCU Theme
+ * Core Course Renderers for Adaptable theme
  */
 class theme_adaptable_core_course_renderer extends core_course_renderer {
     /**
@@ -2336,4 +2395,6 @@ class theme_adaptable_core_course_renderer extends core_course_renderer {
         }
         return $content;
     }
+
+    // End.
 }
