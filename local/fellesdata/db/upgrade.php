@@ -189,7 +189,7 @@ class Fellesdata_Update {
             /* personalnumber   --> Personal number                 */
             $tblUsersFSJR->add_field('personalnumber',XMLDB_TYPE_CHAR,'50',null, XMLDB_NOTNULL, null,null);
             /* companyid        --> Company Id from fellesdata.       */
-            $tblUsersFSJR->add_field('companyid',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
+            $tblUsersFSJR->add_field('companyid',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
             /* jrcode           --> Job role Id from fellesdata     */
             $tblUsersFSJR->add_field('jrcode',XMLDB_TYPE_CHAR,'50',null, XMLDB_NOTNULL, null,null);
             /* ksjrcode           --> Job role Id from ks     */
@@ -233,7 +233,7 @@ class Fellesdata_Update {
             /* Id --> Primary key                           */
             $tblImpManagersReporters->add_field('id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
             /* org_enhet_id --> Company id                  */
-            $tblImpManagersReporters->add_field('org_enhet_id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
+            $tblImpManagersReporters->add_field('org_enhet_id',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
             /* org_nivaa --> Hierarchy level of the company */
             $tblImpManagersReporters->add_field('org_nivaa',XMLDB_TYPE_INTEGER,'2',null, XMLDB_NOTNULL, null,null);
             /* fodselsnr --> Personal number                */
@@ -648,7 +648,7 @@ class Fellesdata_Update {
             /* kscompany        --> Foreign key     */
             $tblUnMap->add_field('kscompany',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
             /* fscompany        --> Foreign key     */
-            $tblUnMap->add_field('fscompany',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
+            $tblUnMap->add_field('fscompany',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
             /* tosync           --> Not null. To be synchronized or not     */
             $tblUnMap->add_field('tosync',XMLDB_TYPE_INTEGER,'1',null, XMLDB_NOTNULL, null,null);
             /* sync             --> Not null. If it is already synchronized */

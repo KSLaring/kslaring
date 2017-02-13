@@ -274,7 +274,7 @@ class Fellesdata_Install {
             /* kscompany        --> Foreign key     */
             $tblUnMap->add_field('kscompany',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
             /* fscompany        --> Foreign key     */
-            $tblUnMap->add_field('fscompany',XMLDB_TYPE_CHAR,'50',null, XMLDB_NOTNULL, null,null);
+            $tblUnMap->add_field('fscompany',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
             /* tosync           --> Not null. To be synchronized or not     */
             $tblUnMap->add_field('tosync',XMLDB_TYPE_INTEGER,'1',null, XMLDB_NOTNULL, null,null);
             /* sync             --> Not null. If it is already synchronized */
@@ -317,13 +317,13 @@ class Fellesdata_Install {
             /* Id               --> Primary key.  */
             $tblFSImpComp->add_field('id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
             /* org_enhet_id     --> Company Id from fellesdata          */
-            $tblFSImpComp->add_field('org_enhet_id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
+            $tblFSImpComp->add_field('org_enhet_id',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
             /* org_nivaa        --> Hierarchy level from fellesdata     */
             $tblFSImpComp->add_field('org_nivaa',XMLDB_TYPE_INTEGER,'2',null, XMLDB_NOTNULL, null,null);
             /* org_navn         --> Company name                        */
             $tblFSImpComp->add_field('org_navn',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
             /* org_enhet_over   --> Parent company                      */
-            $tblFSImpComp->add_field('org_enhet_over',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
+            $tblFSImpComp->add_field('org_enhet_over',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
             /* privat --> public */
             $tblFSImpComp->add_field('privat',XMLDB_TYPE_INTEGER,'1',null, null, null,null);
             /* ansvar   */
@@ -439,7 +439,7 @@ class Fellesdata_Install {
             /* epost        --> eMail                       */
             $tblImpUsersJR->add_field('epost',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
             /* org_enhet_id     --> Company id              */
-            $tblImpUsersJR->add_field('org_enhet_id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
+            $tblImpUsersJR->add_field('org_enhet_id',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
             /* stillingskode    --> Job Role code           */
             $tblImpUsersJR->add_field('stillingskode',XMLDB_TYPE_CHAR,'50',null, XMLDB_NOTNULL, null,null);
             /* stillingstekst   --> Job Role Name           */
@@ -491,7 +491,7 @@ class Fellesdata_Install {
             /* Id --> Primary key                           */
             $tblImpManagersReporters->add_field('id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
             /* org_enhet_id --> Company id                  */
-            $tblImpManagersReporters->add_field('org_enhet_id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
+            $tblImpManagersReporters->add_field('org_enhet_id',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
             /* org_nivaa --> Hierarchy level of the company */
             $tblImpManagersReporters->add_field('org_nivaa',XMLDB_TYPE_INTEGER,'2',null, XMLDB_NOTNULL, null,null);
             /* fodselsnr --> Personal number                */
@@ -702,7 +702,7 @@ class Fellesdata_Install {
             /* Id           --> Primary key                                     */
             $tblFSCompany->add_field('id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
             /* companyid    --> Company Id from fellesdata                      */
-            $tblFSCompany->add_field('companyid',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
+            $tblFSCompany->add_field('companyid',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
             /* name         --> Company name                                    */
             $tblFSCompany->add_field('name',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
             /* level        --> Level of the company inside the organization    */
@@ -710,7 +710,7 @@ class Fellesdata_Install {
             /* parent       --> Parent of the company                           */
             $tblFSCompany->add_field('parent',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
             /* fs_parent    */
-            $tblFSCompany->add_field('fs_parent',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
+            $tblFSCompany->add_field('fs_parent',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
             /* privat --> public */
             $tblFSCompany->add_field('privat',XMLDB_TYPE_INTEGER,'1',null, null, null,null);
             /* ansvar   */
@@ -774,7 +774,7 @@ class Fellesdata_Install {
             /* kscompany    --> Foreign key. Company id from KS */
             $tblKSFSCompany->add_field('kscompany',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
             /* fscompany    --> Foreign key. Company id from FS */
-            $tblKSFSCompany->add_field('fscompany',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
+            $tblKSFSCompany->add_field('fscompany',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
 
             /* Keys     */
             $tblKSFSCompany->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
@@ -813,7 +813,7 @@ class Fellesdata_Install {
             /* Id               --> primary key                                     */
             $tblUsersFSCompany->add_field('id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
             /* companyid        --> Company ID from fellesdata                      */
-            $tblUsersFSCompany->add_field('companyid',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
+            $tblUsersFSCompany->add_field('companyid',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
             /* level            --> Level of the company inside the organization    */
             $tblUsersFSCompany->add_field('level',XMLDB_TYPE_INTEGER,'2',null, XMLDB_NOTNULL, null,null);
             /* personalnumber   --> Personal number                                 */
@@ -1039,7 +1039,7 @@ class Fellesdata_Install {
             /* personalnumber   --> Personal number                 */
             $tblUsersFSJR->add_field('personalnumber',XMLDB_TYPE_CHAR,'50',null, XMLDB_NOTNULL, null,null);
             /* companyid        --> Company Id from fellesdata.       */
-            $tblUsersFSJR->add_field('companyid',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
+            $tblUsersFSJR->add_field('companyid',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
             /* jrcode           --> Job role Id from fellesdata     */
             $tblUsersFSJR->add_field('jrcode',XMLDB_TYPE_CHAR,'50',null, XMLDB_NOTNULL, null,null);
             /* ksjrcode           --> Job role Id from ks     */
