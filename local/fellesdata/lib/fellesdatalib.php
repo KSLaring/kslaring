@@ -560,7 +560,7 @@ class FSKS_COMPANY {
                                   IF(fs.adresse2,fs.adresse2,0)   as 'adresse2',
                                   IF(fs.adresse3,fs.adresse3,0)   as 'adresse3',
                                   IF(fs.postnr,fs.fs.postnr,0)    as 'postnr',
-                                  IF(fs.poststed,fs.poststed,0)   as 'poststed'
+                                  IF(fs.poststed,fs.poststed,0)   as 'poststed',
                                   IF(fs.epost,fs.epost,0)         as 'epost'
                      FROM		  {fs_company}	  fs
                         JOIN      {ks_company}	  ks 	ON ks.companyid     = fs.parent
@@ -644,7 +644,7 @@ class FSKS_COMPANY {
                               IF(fs.adresse2,fs.adresse2,0)   as 'adresse2',
                               IF(fs.adresse3,fs.adresse3,0)   as 'adresse3',
                               IF(fs.postnr,fs.fs.postnr,0)    as 'postnr',
-                              IF(fs.poststed,fs.poststed,0)   as 'poststed'
+                              IF(fs.poststed,fs.poststed,0)   as 'poststed',
                               IF(fs.epost,fs.epost,0)         as 'epost'
                               fs_imp.action
                      FROM	  {fs_company}		fs
