@@ -645,7 +645,7 @@ class FSKS_COMPANY {
                               IF(fs.adresse3,fs.adresse3,0)   as 'adresse3',
                               IF(fs.postnr,fs.postnr,0)       as 'postnr',
                               IF(fs.poststed,fs.poststed,0)   as 'poststed',
-                              IF(fs.epost,fs.epost,0)         as 'epost'
+                              IF(fs.epost,fs.epost,0)         as 'epost',
                               fs_imp.action
                      FROM	  {fs_company}		fs
                         JOIN  {fs_imp_company}	fs_imp 	ON 	fs_imp.org_enhet_id = fs.companyid
