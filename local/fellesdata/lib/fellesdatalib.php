@@ -586,6 +586,7 @@ class FSKS_COMPANY {
                     $infoCompany->public        = $instance->public;
                     $infoCompany->ansvar        = ($instance->ansvar    ? $instance->ansvar     : '     ');
                     $infoCompany->tjeneste      = ($instance->tjeneste  ? $instance->tjeneste   : '     ');
+                    echo $instance->name . " - " . $infoCompany->tjeneste . "</br>";
                     $infoCompany->adresseOne    = ($instance->adresse1  ? $instance->adresse1   : '     ');
                     $infoCompany->adresseTwo    = ($instance->adresse2  ? $instance->adresse2   : '     ');
                     $infoCompany->adresseThree  = ($instance->adresse3  ? $instance->adresse3   : '     ');
