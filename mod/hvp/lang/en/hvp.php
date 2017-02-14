@@ -70,6 +70,11 @@ $string['removetmpfiles'] = 'Remove old H5P temporary files';
 $string['removeoldlogentries'] = 'Remove old H5P log entries';
 
 // Admin settings.
+$string['displayoptionnevershow'] = 'Never show';
+$string['displayoptionalwaysshow'] = 'Always show';
+$string['displayoptionpermissions'] = 'Show only if user has permissions to export H5P';
+$string['displayoptionauthoron'] = 'Controlled by author, default is on';
+$string['displayoptionauthoroff'] = 'Controlled by author, default is off';
 $string['displayoptions'] = 'Display Options';
 $string['enableframe'] = 'Display action bar and frame';
 $string['enabledownload'] = 'Download button';
@@ -175,6 +180,9 @@ $string['noparameters'] = 'No parameters';
 $string['invalidparameters'] = 'Invalid Parameters';
 $string['missingcontentuserdata'] = 'Error: Could not find content user data';
 
+$string['maximumgrade'] = 'Maximum grade';
+$string['maximumgradeerror'] = 'Please enter a valid positive integer as the max points available for this activity';
+
 // Capabilities
 $string['hvp:addinstance'] = 'Add a new H5P Activity';
 $string['hvp:restrictlibraries'] = 'Restrict a H5P library';
@@ -229,7 +237,6 @@ $string['invalidfile'] = 'File "{$a->%filename}" not allowed. Only files with th
 $string['invalidmultiselectoption'] = 'Invalid selected option in multi-select.';
 $string['invalidselectoption'] = 'Invalid selected option in select.';
 $string['invalidsemanticstype'] = 'H5P internal error: unknown content type "{$a->@type}" in semantics. Removing content!';
-$string['invalidsemantics'] = 'Library used in content is not a valid library according to semantics';
 $string['copyrightinfo'] = 'Copyright information';
 $string['years'] = 'Year(s)';
 $string['undisclosed'] = 'Undisclosed';
@@ -260,3 +267,6 @@ $string['welcomeheader'] = 'Welcome to the world of H5P!';
 $string['welcomegettingstarted'] = 'To get started with H5P and Moodle take a look at our <a {$a->moodle_tutorial}>tutorial</a> and check out the <a {$a->example_content}>example content</a> at H5P.org for inspiration.<br>The most popuplar content types have been installed for your convenience!';
 $string['welcomecommunity'] = 'We hope you will enjoy H5P and get engaged in our growing community through our <a {$a->forums}>forums</a> and chat room <a {$a->gitter}>H5P at Gitter</a>';
 $string['welcomecontactus'] = 'If you have any feedback, don\'t hesitate to <a {$a}>contact us</a>. We take feedback very seriously and are dedicated to making H5P better every day!';
+$string['missingmbstring'] = 'The mbstring PHP extension is not loaded. H5P need this to function properly';
+$string['wrongversion'] = 'The version of the H5P library {$a->%machineName} used in this content is not valid. Content contains {$a->%contentLibrary}, but it should be {$a->%semanticsLibrary}.';
+$string['invalidlibrary'] = 'The H5P library {$a->%library} used in the content is not valid';
