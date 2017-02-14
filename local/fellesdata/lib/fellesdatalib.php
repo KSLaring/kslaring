@@ -504,10 +504,7 @@ class FSKS_COMPANY {
 
                 if ($objCompany->unmapped) {
                     // Unmap company
-                    $infoCompany = new stdClass();
-                    $infoCompany->id = $objCompany->id;
-                    $infoCompany->sync = 1;
-                    $DB->update_record('ksfs_org_unmap',$infoCompany);
+                    $DB->delete_records('ksfs_org_unmap',array('id' => $objCompany->id));
                 }//unmapped
             }//for_unmap
         }catch (Exception $ex) {
@@ -638,14 +635,14 @@ class FSKS_COMPANY {
                               fs.parent,
                               ks_pa.industrycode,
                               IF(fs.privat,0,1) 	          as 'public',
-                              IF(fs.ansvar,fs.ansvar,0)       as 'ansvar',
-                              IF(fs.tjeneste,fs.tjeneste,0)   as 'tjeneste',
-                              IF(fs.adresse1,fs.adresse1,0)   as 'adresse1',
-                              IF(fs.adresse2,fs.adresse2,0)   as 'adresse2',
-                              IF(fs.adresse3,fs.adresse3,0)   as 'adresse3',
-                              IF(fs.postnr,fs.postnr,0)       as 'postnr',
-                              IF(fs.poststed,fs.poststed,0)   as 'poststed',
-                              IF(fs.epost,fs.epost,0)         as 'epost',
+                              fs.ansvar,
+                              fs.tjeneste,
+                              fs.adresse1,
+                              fs.adresse2,
+                              fs.adresse3
+                              fs.postnr,
+                              fs.poststed,
+                              fs.epost,
                               fs_imp.action
                      FROM	  {fs_company}		fs
                         JOIN  {fs_imp_company}	fs_imp 	ON 	fs_imp.org_enhet_id = fs.companyid
