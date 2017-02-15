@@ -180,9 +180,9 @@ class job_role {
                         $sqlExtra .= '(' . $sqlLevel . ')';
                     }//levelOne
                 }//for
-                
+
                 if ($sqlExtra) {
-                    $sql .= " AND (" . $sqlExtra . ")";    
+                    $sql .= " AND (" . $sqlExtra . ")";
                 }
             }//if_superUser
 
@@ -579,7 +579,7 @@ class job_role {
     public static function JobRoles_table($job_roles,$superUser=false){
         /* Variables    */
         global $CFG,$OUTPUT;
-        $context        = CONTEXT_SYSTEM::instance();
+        $context        = context_system::instance();
         $can_edit       = has_capability('report/manager:edit', $context);
         /* Column Tables    */
         $str_fullname  = get_string('fullname');
