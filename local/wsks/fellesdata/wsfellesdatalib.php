@@ -1847,14 +1847,32 @@ class WS_FELLESDATA {
             $instanceCompany->industrycode      = $companyInfo->industry;
             $instanceCompany->hierarchylevel    = $companyInfo->level;
             $instanceCompany->public            = $companyInfo->public;
-            $instanceCompany->ansvar            = $companyInfo->ansvar;
-            $instanceCompany->tjeneste          = $companyInfo->tjeneste;
-            $instanceCompany->adresse1          = $companyInfo->adresseOne;
-            $instanceCompany->adresse2          = $companyInfo->adresseTwo;
-            $instanceCompany->adresse3          = $companyInfo->adresseThree;
-            $instanceCompany->postnr            = $companyInfo->postnr;
-            $instanceCompany->poststed          = $companyInfo->poststed;
-            $instanceCompany->epost             = $companyInfo->epost;
+            // Invoice data
+            if ($companyInfo->ansvar) {
+                $instanceCompany->ansvar        = $companyInfo->ansvar;
+            }//if_ansvar
+            if ($companyInfo->tjeneste) {
+                $instanceCompany->tjeneste      = $companyInfo->tjeneste;
+            }//if_tjeneste
+            if ($companyInfo->adresseOne) {
+                $instanceCompany->adresse1      = $companyInfo->adresseOne;
+            }//if_adresseOne
+            if ($companyInfo->adresseTwo) {
+                $instanceCompany->adresse2      = $companyInfo->adresseTwo;
+            }//if_adresseTwo
+            if ($companyInfo->adresseThree) {
+                $instanceCompany->adresse3      = $companyInfo->adresseThree;
+            }//if_adresseThree
+            if ($companyInfo->postnr) {
+                $instanceCompany->postnr        = $companyInfo->postnr;
+            }//if_postnr
+            if ($companyInfo->poststed) {
+                $instanceCompany->poststed      = $companyInfo->poststed;
+            }//if_poststed
+            if ($companyInfo->epost) {
+                $instanceCompany->epost         = $companyInfo->epost;
+            }//if_epost
+
             $instanceCompany->mapped            = MAPPED_TARDIS;
 
             /* Invoice Data */

@@ -1131,7 +1131,7 @@ class WS_DOSKOM {
                         AND		(
                                   e.company 	    = :company
                                   OR
-                                  e.company	LIKE '%,"    . $company . ",%'
+                                  e.company	 LIKE '%,"    . $company . ",%'
                                   OR
                                   e.company  LIKE '"     . $company . ",%'
                                   OR
