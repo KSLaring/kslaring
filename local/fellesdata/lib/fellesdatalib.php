@@ -458,6 +458,8 @@ class FSKS_COMPANY {
         $params     = null;
         $info       = null;
         $toUnMap    = array();
+        $info       = null;
+        
 
         try {
             // Search criteria
@@ -466,10 +468,13 @@ class FSKS_COMPANY {
             $params['sync']     = 0;
 
             // Execute
-            $rdo = $DB->get_records('ksfs_org_unmap',$params,'id','id,kscompany');
+            $rdo = $DB->get_records('ksfs_org_unmap',$params);
             if ($rdo) {
                 foreach ($rdo as $instance) {
-                    $toUnMap[$instance->id] = $instance;
+                    $info = new stdClass();
+                    $info->id           = $instance->id;
+                    $info->kscompany    = $instance->kscompany;
+                    $toUnMap[$info->id] = $info;
                 }//for_rdo
             }//if_rdo
 
@@ -639,7 +644,7 @@ class FSKS_COMPANY {
                               fs.tjeneste,
                               fs.adresse1,
                               fs.adresse2,
-                              fs.adresse3
+                              fs.adresse3,
                               fs.postnr,
                               fs.poststed,
                               fs.epost,
