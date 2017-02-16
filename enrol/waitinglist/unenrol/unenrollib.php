@@ -214,47 +214,45 @@ Class Unenrol_Waiting {
                                   ew.unenrolenddate,
                                   ewq.methodtype,
                                   ewq.queueno
-                    FROM          {enrol_waitinglist_queue} 	ewq
-                        JOIN      {user_enrolments}	            ue 		ON  ue.enrolid 			= ewq.waitinglistid
-                                                                        AND ue.status			= 0
-                                                                        AND ue.userid			= ewq.userid
-                        JOIN	  {enrol_waitinglist_method}	ew		ON	ew.waitinglistid 	= ewq.waitinglistid
-                                                                        AND ew.courseid			= ewq.courseid
-                                                                        AND ew.status 			= 1
-                        LEFT JOIN {course_completions}      	cc  	ON  cc.course			= ew.courseid
-                                                                        AND cc.userid			= ue.userid
-                                                                        AND (cc.timecompleted IS NULL
-                                                                             OR
-                                                                             cc.timecompleted = 0
-                                                                             )
+                    FROM          {enrol_waitinglist_queue} 		ewq
+                        JOIN      {user_enrolments}	                ue 		ON  ue.enrolid 			= ewq.waitinglistid
+																			AND ue.status			= 0
+																			AND ue.userid			= ewq.userid
+                        JOIN	  {enrol_waitinglist_method}		ew		ON	ew.waitinglistid 	= ue.enrolid 	
+																			AND	ew.methodtype		= ewq.methodtype
+							 												AND ew.courseid			= ewq.courseid
+								 											AND ew.status 			= 1
+                        LEFT JOIN {course_completions}      		cc  	ON  cc.course			= ew.courseid
+							 												AND cc.userid			= ue.userid
+								 											AND (cc.timecompleted IS NULL
+								 												 OR
+								  												 cc.timecompleted = 0
+									 											)
                     WHERE       ewq.courseid      	= :course
                         AND     ewq.waitinglistid 	= :wait
                         AND		ewq.userid			= :user ";
 
             /* Execute */
-            $rdo = $DB->get_records_sql($sql,$params);
+            $rdo = $DB->get_record_sql($sql,$params);
             if ($rdo) {
-                foreach ($rdo as $instance) {
-                    switch ($instance->methodtype) {
-                        case 'unnamedbulk':
-                            if ($instance->queueno != '99999') {
-                                $canenrol = false;
-                            }else {
-                                $canenrol = true;
-                            }
+                switch ($rdo->methodtype) {
+                    case 'unnamedbulk':
+                        if ($rdo->queueno != '99999') {
+                            $canenrol = false;
+                        }else {
+                            $canenrol = true;
+                        }
 
-                            break;
+                        break;
 
-                        default:
-                            if ($instance->unenrolenddate != 0 and $instance->unenrolenddate < time()) {
-                                $canenrol = false;
-                            }else {
-                                $canenrol = true;
-                            }
-                            break;
-                    }//switch_methodtype
-                }
-
+                    default:
+                        if ($rdo->unenrolenddate != 0 and $rdo->unenrolenddate < time()) {
+                            $canenrol = false;
+                        }else {
+                            $canenrol = true;
+                        }
+                        break;
+                }//switch_methodtype
             }else {
                 $canenrol = false;
             }
