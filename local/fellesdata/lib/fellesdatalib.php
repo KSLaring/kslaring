@@ -548,28 +548,29 @@ class FSKS_COMPANY {
 
             // SQL Instruction
             $sql = " SELECT	DISTINCT 
-                                  fs.id,
-                                  fs.companyid,
-                                  IF(ks_fs.id,ks_fs.kscompany,0) as 'ks',
+                                  -- fs.id,
+                                  fs.companyid as 'fsId',
+                                  IF(ks_fs.id,ks_fs.kscompany,0) as 'ksId',
                                   fs.name,
                                   fs.level,
-                                  ks.industrycode,
+                                  ks.industrycode as 'industry',
                                   fs.parent,
                                   IF(fs.privat,0,1)             as 'public',
                                   IF(fs.ansvar,fs.ansvar,0) 	as 'ansvar',
                                   IF(fs.tjeneste,fs.tjeneste,0) as 'tjeneste',
-                                  IF(fs.adresse1,fs.adresse1,0) as 'adresse1',
-                                  IF(fs.adresse2,fs.adresse2,0) as 'adresse2',
-                                  IF(fs.adresse3,fs.adresse3,0) as 'adresse3',
+                                  IF(fs.adresse1,fs.adresse1,0) as 'adresseOne',
+                                  IF(fs.adresse2,fs.adresse2,0) as 'adresseTwo',
+                                  IF(fs.adresse3,fs.adresse3,0) as 'adresseThree',
                                   IF(fs.postnr,fs.postnr,0) 	as 'postnr',
                                   IF(fs.poststed,fs.poststed,0) as 'poststed',
-                                  IF(fs.epost,fs.epost,0) 		as 'epost'
+                                  IF(fs.epost,fs.epost,0) 		as 'epost',
+                                  '0' as 'action'
                      FROM		  {fs_company}	  fs
                         JOIN      {ks_company}	  ks 	ON ks.companyid     = fs.parent
                         LEFT JOIN {ksfs_company}  ks_fs	ON ks_fs.fscompany 	= fs.companyid
                      WHERE	      fs.synchronized = :synchronized
                           AND	  fs.new 		  = :new
-                    LIMIT 0,100
+                    -- LIMIT 0,100
                      ";
 
 
@@ -578,7 +579,7 @@ class FSKS_COMPANY {
             if ($rdo) {
                 foreach ($rdo as $instance) {
                     // Info Company
-                    $infoCompany = new stdClass();
+                    /**$infoCompany = new stdClass();
                     $infoCompany->fsId          = $instance->companyid;
                     $infoCompany->ksId          = $instance->ks;
                     $infoCompany->name          = trim($instance->name);
@@ -594,10 +595,10 @@ class FSKS_COMPANY {
                     $infoCompany->postnr        = $instance->postnr;
                     $infoCompany->poststed      = $instance->poststed;
                     $infoCompany->epost         = $instance->epost;
-                    $infoCompany->action        = ADD;
+                    $infoCompany->action        = ADD;**/
 
                     // Add Company
-                    $toSynchronize[$instance->companyid] = $infoCompany;
+                    $toSynchronize[$instance->companyid] = $instance;//$infoCompany;
                 }//for_rdo
             }//if_rdo
         }catch (Exception $ex) {
