@@ -63,7 +63,7 @@ foreach ($results as $key => $name) {
     $infoJR->name      = $name;
 
     /* FS Company - With Parents */
-    $data['jr'][$infoJR->name] = $infoJR;
+    $data['jr'][$infoJR->id] = $infoJR;
 }
 
 /* Encode and Send */

@@ -232,6 +232,10 @@
     margin-bottom: 0px;
 }
 
+.lbl_connector {
+    font-weight: bold;
+    text-indent: 2px;
+}
 #fgroup_id_grp .fitemtitle {
     display: none;
 }
@@ -292,6 +296,15 @@ div.area_unmap_right div.fitemtitle {
 #fitem_ajobroles div.felement.fselect,
 #fitem_id_ajobroles div.felement.fselect,
 #fitem_ajobroles div.felement.fselectgroups,
+#fitem_id_sunconnect div.felement.fselect,
+#fitem_sunconnect div.felement.fselect,
+#fitem_id_sunconnect div.felement.fselect,
+#fitem_sunconnect div.felement.fselectgroups,
+#fitem_id_aunconnect div.felement.fselect,
+#fitem_aunconnect div.felement.fselect,
+#fitem_id_aunconnect div.felement.fselect,
+#fitem_aunconnect div.felement.fselectgroups,
+
 #fitem_id_add_sel div.felement.fsubmit,
 #fitem_id_add_all div.felement.fsubmit,
 #fitem_id_remove_sel div.felement.fsubmit,
@@ -311,6 +324,12 @@ div.area_unmap_right div.fitemtitle {
 #fitem_id_ajobroles div.fitemtitle,
 #fitem_ajobroles div.fitemtitle,
 #fitem_id_ajobroles div.fitemtitle,
+#fitem_id_sunconnect div.fitemtitle,
+#fitem_sunconnect div.fitemtitle,
+#fitem_id_sunconnect div.fitemtitle,
+#fitem_id_aunconnect div.fitemtitle,
+#fitem_aunconnect div.fitemtitle,
+#fitem_id_aunconnect div.fitemtitle,
 #fitem_id_add_sel div.fitemtitle,
 #fitem_id_add_all div.fitemtitle,
 #fitem_id_remove_sel div.fitemtitle,
@@ -321,7 +340,10 @@ div.area_unmap_right div.fitemtitle {
 #fitem_scompanies_searchtext div.fitemtitle,
 #fitem_acompanies_searchtext div.fitemtitle,
 #fitem_sjobroles_searchtext div.fitemtitle,
-#fitem_ajobroles_searchtext div.fitemtitle {
+#fitem_ajobroles_searchtext div.fitemtitle,
+#fitem_sunconnect_searchtext div.fitemtitle,
+#fitem_aunconnect_searchtext div.fitemtitle
+{
     text-align: left;
     margin-left: 5px;
     width: 70px;
@@ -330,7 +352,10 @@ div.area_unmap_right div.fitemtitle {
 #fitem_scompanies_searchtext div.felement.ftext,
 #fitem_acompanies_searchtext div.felement.ftext,
 #fitem_sjobroles_searchtext div.felement.ftext,
-#fitem_ajobroles_searchtext div.felement.ftext {
+#fitem_ajobroles_searchtext div.felement.ftext,
+#fitem_sunconnect_searchtext div.felement.ftext,
+#fitem_aunconnect_searchtext div.felement.ftext
+{
     margin-left: 0px;
 }
 

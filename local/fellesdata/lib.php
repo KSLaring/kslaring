@@ -24,6 +24,8 @@ function local_fellesdata_extend_navigation(global_navigation $navigation) {
             $nodBar = $nodeTracker->add(get_string('nav_map_org','local_fellesdata'),new moodle_url('/local/fellesdata/mapping/mapping_org.php'));
             // Organization Unmap
             $nodBar = $nodeTracker->add(get_string('nav_unmap_org','local_fellesdata'),new moodle_url('/local/fellesdata/unmap/unmap.php'));
+            // Unconnected KS Organizations
+            $nodBar = $nodeTracker->add(get_string('nav_unconnected','local_fellesdata'),new moodle_url('/local/fellesdata/unconnected/unconnected.php'));
             // Job roles mapping
             $nodBar = $nodeTracker->add(get_string('nav_map_jr','local_fellesdata'),new moodle_url('/local/fellesdata/mapping/jobroles.php'));
             // Suspicious data

@@ -64,7 +64,7 @@ foreach ($results as $key => $name) {
     $infoCompany->name      = $name;
 
     /* FS Company - With Parents */
-    $data['comp'][$infoCompany->name] = $infoCompany;
+    $data['comp'][$infoCompany->id] = $infoCompany;
 }
 
 /* Encode and Send */

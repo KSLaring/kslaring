@@ -164,3 +164,10 @@ $string['map_three_desc']   = 'Mapping level three';
 $string['downloaded']       = 'The file <strong>{$a}</strong> has been downloaded';
 $string['to_download']      = 'Click on <strong>{$a}</strong> to download the file';
 
+$string['nav_unconnected']  = 'Unconnected KS Organizations';
+$string['unconnected']      = 'Unconnected';
+$string['sel_level']        = 'Level';
+
+$string['no_mapped'] = 'No mapped yet';
+$string['to_delete'] = 'To delete from KS';
+

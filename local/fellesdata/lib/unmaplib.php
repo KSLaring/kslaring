@@ -87,49 +87,50 @@ class FS_UnMap {
         $trans = $DB->start_delegated_transaction();
 
         try {
-            /**
-             * New instance into mdl_ksfs_org_unmap
-             */
+            // New instance into mdl_ksfs_org_unmap
             $instance = new stdClass();
             $instance->kscompany = $infoOrg->kscompany;
             $instance->fscompany = $infoOrg->fscompany;
             $instance->tosync    = ($infoOrg->new ? 1 : 0);
             $instance->sync      = ($infoOrg->new ? 0 : 1);
 
-            /* Insert */
+            // Insert
             $instance->id = $DB->insert_record('ksfs_org_unmap',$instance);
-            
-            /**
-             * Delete instance in mdl_ksfs_company
-             */
+
+            // Delete from mdl_ks
+            if ($infoOrg->new) {
+                $params = array();
+                $params['companyid']    = $infoOrg->kscompany;
+                // Execute
+                $DB->delete_records('ks_company',$params);
+            }//if_new
+
+
+            // Delete instance from mdl_ksfs_company
             $params = array();
             $params['kscompany']    = $instance->kscompany;
             $params['fscompany']    = $instance->fscompany;
-            /* Execute */
+            // Execute
             $DB->delete_records('ksfs_company',$params);
 
-            /**
-             * Delete from fs_company because is not mapped anymore
-             */
+            // Delete from fs_company because is not mapped anymore
             $params = array();
             $params['id']           = $infoOrg->id;
             $params['companyid']    = $infoOrg->fscompany;
-            /* Execute */
+            // Execute
             $DB->delete_records('fs_company',$params);
 
-            /**
-             * Update fs_imp_company as imported = 0
-             */
+            // Update fs_imp_company as imported = 0
             $rdo = $DB->get_record('fs_imp_company',array('ORG_ENHET_ID' => $infoOrg->fscompany),'id,imported');
             if ($rdo) {
                 $rdo->imported = 0;
                 $DB->update_record('fs_imp_company',$rdo);
             }
 
-            /* Commit   */
+            // Commit
             $trans->allow_commit();
         }catch (Exception $ex) {
-            /* Rollback */
+            // Rollback
             $trans->rollback($ex);
 
             throw $ex;

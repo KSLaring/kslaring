@@ -65,7 +65,7 @@ foreach ($nomapped as $key => $name) {
     $infoJR->name      = $name;
 
     /* FS Company - With Parents */
-    $data['nomapped'][$infoJR->name] = $infoJR;
+    $data['nomapped'][$infoJR->id] = $infoJR;
 }
 
 
