@@ -164,3 +164,10 @@ $string['map_three_desc']   = 'TARDIS mapping til KS Læring L3';
 $string['downloaded']       = 'Filen <strong>{$a}</strong> er lasted ned';
 $string['to_download']      = 'Klikk på <strong>{$a}</strong> for å laste ned filen';
 
+$string['nav_unconnected']  = 'Unconnected KS Organizations';
+$string['unconnected']      = 'Unconnected';
+$string['sel_level']        = 'Level';
+
+$string['no_mapped'] = 'No mapped yet';
+$string['to_delete'] = 'To delete from KS';
+

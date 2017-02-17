@@ -290,38 +290,276 @@ class FSKS_COMPANY {
     /* PUBLIC */
     /**********/
 
-    /**/
     /**
      * Description
-     * Get all companies that have to be synchronized
+     * Get all companies mapped as new that have to be synchornized
+     * @param           integer $start
+     * @param           integer $end
      *
-     * @return          array
+     * @return                  array
+     * @throws                  Exception
      *
-     * @throws          Exception
-     *
-     * @creationDate    09/02/2016
+     * @creationDate    17/02/2017
      * @author          eFaktor     (fbv)
      */
-    public static function companies_fs_to_synchronize() {
+    public static function get_new_companiesfs_to_synchronize($start,$end) {
         /* Variables    */
+        global $DB;
+        $infoCompany    = null;
+        $params         = null;
+        $sql            = null;
+        $rdo            = null;
         $toSynchronize  = array();
-        $synchronizeFS  = null;
-        $toUpdate       = null;
-        $toMail         = null;
 
         try {
-            // Companies to Synchronize between FS and KS
+            // Search Criteria
+            $params = array();
+            $params['synchronized'] = 0;
+            $params['new']          = 1;
 
-            // New - Create
-            self::get_new_companiesfs_to_synchronize($toSynchronize);
-            // New - Update
-            self::get_update_companiesfs_to_synchronize($toSynchronize);
+            // SQL Instruction
+            $sql = " SELECT	DISTINCT 
+                                  fs.id,
+                                  fs.companyid,
+                                  IF(ks_fs.id,ks_fs.kscompany,0) as 'ks',
+                                  fs.name,
+                                  fs.level,
+                                  ks.industrycode,
+                                  fs.parent,
+                                  IF(fs.privat,0,1)               as 'public',
+                                  IF(fs.ansvar,fs.ansvar,0)       as 'ansvar',
+                                  IF(fs.tjeneste,fs.tjeneste,0)   as 'tjeneste',
+                                  IF(fs.adresse1,fs.adresse1,0)   as 'adresse1',
+                                  IF(fs.adresse2,fs.adresse2,0)   as 'adresse2',
+                                  IF(fs.adresse3,fs.adresse3,0)   as 'adresse3',
+                                  IF(fs.postnr,fs.postnr,0)       as 'postnr',
+                                  IF(fs.poststed,fs.poststed,0)   as 'poststed',
+                                  IF(fs.epost,fs.epost,0)         as 'epost'
+                     FROM		  {fs_company}	  fs
+                        JOIN      {ks_company}	  ks 	ON ks.companyid     = fs.parent
+                        LEFT JOIN {ksfs_company}  ks_fs	ON ks_fs.fscompany 	= fs.companyid
+                     WHERE	      fs.synchronized = :synchronized
+                          AND	  fs.new 		  = :new
+                     ";
+
+
+            // Execute
+            $rdo = $DB->get_records_sql($sql,$params,$start,$end);
+            if ($rdo) {
+                foreach ($rdo as $instance) {
+                    // Info Company
+                    $infoCompany = new stdClass();
+                    $infoCompany->fsId          = $instance->companyid;
+                    $infoCompany->ksId          = $instance->ks;
+                    $infoCompany->name          = trim($instance->name);
+                    $infoCompany->industry      = trim($instance->industrycode);
+                    $infoCompany->level         = $instance->level;
+                    $infoCompany->parent        = $instance->parent;
+                    $infoCompany->public        = $instance->public;
+                    $infoCompany->ansvar        = $instance->ansvar;
+                    $infoCompany->tjeneste      = $instance->tjeneste;
+                    $infoCompany->adresseOne    = $instance->adresse1;
+                    $infoCompany->adresseTwo    = $instance->adresse2;
+                    $infoCompany->adresseThree  = $instance->adresse3;
+                    $infoCompany->postnr        = $instance->postnr;
+                    $infoCompany->poststed      = $instance->poststed;
+                    $infoCompany->epost         = $instance->epost;
+                    $infoCompany->action        = ADD;
+
+                    // Add Company
+                    $toSynchronize[$instance->companyid] = $infoCompany;
+                }//for_rdo
+            }//if_rdo
 
             return $toSynchronize;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//companies_fs_to_synchronize
+    }//get_new_companiesfs_to_synchronize
+
+    /**
+     * Description
+     * Get all companies mapped as a new that have to be synchronized
+     *
+     * @return          null
+     * @throws          Exception
+     *
+     * @creationDate    17/02/2017
+     * @author          eFaktor     (fbv)
+     */
+    public static function get_total_new_companiesfs_to_synchronize() {
+        /* Variables */
+        global $DB;
+        $rdo    = null;
+        $sql    = null;
+        $params = null;
+
+        try {
+            // Search criteria
+            $params = array();
+            $params['new']  = 1;
+            $params['sync'] = 0;
+
+            // SQL Instruction
+            $sql = " SELECT	DISTINCT 	
+                                  count(*)   as 'total'
+                     FROM		  {fs_company}	  fs
+                        JOIN      {ks_company}	  ks 	ON ks.companyid     = fs.parent
+                        LEFT JOIN {ksfs_company}  ks_fs	ON ks_fs.fscompany 	= fs.companyid
+                     WHERE	      fs.synchronized = :sync
+                        AND	  	  fs.new 		  = :new ";
+
+            // Execute
+            $rdo = $DB->get_record_sql($sql,$params);
+            if ($rdo) {
+                return $rdo->total;
+            }else {
+                return null;
+            }//if_rdo
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//get_total_new_companiesfs_to_synchronize
+
+
+    /**
+     * Description
+     * Get all comapnies mapped that have to be synchornized
+     *
+     * @param           $start
+     * @param           $end
+     *
+     * @return          array
+     * @throws          Exception
+     *
+     * @creationDate    09/02/0216
+     * @author          eFaktor     (fbv)
+     */
+    public static function get_update_companiesfs_to_synchronize($start,$end) {
+        /* Variables    */
+        global $DB;
+        $infoCompany    = null;
+        $params         = null;
+        $sql            = null;
+        $rdo            = null;
+        $toSynchronize  = array();
+
+        try {
+            // Search Criteria
+            $params = array();
+            $params['new']          = 0;
+            $params['imported']     = 1;
+            $params['synchronized'] = 0;
+
+            // SQL Instruction
+            $sql = " SELECT	  fs.id,
+                              fs.companyid,
+                              fk.kscompany,
+                              fs.name,
+                              fs.level,
+                              fs.parent,
+                              ks_pa.industrycode,
+                              IF(fs.privat,0,1) 	          as 'public',
+                              IF(fs.ansvar,fs.ansvar,0)       as 'ansvar',
+                              IF(fs.tjeneste,fs.tjeneste,0)   as 'tjeneste',
+                              IF(fs.adresse1,fs.adresse1,0)   as 'adresse1',
+                              IF(fs.adresse2,fs.adresse2,0)   as 'adresse2',
+                              IF(fs.adresse3,fs.adresse3,0)   as 'adresse3',
+                              IF(fs.postnr,fs.postnr,0)       as 'postnr',
+                              IF(fs.poststed,fs.poststed,0)   as 'poststed',
+                              IF(fs.epost,fs.epost,0)         as 'epost',
+                              fs_imp.action
+                     FROM	  {fs_company}		fs
+                        JOIN  {fs_imp_company}	fs_imp 	ON 	fs_imp.org_enhet_id = fs.companyid
+                                                        AND fs_imp.imported     = :imported
+                        -- INFO KS
+                        JOIN  {ksfs_company}	fk 		ON 	fk.fscompany 	    = fs.companyid
+                        -- INFO PARENT
+                        JOIN  {ks_company}		ks_pa	ON 	ks_pa.companyid     = fk.kscompany
+                     WHERE	  fs.new 			= :new
+                        AND   fs.synchronized   = :synchronized ";
+
+            // Execute
+            $rdo = $DB->get_records_sql($sql,$params,$start,$end);
+            if ($rdo) {
+                foreach ($rdo as $instance) {
+                    // Info Company
+                    $infoCompany = new stdClass();
+                    $infoCompany->fsId          = $instance->companyid;
+                    $infoCompany->ksId          = $instance->kscompany;
+                    $infoCompany->name          = $instance->name;
+                    $infoCompany->industry      = $instance->industrycode;
+                    $infoCompany->level         = $instance->level;
+                    $infoCompany->parent        = $instance->parent;
+                    $infoCompany->public        = $instance->public;
+                    $infoCompany->ansvar        = $instance->ansvar;
+                    $infoCompany->tjeneste      = $instance->tjeneste;
+                    $infoCompany->adresseOne    = $instance->adresse1;
+                    $infoCompany->adresseTwo    = $instance->adresse2;
+                    $infoCompany->adresseThree  = $instance->adresse3;
+                    $infoCompany->postnr        = $instance->postnr;
+                    $infoCompany->poststed      = $instance->poststed;
+                    $infoCompany->epost         = $instance->epost;
+                    $infoCompany->action        = $instance->action;
+
+                    // Add Company
+                    $toSynchronize[$instance->companyid] = $infoCompany;
+                }//for_rdo
+            }//if_rdo
+
+            return $toSynchronize;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//get_update_companiesfs_to_synchronize
+
+    /**
+     * Description
+     * Get total of companies mapped that have to be synchronized
+     *
+     * @return          null
+     * @throws          Exception
+     *
+     * @creationDate    17/02/2017
+     * @author          eFaktor     (fbv)
+     */
+    public static function get_total_update_companiesfs_to_synchronize() {
+        /* Variables */
+        global $DB;
+        $rdo    = null;
+        $sql    = null;
+        $params = null;
+
+        try {
+            // Search criteria
+            $params = array();
+            $params['new']          = 0;
+            $params['imported']     = 1;
+            $params['synchronized'] = 0;
+
+            // SQL Instruction
+            $sql = " SELECT	  DISTINCT count(*)	as 'total'
+                     FROM	  {fs_company}		fs
+                        JOIN  {fs_imp_company}	fs_imp 	ON 	fs_imp.org_enhet_id = fs.companyid
+                                                        AND fs_imp.imported     = :imported
+                        -- INFO KS
+                        JOIN  {ksfs_company}	fk 		ON 	fk.fscompany 	    = fs.companyid
+                        -- INFO PARENT
+                        JOIN  {ks_company}		ks_pa	ON 	ks_pa.companyid     = fk.kscompany
+                     WHERE	  fs.new 			= :new
+                        AND   fs.synchronized   = :synchronized ";
+
+            // Execute
+            $rdo = $DB->get_record_sql($sql,$params);
+            if ($rdo) {
+                return $rdo->total;
+            }else {
+                return null;
+            }//if_else_rdo
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//get_total_update_companiesfs_to_synchronize
 
     /**
      * Description
@@ -522,176 +760,6 @@ class FSKS_COMPANY {
     /***********/
 
     /**
-     * @param           $toSynchronize
-     *
-     * @throws          Exception
-     *
-     * @creationDate    09/02/2016
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get companies, created with option new during the mapping, that have to be created to KS site.
-     */
-    private static function get_new_companiesfs_to_synchronize(&$toSynchronize) {
-        /* Variables    */
-        global $DB;
-        $infoCompany    = null;
-        $params         = null;
-        $sql            = null;
-        $rdo            = null;
-
-        try {
-            // Search Criteria
-            $params = array();
-            $params['synchronized'] = 0;
-            $params['new']          = 1;
-
-            // SQL Instruction
-            $sql = " SELECT	DISTINCT 
-                                  fs.id,
-                                  fs.companyid,
-                                  IF(ks_fs.id,ks_fs.kscompany,0) as 'ks',
-                                  fs.name,
-                                  fs.level,
-                                  ks.industrycode,
-                                  fs.parent,
-                                  IF(fs.privat,0,1)             as 'public',
-                                  IF(fs.ansvar,fs.ansvar,0) 	as 'ansvar',
-                                  IF(fs.tjeneste,fs.tjeneste,0) as 'tjeneste',
-                                  IF(fs.adresse1,fs.adresse1,0) as 'adresse1',
-                                  IF(fs.adresse2,fs.adresse2,0) as 'adresse2',
-                                  IF(fs.adresse3,fs.adresse3,0) as 'adresse3',
-                                  IF(fs.postnr,fs.postnr,0) 	as 'postnr',
-                                  IF(fs.poststed,fs.poststed,0) as 'poststed',
-                                  IF(fs.epost,fs.epost,0) 		as 'epost'
-                     FROM		  {fs_company}	  fs
-                        JOIN      {ks_company}	  ks 	ON ks.companyid     = fs.parent
-                        LEFT JOIN {ksfs_company}  ks_fs	ON ks_fs.fscompany 	= fs.companyid
-                     WHERE	      fs.synchronized = :synchronized
-                          AND	  fs.new 		  = :new
-                     ";
-
-
-            // Execute
-            $rdo = $DB->get_records_sql($sql,$params);
-            if ($rdo) {
-                foreach ($rdo as $instance) {
-                    // Info Company
-                    $infoCompany = new stdClass();
-                    $infoCompany->fsId          = $instance->companyid;
-                    $infoCompany->ksId          = $instance->ks;
-                    $infoCompany->name          = trim($instance->name);
-                    $infoCompany->industry      = trim($instance->industrycode);
-                    $infoCompany->level         = $instance->level;
-                    $infoCompany->parent        = $instance->parent;
-                    $infoCompany->public        = $instance->public;
-                    $infoCompany->ansvar        = $instance->ansvar;
-                    $infoCompany->tjeneste      = $instance->tjeneste;
-                    $infoCompany->adresseOne    = $instance->adresse1;
-                    $infoCompany->adresseTwo    = $instance->adresse2;
-                    $infoCompany->adresseThree  = $instance->adresse3;
-                    $infoCompany->postnr        = $instance->postnr;
-                    $infoCompany->poststed      = $instance->poststed;
-                    $infoCompany->epost         = $instance->epost;
-                    $infoCompany->action        = ADD;
-
-                    // Add Company
-                    $toSynchronize[$instance->companyid] = $infoCompany;
-                }//for_rdo
-            }//if_rdo
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//get_new_Companiesfs_to_synchronize
-
-    /**
-     * Description
-     * For all companies created with 'new' option during the mapped,
-     * Get all companies that have to be updates or delete from the KS site.
-     *
-     * @param           $toSynchronize
-     *
-     * @throws          Exception
-     *
-     * @creationDate    09/02/0216
-     * @author          eFaktor     (fbv)
-     */
-    private static function get_update_companiesfs_to_synchronize(&$toSynchronize) {
-        /* Variables    */
-        global $DB;
-        $infoCompany    = null;
-        $params         = null;
-        $sql            = null;
-        $rdo            = null;
-
-        try {
-            // Search Criteria
-            $params = array();
-            $params['new']          = 0;
-            $params['imported']     = 1;
-            $params['synchronized'] = 0;
-
-            // SQL Instruction
-            $sql = " SELECT	  fs.id,
-                              fs.companyid,
-                              fk.kscompany,
-                              fs.name,
-                              fs.level,
-                              fs.parent,
-                              ks_pa.industrycode,
-                              IF(fs.privat,0,1) 	        as 'public',
-                              IF(fs.ansvar,fs.ansvar,0) 	as 'ansvar',
-                              IF(fs.tjeneste,fs.tjeneste,0) as 'tjeneste',
-                              IF(fs.adresse1,fs.adresse1,0) as 'adresse1',
-                              IF(fs.adresse2,fs.adresse2,0) as 'adresse2',
-                              IF(fs.adresse3,fs.adresse3,0) as 'adresse3',
-                              IF(fs.postnr,fs.postnr,0) 	as 'postnr',
-                              IF(fs.poststed,fs.poststed,0) as 'poststed',
-                              IF(fs.epost,fs.epost,0) 		as 'epost',
-                              fs_imp.action
-                     FROM	  {fs_company}		fs
-                        JOIN  {fs_imp_company}	fs_imp 	ON 	fs_imp.org_enhet_id = fs.companyid
-                                                        AND fs_imp.imported     = :imported
-                        -- INFO KS
-                        JOIN  {ksfs_company}	fk 		ON 	fk.fscompany 	    = fs.companyid
-                        -- INFO PARENT
-                        JOIN  {ks_company}		ks_pa	ON 	ks_pa.companyid     = fk.kscompany
-                     WHERE	  fs.new 			= :new
-                        AND   fs.synchronized   = :synchronized ";
-
-            // Execute
-            $rdo = $DB->get_records_sql($sql,$params);
-            if ($rdo) {
-                foreach ($rdo as $instance) {
-                    // Info Company
-                    $infoCompany = new stdClass();
-                    $infoCompany->fsId          = $instance->companyid;
-                    $infoCompany->ksId          = $instance->kscompany;
-                    $infoCompany->name          = $instance->name;
-                    $infoCompany->industry      = $instance->industrycode;
-                    $infoCompany->level         = $instance->level;
-                    $infoCompany->parent        = $instance->parent;
-                    $infoCompany->public        = $instance->public;
-                    $infoCompany->ansvar        = $instance->ansvar;
-                    $infoCompany->tjeneste      = $instance->tjeneste;
-                    $infoCompany->adresseOne    = $instance->adresse1;
-                    $infoCompany->adresseTwo    = $instance->adresse2;
-                    $infoCompany->adresseThree  = $instance->adresse3;
-                    $infoCompany->postnr        = $instance->postnr;
-                    $infoCompany->poststed      = $instance->poststed;
-                    $infoCompany->epost         = $instance->epost;
-                    $infoCompany->action        = $instance->action;
-
-                    // Add Company
-                    $toSynchronize[$instance->companyid] = $infoCompany;
-                }//for_rdo
-            }//if_rdo
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//get_update_companiesfs_to_synchronize
-
-    /**
      * Description
      * Get all companies that have to be updated or deleted only in the FS site
      *
@@ -723,14 +791,14 @@ class FSKS_COMPANY {
                             fs.org_navn       as 'name',
                             fs.org_enhet_over as 'fs_parent',
                             fs.privat,
-                            IF(fs.ansvar,fs.ansvar,0) 	  as 'ansvar',
-                            IF(fs.tjeneste,fs.tjeneste,0) as 'tjeneste',
-                            IF(fs.adresse1,fs.adresse1,0) as 'adresse1',
-                            IF(fs.adresse2,fs.adresse2,0) as 'adresse2',
-                            IF(fs.adresse3,fs.adresse3,0) as 'adresse3',
-                            IF(fs.postnr,fs.postnr,0) 	  as 'postnr',
-                            IF(fs.poststed,fs.poststed,0) as 'poststed',
-                            IF(fs.epost,fs.epost,0) 	  as 'epost'
+                            IF(fs.ansvar,fs.ansvar,0)       as 'ansvar',
+                            IF(fs.tjeneste,fs.tjeneste,0)   as 'tjeneste',
+                            IF(fs.adresse1,fs.adresse1,0)   as 'adresse1',
+                            IF(fs.adresse2,fs.adresse2,0)   as 'adresse2',
+                            IF(fs.adresse3,fs.adresse3,0)   as 'adresse3',
+                            IF(fs.postnr,fs.postnr,0)       as 'postnr',
+                            IF(fs.poststed,fs.poststed,0)   as 'poststed',
+                            IF(fs.epost,fs.epost,0)         as 'epost',
                             fs.action
                      FROM   {fs_imp_company}	fs
                      WHERE	fs.action 	 != :add

@@ -193,6 +193,7 @@ M.core_user.init_search_jobrole = function (Y, name, jobrole, hash, lastsearch) 
 
                     this.listbox.append(option);
                 }//for_companies
+                
                 /* Mark selected    */
                 this.listbox.get("options").each( function() {
                     if (selectedJR[this.get('value')]) {
