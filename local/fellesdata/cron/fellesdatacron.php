@@ -1133,7 +1133,7 @@ class FELLESDATA_CRON {
             throw $ex;
         }//try_catch
     }//companies_fs_synchronization
-
+    
     /**
      * Description
      * Un map organizations between FS & KS

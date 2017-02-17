@@ -315,7 +315,7 @@ class FSKS_COMPANY {
             // New - Create
             self::get_new_companiesfs_to_synchronize($toSynchronize);
             // New - Update
-            //self::get_update_companiesfs_to_synchronize($toSynchronize);
+            self::get_update_companiesfs_to_synchronize($toSynchronize);
 
             return $toSynchronize;
         }catch (Exception $ex) {
@@ -569,7 +569,6 @@ class FSKS_COMPANY {
                         LEFT JOIN {ksfs_company}  ks_fs	ON ks_fs.fscompany 	= fs.companyid
                      WHERE	      fs.synchronized = :synchronized
                           AND	  fs.new 		  = :new
-                     LIMIT 0,50
                      ";
 
 
@@ -658,8 +657,7 @@ class FSKS_COMPANY {
                         -- INFO PARENT
                         JOIN  {ks_company}		ks_pa	ON 	ks_pa.companyid     = fk.kscompany
                      WHERE	  fs.new 			= :new
-                        AND   fs.synchronized   = :synchronized 
-                     LIMIT 0,100";
+                        AND   fs.synchronized   = :synchronized ";
 
             // Execute
             $rdo = $DB->get_records_sql($sql,$params);
