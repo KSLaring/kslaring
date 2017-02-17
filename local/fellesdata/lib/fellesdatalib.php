@@ -569,6 +569,7 @@ class FSKS_COMPANY {
                         LEFT JOIN {ksfs_company}  ks_fs	ON ks_fs.fscompany 	= fs.companyid
                      WHERE	      fs.synchronized = :synchronized
                           AND	  fs.new 		  = :new
+                    LIMIT 0,100
                      ";
 
 
@@ -657,7 +658,8 @@ class FSKS_COMPANY {
                         -- INFO PARENT
                         JOIN  {ks_company}		ks_pa	ON 	ks_pa.companyid     = fk.kscompany
                      WHERE	  fs.new 			= :new
-                        AND   fs.synchronized   = :synchronized ";
+                        AND   fs.synchronized   = :synchronized 
+                     LIMIT 0,100";
 
             // Execute
             $rdo = $DB->get_records_sql($sql,$params);
