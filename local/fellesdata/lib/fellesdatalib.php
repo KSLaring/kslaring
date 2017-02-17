@@ -569,7 +569,7 @@ class FSKS_COMPANY {
                         LEFT JOIN {ksfs_company}  ks_fs	ON ks_fs.fscompany 	= fs.companyid
                      WHERE	      fs.synchronized = :synchronized
                           AND	  fs.new 		  = :new
-                    LIMIT 0,25
+                    LIMIT 0,100
                      ";
 
 
