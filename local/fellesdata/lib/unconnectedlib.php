@@ -210,7 +210,7 @@ class KS_UNCONNECT {
                                 ks.industrycode,
                                 ks.name
                      FROM		{ksfs_org_unmap}	un		
-                        JOIN	{ks_company}		KS 	ON  ks.companyid 		= un.kscompany
+                        JOIN	{ks_company}		ks 	ON  ks.companyid 		= un.kscompany
                                                         AND ks.hierarchylevel 	= :level
                      WHERE 		un.fscompany = :fs
                         AND		un.tosync 	 = :tosync
