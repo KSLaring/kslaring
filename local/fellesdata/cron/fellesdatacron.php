@@ -1081,41 +1081,23 @@ class FELLESDATA_CRON {
                     // Synchronize only companies FS
                     //FSKS_COMPANY::synchronize_companies_fs();
 
-                    // Companies to synchronize and emails
-                    $toSynchronize = FSKS_COMPANY::companies_fs_to_synchronize();
+                    // Synchronize new companies
+                    self::companies_new_fs_synchronization($pluginInfo);
+                    
+                    // Synchronize no new companies
+                    self::companies_no_new_fs_synchronization($pluginInfo);
+                    
+                    // Send notifications
+                    // Notification manual synchronization
+                    if ($notifyTo) {
+                        // Get companies to send notifications
+                        $toMail = FSKS_COMPANY::get_companiesfs_to_mail();
 
-                    // Synchronize FS-KS companies
-                    // Call webs service
-                    if ($toSynchronize) {
-                        $params     = array('companiesFS' => $toSynchronize);
-                        $response   = self::process_ks_service($pluginInfo,KS_SYNC_FS_COMPANY,$params);
-
-                        if ($response) {
-                            if ($response['error'] == '200') {
-                                FSKS_COMPANY::synchronize_companies_ksfs($toSynchronize,$response['companies']);
-
-                                // Notification manual synchronization
-                                if ($notifyTo) {
-                                    // Get companies to send notifications
-                                    $toMail = FSKS_COMPANY::get_companiesfs_to_mail();
-
-                                    if ($toMail) {
-                                        self::send_notifications(SYNC_COMP,$toMail,$notifyTo,$pluginInfo->fs_source);
-                                    }//if_toMail
-                                }//if_notify
-                            }else {
-                                /* Log  */
-                                $dbLog  .= "ERROR WS: " . $response['message'] . "\n\n";
-                                $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' Finish ERROR Companies FS/KS Synchronization . ' . "\n";
-                            }//if_no_error
-                        }else {
-                            /* Log  */
-                            $dbLog  .= "ERROR NUL OBJECT " . "\n\n";
-                            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' Finish ERROR Companies FS/KS Synchronization . ' . "\n";
-                        }
-
-                    }//if_toSynchronize
-
+                        if ($toMail) {
+                            self::send_notifications(SYNC_COMP,$toMail,$notifyTo,$pluginInfo->fs_source);
+                        }//if_toMail
+                    }//if_notify
+                    
                     /* Clean Table*/
                     //$DB->delete_records('fs_imp_company',array('imported' => '1'));
                 }//if_else
@@ -1133,6 +1115,127 @@ class FELLESDATA_CRON {
             throw $ex;
         }//try_catch
     }//companies_fs_synchronization
+
+    /**
+     * Description
+     * Synchronize companies created as a new from Tardis
+     * 
+     * @param       Object $plugin
+     * 
+     * @throws             Exception
+     * 
+     * @creationDate        17/02/2017
+     * @author              eFaktor     (fbv)
+     */
+    private static function companies_new_fs_synchronization($plugin) {
+        /* Variables */
+        global $CFG;
+        $toSynchronize  = null;
+        $response       = null;
+        $dbLog          = null;
+        $total          = null;
+        $start          = 0;
+        $limit          = 50;
+
+        try {
+            // Log
+            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START Companies NEW FS/KS Synchronization . ' . "\n";
+
+            // Get total
+            $total = FSKS_COMPANY::get_total_new_companiesfs_to_synchronize();
+
+            // Synchronize
+            if ($total) {
+                for ($i=0;$i<=$total;$i=$i+$limit) {
+                    // Get companies to synchronize
+                    $toSynchronize = FSKS_COMPANY::get_new_companiesfs_to_synchronize($start,$limit);
+                    
+                    // Call webs service
+                    if ($toSynchronize) {
+                        $params     = array('companiesFS' => $toSynchronize);
+                        $response   = self::process_ks_service($plugin,KS_SYNC_FS_COMPANY,$params);
+
+                        if ($response) {
+                            if ($response['error'] == '200') {
+                                FSKS_COMPANY::synchronize_companies_ksfs($toSynchronize,$response['companies']);
+                            }else {
+                                /* Log  */
+                                $dbLog  .= "ERROR WS: " . $response['message'] . "\n\n";
+                                $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' Finish ERROR Companies NEW FS/KS Synchronization . ' . "\n";
+                            }//if_no_error
+                        }else {
+                            /* Log  */
+                            $dbLog  .= "ERROR NUL OBJECT " . "\n\n";
+                            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' Finish ERROR Companies NEW FS/KS Synchronization . ' . "\n";
+                        }//if_response
+                    }//if_toSynchronize
+                }//for
+            }//if_total
+
+            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//companies_new_fs_synchronization
+
+    /**
+     * Description 
+     * Synchronize companies mapped
+     * @param           Object  $plugin
+     * 
+     * @throws                  Exception
+     * 
+     * @creationDate        17/02/2017
+     * @author              eFaktor     (fbv)
+     */
+    private static function companies_no_new_fs_synchronization($plugin) {
+        /* Variables */
+        global $CFG;
+        $toSynchronize  = null;
+        $response       = null;
+        $dbLog          = null;
+        $total          = null;
+        $start          = 0;
+        $limit          = 50;
+
+        try {
+            // Log
+            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START Companies NO NEW FS/KS Synchronization . ' . "\n";
+
+            // Get total
+            $total = FSKS_COMPANY::get_total_update_companiesfs_to_synchronize();
+
+            // Synchronize
+            if ($total) {
+                for ($i=0;$i<=$total;$i=$i+$limit) {
+                    // Get companies to synchronize
+                    $toSynchronize = FSKS_COMPANY::get_update_companiesfs_to_synchronize($start,$limit);
+
+                    // Call webs service
+                    if ($toSynchronize) {
+                        $params     = array('companiesFS' => $toSynchronize);
+                        $response   = self::process_ks_service($plugin,KS_SYNC_FS_COMPANY,$params);
+
+                        if ($response) {
+                            if ($response['error'] == '200') {
+                                FSKS_COMPANY::synchronize_companies_ksfs($toSynchronize,$response['companies']);
+                            }else {
+                                /* Log  */
+                                $dbLog  .= "ERROR WS: " . $response['message'] . "\n\n";
+                                $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' Finish ERROR Companies NO NEW FS/KS Synchronization . ' . "\n";
+                            }//if_no_error
+                        }else {
+                            /* Log  */
+                            $dbLog  .= "ERROR NUL OBJECT " . "\n\n";
+                            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' Finish ERROR Companies NO NEW FS/KS Synchronization . ' . "\n";
+                        }//if_response
+                    }//if_toSynchronize
+                }//for
+            }//if_total
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//companies_no_new_fs_synchronization
 
     /**
      * Description
