@@ -39,7 +39,7 @@ class FELLESDATA_CRON {
     /* PUBLIC */
     /**********/
 
-    public static function cron_ok($plugin,$fstExecution) {
+    public static function cron($plugin,$fstExecution) {
         /* Variables    */
         global $CFG;
         $dbLog              = null;
@@ -48,6 +48,9 @@ class FELLESDATA_CRON {
         try {
             // Log
             $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START FELLESDATA CRON . ' . "\n";
+
+
+            $last = self::get_last_status($plugin,$fstExecution);
 
             // Suspicious data
             $suspicious_path = $CFG->dataroot . '/' . $plugin->suspicious_path;
@@ -64,26 +67,26 @@ class FELLESDATA_CRON {
 
             // Import KS
             $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START Import KS. ' . "\n";
-            self::import_ks($plugin);
+            //self::import_ks($plugin);
 
             // Import fellesdata
             $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START Import Fellesdata. ' . "\n";
-            self::import_fellesdata($plugin,$fstExecution);
+            self::import_fellesdata($plugin,$last);
 
             // Users accounts synchornization
             $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START Users FS Synchronization. ' . "\n";
-            self::users_fs_synchronization($plugin);
+            //self::users_fs_synchronization($plugin);
 
             // Companies synchornization
             $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START Companies FS Synchronization. ' . "\n";
-            self::companies_fs_synchronization($plugin,$fstExecution);
+            //self::companies_fs_synchronization($plugin,$fstExecution);
 
             // Job roles to map
-            self::jobroles_fs_to_map($plugin);
+            //self::jobroles_fs_to_map($plugin);
 
             // Competence synchronization
             if (!$fstExecution) {
-                self::competence_synchronization($plugin,$dbLog);
+                //self::competence_synchronization($plugin,$dbLog);
             }
 
             /* Log  */
@@ -233,10 +236,6 @@ class FELLESDATA_CRON {
     }//cron_manual
 
 
-    /***********/
-    /* PRIVATE */
-    /***********/
-
     /**
      * Description
      * Check if it has to ask for the last status or not
@@ -280,10 +279,6 @@ class FELLESDATA_CRON {
                 if (!$plugin->nextstatus) {
                     $laststatus = true;
                 }else {
-                    echo "DAY TO RUN : " . $calendar[$plugin->fs_calendar_status] . "</br>";
-                    echo "TIME: " . userdate($time,'%d.%m.%Y', 99, false) . "</br>";
-                    echo "LAST: " . userdate($plugin->laststatus,'%d.%m.%Y', 99, false) . "</br>";
-                    echo "NEXT: " . userdate($plugin->nextstatus,'%d.%m.%Y', 99, false) . "</br>";
                     if ($today['weekday'] == $calendar[$plugin->fs_calendar_status]) {
                         $laststatus = true;
                     }else {
@@ -306,6 +301,10 @@ class FELLESDATA_CRON {
             throw $ex;
         }//try_catch
     }//get_last_status
+
+    /***********/
+    /* PRIVATE */
+    /***********/
 
     /**
      * Description

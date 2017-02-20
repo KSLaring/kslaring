@@ -59,7 +59,7 @@ function fellesdata_cron() {
             }else {
                 $fstExecution = true;
             }
-
+            
             \FELLESDATA_CRON::cron($plugin,$fstExecution);
             
             set_config('lastexecution', $now, 'local_fellesdata');
