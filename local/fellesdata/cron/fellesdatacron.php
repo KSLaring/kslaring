@@ -102,14 +102,8 @@ class FELLESDATA_CRON {
             $last = self::get_last_status($plugin,$fstExecution);
 
             if ($last) {
-                $backupstatus = $CFG->dataroot . '/fellesdata/backup_status';
-                if (!file_exists($backupstatus)) {
-                    mkdir($backupstatus);
-                }//if_backup
+                FS::backup_temporary_fellesdata();
                 
-                if ($last) {
-                    
-                }
                 // Ask for the last status
                 self::import_fs_users($plugin,true);
 

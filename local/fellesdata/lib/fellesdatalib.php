@@ -2383,7 +2383,73 @@ class FS {
     /**********/
     /* PUBLIC */
     /**********/
-    
+
+    public static function backup_temporary_fellesdata() {
+        /* Variables */
+        global $CFG;
+        $file           = null;
+        $backupstatus   = null;
+        $content        = null;
+        $path           = null;
+        $time           = null;
+
+        try {
+            // Local time
+            $time = time();
+
+            $backupstatus = $CFG->dataroot . '/fellesdata/backup_status';
+            if (!file_exists($backupstatus)) {
+                mkdir($backupstatus);
+            }//if_backup
+
+            // backup all imp tables
+            // IMP USERS
+            $path = $backupstatus . "/fs_imp_users_" . $time . ".txt";
+            self::backup_imp_fs_tables($path,'fs_imp_users');
+
+            // IMP COMPANIES
+            $path = $backupstatus . "/fs_imp_company_" . $time . ".txt";
+            self::backup_imp_fs_tables($path,'fs_imp_company');
+
+            // IMP JOBROLES
+            $path = $backupstatus . "/fs_imp_jobroles_" . $time . ".txt";
+            self::backup_imp_fs_tables($path,'fs_imp_jobroles');
+
+            // IMP MANAGERS_REPORTERS
+            $path = $backupstatus . "/fs_imp_managers_reporters_" . $time . ".txt";
+            self::backup_imp_fs_tables($path,'fs_imp_managers_reporters');
+
+            // IMP COMPETENCE JR
+            $path = $backupstatus . "/fs_imp_users_jr_" . $time . ".txt";
+            self::backup_imp_fs_tables($path,'fs_imp_users_jr');
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//backup_temporary_fellesdata
+
+    private static function backup_imp_fs_tables($path,$table) {
+        /* Variables */
+        global $DB;
+        $rdo    = null;
+        $file   = null;
+
+        try {
+            // get content table
+            $rdo = $DB->get_records($table);
+            if ($rdo) {
+                // content to string
+                $content = json_encode($rdo);
+
+                // Add content to the file
+                echo $content . " </br>";
+                $file = fopen($path,'w');
+                fwrite($file,$content);
+                fclose($file);
+            }//if_rdo
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//backup_imp_fs_users
 
     /**
      * @param           $data
@@ -2415,34 +2481,41 @@ class FS {
 
                 // Get New Entry
                 if ($lineContent) {
-                    // Get Action
-                    switch (trim($lineContent->changeType)) {
-                        case ADD_ACTION:
-                            // Add
-                            $newEntry = $lineContent->newRecord;
-                            $newEntry->action   = 0;
-                            $newEntry->imported = 0;
-
-                            break;
-
-                        case UPDATE_ACTION:
-                            // Update
-                            $newEntry = $lineContent->newRecord;
-                            $newEntry->action   = 1;
-                            $newEntry->imported = 0;
-
-                            break;
-
-                        case DELETE_ACTION:
-                            // Old Entry
-                            if (isset($lineContent->oldRecord)) {
-                                $newEntry = $lineContent->oldRecord;
-                                $newEntry->action   = 2;
+                    if ($status) {
+                        $newEntry = $lineContent->newRecord;
+                        $newEntry->action   = 3;
+                        $newEntry->imported = 0;
+                    }else {
+                        // Get Action
+                        switch (trim($lineContent->changeType)) {
+                            case ADD_ACTION:
+                                // Add
+                                $newEntry = $lineContent->newRecord;
+                                $newEntry->action   = 0;
                                 $newEntry->imported = 0;
-                            }//if_old_record
 
-                            break;
-                    }//action
+                                break;
+
+                            case UPDATE_ACTION:
+                                // Update
+                                $newEntry = $lineContent->newRecord;
+                                $newEntry->action   = 1;
+                                $newEntry->imported = 0;
+
+                                break;
+
+                            case DELETE_ACTION:
+                                // Old Entry
+                                if (isset($lineContent->oldRecord)) {
+                                    $newEntry = $lineContent->oldRecord;
+                                    $newEntry->action   = 2;
+                                    $newEntry->imported = 0;
+                                }//if_old_record
+
+                                break;
+                        }//action
+                    }//if_status
+
 
                     // Add Record
                     if ($newEntry) {
@@ -2456,36 +2529,11 @@ class FS {
             if ($toSave) {
                 switch ($type) {
                     case IMP_USERS:
-                        if ($status) {
-                            echo " HOLA " . "</br>";
-                            global $DB,$CFG;
-                            $rdo = $DB->get_records('fs_imp_users');
-                            $backupstatus = $CFG->dataroot . '/fellesdata/backup_status/fs_imp_users_' . time() . '.txt';
-                            if (file_exists($backupstatus)) {
-                                unlink($backupstatus);
-                            }else {
-                                //$file = fopen($backupstatus,'r+');
-                                //foreach ($rdo as $instance) {
-                                //    $line = json_encode($instance);
-                                //    echo $line . "</br>";
-                                //    fwrite($file,$line);
-                                //}
-                                //fclose($file);
-
-                                $content = json_encode($rdo);
-                                echo $content . " </br>";
-                                $file = fopen($backupstatus,'w');
-                                fwrite($file,$content);
-                                fclose($file);
-                            }
-
-
-                        }
                         // FS Users
-                        //self::import_temporary_fs_users($toSave);
+                        self::import_temporary_fs_users($toSave);
 
                         // Fake eMails
-                        //self::update_fake_mails();
+                        self::update_fake_mails();
                         
                         break;
 
