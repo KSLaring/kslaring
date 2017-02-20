@@ -2457,7 +2457,7 @@ class FS {
                 switch ($type) {
                     case IMP_USERS:
                         if ($status) {
-                            echo " HOLA ";
+                            echo " HOLA " . "</br>";
                             global $DB,$CFG;
                             $rdo = $DB->get_records('fs_imp_users');
                             $backupstatus = $CFG->dataroot . '/fellesdata/backup_status/fs_imp_users_' . time() . '.txt';
@@ -2473,6 +2473,7 @@ class FS {
                                 //fclose($file);
 
                                 $content = json_encode($rdo);
+                                echo $content . " </br>";
                                 $file = fopen($backupstatus,'w');
                                 fwrite($file,$content);
                                 fclose($file);
