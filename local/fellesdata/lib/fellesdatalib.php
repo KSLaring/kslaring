@@ -2464,12 +2464,17 @@ class FS {
                             if (file_exists($backupstatus)) {
                                 unlink($backupstatus);
                             }else {
-                                $file = fopen($backupstatus,'r+');
-                                foreach ($rdo as $instance) {
-                                    $line = json_encode($instance);
-                                    echo $line . "</br>";
-                                    fputs($file,$line);
-                                }
+                                //$file = fopen($backupstatus,'r+');
+                                //foreach ($rdo as $instance) {
+                                //    $line = json_encode($instance);
+                                //    echo $line . "</br>";
+                                //    fwrite($file,$line);
+                                //}
+                                //fclose($file);
+
+                                $content = json_encode($rdo);
+                                $file = fopen($backupstatus,'w');
+                                fwrite($file,$content);
                                 fclose($file);
                             }
 
