@@ -2432,8 +2432,6 @@ class FS {
                     break;
 
                 case IMP_COMPETENCE_JR:
-
-
                     // IMP COMPETENCE JR
                     $path = $backupstatus . "/fs_imp_users_jr_" . $time . ".txt";
                     self::backup_imp_fs_tables($path,'fs_imp_users_jr');
@@ -2459,7 +2457,6 @@ class FS {
                 $content = json_encode($rdo);
 
                 // Add content to the file
-                echo $content . " </br>";
                 $file = fopen($path,'w');
                 fwrite($file,$content);
                 fclose($file);
