@@ -263,8 +263,9 @@ class FSKS_JOBROLES {
             // Synchronized
             if ($sync) {
                 $infoImp = new stdClass();
-                $infoImp->id        = $jobRole->id;
-                $infoImp->imported  = 1;
+                $infoImp->id            = $jobRole->id;
+                $infoImp->imported      = 1;
+                $infoImp->timemodified  = $time;
 
                 // Execute
                 $DB->update_record('fs_imp_jobroles',$infoImp);
@@ -980,7 +981,8 @@ class FSKS_COMPANY {
 
                 $instance = $DB->get_record('fs_imp_company',array('ORG_ENHET_ID' => $impKey),'id,imported');
                 if ($instance) {
-                    $instance->imported = 1;
+                    $instance->imported         = 1;
+                    $instance->timemodified     = $time;
                     $DB->update_record('fs_imp_company',$instance);
                 }
             }//if_sync
@@ -1075,8 +1077,9 @@ class FSKS_COMPANY {
             // Synchronized
             if ($sync) {
                 $instance = new stdClass();
-                $instance->id       = $companyFS->id;
-                $instance->imported = 1;
+                $instance->id           = $companyFS->id;
+                $instance->imported     = 1;
+                $instance->timemodified = $time;
 
                 $DB->update_record('fs_imp_company',$instance);
             }//if_sync
@@ -1809,8 +1812,9 @@ class FSKS_USERS {
             // Synchronized
             if ($sync) {
                 $instance = new stdClass();
-                $instance->id       = $fsKey;
-                $instance->imported = 1;
+                $instance->id           = $fsKey;
+                $instance->imported     = 1;
+                $instance->timemodified = $time;
 
                 $DB->update_record('fs_imp_users',$instance);
             }//if_sync
@@ -1883,11 +1887,15 @@ class FSKS_USERS {
         $params         = null;
         $sync           = null;
         $trans          = null;
+        $time           = null;
 
         // Start Transaction
         $trans = $DB->start_delegated_transaction();
 
         try {
+            // Local time
+            $time = time();
+
             // GEt info fs_user_company
             $params = array();
             $params['personalnumber']    = $infoUserFS->personalNumber;
@@ -1952,9 +1960,9 @@ class FSKS_USERS {
             // Synchronized
             if ($sync) {
                 $instance = new stdClass();
-                $instance->id       = $fsKey;
-                $instance->imported = 1;
-
+                $instance->id           = $fsKey;
+                $instance->imported     = 1;
+                $instance->timemodified = $time;
                 $DB->update_record('fs_imp_managers_reporters',$instance);
             }//if_sync
 
@@ -2185,8 +2193,12 @@ class FSKS_USERS {
         $fsJobRoles     = null;
         $toDeleteFromKS = false;
         $impKeys        = null;
+        $time           = null;
 
         try {
+            // Local time
+            $time = time();
+
             // Search criteria
             $params = array();
             $params['personalnumber']   = $competence->fodselsnr;
@@ -2216,8 +2228,9 @@ class FSKS_USERS {
 
                     foreach ($impKeys as $fsKey) {
                         $instance = new stdClass();
-                        $instance->id       = $fsKey;
-                        $instance->imported = 1;
+                        $instance->id           = $fsKey;
+                        $instance->imported     = 1;
+                        $instance->timemodified = $time;
 
                         $DB->update_record('fs_imp_users_jr',$instance);
                     }
@@ -2250,11 +2263,15 @@ class FSKS_USERS {
         $trans          = null;
         $fsKey          = null;
         $impKeys        = null;
+        $time           = null;
 
         // Start transaction
         $trans = $DB->start_delegated_transaction();
 
         try {
+            // Local time
+            $time = time();
+
             // Get Info User Job Role (FS)
             $params = array();
             $params['personalnumber']   = $competenceFS->personalNumber;
@@ -2314,8 +2331,9 @@ class FSKS_USERS {
 
                 foreach ($impKeys as $fsKey) {
                     $instance = new stdClass();
-                    $instance->id       = $fsKey;
-                    $instance->imported = 1;
+                    $instance->id           = $fsKey;
+                    $instance->imported     = 1;
+                    $instance->timemodified = $time;
 
                     $DB->update_record('fs_imp_users_jr',$instance);
                 }
@@ -2385,8 +2403,12 @@ class FS {
         $newEntry       = null;
         $lineContent    = null;
         $toSave         = array();
+        $time           = null;
 
         try {
+            // Local time
+            $time = time();
+
             // Each line file
             foreach($data as $key=>$line) {
                 $lineContent    = json_decode($line);
@@ -2424,6 +2446,8 @@ class FS {
 
                     // Add Record
                     if ($newEntry) {
+                        $newEntry->timeimport   = $time;
+                        $newEntry->timemodified = $time;
                         $toSave[$key] = $newEntry;
                     }
                 }//ifLineContent
@@ -2531,8 +2555,12 @@ class FS {
         global $DB;
         $sql        = null;
         $rdo        = null;
-
+        $time       = null;
+        
         try {
+            // Local time
+            $time = time();
+            
             // SQL Instruction
             $sql = " SELECT fs.id,
                             fs.EPOST
@@ -2545,7 +2573,8 @@ class FS {
             if ($rdo) {
                 foreach ($rdo as $instance) {
                     // Fake eMail
-                    $instance->EPOST = random_string() . '@byttmegut.no';
+                    $instance->EPOST        = random_string() . '@byttmegut.no';
+                    $instance->timemodified = $time;
                     
                     // Update
                     $DB->update_record('fs_imp_users',$instance);
@@ -2584,7 +2613,7 @@ class FS {
                 if (!$rdo) {
                     $DB->insert_record('fs_imp_company',$infoFS);
                 }else {
-                    $infoFS->id         = $rdo->id;
+                    $infoFS->id             = $rdo->id;
                     $DB->update_record('fs_imp_company',$infoFS);
                 }//if_rdo
             }//for_each

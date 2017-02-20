@@ -81,12 +81,15 @@ class FS_UnMap {
         $trans      = null;
         $instance   = null;
         $params     = null;
-
+        $time       = null;
 
         /* Start Transaction */
         $trans = $DB->start_delegated_transaction();
 
         try {
+            // Local time
+            $time = time();
+            
             // New instance into mdl_ksfs_org_unmap
             $instance = new stdClass();
             $instance->kscompany = $infoOrg->kscompany;
@@ -123,7 +126,8 @@ class FS_UnMap {
             // Update fs_imp_company as imported = 0
             $rdo = $DB->get_record('fs_imp_company',array('ORG_ENHET_ID' => $infoOrg->fscompany),'id,imported');
             if ($rdo) {
-                $rdo->imported = 0;
+                $rdo->imported      = 0;
+                $rdo->timemodified  = $time;
                 $DB->update_record('fs_imp_company',$rdo);
             }
 

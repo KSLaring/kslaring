@@ -30,6 +30,11 @@ function xmldb_local_fellesdata_upgrade($oldVersion) {
     $fldUsersImp        = null;
     $fldToken           = null;
     $tblSuspicious      = null;
+    $tblFSImpJR         = null;
+    $tblImpManagers     = null;
+    $tblImpUsers        = null;
+    $fdlTimeImp         = null;
+    $fdlTime            = null;
 
     /* Get Manager  */
     $dbMan = $DB->get_manager();
@@ -157,6 +162,60 @@ function xmldb_local_fellesdata_upgrade($oldVersion) {
                 $dbMan->add_field($tblSuspicious, $fldToken);
             }//if_not_exists
         }//if_oldVersion
+
+        // Add new fields timeimport and timemodified
+        if ($oldVersion < 2017022002) {
+            // New fields
+            // timeimport
+            $fdlTimeImp = new xmldb_field('timeimport',XMLDB_TYPE_INTEGER,'10',null, null, null,null);
+            // timemodified
+            $fdlTime = new xmldb_field('timemodified',XMLDB_TYPE_INTEGER,'10',null, null, null,null);
+
+            // fs_imp_company
+            $tblFSCompany = new xmldb_table('fs_imp_company');
+            if (!$dbMan->field_exists($tblFSCompany, $fdlTimeImp)) {
+                $dbMan->add_field($tblFSCompany, $fdlTimeImp);
+            }//if_not_exists_timeimport
+            if (!$dbMan->field_exists($tblFSCompany, $fdlTime)) {
+                $dbMan->add_field($tblFSCompany, $fdlTime);
+            }//if_not_exists_timemodified
+
+            // fs_imp_jobroles
+            $tblFSImpJR = new xmldb_table('fs_imp_jobroles');
+            if (!$dbMan->field_exists($tblFSImpJR, $fdlTimeImp)) {
+                $dbMan->add_field($tblFSImpJR, $fdlTimeImp);
+            }//if_not_exists_timeimport
+            if (!$dbMan->field_exists($tblFSImpJR, $fdlTime)) {
+                $dbMan->add_field($tblFSImpJR, $fdlTime);
+            }//if_not_exists_timemodified
+
+            // fs_imp_users_jr
+            $tblImpUsersJR = new xmldb_table('fs_imp_users_jr');
+            if (!$dbMan->field_exists($tblImpUsersJR, $fdlTimeImp)) {
+                $dbMan->add_field($tblImpUsersJR, $fdlTimeImp);
+            }//if_not_exists_timeimport
+            if (!$dbMan->field_exists($tblImpUsersJR, $fdlTime)) {
+                $dbMan->add_field($tblImpUsersJR, $fdlTime);
+            }//if_not_exists_timemodified
+
+            // fs_imp_managers_reporters
+            $tblImpManagers = new xmldb_table('fs_imp_managers_reporters');
+            if (!$dbMan->field_exists($tblImpManagers, $fdlTimeImp)) {
+                $dbMan->add_field($tblImpManagers, $fdlTimeImp);
+            }//if_not_exists_timeimport
+            if (!$dbMan->field_exists($tblImpManagers, $fdlTime)) {
+                $dbMan->add_field($tblImpManagers, $fdlTime);
+            }//if_not_exists_timemodified
+
+            // fs_imp_users
+            $tblImpUsers = new xmldb_table('fs_imp_users');
+            if (!$dbMan->field_exists($tblImpUsers, $fdlTimeImp)) {
+                $dbMan->add_field($tblImpUsers, $fdlTimeImp);
+            }//if_not_exists_timeimport
+            if (!$dbMan->field_exists($tblImpUsers, $fdlTime)) {
+                $dbMan->add_field($tblImpUsers, $fdlTime);
+            }//if_not_exists_timemodified
+        }//if_oldversion
 
         return true;
     }catch (Exception $ex) {

@@ -171,3 +171,7 @@ $string['sel_level']        = 'Level';
 $string['no_mapped'] = 'No mapped yet';
 $string['to_delete'] = 'To delete from KS';
 
+$string['status']       = 'Get last status';
+$string['day']          = 'Day to get last status';
+$string['stweekly']     = 'Weekly';
+$string['stmonthly']    = 'Monthly';

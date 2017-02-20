@@ -39,81 +39,52 @@ class FELLESDATA_CRON {
     /* PUBLIC */
     /**********/
 
-    public static function cron($fstExecution) {
+    public static function cron($plugin,$fstExecution) {
         /* Variables    */
         global $CFG;
-        $pluginInfo         = null;
         $dbLog              = null;
         $suspicious_path    = null;
 
         try {
-            /* Log  */
+            // Log
             $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START FELLESDATA CRON . ' . "\n";
 
-            /* Plugin Info      */
-            $pluginInfo     = get_config('local_fellesdata');
-
-            $suspicious_path = $CFG->dataroot . '/' . $pluginInfo->suspicious_path;
+            // Suspicious data
+            $suspicious_path = $CFG->dataroot . '/' . $plugin->suspicious_path;
             if ($suspicious_path) {
                 if (!file_exists($suspicious_path)) {
                     mkdir($suspicious_path);
                 }
             }//if_suspucuous_path
 
-            /*
-             * Unmap process
-             * 1 - Unmap user competence
-             * 2 - Unmap managers reporters
-             * 3 - Unmap organizations
-             */
+            // Unmap process
             if (!$fstExecution) {
-                /* Unmap user competence    */
-                $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START  UNMAP User competence. ' . "\n";
-                self::unmap_user_competence($pluginInfo,KS_UNMAP_USER_COMPETENCE);
-
-                /* Unmap Managers           */
-                $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START  UNMAP Manager/Reporter. ' . "\n";
-                self::unmap_managers_reporters($pluginInfo,KS_MANAGER_REPORTER);
-
-                /* Unmap organizations      */
-                $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START  UNMAP Organizations. ' . "\n";
-                self::unmap_organizations($pluginInfo,KS_UNMAP_COMPANY);
+                self::unmapping($plugin,$dbLog);
             }//fstExecution_tounmap
-            
-            /* Import KS */
+
+            // Import KS
             $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START Import KS. ' . "\n";
-            self::import_ks($pluginInfo);
+            self::import_ks($plugin);
 
-            /* Import Fellesdata        */
+            // Import fellesdata
             $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START Import Fellesdata. ' . "\n";
-            self::import_fellesdata($pluginInfo);
+            self::import_fellesdata($plugin,$fstExecution);
 
-            /* SYNCHRONIZATION  */
-            /* Synchronization Users Accounts   */
+            // Users accounts synchornization
             $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START Users FS Synchronization. ' . "\n";
-            self::users_fs_synchronization($pluginInfo);
+            self::users_fs_synchronization($plugin);
 
-            /* Synchronization Companies    */
+            // Companies synchornization
             $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START Companies FS Synchronization. ' . "\n";
-            self::companies_fs_synchronization($pluginInfo,$fstExecution);
+            self::companies_fs_synchronization($plugin,$fstExecution);
 
-            /* Job roles to Map/Synchronize */
-            self::jobroles_fs_to_map($pluginInfo);
+            // Job roles to map
+            self::jobroles_fs_to_map($plugin);
 
-            /* Synchronization Comeptence   */
+            // Competence synchronization
             if (!$fstExecution) {
-                /* Synchronization Managers && Reporters    */
-                $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START  Managers/Reporters FS Synchronization. ' . "\n";
-                self::manager_reporter_synchronization($pluginInfo,KS_MANAGER_REPORTER);
-
-                /* Synchronization User Competence JobRole  -- Add/Update */
-                $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START Users competence FS Synchronization. ' . "\n";
-                self::user_competence_synchronization($pluginInfo,KS_USER_COMPETENCE);
-
-                /* Synchronization User Competence JobRole  -- Delete */
-                $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START Users Competence to delete FS Synchronization. ' . "\n";
-                self::user_competence_synchronization($pluginInfo,KS_USER_COMPETENCE,true);
-           }
+                self::competence_synchronization($plugin,$dbLog);
+            }
 
             /* Log  */
             $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH FELLESDATA CRON . ' . "\n";
@@ -122,6 +93,21 @@ class FELLESDATA_CRON {
             throw $ex;
         }//try_catch
     }//cron
+
+    public static function cron_test($plugin,$fstExecution) {
+        try {
+            $last = self::get_last_status($plugin,$fstExecution);
+
+            if ($last) {
+                // Ask for the last status
+                self::import_fs_users($plugin,true);
+            }
+
+        }catch (Exception $ex) {
+            throw $ex;
+        }
+    }//cron_test
+
 
     /* MANUAL EXECUTION */
     public static function cron_manual($fstExecution,$option) {
@@ -236,6 +222,143 @@ class FELLESDATA_CRON {
     /* PRIVATE */
     /***********/
 
+    /**
+     * Description
+     * Check if it has to ask for the last status or not
+     *
+     * @param       object  $plugin
+     * @param       bool    $fstExecution
+     *
+     * @return              bool|null
+     * @throws              Exception
+     *
+     * @creationDate        20/02/2017
+     * @author              eFaktor     (fbv)
+     */
+    private static function get_last_status($plugin,$fstExecution) {
+        /* Variables */
+        global $CFG;
+        $dbLog      = null;
+        $laststatus = null;
+        $time       = null;
+        $calendar   = null;
+
+        try {
+            // Calendar
+            $calendar = array();
+            $calendar[0] = new lang_string('sunday', 'calendar');
+            $calendar[1] = new lang_string('monday', 'calendar');
+            $calendar[2] = new lang_string('tuesday', 'calendar');
+            $calendar[3] = new lang_string('wednesday', 'calendar');
+            $calendar[4] = new lang_string('thursday', 'calendar');
+            $calendar[5] = new lang_string('friday', 'calendar');
+            $calendar[6] = new lang_string('saturday', 'calendar');
+
+            // Local time
+            $time   = time();
+            $today  = getdate($time);
+
+            // Check first execution
+            if ($fstExecution) {
+                $laststatus = true;
+            }else {
+                if (!$plugin->nextstatus) {
+                    $laststatus = true;
+                }else {
+                    echo "DAY TO RUN : " . $calendar[$plugin->fs_calendar_status] . "</br>";
+                    echo "TIME: " . userdate($time,'%d.%m.%Y', 99, false) . "</br>";
+                    echo "LAST: " . userdate($plugin->laststatus,'%d.%m.%Y', 99, false) . "</br>";
+                    echo "NEXT: " . userdate($plugin->nextstatus,'%d.%m.%Y', 99, false) . "</br>";
+                    if ($today['weekday'] == $calendar[$plugin->fs_calendar_status]) {
+                        $laststatus = true;
+                    }else {
+                        if (($plugin->laststatus < $time) && ($time > $plugin->nextstatus)) {
+                            $laststatus = true;
+                        }else {
+                            $laststatus = false;
+                        }
+                    }
+                }
+            }//if_fstExecution
+
+            return $laststatus;
+        }catch (Exception $ex) {
+            // Log
+            $dbLog = "ERROR: " . $ex->getMessage() . "\n" . "\n";
+            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Fellesdata CRON get_last_status . ' . "\n";
+            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+
+            throw $ex;
+        }//try_catch
+    }//get_last_status
+
+    /**
+     * Description
+     * Unmap process
+     * - Unmap user compentence
+     * - Unmap managers reportes
+     * - Unmap organizations
+     *
+     * @param       object  $plugin
+     * @param       String  $dbLog
+     *
+     * @throws              Exception
+     *
+     * @creationDate        20/02/2017
+     * @author              eFaktor     (fbv)
+     */
+    private static function unmapping($plugin,&$dbLog) {
+        /* Variables */
+
+        try {
+            // Unmap user competence
+            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START  UNMAP User competence. ' . "\n";
+            self::unmap_user_competence($plugin,KS_UNMAP_USER_COMPETENCE);
+
+            // Unmap managers
+            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START  UNMAP Manager/Reporter. ' . "\n";
+            self::unmap_managers_reporters($plugin,KS_MANAGER_REPORTER);
+
+            // Unmap organizations
+            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START  UNMAP Organizations. ' . "\n";
+            self::unmap_organizations($plugin,KS_UNMAP_COMPANY);
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//unmapping
+
+    /**
+     * Description
+     * Competence synchornization
+     *
+     * @param       object  $plugin
+     * @param       String  $dbLog
+     *
+     * @throws              Exception
+     *
+     * @creationDate        20/02/2017
+     * @author              eFaktor     (fbv)
+     */
+    private static function competence_synchronization($plugin,&$dbLog) {
+        /* Variables */
+
+        try {
+            // Synchronization Managers && Reporters
+            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START  Managers/Reporters FS Synchronization. ' . "\n";
+            self::manager_reporter_synchronization($plugin,KS_MANAGER_REPORTER);
+
+            // Synchronization User Competence JobRole  -- Add/Update
+            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START Users competence FS Synchronization. ' . "\n";
+            self::user_competence_synchronization($plugin,KS_USER_COMPETENCE);
+
+            // Synchronization User Competence JobRole  -- Delete
+            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START Users Competence to delete FS Synchronization. ' . "\n";
+            self::user_competence_synchronization($plugin,KS_USER_COMPETENCE,true);
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//competence_synchronization
+    
     /**
      * Description
      * Import data from KS site
@@ -468,40 +591,43 @@ class FELLESDATA_CRON {
      * Import data from fellesdata
      *
      * @param           $pluginInfo
+     * @param           $status
      *
      * @throws          Exception
      *
      * @creationDate    02/02/2016
      * @author          eFaktor     (fbv)
      */
-    private static function import_fellesdata($pluginInfo) {
+    private static function import_fellesdata($pluginInfo,$status = false) {
         /* Variables    */
         global $CFG;
         $dbLog = null;
 
         try {
             // Import FS Users
-            self::import_fs_users($pluginInfo);
+            self::import_fs_users($pluginInfo,$status);
 
             // Import FS Companies
-            self::import_fs_orgstructure($pluginInfo);
+            self::import_fs_orgstructure($pluginInfo,$status);
 
             // Import FS Job roles
-            self::import_fs_jobroles($pluginInfo);
+            self::import_fs_jobroles($pluginInfo,$status);
 
             // Import FS User Competence
-            self::import_fs_managers_reporters($pluginInfo);
+            self::import_fs_managers_reporters($pluginInfo,$status);
 
             // Import FS User Competence JR
-            self::import_fs_user_competence_jr($pluginInfo);
+            self::import_fs_user_competence_jr($pluginInfo,$status);
 
             // Send suspicious notifications
-            if ($pluginInfo->suspicious_path) {
-                // Send Notifications
-                suspicious::send_suspicious_notifications($pluginInfo);
-                // Send Reminder
-                suspicious::send_suspicious_notifications($pluginInfo,true);
-            }//suspicious_path
+            if (!$status) {
+                if ($pluginInfo->suspicious_path) {
+                    // Send Notifications
+                    suspicious::send_suspicious_notifications($pluginInfo);
+                    // Send Reminder
+                    suspicious::send_suspicious_notifications($pluginInfo,true);
+                }//suspicious_path
+            }//if_status
         }catch (Exception $ex) {
             // Log
             $dbLog  = "Error: " . $ex->getMessage() . "\n" . "\n";
@@ -516,14 +642,15 @@ class FELLESDATA_CRON {
      * Description
      * Import all users from Fellesdata
      *
-     * @param           $pluginInfo
+     * @param           object  $plugin
+     * @param           boolean $status If it has to get the last status
      *
      * @throws          Exception
      *
      * @creationDate    02/02/2016
      * @author          eFaktor     (fbv)
      */
-    private static function import_fs_users($pluginInfo) {
+    private static function import_fs_users($plugin,$status = false) {
         /* Variables    */
         global $CFG;
         $pathFile       = null;
@@ -534,34 +661,44 @@ class FELLESDATA_CRON {
         
         try {
             // Call web service
-            $fsResponse = self::process_tradis_service($pluginInfo,TRADIS_FS_USERS);
+            $fsResponse = self::process_tradis_service($plugin,TRADIS_FS_USERS,$status);
 
             // Import data into temporary tables
             if ($fsResponse) {
                 // Open file
                 $pathFile = $CFG->dataroot . '/fellesdata/' . TRADIS_FS_USERS . '.txt';
                 if (file_exists($pathFile)) {
-                    // First check if is a suspicious file
-                    if ($pluginInfo->suspicious_path) {
-                        if (!suspicious::check_for_suspicious_data(TRADIS_FS_USERS,$pathFile)) {
+                    if ($status) {
+                        // Get last status
+                        // Get content
+                        $content = file($pathFile);
+
+                        echo $content . "</br>";
+                        //FS::save_temporary_fellesdata($content,IMP_USERS);
+                    }else {
+                        // Get last changes
+                        // First check if is a suspicious file
+                        if ($plugin->suspicious_path) {
+                            if (!suspicious::check_for_suspicious_data(TRADIS_FS_USERS,$pathFile)) {
+                                // Get content
+                                $content = file($pathFile);
+
+                                FS::save_temporary_fellesdata($content,IMP_USERS);
+                            }else {
+                                // Mark file as suspicious
+                                $suspiciousPath = suspicious::mark_suspicious_file(TRADIS_FS_USERS,$plugin);
+
+                                // Move file to the right folder
+                                copy($pathFile,$suspiciousPath);
+                                unlink($pathFile);
+                            }//if_suspicious
+                        }else {
                             // Get content
                             $content = file($pathFile);
 
                             FS::save_temporary_fellesdata($content,IMP_USERS);
-                        }else {
-                            // Mark file as suspicious
-                            $suspiciousPath = suspicious::mark_suspicious_file(TRADIS_FS_USERS,$pluginInfo);
-
-                            // Move file to the right folder
-                            copy($pathFile,$suspiciousPath);
-                            unlink($pathFile);
-                        }//if_suspicious
-                    }else {
-                        // Get content
-                        $content = file($pathFile);
-
-                        FS::save_temporary_fellesdata($content,IMP_USERS);
-                    }
+                        }
+                    }//if_status
                 }//if_exists
             }//if_fsResponse
         }catch (Exception $ex) {
@@ -579,14 +716,15 @@ class FELLESDATA_CRON {
      * Description
      * Import all companies from fellesdata
      *
-     * @param           $pluginInfo
+     * @param           object  $plugin
+     * @param           boolean $status
      *
      * @throws          Exception
      *
      * @creationDate    02/02/2016
      * @author          eFaktor     (fbv)
      */
-    private static function import_fs_orgstructure($pluginInfo) {
+    private static function import_fs_orgstructure($plugin,$status = false) {
         /* Variables    */
         global $CFG;
         $pathFile   = null;
@@ -599,34 +737,43 @@ class FELLESDATA_CRON {
             $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START Import FS ORG Structure . ' . "\n";
 
             // Call web service
-            $fsResponse = self::process_tradis_service($pluginInfo,TRADIS_FS_COMPANIES);
+            $fsResponse = self::process_tradis_service($plugin,TRADIS_FS_COMPANIES,$status);
 
             // Import data into temporary tables
             if ($fsResponse) {
                 // Open file
                 $pathFile = $CFG->dataroot . '/fellesdata/' . TRADIS_FS_COMPANIES . '.txt';
                 if (file_exists($pathFile)) {
-                    // First check if is a suspicious file
-                    if ($pluginInfo->suspicious_path) {
-                        if (!suspicious::check_for_suspicious_data(TRADIS_FS_COMPANIES,$pathFile)) {
-                            // Get content
-                            $content = file($pathFile);
-
-                            FS::save_temporary_fellesdata($content,IMP_COMPANIES);
-                        }else {
-                            // Mark file as suspicious
-                            $suspiciousPath = suspicious::mark_suspicious_file(TRADIS_FS_COMPANIES,$pluginInfo);
-
-                            // Move file to the right folder
-                            copy($pathFile,$suspiciousPath);
-                            unlink($pathFile);
-                        }//if_suspicious
-                    }else {
+                    if ($status) {
+                        // Get last status
                         // Get content
                         $content = file($pathFile);
 
                         FS::save_temporary_fellesdata($content,IMP_COMPANIES);
-                    }///if_suspicous_path
+                    }else {
+                        // Get last changes
+                        // First check if is a suspicious file
+                        if ($plugin->suspicious_path) {
+                            if (!suspicious::check_for_suspicious_data(TRADIS_FS_COMPANIES,$pathFile)) {
+                                // Get content
+                                $content = file($pathFile);
+
+                                FS::save_temporary_fellesdata($content,IMP_COMPANIES);
+                            }else {
+                                // Mark file as suspicious
+                                $suspiciousPath = suspicious::mark_suspicious_file(TRADIS_FS_COMPANIES,$plugin);
+
+                                // Move file to the right folder
+                                copy($pathFile,$suspiciousPath);
+                                unlink($pathFile);
+                            }//if_suspicious
+                        }else {
+                            // Get content
+                            $content = file($pathFile);
+
+                            FS::save_temporary_fellesdata($content,IMP_COMPANIES);
+                        }///if_suspicous_path
+                    }//if_status
                 }//if_exists
             }//if_fsResponse
 
@@ -647,14 +794,15 @@ class FELLESDATA_CRON {
      * Description
      * Import FS Job roles from fellesdata
      *
-     * @param           $pluginInfo
+     * @param           object  $plugin
+     * @param           boolean $status
      *
      * @throws          Exception
      *
      * @creationDate    04/02/2016
      * @author          eFaktor     (fbv)
      */
-    private static function import_fs_jobroles($pluginInfo) {
+    private static function import_fs_jobroles($plugin,$status = false) {
         /* Variables    */
         global $CFG;
         $pathFile   = null;
@@ -664,34 +812,43 @@ class FELLESDATA_CRON {
         
         try {
             // Call web service
-            $fsResponse = self::process_tradis_service($pluginInfo,TRADIS_FS_JOBROLES);
+            $fsResponse = self::process_tradis_service($plugin,TRADIS_FS_JOBROLES,$status);
 
             // Import data into temporary tables
             if ($fsResponse) {
                 // Open file
                 $pathFile = $CFG->dataroot . '/fellesdata/' . TRADIS_FS_JOBROLES . '.txt';
                 if (file_exists($pathFile)) {
-                    // First check if is a suspicious file
-                    if ($pluginInfo->suspicious_path) {
-                        if (!suspicious::check_for_suspicious_data(TRADIS_FS_JOBROLES,$pathFile)) {
-                            // Get content
-                            $content = file($pathFile);
-
-                            FS::save_temporary_fellesdata($content,IMP_JOBROLES);
-                        }else {
-                            // Mark file as suspicious
-                            $suspiciousPath = suspicious::mark_suspicious_file(TRADIS_FS_JOBROLES,$pluginInfo);
-
-                            // Move file to the right folder
-                            copy($pathFile,$suspiciousPath);
-                            unlink($pathFile);
-                        }//if_suspicious
-                    }else {
+                    if ($status) {
+                        //Get last status
                         // Get content
                         $content = file($pathFile);
 
                         FS::save_temporary_fellesdata($content,IMP_JOBROLES);
-                    }//if_suspicious_path
+                    }else {
+                        //Get last changes
+                        // First check if is a suspicious file
+                        if ($plugin->suspicious_path) {
+                            if (!suspicious::check_for_suspicious_data(TRADIS_FS_JOBROLES,$pathFile)) {
+                                // Get content
+                                $content = file($pathFile);
+
+                                FS::save_temporary_fellesdata($content,IMP_JOBROLES);
+                            }else {
+                                // Mark file as suspicious
+                                $suspiciousPath = suspicious::mark_suspicious_file(TRADIS_FS_JOBROLES,$plugin);
+
+                                // Move file to the right folder
+                                copy($pathFile,$suspiciousPath);
+                                unlink($pathFile);
+                            }//if_suspicious
+                        }else {
+                            // Get content
+                            $content = file($pathFile);
+
+                            FS::save_temporary_fellesdata($content,IMP_JOBROLES);
+                        }//if_suspicious_path
+                    }//if_status
                 }//if_exists
             }//if_fsResponse
         }catch (Exception $ex) {
@@ -708,13 +865,15 @@ class FELLESDATA_CRON {
      * Description
      * Import Managers Reporters
      *
-     * @param           $pluginInfo
+     * @param           object  $plugin
+     * @param           boolean $status
+     *
      * @throws          Exception
      *
      * @creationDate    13/06/2016
      * @author          eFaktor     (fbv)
      */
-    private static function import_fs_managers_reporters($pluginInfo) {
+    private static function import_fs_managers_reporters($plugin,$status = false) {
         /* Variables    */
         global $CFG;
         $pathFile               = null;
@@ -724,34 +883,43 @@ class FELLESDATA_CRON {
         
         try {
             // Call web service
-            $fsManagersReporters = self::process_tradis_service($pluginInfo,TRADIS_FS_MANAGERS_REPORTERS);
+            $fsManagersReporters = self::process_tradis_service($plugin,TRADIS_FS_MANAGERS_REPORTERS,$status);
 
             // Import data into temporary tables
             if ($fsManagersReporters) {
                 // Open file
                 $pathFile = $CFG->dataroot . '/fellesdata/' . TRADIS_FS_MANAGERS_REPORTERS . '.txt';
                 if (file_exists($pathFile)) {
-                    // First check if is a suspicious file
-                    if ($pluginInfo->suspicious_path) {
-                        if (!suspicious::check_for_suspicious_data(TRADIS_FS_MANAGERS_REPORTERS,$pathFile)) {
-                            // Get content
-                            $content = file($pathFile);
-
-                            FS::save_temporary_fellesdata($content,IMP_MANAGERS_REPORTERS);
-                        }else {
-                            // Mark file as suspicious
-                            $suspiciousPath = suspicious::mark_suspicious_file(TRADIS_FS_MANAGERS_REPORTERS,$pluginInfo);
-
-                            // Move file to the right folder
-                            copy($pathFile,$suspiciousPath);
-                            unlink($pathFile);
-                        }//if_suspicious
-                    }else {
+                    if ($status) {
+                        // Get last status
                         // Get content
                         $content = file($pathFile);
 
                         FS::save_temporary_fellesdata($content,IMP_MANAGERS_REPORTERS);
-                    }//if_suspicious_path
+                    }else {
+                        // Get last changes
+                        // First check if is a suspicious file
+                        if ($plugin->suspicious_path) {
+                            if (!suspicious::check_for_suspicious_data(TRADIS_FS_MANAGERS_REPORTERS,$pathFile)) {
+                                // Get content
+                                $content = file($pathFile);
+
+                                FS::save_temporary_fellesdata($content,IMP_MANAGERS_REPORTERS);
+                            }else {
+                                // Mark file as suspicious
+                                $suspiciousPath = suspicious::mark_suspicious_file(TRADIS_FS_MANAGERS_REPORTERS,$plugin);
+
+                                // Move file to the right folder
+                                copy($pathFile,$suspiciousPath);
+                                unlink($pathFile);
+                            }//if_suspicious
+                        }else {
+                            // Get content
+                            $content = file($pathFile);
+
+                            FS::save_temporary_fellesdata($content,IMP_MANAGERS_REPORTERS);
+                        }//if_suspicious_path                        
+                    }//if_status
                 }//if_exists
             }//if_fsResponse
         }catch (Exception $ex) {
@@ -769,14 +937,15 @@ class FELLESDATA_CRON {
      * Description
      * Import all User - Competence JR from fellesdata
      *
-     * @param           $pluginInfo
+     * @param           object  $plugin
+     * @param           boolean $status
      *
      * @throws          Exception
      *
      * @creationDate    02/02/2016
      * @author          eFaktor     (fbv)
      */
-    private static function import_fs_user_competence_jr($pluginInfo) {
+    private static function import_fs_user_competence_jr($plugin,$status = false) {
         /* Variables    */
         global $CFG;
         $pathFile           = null;
@@ -786,34 +955,43 @@ class FELLESDATA_CRON {
         
         try {
             // Call web service
-            $usersCompetenceJR = self::process_tradis_service($pluginInfo,TRADIS_FS_USERS_JOBROLES);
+            $usersCompetenceJR = self::process_tradis_service($plugin,TRADIS_FS_USERS_JOBROLES,$status);
 
             // Import data into temporary tables
             if ($usersCompetenceJR) {
                 // Open file
                 $pathFile = $CFG->dataroot . '/fellesdata/' . TRADIS_FS_USERS_JOBROLES . '.txt';
                 if (file_exists($pathFile)) {
-                    // First check if is a suspicious file
-                    if ($pluginInfo->suspicious_path) {
-                        if (!suspicious::check_for_suspicious_data(TRADIS_FS_USERS_JOBROLES,$pathFile)) {
-                            // Get content
-                            $content = file($pathFile);
-
-                            FS::save_temporary_fellesdata($content,IMP_COMPETENCE_JR);
-                        }else {
-                            // Mark file as suspicious
-                            $suspiciousPath = suspicious::mark_suspicious_file(TRADIS_FS_USERS_JOBROLES,$pluginInfo);
-
-                            // Move file to the right folder
-                            copy($pathFile,$suspiciousPath);
-                            unlink($pathFile);
-                        }//if_suspicious
-                    }else {
+                    if ($status) {
+                        // Get last status
                         // Get content
                         $content = file($pathFile);
 
                         FS::save_temporary_fellesdata($content,IMP_COMPETENCE_JR);
-                    }//if_suspicious_path
+                    }else {
+                        // Get last changes
+                        // First check if is a suspicious file
+                        if ($plugin->suspicious_path) {
+                            if (!suspicious::check_for_suspicious_data(TRADIS_FS_USERS_JOBROLES,$pathFile)) {
+                                // Get content
+                                $content = file($pathFile);
+
+                                FS::save_temporary_fellesdata($content,IMP_COMPETENCE_JR);
+                            }else {
+                                // Mark file as suspicious
+                                $suspiciousPath = suspicious::mark_suspicious_file(TRADIS_FS_USERS_JOBROLES,$plugin);
+
+                                // Move file to the right folder
+                                copy($pathFile,$suspiciousPath);
+                                unlink($pathFile);
+                            }//if_suspicious
+                        }else {
+                            // Get content
+                            $content = file($pathFile);
+
+                            FS::save_temporary_fellesdata($content,IMP_COMPETENCE_JR);
+                        }//if_suspicious_path
+                    }//if_status
                 }//if_exists
             }//if_data
         }catch (Exception $ex) {
@@ -832,6 +1010,7 @@ class FELLESDATA_CRON {
      *
      * @param           $pluginInfo
      * @param           $service
+     * @param           $last
      *
      * @return          mixed|null
      * @throws          Exception
@@ -839,7 +1018,7 @@ class FELLESDATA_CRON {
      * @creationDate    02/02/2016
      * @author          eFaktor     (fbv)
      */
-    private static function process_tradis_service($pluginInfo,$service) {
+    private static function process_tradis_service($pluginInfo,$service,$last = false) {
         /* Variables    */
         global $CFG;
         $dir            = null;
@@ -855,18 +1034,20 @@ class FELLESDATA_CRON {
             // Get parameters service
             $toDate     = mktime(1, 60, 0, date("m"), date("d"), date("Y"));
             $toDate     = gmdate('Y-m-d\TH:i:s\Z',$toDate);
-            
-            if (isset($pluginInfo->lastexecution) && $pluginInfo->lastexecution) {
-                // No first execution
+
+            if ($last) {
+                $fromDate = 0;
+            }else {
+                // No last status
                 $admin      = get_admin();
                 $date       = usergetdate($pluginInfo->lastexecution, $admin->timezone);
                 $fromDate   = mktime(0, 0, 0, $date['mon'], $date['mday']- $pluginInfo->fs_days, $date['year']);
                 $fromDate   = gmdate('Y-m-d\TH:i:s\Z',$fromDate);
-            }else {
-                // First execution
-                $fromDate = gmdate('Y-m-d\TH:i:s\Z',0);
-            }
+            }//if_last
 
+            echo "FROM : " . $fromDate . "</br>";
+            echo "toDate: " . $toDate . "</br>";
+            
             // Build url end point
             $urlTradis = $pluginInfo->fs_point . '/' . $service . '?fromDate=' . $fromDate . '&toDate=' . $toDate;
 
@@ -1066,41 +1247,14 @@ class FELLESDATA_CRON {
 
             // check if the synchronization can be run
             if (suspicious::run_synchronization(IMP_SUSP_COMPANIES)) {
-                // Notifications
-                if ($pluginInfo->mail_notification) {
-                    $notifyTo   = explode(',',$pluginInfo->mail_notification);
-                }//if_mail_notifications
+                // Synchronize new companies
+                self::companies_new_fs_synchronization($pluginInfo);
 
-                // First execution
-                if ($fstExecution) {
-                    // Mail --> manual synchronization
-                    if ($notifyTo) {
-                        self::send_notifications(SYNC_COMP,null,$notifyTo,$pluginInfo->fs_source);
-                    }//if_notify
-                }else {
-                    // Synchronize only companies FS
-                    //FSKS_COMPANY::synchronize_companies_fs();
+                // Synchronize no new companies
+                self::companies_no_new_fs_synchronization($pluginInfo);
 
-                    // Synchronize new companies
-                    self::companies_new_fs_synchronization($pluginInfo);
-                    
-                    // Synchronize no new companies
-                    self::companies_no_new_fs_synchronization($pluginInfo);
-                    
-                    // Send notifications
-                    // Notification manual synchronization
-                    if ($notifyTo) {
-                        // Get companies to send notifications
-                        $toMail = FSKS_COMPANY::get_companiesfs_to_mail();
-
-                        if ($toMail) {
-                            self::send_notifications(SYNC_COMP,$toMail,$notifyTo,$pluginInfo->fs_source);
-                        }//if_toMail
-                    }//if_notify
-                    
-                    /* Clean Table*/
-                    //$DB->delete_records('fs_imp_company',array('imported' => '1'));
-                }//if_else
+                /* Clean Table*/
+                //$DB->delete_records('fs_imp_company',array('imported' => '1'));
             }//if_synchronization
 
             // Log

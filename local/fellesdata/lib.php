@@ -36,29 +36,32 @@ function local_fellesdata_extend_navigation(global_navigation $navigation) {
 
 function fellesdata_cron() {
     global $CFG;
-    $pluginInfo     = null;
+    $plugin         = null;
     $now            = time();
     $fstExecution   = null;
+    $laststatus     = null;
+    $nextstatus     = null;
 
     try {
-        /* Library */
+        // library
         require_once('cron/fellesdatacron.php');
         require_once('lib/fellesdatalib.php');
         require_once('lib/suspiciouslib.php');
 
-        /* First execution or no */
-        $activate = get_config('local_fellesdata','cron_active');
-        if ($activate) {
-            $lastexecution = get_config('local_fellesdata','lastexecution');
-            if ($lastexecution) {
+        // Plugin info
+        $plugin = get_config('local_fellesdata');
+        
+        // Activate
+        if ($plugin->cron_active) {
+            // First execution
+            if ($plugin->lastexecution) {
                 $fstExecution = false;
             }else {
                 $fstExecution = true;
             }
-            \FELLESDATA_CRON::cron($fstExecution);
 
-            $lastexecution = get_config('local_fellesdata','lastexecution');
-
+            \FELLESDATA_CRON::cron($plugin,$fstExecution);
+            
             set_config('lastexecution', $now, 'local_fellesdata');
         }
     }catch (Exception $ex) {
