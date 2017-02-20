@@ -95,24 +95,35 @@ class FELLESDATA_CRON {
     }//cron
 
     public static function cron_test($plugin,$fstExecution) {
+        /* Variables */
+        global $CFG;
+        
         try {
             $last = self::get_last_status($plugin,$fstExecution);
 
             if ($last) {
+                $backupstatus = $CFG->dataroot . '/fellesdata/backup_status';
+                if (!file_exists($backupstatus)) {
+                    mkdir($backupstatus);
+                }//if_backup
+                
+                if ($last) {
+                    
+                }
                 // Ask for the last status
                 self::import_fs_users($plugin,true);
 
                 // Import FS Companies
-                self::import_fs_orgstructure($plugin,true);
+                //self::import_fs_orgstructure($plugin,true);
 
                 // Import FS Job roles
-                self::import_fs_jobroles($plugin,true);
+                //self::import_fs_jobroles($plugin,true);
 
                 // Import FS User Competence
-                self::import_fs_managers_reporters($plugin,true);
+                //self::import_fs_managers_reporters($plugin,true);
 
                 // Import FS User Competence JR
-                self::import_fs_user_competence_jr($plugin,true);
+                //self::import_fs_user_competence_jr($plugin,true);
             }
 
         }catch (Exception $ex) {
@@ -613,7 +624,7 @@ class FELLESDATA_CRON {
     private static function import_fellesdata($pluginInfo,$status = false) {
         /* Variables    */
         global $CFG;
-        $dbLog = null;
+        $dbLog        = null;
 
         try {
             // Import FS Users
@@ -683,9 +694,9 @@ class FELLESDATA_CRON {
                     if ($status) {
                         // Get last status
                         // Get content
-                        //$content = file($pathFile);
+                        $content = file($pathFile);
 
-                        //FS::save_temporary_fellesdata($content,IMP_USERS);
+                        FS::save_temporary_fellesdata($content,IMP_USERS,$status);
                     }else {
                         // Get last changes
                         // First check if is a suspicious file
@@ -1033,6 +1044,7 @@ class FELLESDATA_CRON {
         /* Variables    */
         global $CFG;
         $dir            = null;
+        $backup         = null;
         $responseFile   = null;
         $pathFile       = null;
         $urlTradis      = null;
@@ -1047,7 +1059,6 @@ class FELLESDATA_CRON {
             $toDate     = gmdate('Y-m-d\TH:i:s\Z',$toDate);
 
             if ($last) {
-                $fromDate = 0;
                 $fromDate = gmdate('Y-m-d\TH:i:s\Z',0);
             }else {
                 // No last status
@@ -1057,9 +1068,7 @@ class FELLESDATA_CRON {
                 $fromDate   = gmdate('Y-m-d\TH:i:s\Z',$fromDate);
             }//if_last
 
-            echo "FROM : " . $fromDate . "</br>";
-            echo "toDate: " . $toDate . "</br>";
-            
+
             // Build url end point
             $urlTradis = $pluginInfo->fs_point . '/' . $service . '?fromDate=' . $fromDate . '&toDate=' . $toDate;
 
@@ -1086,11 +1095,12 @@ class FELLESDATA_CRON {
                 $dir = $CFG->dataroot . '/fellesdata';
                 if (!file_exists($dir)) {
                     mkdir($dir);
-                }
+                }//if_dir
+
                 $backup = $CFG->dataroot . '/fellesdata/backup';
                 if (!file_exists($backup)) {
                     mkdir($backup);
-                }
+                }//if_backup
 
                 // Clean all response
                 $pathFile = $dir . '/' . $service . '.txt';

@@ -2397,7 +2397,7 @@ class FS {
      * Description
      * Save in temporary tables. Step before synchronization
      */
-    public static function save_temporary_fellesdata($data,$type) {
+    public static function save_temporary_fellesdata($data,$type,$status = false) {
         /* Variables    */
         $action         = null;
         $newEntry       = null;
@@ -2456,11 +2456,27 @@ class FS {
             if ($toSave) {
                 switch ($type) {
                     case IMP_USERS:
+                        if ($status) {
+                            echo " HOLA ";
+                            global $DB,$CFG;
+                            $rdo = $DB->get_records('fs_imp_users');
+                            $backupstatus = $CFG->dataroot . '/fellesdata/backup_status/fs_imp_users_' . time() . '.txt';
+                            if (file_exists($backupstatus)) {
+                                unlink($backupstatus);
+                            }else {
+                                //$file = fopen($backupstatus);
+                                //for
+                                file_put_contents($backupstatus,$rdo);
+
+                            }
+
+
+                        }
                         // FS Users
-                        self::import_temporary_fs_users($toSave);
+                        //self::import_temporary_fs_users($toSave);
 
                         // Fake eMails
-                        self::update_fake_mails();
+                        //self::update_fake_mails();
                         
                         break;
 
