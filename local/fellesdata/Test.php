@@ -47,7 +47,7 @@ try {
             FELLESDATA_CRON::cron_manual(true,$option);
         }
     }else {
-        FELLESDATA_CRON::cron_test($pluginInfo,false);
+        FELLESDATA_CRON::cron($pluginInfo,false);
 
         //echo $pluginInfo->fs_days;
     }

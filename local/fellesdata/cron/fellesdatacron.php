@@ -62,7 +62,7 @@ class FELLESDATA_CRON {
 
             // Unmap process
             if (!$fstExecution) {
-                self::unmapping($plugin,$dbLog);
+                //self::unmapping($plugin,$dbLog);
             }//fstExecution_tounmap
 
             // Import KS
@@ -277,14 +277,18 @@ class FELLESDATA_CRON {
                 $laststatus = true;
             }else {
                 if (!$plugin->nextstatus) {
+                    echo "1" . "</br>";
                     $laststatus = true;
                 }else {
                     if ($today['weekday'] == $calendar[$plugin->fs_calendar_status]) {
+                        echo "2" . "</br>";
                         $laststatus = true;
                     }else {
                         if (($plugin->laststatus < $time) && ($time > $plugin->nextstatus)) {
+                            echo "3" . "</br>";
                             $laststatus = true;
                         }else {
+                            echo "4" . "</br>";
                             $laststatus = false;
                         }
                     }
@@ -618,9 +622,11 @@ class FELLESDATA_CRON {
         $dbLog        = null;
 
         try {
+            echo " Import Fellesdata 1 --> " . $status . "</br>";
             // Import FS Users
-            self::import_fs_users($pluginInfo,$status);
+            self::import_fs_users($pluginInfo);
 
+            /**
             // Import FS Companies
             self::import_fs_orgstructure($pluginInfo,$status);
 
@@ -642,6 +648,7 @@ class FELLESDATA_CRON {
                     suspicious::send_suspicious_notifications($pluginInfo,true);
                 }//suspicious_path
             }//if_status
+             **/
         }catch (Exception $ex) {
             // Log
             $dbLog  = "Error: " . $ex->getMessage() . "\n" . "\n";
