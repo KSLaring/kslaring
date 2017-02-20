@@ -39,7 +39,7 @@ class FELLESDATA_CRON {
     /* PUBLIC */
     /**********/
 
-    public static function cron($plugin,$fstExecution) {
+    public static function cron_DEACTIVATE($plugin,$fstExecution) {
         /* Variables    */
         global $CFG;
         $dbLog              = null;
@@ -62,12 +62,12 @@ class FELLESDATA_CRON {
 
             // Unmap process
             if (!$fstExecution) {
-                //self::unmapping($plugin,$dbLog);
+                self::unmapping($plugin,$dbLog);
             }//fstExecution_tounmap
 
             // Import KS
             $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START Import KS. ' . "\n";
-            //self::import_ks($plugin);
+            self::import_ks($plugin);
 
             // Import fellesdata
             $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START Import Fellesdata. ' . "\n";
@@ -75,18 +75,18 @@ class FELLESDATA_CRON {
 
             // Users accounts synchornization
             $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START Users FS Synchronization. ' . "\n";
-            //self::users_fs_synchronization($plugin);
+            self::users_fs_synchronization($plugin);
 
             // Companies synchornization
             $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START Companies FS Synchronization. ' . "\n";
-            //self::companies_fs_synchronization($plugin,$fstExecution);
+            self::companies_fs_synchronization($plugin,$fstExecution);
 
             // Job roles to map
-            //self::jobroles_fs_to_map($plugin);
+            self::jobroles_fs_to_map($plugin);
 
             // Competence synchronization
             if (!$fstExecution) {
-                //self::competence_synchronization($plugin,$dbLog);
+                self::competence_synchronization($plugin,$dbLog);
             }
 
             /* Log  */
@@ -106,7 +106,7 @@ class FELLESDATA_CRON {
             
             if ($last) {
                 // Ask for the last status
-                self::import_fs_users($plugin,true);
+                self::import_fs_users($plugin,false);
 
                 // Import FS Companies
                 //self::import_fs_orgstructure($plugin,true);
@@ -624,7 +624,7 @@ class FELLESDATA_CRON {
         try {
             echo " Import Fellesdata 1 --> " . $status . "</br>";
             // Import FS Users
-            self::import_fs_users($pluginInfo);
+            self::import_fs_users($pluginInfo,$status);
 
             /**
             // Import FS Companies
