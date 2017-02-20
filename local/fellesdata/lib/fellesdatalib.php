@@ -2464,10 +2464,13 @@ class FS {
                             if (file_exists($backupstatus)) {
                                 unlink($backupstatus);
                             }else {
-                                //$file = fopen($backupstatus);
-                                //for
-                                file_put_contents($backupstatus,$rdo);
-
+                                $file = fopen($backupstatus,'r+');
+                                foreach ($rdo as $instance) {
+                                    $line = json_encode($instance);
+                                    echo $line . "</br>";
+                                    fputs($file,$line);
+                                }
+                                fclose($file);
                             }
 
 
