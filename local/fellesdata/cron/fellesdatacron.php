@@ -101,6 +101,18 @@ class FELLESDATA_CRON {
             if ($last) {
                 // Ask for the last status
                 self::import_fs_users($plugin,true);
+
+                // Import FS Companies
+                self::import_fs_orgstructure($plugin,true);
+
+                // Import FS Job roles
+                self::import_fs_jobroles($plugin,true);
+
+                // Import FS User Competence
+                self::import_fs_managers_reporters($plugin,true);
+
+                // Import FS User Competence JR
+                self::import_fs_user_competence_jr($plugin,true);
             }
 
         }catch (Exception $ex) {
@@ -746,9 +758,9 @@ class FELLESDATA_CRON {
                     if ($status) {
                         // Get last status
                         // Get content
-                        $content = file($pathFile);
+                        //$content = file($pathFile);
 
-                        FS::save_temporary_fellesdata($content,IMP_COMPANIES);
+                        //FS::save_temporary_fellesdata($content,IMP_COMPANIES);
                     }else {
                         // Get last changes
                         // First check if is a suspicious file
@@ -821,9 +833,9 @@ class FELLESDATA_CRON {
                     if ($status) {
                         //Get last status
                         // Get content
-                        $content = file($pathFile);
+                        //$content = file($pathFile);
 
-                        FS::save_temporary_fellesdata($content,IMP_JOBROLES);
+                        //FS::save_temporary_fellesdata($content,IMP_JOBROLES);
                     }else {
                         //Get last changes
                         // First check if is a suspicious file
@@ -892,9 +904,9 @@ class FELLESDATA_CRON {
                     if ($status) {
                         // Get last status
                         // Get content
-                        $content = file($pathFile);
+                        //$content = file($pathFile);
 
-                        FS::save_temporary_fellesdata($content,IMP_MANAGERS_REPORTERS);
+                        //FS::save_temporary_fellesdata($content,IMP_MANAGERS_REPORTERS);
                     }else {
                         // Get last changes
                         // First check if is a suspicious file
@@ -964,9 +976,9 @@ class FELLESDATA_CRON {
                     if ($status) {
                         // Get last status
                         // Get content
-                        $content = file($pathFile);
+                        //$content = file($pathFile);
 
-                        FS::save_temporary_fellesdata($content,IMP_COMPETENCE_JR);
+                        //FS::save_temporary_fellesdata($content,IMP_COMPETENCE_JR);
                     }else {
                         // Get last changes
                         // First check if is a suspicious file
