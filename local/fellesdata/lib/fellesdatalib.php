@@ -2605,7 +2605,7 @@ class FS {
      * @creationDate    02/02/2016
      * @author          eFaktor     (fbv)
      */
-    private static  function import_temporary_fs_users($data,$status) {
+    private static  function import_temporary_fs_users($data,$status = false) {
         /* Variables    */
         global $DB;
         $infoUser   = null;
