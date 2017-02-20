@@ -671,9 +671,8 @@ class FELLESDATA_CRON {
                     if ($status) {
                         // Get last status
                         // Get content
-                        $content = file($pathFile);
+                        //$content = file($pathFile);
 
-                        echo $content . "</br>";
                         //FS::save_temporary_fellesdata($content,IMP_USERS);
                     }else {
                         // Get last changes
@@ -1037,6 +1036,7 @@ class FELLESDATA_CRON {
 
             if ($last) {
                 $fromDate = 0;
+                $fromDate = gmdate('Y-m-d\TH:i:s\Z',0);
             }else {
                 // No last status
                 $admin      = get_admin();
