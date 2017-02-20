@@ -100,10 +100,8 @@ class FELLESDATA_CRON {
         
         try {
             $last = self::get_last_status($plugin,$fstExecution);
-
+            
             if ($last) {
-                FS::backup_temporary_fellesdata();
-                
                 // Ask for the last status
                 self::import_fs_users($plugin,true);
 
@@ -686,6 +684,8 @@ class FELLESDATA_CRON {
                 $pathFile = $CFG->dataroot . '/fellesdata/' . TRADIS_FS_USERS . '.txt';
                 if (file_exists($pathFile)) {
                     if ($status) {
+                        FS::backup_temporary_fellesdata(IMP_USERS);
+                        
                         // Get last status
                         // Get content
                         $content = file($pathFile);

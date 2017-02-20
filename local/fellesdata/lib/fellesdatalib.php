@@ -2384,7 +2384,7 @@ class FS {
     /* PUBLIC */
     /**********/
 
-    public static function backup_temporary_fellesdata() {
+    public static function backup_temporary_fellesdata($type) {
         /* Variables */
         global $CFG;
         $file           = null;
@@ -2402,26 +2402,44 @@ class FS {
                 mkdir($backupstatus);
             }//if_backup
 
-            // backup all imp tables
-            // IMP USERS
-            $path = $backupstatus . "/fs_imp_users_" . $time . ".txt";
-            self::backup_imp_fs_tables($path,'fs_imp_users');
+            switch ($type) {
+                case IMP_USERS:
+                    // IMP USERS
+                    $path = $backupstatus . "/fs_imp_users_" . $time . ".txt";
+                    self::backup_imp_fs_tables($path,'fs_imp_users');
 
-            // IMP COMPANIES
-            $path = $backupstatus . "/fs_imp_company_" . $time . ".txt";
-            self::backup_imp_fs_tables($path,'fs_imp_company');
+                    break;
 
-            // IMP JOBROLES
-            $path = $backupstatus . "/fs_imp_jobroles_" . $time . ".txt";
-            self::backup_imp_fs_tables($path,'fs_imp_jobroles');
+                case IMP_COMPANIES:
+                    // IMP COMPANIES
+                    $path = $backupstatus . "/fs_imp_company_" . $time . ".txt";
+                    self::backup_imp_fs_tables($path,'fs_imp_company');
 
-            // IMP MANAGERS_REPORTERS
-            $path = $backupstatus . "/fs_imp_managers_reporters_" . $time . ".txt";
-            self::backup_imp_fs_tables($path,'fs_imp_managers_reporters');
+                    break;
 
-            // IMP COMPETENCE JR
-            $path = $backupstatus . "/fs_imp_users_jr_" . $time . ".txt";
-            self::backup_imp_fs_tables($path,'fs_imp_users_jr');
+                case IMP_JOBROLES:
+                    // IMP JOBROLES
+                    $path = $backupstatus . "/fs_imp_jobroles_" . $time . ".txt";
+                    self::backup_imp_fs_tables($path,'fs_imp_jobroles');
+
+                    break;
+
+                case IMP_MANAGERS_REPORTERS:
+                    // IMP MANAGERS_REPORTERS
+                    $path = $backupstatus . "/fs_imp_managers_reporters_" . $time . ".txt";
+                    self::backup_imp_fs_tables($path,'fs_imp_managers_reporters');
+
+                    break;
+
+                case IMP_COMPETENCE_JR:
+
+
+                    // IMP COMPETENCE JR
+                    $path = $backupstatus . "/fs_imp_users_jr_" . $time . ".txt";
+                    self::backup_imp_fs_tables($path,'fs_imp_users_jr');
+
+                    break;
+            }//type
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -2446,6 +2464,11 @@ class FS {
                 fwrite($file,$content);
                 fclose($file);
             }//if_rdo
+
+            // Delete all records
+            $DB->delete_records($table,array('action' => 0));
+            $DB->delete_records($table,array('action' => 1));
+            $DB->delete_records($table,array('action' => 2));
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -2582,7 +2605,7 @@ class FS {
      * @creationDate    02/02/2016
      * @author          eFaktor     (fbv)
      */
-    private static  function import_temporary_fs_users($data) {
+    private static  function import_temporary_fs_users($data,$status) {
         /* Variables    */
         global $DB;
         $infoUser   = null;
@@ -2592,16 +2615,22 @@ class FS {
         $trans = $DB->start_delegated_transaction();
 
         try {
-            // User Info
             foreach ($data as $key => $infoUser) {
                 // Execute
-                $rdo = $DB->get_record('fs_imp_users',array('FODSELSNR' => $infoUser->FODSELSNR));
-                if (!$rdo) {
+
+                if ($status) {
                     $DB->insert_record('fs_imp_users',$infoUser);
+
                 }else {
-                    $infoUser->id       = $rdo->id;
-                    $DB->update_record('fs_imp_users',$infoUser);
-                }//if_rdo
+                    $rdo = $DB->get_record('fs_imp_users',array('FODSELSNR' => $infoUser->FODSELSNR));
+                    if (!$rdo) {
+                        $DB->insert_record('fs_imp_users',$infoUser);
+                    }else {
+                        $infoUser->id       = $rdo->id;
+                        $DB->update_record('fs_imp_users',$infoUser);
+                    }//if_rdo
+                }
+
             }//ofr_each
 
             // Commit
