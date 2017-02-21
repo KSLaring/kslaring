@@ -71,7 +71,7 @@ class FELLESDATA_CRON {
 
             // Import fellesdata
             $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START Import Fellesdata. ' . "\n";
-            self::import_fellesdata($plugin);
+            self::import_fellesdata($plugin,$last);
 
             // Users accounts synchornization
             $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START Users FS Synchronization. ' . "\n";
