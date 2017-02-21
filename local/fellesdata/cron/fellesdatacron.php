@@ -97,7 +97,7 @@ class FELLESDATA_CRON {
         }//try_catch
     }//cron
 
-    public static function cron_test_status($plugin,$fstExecution) {
+    public static function cron_test($plugin,$fstExecution) {
         /* Variables */
         global $CFG;
         
@@ -105,7 +105,7 @@ class FELLESDATA_CRON {
             $last = self::get_last_status($plugin,$fstExecution);
 
             echo "Last: " . $last . "</br>";
-            
+
             //if ($last) {
                 // Ask for the last status
                 self::import_fs_users($plugin,$fstExecution);
