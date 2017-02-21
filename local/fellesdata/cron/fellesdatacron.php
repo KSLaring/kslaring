@@ -277,18 +277,18 @@ class FELLESDATA_CRON {
                 $laststatus = true;
             }else {
                 if (!$plugin->nextstatus) {
-                    echo "1" . "</br>";
+                    echo "Status: 1 --> Nextstatus: " . $plugin->nextstatus . "</br>";
                     $laststatus = true;
                 }else {
                     if ($today['weekday'] == $calendar[$plugin->fs_calendar_status]) {
-                        echo "2" . "</br>";
+                        echo "Status: 1 --> Day --> " . $calendar[$plugin->fs_calendar_status] . "</br>";
                         $laststatus = true;
                     }else {
                         if (($plugin->laststatus < $time) && ($time > $plugin->nextstatus)) {
-                            echo "3" . "</br>";
+                            echo "Status: 1 --> time right (nextstatus) " . "</br>";
                             $laststatus = true;
                         }else {
-                            echo "4" . "</br>";
+                            echo "Status: 0 " . "</br>";
                             $laststatus = false;
                         }
                     }

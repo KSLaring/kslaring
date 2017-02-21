@@ -2463,9 +2463,9 @@ class FS {
             }//if_rdo
 
             // Delete all records
-            //$DB->delete_records($table,array('action' => 0));
-            //$DB->delete_records($table,array('action' => 1));
-            //$DB->delete_records($table,array('action' => 2));
+            $DB->delete_records($table,array('action' => 0));
+            $DB->delete_records($table,array('action' => 1));
+            $DB->delete_records($table,array('action' => 2));
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -2615,16 +2615,16 @@ class FS {
             foreach ($data as $key => $infoUser) {
                 // Execute
                 if ($status) {
-                    $DB->insert_record('fs_imp_users',$infoUser);
+                    //$DB->insert_record('fs_imp_users',$infoUser);
                 }else {
                     $rdo = $DB->get_record('fs_imp_users',array('FODSELSNR' => $infoUser->FODSELSNR));
                     if (!$rdo) {
                         echo "1 - rdo " . "</br>";
-                        $DB->insert_record('fs_imp_users',$infoUser);
+                        //$DB->insert_record('fs_imp_users',$infoUser);
                     }else {
                         echo "2 - rdo " . "</br>";
                         $infoUser->id       = $rdo->id;
-                        $DB->update_record('fs_imp_users',$infoUser);
+                        //$DB->update_record('fs_imp_users',$infoUser);
                     }//if_rdo
                 }
 
