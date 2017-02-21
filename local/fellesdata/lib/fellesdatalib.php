@@ -39,6 +39,7 @@ define('DELETE_ACTION','delete');
 define('ADD',0);
 define('UPDATE',1);
 define('DELETE',2);
+define('STATUS',3);
 
 define('IMP_USERS',0);
 define('IMP_COMPANIES',1);
@@ -2451,7 +2452,8 @@ class FS {
 
         try {
             // get content table
-            $rdo = $DB->get_records($table);
+            $sql = " SELECT * FROM {" . $table . "} WHERE action != " . STATUS ;
+            $rdo = $DB->get_records_sql($table,$sql);
             if ($rdo) {
                 // content to string
                 $content = json_encode($rdo);
@@ -2555,6 +2557,7 @@ class FS {
                         // Fake eMails
                         self::update_fake_mails();
                         
+                        
                         break;
 
                     case IMP_COMPANIES:
@@ -2582,6 +2585,8 @@ class FS {
                         break;
                 }//type
             }//if_toSave
+            
+            return true;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch

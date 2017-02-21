@@ -39,7 +39,7 @@ class FELLESDATA_CRON {
     /* PUBLIC */
     /**********/
 
-    public static function cron_old($plugin,$fstExecution) {
+    public static function cron($plugin,$fstExecution) {
         /* Variables    */
         global $CFG;
         $dbLog              = null;
@@ -688,13 +688,13 @@ class FELLESDATA_CRON {
                 $pathFile = $CFG->dataroot . '/fellesdata/' . TRADIS_FS_USERS . '.txt';
                 if (file_exists($pathFile)) {
                     if ($status) {
-                        FS::backup_temporary_fellesdata(IMP_USERS);
-                        
                         // Get last status
                         // Get content
                         $content = file($pathFile);
 
-                        FS::save_temporary_fellesdata($content,IMP_USERS,$status);
+                        if (FS::save_temporary_fellesdata($content,IMP_USERS,$status)) {
+                            FS::backup_temporary_fellesdata(IMP_USERS);
+                        }
                     }else {
                         // Get last changes
                         // First check if is a suspicious file
