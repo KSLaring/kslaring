@@ -2463,9 +2463,9 @@ class FS {
             }//if_rdo
 
             // Delete all records
-            $DB->delete_records($table,array('action' => 0));
-            $DB->delete_records($table,array('action' => 1));
-            $DB->delete_records($table,array('action' => 2));
+            //$DB->delete_records($table,array('action' => 0));
+            //$DB->delete_records($table,array('action' => 1));
+            //$DB->delete_records($table,array('action' => 2));
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
