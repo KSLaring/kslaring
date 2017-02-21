@@ -2615,16 +2615,17 @@ class FS {
             foreach ($data as $key => $infoUser) {
                 // Execute
                 if ($status) {
-                    //$DB->insert_record('fs_imp_users',$infoUser);
+                    echo "HOLA" . "</br>";
+                    $DB->insert_record('fs_imp_users',$infoUser);
                 }else {
                     $rdo = $DB->get_record('fs_imp_users',array('FODSELSNR' => $infoUser->FODSELSNR));
                     if (!$rdo) {
                         echo "1 - rdo " . "</br>";
-                        //$DB->insert_record('fs_imp_users',$infoUser);
+                        $DB->insert_record('fs_imp_users',$infoUser);
                     }else {
                         echo "2 - rdo " . "</br>";
                         $infoUser->id       = $rdo->id;
-                        //$DB->update_record('fs_imp_users',$infoUser);
+                        $DB->update_record('fs_imp_users',$infoUser);
                     }//if_rdo
                 }
 

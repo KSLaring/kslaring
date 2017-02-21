@@ -97,16 +97,18 @@ class FELLESDATA_CRON {
         }//try_catch
     }//cron
 
-    public static function cron_test($plugin,$fstExecution) {
+    public static function cron_test_status($plugin,$fstExecution) {
         /* Variables */
         global $CFG;
         
         try {
             $last = self::get_last_status($plugin,$fstExecution);
+
+            echo "Last: " . $last . "</br>";
             
-            if ($last) {
+            //if ($last) {
                 // Ask for the last status
-                self::import_fs_users($plugin,$last);
+                self::import_fs_users($plugin,$fstExecution);
 
                 // Import FS Companies
                 //self::import_fs_orgstructure($plugin,true);
@@ -119,7 +121,7 @@ class FELLESDATA_CRON {
 
                 // Import FS User Competence JR
                 //self::import_fs_user_competence_jr($plugin,true);
-            }
+            //}
 
         }catch (Exception $ex) {
             throw $ex;
