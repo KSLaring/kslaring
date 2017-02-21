@@ -2551,7 +2551,7 @@ class FS {
                 switch ($type) {
                     case IMP_USERS:
                         // FS Users
-                        self::import_temporary_fs_users($toSave);
+                        self::import_temporary_fs_users($toSave,$status);
 
                         // Fake eMails
                         self::update_fake_mails();
