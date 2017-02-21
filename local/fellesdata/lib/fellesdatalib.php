@@ -2453,7 +2453,7 @@ class FS {
         try {
             // get content table
             $sql = " SELECT * FROM {" . $table . "} WHERE action != " . STATUS ;
-            $rdo = $DB->get_records_sql($table,$sql);
+            $rdo = $DB->get_records_sql($sql);
             if ($rdo) {
                 // content to string
                 $content = json_encode($rdo);
