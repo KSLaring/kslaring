@@ -279,18 +279,14 @@ class FELLESDATA_CRON {
                 $laststatus = true;
             }else {
                 if (!$plugin->nextstatus) {
-                    echo "Status: 1 --> Nextstatus: " . $plugin->nextstatus . "</br>";
                     $laststatus = true;
                 }else {
                     if ($today['weekday'] == $calendar[$plugin->fs_calendar_status]) {
-                        echo "Status: 1 --> Day --> " . $calendar[$plugin->fs_calendar_status] . "</br>";
                         $laststatus = true;
                     }else {
                         if (($plugin->laststatus < $time) && ($time > $plugin->nextstatus)) {
-                            echo "Status: 1 --> time right (nextstatus) " . "</br>";
                             $laststatus = true;
                         }else {
-                            echo "Status: 0 " . "</br>";
                             $laststatus = false;
                         }
                     }
@@ -692,7 +688,6 @@ class FELLESDATA_CRON {
                 $pathFile = $CFG->dataroot . '/fellesdata/' . TRADIS_FS_USERS . '.txt';
                 if (file_exists($pathFile)) {
                     if ($status) {
-                        echo " Before backup" . "</br>";
                         FS::backup_temporary_fellesdata(IMP_USERS);
                         
                         // Get last status
