@@ -39,7 +39,7 @@ class FELLESDATA_CRON {
     /* PUBLIC */
     /**********/
 
-    public static function cron($fstExecution) {
+    public static function cron_ok($fstExecution) {
         /* Variables    */
         global $CFG;
         $pluginInfo         = null;
@@ -353,7 +353,7 @@ class FELLESDATA_CRON {
             }else {
                 // Log
                 $dbLog = "ERROR: " . $response['message'] . "\n" . "\n";
-                $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH ERROR Fellesdata CRON KS Job Roles . ' . "\n";
+                $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH ERROR Fellesdata CRON KS Job Generics Roles . ' . "\n";
                 error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
             }//if_no_error
 
