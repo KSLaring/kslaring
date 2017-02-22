@@ -71,11 +71,11 @@ class FELLESDATA_CRON {
 
             // Import fellesdata
             $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START Import Fellesdata. ' . "\n";
-            self::import_fellesdata($plugin,$last);
+            //self::import_fellesdata($plugin,$last);
 
             // Users accounts synchornization
             $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START Users FS Synchronization. ' . "\n";
-            //self::users_fs_synchronization($plugin);
+            self::users_fs_synchronization($plugin,$last);
 
             // Companies synchornization
             $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START Companies FS Synchronization. ' . "\n";
@@ -1132,6 +1132,7 @@ class FELLESDATA_CRON {
      * Add resource number
      *
      * @param           $pluginInfo
+     * @param           $status
      *
      * @throws          Exception
      *
@@ -1141,7 +1142,7 @@ class FELLESDATA_CRON {
      * @updateDate      23/09/2016
      * @author          eFaktor     (fbv)
      */
-    private static function users_fs_synchronization($pluginInfo) {
+    private static function users_fs_synchronization($pluginInfo,$status = false) {
         /* Variables    */
         global $DB,$CFG;
         $rdo            = null;
@@ -1178,10 +1179,19 @@ class FELLESDATA_CRON {
                 }//if_muni
 
                 // Users to synchronize
-                $total = $DB->count_records('fs_imp_users',array('imported' => '0'));
+                if ($status) {
+                    $total = $DB->count_records('fs_imp_users',array('imported' => '0','action' => STATUS));
+                }else {
+                    $total = $DB->count_records('fs_imp_users',array('imported' => '0'));
+                }
+
                 if ($total) {
                     for ($i=0;$i<=$total;$i=$i+100) {
-                        $rdo = $DB->get_records('fs_imp_users',array('imported' => '0'),'','*',$start,$limit);
+                        if ($status) {
+                            $rdo = $DB->get_records('fs_imp_users',array('imported' => '0','action' => STATUS),'','*',$start,$limit);
+                        }else {
+                            $rdo = $DB->get_records('fs_imp_users',array('imported' => '0'),'','*',$start,$limit);
+                        }//if_status
 
                         // Prepare data
                         if ($rdo) {
@@ -1199,7 +1209,11 @@ class FELLESDATA_CRON {
                                 $infoUser->firstname        = trim($instance->fornavn) . ' ' . trim($instance->mellomnavn);
                                 $infoUser->lastname         = trim($instance->etternavn);
                                 $infoUser->email            = trim($instance->epost);
-                                $infoUser->action           = trim($instance->action);
+                                if ($status) {
+                                    $infoUser->action       = ADD;
+                                }else {
+                                    $infoUser->action       = trim($instance->action);
+                                }
 
                                 // add user
                                 $usersFS[$instance->id] = $infoUser;
@@ -1210,24 +1224,26 @@ class FELLESDATA_CRON {
                             // Call web service
                             $response = self::process_ks_service($pluginInfo,KS_SYNC_USER_ACCOUNT,array('usersAccounts' => $lstUsersFS));
 
-                            if ($response['error'] == '200') {
-                                // Synchornize users accounts FS
-                                FSKS_USERS::synchronize_users_fs($usersFS,$response['usersAccounts']);
-
-                                /* Clean Table*/
-                                //$DB->delete_records('fs_imp_users',array('imported' => '1'));
+                            if ($response) {
+                                if ($response['error'] == '200') {
+                                    // Synchronize users accounts FS
+                                    FSKS_USERS::synchronize_users_fs($usersFS,$response['usersAccounts']);
+                                }else {
+                                    // Log
+                                    $dbLog .= "Error WS: " . $response['message'] . "\n" ."\n";
+                                }//if_no_error
                             }else {
                                 // Log
-                                $dbLog .= "Error WS: " . $response['message'] . "\n" ."\n";
-                                $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH ERROR Synchronization Users Accoutns . ' . "\n";
-                            }//if_no_error
+                                $dbLog .= "Error WS: EMpty response object " . "\n" ."\n";
+                            }//if_else
+
                         }//if_Rdo
                     }
                 }//if_total
             }//if_synchronization
 
             // Log
-            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Synchronization Users Accoutns . ' . "\n";
+            $dbLog .= ' FINISH Synchronization Users Accoutns . ' . "\n";
             error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
         }catch (Exception $ex) {
             // Log
@@ -1267,14 +1283,38 @@ class FELLESDATA_CRON {
 
             // check if the synchronization can be run
             if (suspicious::run_synchronization(IMP_SUSP_COMPANIES)) {
-                // Synchronize new companies
-                self::companies_new_fs_synchronization($pluginInfo);
+                // Notifications
+                if ($pluginInfo->mail_notification) {
+                    $notifyTo   = explode(',',$pluginInfo->mail_notification);
+                }//if_mail_notifications
 
-                // Synchronize no new companies
-                self::companies_no_new_fs_synchronization($pluginInfo);
+                // First execution
+                if ($fstExecution) {
+                    // Mail --> manual synchronization
+                    if ($notifyTo) {
+                        self::send_notifications(SYNC_COMP,null,$notifyTo,$pluginInfo->fs_source);
+                    }//if_notify
+                }else {
+                    // Synchronize only companies FS
+                    //FSKS_COMPANY::synchronize_companies_fs();
 
-                /* Clean Table*/
-                //$DB->delete_records('fs_imp_company',array('imported' => '1'));
+                    // Synchronize new companies
+                    self::companies_new_fs_synchronization($pluginInfo);
+
+                    // Synchronize no new companies
+                    self::companies_no_new_fs_synchronization($pluginInfo);
+
+                    // Send notifications
+                    // Notification manual synchronization
+                    if ($notifyTo) {
+                        // Get companies to send notifications
+                        $toMail = FSKS_COMPANY::get_companiesfs_to_mail();
+
+                        if ($toMail) {
+                            self::send_notifications(SYNC_COMP,$toMail,$notifyTo,$pluginInfo->fs_source);
+                        }//if_toMail
+                    }//if_notify
+                }//if_else
             }//if_synchronization
 
             // Log

@@ -2472,12 +2472,14 @@ class FS {
             throw $ex;
         }//try_catch
     }//backup_imp_fs_users
-
+    
     /**
-     * @param           $data
-     * @param           $type
+     * @param            $data
+     * @param            $type
+     * @param       bool $status
      *
-     * @throws          Exception
+     * @return           bool
+     * @throws           Exception
      *
      * @creationDate    02/02/2016
      * @author          eFaktor     (fbv)
