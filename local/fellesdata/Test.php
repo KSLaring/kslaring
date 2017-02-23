@@ -177,15 +177,15 @@ try {
                 echo "Today is thursday" . "</br>";
                 switch ($calendar[$pluginInfo->fs_calendar_status]) {
                     case 'Monday':
-                        $diff = 3;
+                        $add = 4;
 
                         break;
                     case 'Tuesday':
-                        $diff = 2;
+                        $add = 5;
 
                         break;
                     case 'Wednesday':
-                        $diff = 1;
+                        $diff = 6;
 
                         break;
                     case 'Thursday':
@@ -193,15 +193,15 @@ try {
 
                         break;
                     case 'Friday':
-                        $diff = 6;
+                        $diff = 8;
 
                         break;
                     case 'Saturday':
-                        $diff = 5;
+                        $diff = 9;
 
                         break;
                     case 'Sunday':
-                        $diff = 4;
+                        $diff = 10;
 
                         break;
                 }//switch_calendar
@@ -211,31 +211,31 @@ try {
                 echo "Today is friday" . "</br>";
                 switch ($calendar[$pluginInfo->fs_calendar_status]) {
                     case 'Monday':
-                        $diff = 4;
+                        $add = 3;
 
                         break;
                     case 'Tuesday':
-                        $diff = 3;
+                        $add = 4;
 
                         break;
                     case 'Wednesday':
-                        $diff = 2;
+                        $add = 5;
 
                         break;
                     case 'Thursday':
-                        $diff = 1;
+                        $add = 6;
 
                         break;
                     case 'Friday':
-                        $diff = 7;
+                        $add = 7;
 
                         break;
                     case 'Saturday':
-                        $diff = 6;
+                        $add = 8;
 
                         break;
                     case 'Sunday':
-                        $diff = 5;
+                        $add = 9;
 
                         break;
                 }//switch_calendar
@@ -245,31 +245,31 @@ try {
                 echo "Today is saturday" . "</br>";
                 switch ($calendar[$pluginInfo->fs_calendar_status]) {
                     case 'Monday':
-                        $diff = 5;
+                        $add = 2;
 
                         break;
                     case 'Tuesday':
-                        $diff = 4;
+                        $add = 3;
 
                         break;
                     case 'Wednesday':
-                        $diff = 3;
+                        $add = 4;
 
                         break;
                     case 'Thursday':
-                        $diff = 2;
+                        $add = 5;
 
                         break;
                     case 'Friday':
-                        $diff = 1;
+                        $add = 6;
 
                         break;
                     case 'Saturday':
-                        $diff = 7;
+                        $add = 7;
 
                         break;
                     case 'Sunday':
-                        $diff = 6;
+                        $add = 8;
 
                         break;
                 }//switch_calendar
@@ -279,31 +279,31 @@ try {
                 echo "Today is sunday" . "</br>";
                 switch ($calendar[$pluginInfo->fs_calendar_status]) {
                     case 'Monday':
-                        $diff = 6;
+                        $add = 1;
 
                         break;
                     case 'Tuesday':
-                        $diff = 5;
+                        $add = 2;
 
                         break;
                     case 'Wednesday':
-                        $diff = 4;
+                        $add = 3;
 
                         break;
                     case 'Thursday':
-                        $diff = 3;
+                        $add = 4;
 
                         break;
                     case 'Friday':
-                        $diff = 2;
+                        $add = 5;
 
                         break;
                     case 'Saturday':
-                        $diff = 1;
+                        $add = 6;
 
                         break;
                     case 'Sunday':
-                        $diff = 7;
+                        $add = 7;
 
                         break;
                 }//switch_calendar
