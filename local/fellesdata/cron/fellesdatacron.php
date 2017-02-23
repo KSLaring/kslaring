@@ -361,6 +361,9 @@ class FELLESDATA_CRON {
             $hierarchy  = KS::get_hierarchy_jr($pluginInfo->ks_muni);
             $notIn      = KS::existing_jobroles(false,$hierarchy);
 
+            echo "HIERARCHY : " . $hierarchy . "</br>";
+            echo "NOT IN: " . $notIn . "</br>";
+            
             // Params web service
             $infoLevel = new stdClass();
             $infoLevel->notIn   = $notIn;
