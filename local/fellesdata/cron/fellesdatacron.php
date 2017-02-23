@@ -361,27 +361,29 @@ class FELLESDATA_CRON {
             $hierarchy  = KS::get_hierarchy_jr($pluginInfo->ks_muni);
             $notIn      = KS::existing_jobroles(false,$hierarchy);
 
-            echo "HIERARCHY : " . $hierarchy . "</br>";
-            echo "NOT IN: " . $notIn . "</br>";
-            
-            // Params web service
-            $infoLevel = new stdClass();
-            $infoLevel->notIn   = $notIn;
-            $infoLevel->top     = $hierarchy;
+            if ($hierarchy) {
+                foreach ($hierarchy as $top) {
+                    // Params web service
+                    $infoLevel = new stdClass();
+                    $infoLevel->notIn   = $notIn;
+                    $infoLevel->top     = $top;
 
-            // Call web service
-            $params = array('hierarchy' => $infoLevel);
-            $response = self::process_ks_service($pluginInfo,KS_JOBROLES,$params);
+                    // Call web service
+                    $params = array('hierarchy' => $infoLevel);
+                    $response = self::process_ks_service($pluginInfo,KS_JOBROLES,$params);
 
-            // Import jobroles no generics
-            if ($response['error'] == '200') {
-                KS::ks_jobroles($response['jobroles']);
-            }else {
-                // Log
-                $dbLog = "ERROR: " . $response['message'] . "\n" . "\n";
-                $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH ERROR Fellesdata CRON KS Job Roles . ' . "\n";
-                error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
-            }//if_no_error
+                    // Import jobroles no generics
+                    if ($response['error'] == '200') {
+                        KS::ks_jobroles($response['jobroles']);
+                    }else {
+                        // Log
+                        $dbLog = "ERROR: " . $response['message'] . "\n" . "\n";
+                    }//if_no_error
+                }//for_hierarchy
+            }//if_hierarchy
+
+            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH ERROR Fellesdata CRON KS Job Roles . ' . "\n";
+            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
         }catch (Exception $ex) {
             // Log
             $dbLog = "ERROR: " . $ex->getMessage() . "\n" . "\n";

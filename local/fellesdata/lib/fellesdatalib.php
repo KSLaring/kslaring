@@ -2918,8 +2918,6 @@ class KS {
                 foreach ($rdo as $instance) {
                     $hierarchy[$instance->companyid] = $instance->companyid;
                 }//for_Rdo
-
-                $hierarchy = implode(',',$hierarchy);
             }//if_Rdo
 
             return $hierarchy;
