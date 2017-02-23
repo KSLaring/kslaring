@@ -32,6 +32,8 @@ define('KS_UNMAP_COMPANY','wsUnMapCompany');
 define('KS_USER_MANAGER','wsManagerCompany');
 define('KS_SYNC_USER_ACCOUNT','wsUsersAccounts');
 
+define('KS_CLEAN_STATUS','wsCleanSynchronization');
+
 define('ADD_ACTION','add');
 define('UPDATE_ACTION','modify');
 define('DELETE_ACTION','delete');
@@ -46,6 +48,9 @@ define('IMP_COMPANIES',1);
 define('IMP_JOBROLES',2);
 define('IMP_MANAGERS_REPORTERS',3);
 define('IMP_COMPETENCE_JR',4);
+
+define('CLEAN_MANAGERS_REPORTERS',0);
+define('CLEAN_COMPETENCE',1);
 
 /***********************/
 /* CLASS FSKS_JOBROLES */
@@ -430,6 +435,7 @@ class FSKS_COMPANY {
      *
      * @param           $start
      * @param           $end
+     * @param           $status
      *
      * @return          array
      * @throws          Exception
@@ -437,7 +443,7 @@ class FSKS_COMPANY {
      * @creationDate    09/02/0216
      * @author          eFaktor     (fbv)
      */
-    public static function get_update_companiesfs_to_synchronize($start,$end) {
+    public static function get_update_companiesfs_to_synchronize($start,$end,$status = false) {
         /* Variables    */
         global $DB;
         $infoCompany    = null;
@@ -481,6 +487,12 @@ class FSKS_COMPANY {
                      WHERE	  fs.new 			= :new
                         AND   fs.synchronized   = :synchronized ";
 
+            // Status criterua
+            if ($status) {
+                $params['action'] = STATUS;
+                $sql .= " fs_imp.action = : action ";
+            }
+            
             // Execute
             $rdo = $DB->get_records_sql($sql,$params,$start,$end);
             if ($rdo) {
@@ -502,8 +514,12 @@ class FSKS_COMPANY {
                     $infoCompany->postnr        = $instance->postnr;
                     $infoCompany->poststed      = $instance->poststed;
                     $infoCompany->epost         = $instance->epost;
-                    $infoCompany->action        = $instance->action;
-
+                    if ($status) {
+                        $infoCompany->action    = UPDATE;
+                    }else {
+                        $infoCompany->action    = $instance->action;    
+                    }//if_status
+                    
                     // Add Company
                     $toSynchronize[$instance->companyid] = $infoCompany;
                 }//for_rdo
@@ -519,13 +535,15 @@ class FSKS_COMPANY {
      * Description
      * Get total of companies mapped that have to be synchronized
      *
+     * @param           $status
+     *
      * @return          null
      * @throws          Exception
      *
      * @creationDate    17/02/2017
      * @author          eFaktor     (fbv)
      */
-    public static function get_total_update_companiesfs_to_synchronize() {
+    public static function get_total_update_companiesfs_to_synchronize($status = false) {
         /* Variables */
         global $DB;
         $rdo    = null;
@@ -550,6 +568,12 @@ class FSKS_COMPANY {
                         JOIN  {ks_company}		ks_pa	ON 	ks_pa.companyid     = fk.kscompany
                      WHERE	  fs.new 			= :new
                         AND   fs.synchronized   = :synchronized ";
+
+            // Status criterua
+            if ($status) {
+                $params['action'] = STATUS;
+                $sql .= " fs_imp.action = : action ";
+            }
 
             // Execute
             $rdo = $DB->get_record_sql($sql,$params);
@@ -1144,13 +1168,15 @@ class FSKS_USERS {
      * Description
      * Get total managers to synchronize
      *
+     * @param           $status
+     * 
      * @return          null
      * @throws          Exception
      *
      * @creationDate    01/11/2016
      * @author          eFaktor     (fbv)
      */
-    public static function get_total_managers_reporters_to_synchronize() {
+    public static function get_total_managers_reporters_to_synchronize($status = false) {
         /* Variables    */
         global $DB;
         $params             = null;
@@ -1171,6 +1197,12 @@ class FSKS_USERS {
                         JOIN  {ks_company}			        ks	ON	ks.companyid  = fsk.kscompany
                      WHERE	  fs.imported	= :imported ";
 
+            // Status criteria
+            if ($status) {
+                $params['action'] = STATUS;
+                $sql .= " AND fs.action = :action ";
+            }//if_status
+            
             // Execute
             $rdo = $DB->get_record_sql($sql,$params);
             if ($rdo) {
@@ -1193,6 +1225,7 @@ class FSKS_USERS {
      *
      * @param           $start
      * @param           $limit
+     * @param           $status
      * 
      * @return          array
      * @throws          Exception
@@ -1200,7 +1233,7 @@ class FSKS_USERS {
      * @creationDate    14/06/2016
      * @author          eFaktor     (fbv)
      */
-    public static function get_managers_reporters_to_synchronize($start,$limit) {
+    public static function get_managers_reporters_to_synchronize($start,$limit,$status = false) {
         /* Variables    */
         global $DB;
         $params             = null;
@@ -1229,6 +1262,12 @@ class FSKS_USERS {
                         JOIN  {ks_company}			        ks	ON	ks.companyid  = fsk.kscompany
                      WHERE	  fs.imported	= :imported ";
 
+            // Status criteria
+            if ($status) {
+                $params['action'] = STATUS;
+                $sql .= " AND fs.action = :action ";
+            }//if_status
+            
             // Execute
             $rdo = $DB->get_records_sql($sql,$params,$start,$limit);
             if ($rdo) {
@@ -1241,7 +1280,12 @@ class FSKS_USERS {
                     $info->fsId             = $instance->fscompany;
                     $info->level            = $instance->hierarchylevel;
                     $info->prioritet        = $instance->prioritet;
-                    $info->action           = $instance->action;
+                    if ($status) {
+                        $info->action       = ADD;
+                    }else {
+                        $info->action       = $instance->action;
+                    }//if_status
+
 
                     // Add Competence
                     $managersReporters[$instance->id] = $info;
@@ -1901,7 +1945,19 @@ class FSKS_USERS {
             $params = array();
             $params['personalnumber']    = $infoUserFS->personalNumber;
             $params['companyid']         = $infoUserFS->fsId;
+            // Execute
             $rdo = $DB->get_record('fs_users_company',$params);
+
+            // Create the instance if it does not exist
+            if (!$rdo) {
+                // Create Entry
+                $infoFS = new stdClass();
+                $infoFS->companyid          = $infoUserFS->fsId;
+                $infoFS->personalnumber     = $infoUserFS->personalNumber;
+                $infoFS->level              = $infoUserFS->level;
+                $infoFS->priority           = $infoUserFS->prioritet;
+                $infoFS->synchronized       = 1;
+            }//if_rdo
 
             // Apply action
             switch ($infoUserFS->action) {
@@ -1913,14 +1969,6 @@ class FSKS_USERS {
                         // Execute
                         $DB->update_record('fs_users_company',$rdo);
                     }else {
-                        // Create Entry
-                        $infoFS = new stdClass();
-                        $infoFS->companyid          = $infoUserFS->fsId;
-                        $infoFS->personalnumber     = $infoUserFS->personalNumber;
-                        $infoFS->level              = $infoUserFS->level;
-                        $infoFS->priority           = $infoUserFS->prioritet;
-                        $infoFS->synchronized       = 1;
-
                         // Execute
                         $DB->insert_record('fs_users_company',$infoFS);
                     }//if_exists
@@ -1943,6 +1991,9 @@ class FSKS_USERS {
 
                         // Synchronized
                         $sync = true;
+                    }else {
+                        // Execute
+                        $DB->insert_record('fs_users_company',$infoFS);
                     }//if_exists
 
                     break;
@@ -2472,7 +2523,7 @@ class FS {
             throw $ex;
         }//try_catch
     }//backup_imp_fs_users
-    
+
     /**
      * @param            $data
      * @param            $type
@@ -2564,25 +2615,25 @@ class FS {
 
                     case IMP_COMPANIES:
                         // FS Companies
-                        self::import_temporary_fs_company($toSave);
+                        self::import_temporary_fs_company($toSave,$status);
 
                         break;
 
                     case IMP_JOBROLES:
                         // FS JOB ROLES
-                        self::import_temporary_fs_jobroles($toSave);
+                        self::import_temporary_fs_jobroles($toSave,$status);
 
                         break;
 
                     case IMP_MANAGERS_REPORTERS:
                         // Managers Reporters
-                        self::import_temporary_managers_reporters($toSave);
+                        self::import_temporary_managers_reporters($toSave,$status);
 
                         break;
 
                     case IMP_COMPETENCE_JR:
                         // Competence Job Role
-                        self::import_temporary_competence_jobrole($toSave);
+                        self::import_temporary_competence_jobrole($toSave,$status);
 
                         break;
                 }//type
@@ -2603,6 +2654,7 @@ class FS {
      * Save FS users in temporary tables before the synchronization
      *
      * @param           $data
+     * @param           $status
      *
      * @throws          Exception
      *
@@ -2614,24 +2666,33 @@ class FS {
         global $DB;
         $infoUser   = null;
         $trans      = null;
+        $rdo        = null;
+        $params     = null;
 
         // Start transaction
         $trans = $DB->start_delegated_transaction();
 
         try {
+            // Search criteria
+            $params = array();
+
+            // Status criteria
+            if ($status) {
+                $params['action'] = STATUS;
+            }//if_status
+
             foreach ($data as $key => $infoUser) {
+                // Criteria
+                $params['FODSELSNR'] = $infoUser->FODSELSNR;
+
                 // Execute
-                if ($status) {
+                $rdo = $DB->get_record('fs_imp_users',$params);
+                if (!$rdo) {
                     $DB->insert_record('fs_imp_users',$infoUser);
                 }else {
-                    $rdo = $DB->get_record('fs_imp_users',array('FODSELSNR' => $infoUser->FODSELSNR));
-                    if (!$rdo) {
-                        $DB->insert_record('fs_imp_users',$infoUser);
-                    }else {
-                        $infoUser->id       = $rdo->id;
-                        $DB->update_record('fs_imp_users',$infoUser);
-                    }//if_rdo
-                }//if_status
+                    $infoUser->id       = $rdo->id;
+                    $DB->update_record('fs_imp_users',$infoUser);
+                }//if_rdo
             }//ofr_each
 
             // Commit
@@ -2693,26 +2754,40 @@ class FS {
      * Save FS companies in temporary tables before the synchronization
      *
      * @param           $data
+     * @param           $status
      *
      * @throws          Exception
      *
      * @creationDate    02/02/2016
      * @author          eFaktor     (fbv)
      */
-    private static function import_temporary_fs_company($data) {
+    private static function import_temporary_fs_company($data,$status = false) {
         /* Variables    */
         global $DB;
         $infoFS     = null;
         $trans      = null;
+        $rdo        = null;
+        $params     = null;
 
         // Start transaction
         $trans = $DB->start_delegated_transaction();
 
         try {
+            // Search criteria
+            $params = array();
+
+            // Status criteria
+            if ($status) {
+                $params['action'] = STATUS;
+            }//if_status
+
             // FS Company Info
             foreach($data as $key => $infoFS) {
+                // Criteria
+                $params['ORG_ENHET_ID'] = $infoFS->ORG_ENHET_ID;
+
                 // Execute
-                $rdo = $DB->get_record('fs_imp_company',array('ORG_ENHET_ID' => $infoFS->ORG_ENHET_ID));
+                $rdo = $DB->get_record('fs_imp_company',$params);
                 if (!$rdo) {
                     $DB->insert_record('fs_imp_company',$infoFS);
                 }else {
@@ -2735,27 +2810,41 @@ class FS {
      * Description
      * Save FS Jobroles in temporary tables before the synchronization
      *
-     * @param               $data
+     * @param                $data
+     * @param           bool $status
      *
-     * @throws              Exception
+     * @throws                  Exception
      *
      * @creationDate    04/02/2016
      * @author          eFaktor     (fbv)
      */
-    private static function import_temporary_fs_jobroles($data) {
+    private static function import_temporary_fs_jobroles($data,$status = false) {
         /* Variables    */
         global $DB;
         $infoFS = null;
         $trans  = null;
+        $rdo    = null;
+        $params = null;
 
         // Start transaction
         $trans = $DB->start_delegated_transaction();
 
         try {
+            // Search criteria
+            $params = array();
+
+            // Status criteria
+            if ($status) {
+                $params['action'] = STATUS;
+            }//if_status
+
             // FS jobrole info
             foreach($data as $key => $infoFS) {
+                // Criteria
+                $params['STILLINGSKODE'] = $infoFS->STILLINGSKODE;
+
                 // Execute
-                $rdo = $DB->get_record('fs_imp_jobroles',array('STILLINGSKODE' => $infoFS->STILLINGSKODE));
+                $rdo = $DB->get_record('fs_imp_jobroles',$params);
                 if (!$rdo) {
                     $DB->insert_record('fs_imp_jobroles',$infoFS);
                 }else {
@@ -2779,12 +2868,14 @@ class FS {
      * Import Temporary ManagersReporters
      *
      * @param           $data
+     * @param           $status
+     *
      * @throws          Exception
      *
      * @creationDate    13/06/2016
      * @author          eFaktor     (fbv)
      */
-    private static function import_temporary_managers_reporters($data) {
+    private static function import_temporary_managers_reporters($data,$status = false) {
         /* Variables */
         global $DB;
         $info   = null;
@@ -2798,6 +2889,11 @@ class FS {
             // Search criteria
             $params = array();
 
+            // Status criteria
+            if ($status) {
+                $params['action'] = STATUS;
+            }//if_status
+
             foreach ($data as $key => $info) {
                 // Criteria
                 $params['ORG_ENHET_ID'] = $info->ORG_ENHET_ID;
@@ -2805,6 +2901,7 @@ class FS {
                 $params['FODSELSNR']    = $info->FODSELSNR;
                 $params['PRIORITET']    = $info->PRIORITET;
 
+                // Execute
                 $rdo = $DB->get_record('fs_imp_managers_reporters',$params);
                 if (!$rdo) {
                     $DB->insert_record('fs_imp_managers_reporters',$info);
@@ -2812,7 +2909,7 @@ class FS {
                     $info->id       = $rdo->id;
                     $DB->update_record('fs_imp_managers_reporters',$info);
                 }//if_rdo
-            }
+            }//for_rdo
 
             // Commit
             $trans->allow_commit();
@@ -2829,25 +2926,32 @@ class FS {
      * Save User Job Role (FS)  in temporary tables before the synchronization
      *
      * @param           $data
+     * @param           $status
      *
      * @throws          Exception
      *
      * @creationDate    02/02/2016
      * @author          eFaktor     (fbv)
      */
-    private static function import_temporary_competence_jobrole($data) {
+    private static function import_temporary_competence_jobrole($data, $status = false) {
         /* Variables    */
         global $DB;
         $infoCompetenceJR       = null;
         $infoOldCompetenceJR    = null;
         $trans                  = null;
+        $rdo                    = null;
 
         // Start transaction
         $trans = $DB->start_delegated_transaction();
 
         try {
             // Execute
+            if ($status) {
+                $DB->delete_records('fs_imp_users_jr',array('action' => STATUS));
+            }//status
+            // Execute
             $DB->insert_records('fs_imp_users_jr',$data);
+
 
             // Commit
             $trans->allow_commit();

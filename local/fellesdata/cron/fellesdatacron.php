@@ -71,22 +71,31 @@ class FELLESDATA_CRON {
 
             // Import fellesdata
             $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START Import Fellesdata. ' . "\n";
-            //self::import_fellesdata($plugin,$last);
+            self::import_fellesdata($plugin,$last);
 
             // Users accounts synchornization
             $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START Users FS Synchronization. ' . "\n";
-            self::users_fs_synchronization($plugin,$last);
+            if ($last) {
+                //self::users_last_fs_synchronization($plugin);
+            }else {
+                //self::users_fs_synchronization($plugin);
+            }//if_last
+
 
             // Companies synchornization
             $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START Companies FS Synchronization. ' . "\n";
-            //self::companies_fs_synchronization($plugin,$fstExecution);
+            if ($last) {
+                //self::companies_last_fs_synchronization($plugin);
+            }else {
+                //self::companies_fs_synchronization($plugin,$fstExecution);
+            }//if_status
 
             // Job roles to map
             //self::jobroles_fs_to_map($plugin);
 
             // Competence synchronization
             if (!$fstExecution) {
-                //self::competence_synchronization($plugin,$dbLog);
+                //self::competence_synchronization($plugin);
             }
 
             /* Log  */
@@ -104,7 +113,6 @@ class FELLESDATA_CRON {
         try {
             $last = self::get_last_status($plugin,$fstExecution);
 
-            echo "Last: " . $last . "</br>";
 
             //if ($last) {
                 // Ask for the last status
@@ -345,22 +353,24 @@ class FELLESDATA_CRON {
 
     /**
      * Description
-     * Competence synchornization
+     * Competence synchronization
      *
      * @param       object  $plugin
-     * @param       String  $dbLog
+     * @param               $status
      *
      * @throws              Exception
      *
      * @creationDate        20/02/2017
      * @author              eFaktor     (fbv)
      */
-    private static function competence_synchronization($plugin,&$dbLog) {
+    private static function competence_synchronization($plugin,$status = false) {
         /* Variables */
+        global $CFG;
+        $dbLog = null;
 
         try {
             // Synchronization Managers && Reporters
-            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START  Managers/Reporters FS Synchronization. ' . "\n";
+            $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START  Managers/Reporters FS Synchronization. ' . "\n";
             self::manager_reporter_synchronization($plugin,KS_MANAGER_REPORTER);
 
             // Synchronization User Competence JobRole  -- Add/Update
@@ -370,6 +380,9 @@ class FELLESDATA_CRON {
             // Synchronization User Competence JobRole  -- Delete
             $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START Users Competence to delete FS Synchronization. ' . "\n";
             self::user_competence_synchronization($plugin,KS_USER_COMPETENCE,true);
+
+            // Log
+            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -492,32 +505,37 @@ class FELLESDATA_CRON {
             }else {
                 // Log
                 $dbLog = "ERROR: " . $response['message'] . "\n" . "\n";
-                $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH ERROR Fellesdata CRON KS Job Roles . ' . "\n";
+                $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH ERROR Fellesdata CRON KS Job Generics Roles . ' . "\n";
                 error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
             }//if_no_error
 
             // Jobroles no generics
             $hierarchy  = KS::get_hierarchy_jr($pluginInfo->ks_muni);
-            $notIn      = KS::existing_jobroles(false,$hierarchy);
+            $notIn      = KS::existing_jobroles(false,implode(',',$hierarchy));
 
-            // Params web service
-            $infoLevel = new stdClass();
-            $infoLevel->notIn   = $notIn;
-            $infoLevel->top     = $hierarchy;
+            if ($hierarchy) {
+                foreach ($hierarchy as $top) {
+                    // Params web service
+                    $infoLevel = new stdClass();
+                    $infoLevel->notIn   = $notIn;
+                    $infoLevel->top     = $top;
 
-            // Call web service
-            $params = array('hierarchy' => $infoLevel);
-            $response = self::process_ks_service($pluginInfo,KS_JOBROLES,$params);
+                    // Call web service
+                    $params = array('hierarchy' => $infoLevel);
+                    $response = self::process_ks_service($pluginInfo,KS_JOBROLES,$params);
 
-            // Import jobroles no generics
-            if ($response['error'] == '200') {
-                KS::ks_jobroles($response['jobroles']);
-            }else {
-                // Log
-                $dbLog = "ERROR: " . $response['message'] . "\n" . "\n";
-                $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH ERROR Fellesdata CRON KS Job Roles . ' . "\n";
-                error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
-            }//if_no_error
+                    // Import jobroles no generics
+                    if ($response['error'] == '200') {
+                        KS::ks_jobroles($response['jobroles']);
+                    }else {
+                        // Log
+                        $dbLog = "ERROR: " . $response['message'] . "\n" . "\n";
+                    }//if_no_error
+                }//for_hierarchy
+            }//if_hierarchy
+
+            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH ERROR Fellesdata CRON KS Job Roles . ' . "\n";
+            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
         }catch (Exception $ex) {
             // Log
             $dbLog = "ERROR: " . $ex->getMessage() . "\n" . "\n";
@@ -620,23 +638,23 @@ class FELLESDATA_CRON {
         $dbLog        = null;
 
         try {
-            echo " Import Fellesdata 1 --> " . $status . "</br>";
             // Import FS Users
-            self::import_fs_users($pluginInfo,$status);
+            //self::import_fs_users($pluginInfo,$status);
 
-            /**
             // Import FS Companies
-            self::import_fs_orgstructure($pluginInfo,$status);
+            //self::import_fs_orgstructure($pluginInfo,$status);
 
             // Import FS Job roles
-            self::import_fs_jobroles($pluginInfo,$status);
+            //self::import_fs_jobroles($pluginInfo,$status);
 
             // Import FS User Competence
-            self::import_fs_managers_reporters($pluginInfo,$status);
+            //self::import_fs_managers_reporters($pluginInfo,$status);
+
 
             // Import FS User Competence JR
             self::import_fs_user_competence_jr($pluginInfo,$status);
 
+            /**
             // Send suspicious notifications
             if (!$status) {
                 if ($pluginInfo->suspicious_path) {
@@ -767,9 +785,11 @@ class FELLESDATA_CRON {
                     if ($status) {
                         // Get last status
                         // Get content
-                        //$content = file($pathFile);
+                        $content = file($pathFile);
 
-                        //FS::save_temporary_fellesdata($content,IMP_COMPANIES);
+                        if (FS::save_temporary_fellesdata($content,IMP_COMPANIES,$status)) {
+                            FS::backup_temporary_fellesdata(IMP_COMPANIES);
+                        }//if_save_temporary
                     }else {
                         // Get last changes
                         // First check if is a suspicious file
@@ -795,6 +815,8 @@ class FELLESDATA_CRON {
                         }///if_suspicous_path
                     }//if_status
                 }//if_exists
+            }else {
+                $dbLog .= ' ERROR Import FS ORG Structure - RESPONSE NULL. ' . "\n";
             }//if_fsResponse
 
             // Log
@@ -831,6 +853,9 @@ class FELLESDATA_CRON {
         $dbLog      = null;
         
         try {
+            // Log
+            $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START Import FS JOB ROLES . ' . "\n";
+            
             // Call web service
             $fsResponse = self::process_tradis_service($plugin,TRADIS_FS_JOBROLES,$status);
 
@@ -840,11 +865,13 @@ class FELLESDATA_CRON {
                 $pathFile = $CFG->dataroot . '/fellesdata/' . TRADIS_FS_JOBROLES . '.txt';
                 if (file_exists($pathFile)) {
                     if ($status) {
-                        //Get last status
+                        // Get last status
                         // Get content
-                        //$content = file($pathFile);
+                        $content = file($pathFile);
 
-                        //FS::save_temporary_fellesdata($content,IMP_JOBROLES);
+                        if (FS::save_temporary_fellesdata($content,IMP_JOBROLES,$status)) {
+                            FS::backup_temporary_fellesdata(IMP_JOBROLES);
+                        }//if_save_temporay
                     }else {
                         //Get last changes
                         // First check if is a suspicious file
@@ -870,7 +897,13 @@ class FELLESDATA_CRON {
                         }//if_suspicious_path
                     }//if_status
                 }//if_exists
+            }else {
+                $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' ERROR Import FS JOB ROLES - Response null . ' . "\n";
             }//if_fsResponse
+
+            // Log
+            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Import FS JOB ROLES . ' . "\n";
+            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
         }catch (Exception $ex) {
             /* Log  */
             $dbLog  = "Error: " . $ex->getMessage() . "\n" . "\n";
@@ -902,6 +935,9 @@ class FELLESDATA_CRON {
         $dbLog                  = null;
         
         try {
+            // Log
+            $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START Import FS MANAGERRS REPORTERS . ' . "\n";
+
             // Call web service
             $fsManagersReporters = self::process_tradis_service($plugin,TRADIS_FS_MANAGERS_REPORTERS,$status);
 
@@ -913,9 +949,11 @@ class FELLESDATA_CRON {
                     if ($status) {
                         // Get last status
                         // Get content
-                        //$content = file($pathFile);
+                        $content = file($pathFile);
 
-                        //FS::save_temporary_fellesdata($content,IMP_MANAGERS_REPORTERS);
+                        if (FS::save_temporary_fellesdata($content,IMP_MANAGERS_REPORTERS,$status)) {
+                            FS::backup_temporary_fellesdata(IMP_MANAGERS_REPORTERS);
+                        }//if_save_temporary
                     }else {
                         // Get last changes
                         // First check if is a suspicious file
@@ -941,7 +979,13 @@ class FELLESDATA_CRON {
                         }//if_suspicious_path                        
                     }//if_status
                 }//if_exists
+            }else {
+                $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' ERROR Import FS MANAGERRS REPORTERS - Response null. ' . "\n";
             }//if_fsResponse
+
+            // Log
+            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Import FS MANAGERRS REPORTERS . ' . "\n";
+            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
         }catch (Exception $ex) {
             // log
             $dbLog  = "Error: " . $ex->getMessage() . "\n" . "\n";
@@ -974,6 +1018,9 @@ class FELLESDATA_CRON {
         $dbLog              = null;
         
         try {
+            // Log
+            $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START Import FS USER COMPETENCE JR . ' . "\n";
+            
             // Call web service
             $usersCompetenceJR = self::process_tradis_service($plugin,TRADIS_FS_USERS_JOBROLES,$status);
 
@@ -985,9 +1032,11 @@ class FELLESDATA_CRON {
                     if ($status) {
                         // Get last status
                         // Get content
-                        //$content = file($pathFile);
+                        $content = file($pathFile);
 
-                        //FS::save_temporary_fellesdata($content,IMP_COMPETENCE_JR);
+                        if (FS::save_temporary_fellesdata($content,IMP_COMPETENCE_JR,$status)) {
+                            FS::backup_temporary_fellesdata(IMP_COMPETENCE_JR);
+                        }//if_status
                     }else {
                         // Get last changes
                         // First check if is a suspicious file
@@ -1013,7 +1062,13 @@ class FELLESDATA_CRON {
                         }//if_suspicious_path
                     }//if_status
                 }//if_exists
+            }else {
+                $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' ERROR Import FS USER COMPETENCE JR - NULL RESPONSE . ' . "\n";
             }//if_data
+            
+            // Log
+            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINSH Import FS USER COMPETENCE JR . ' . "\n";
+            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
         }catch (Exception $ex) {
             // Log
             $dbLog  = "Error: " . $ex->getMessage() . "\n" . "\n";
@@ -1132,7 +1187,6 @@ class FELLESDATA_CRON {
      * Add resource number
      *
      * @param           $pluginInfo
-     * @param           $status
      *
      * @throws          Exception
      *
@@ -1142,7 +1196,7 @@ class FELLESDATA_CRON {
      * @updateDate      23/09/2016
      * @author          eFaktor     (fbv)
      */
-    private static function users_fs_synchronization($pluginInfo,$status = false) {
+    private static function users_fs_synchronization($pluginInfo) {
         /* Variables    */
         global $DB,$CFG;
         $rdo            = null;
@@ -1179,19 +1233,11 @@ class FELLESDATA_CRON {
                 }//if_muni
 
                 // Users to synchronize
-                if ($status) {
-                    $total = $DB->count_records('fs_imp_users',array('imported' => '0','action' => STATUS));
-                }else {
-                    $total = $DB->count_records('fs_imp_users',array('imported' => '0'));
-                }
+                $total = $DB->count_records('fs_imp_users',array('imported' => '0'));
 
                 if ($total) {
                     for ($i=0;$i<=$total;$i=$i+100) {
-                        if ($status) {
-                            $rdo = $DB->get_records('fs_imp_users',array('imported' => '0','action' => STATUS),'','*',$start,$limit);
-                        }else {
-                            $rdo = $DB->get_records('fs_imp_users',array('imported' => '0'),'','*',$start,$limit);
-                        }//if_status
+                        $rdo = $DB->get_records('fs_imp_users',array('imported' => '0'),'','*',$start,$limit);
 
                         // Prepare data
                         if ($rdo) {
@@ -1209,11 +1255,7 @@ class FELLESDATA_CRON {
                                 $infoUser->firstname        = trim($instance->fornavn) . ' ' . trim($instance->mellomnavn);
                                 $infoUser->lastname         = trim($instance->etternavn);
                                 $infoUser->email            = trim($instance->epost);
-                                if ($status) {
-                                    $infoUser->action       = ADD;
-                                }else {
-                                    $infoUser->action       = trim($instance->action);
-                                }
+                                $infoUser->action           = trim($instance->action);
 
                                 // add user
                                 $usersFS[$instance->id] = $infoUser;
@@ -1257,6 +1299,116 @@ class FELLESDATA_CRON {
 
     /**
      * Description
+     * Synchronization of users accounts between KS and FS
+     * LAST STATUS
+     *
+     * @param           $plugin
+     *
+     * @throws          Exception
+     *
+     * @creationDate    22/02/2017
+     * @author          eFaktor     (fbv)
+     */
+    private static function users_last_fs_synchronization($plugin) {
+        /* Variables    */
+        global $DB,$CFG;
+        $rdo            = null;
+        $total          = null;
+        $usersFS        = null;
+        $lstUsersFS     = null;
+        $infoUser       = null;
+        $response       = null;
+        $dbLog          = null;
+        $rdoIC          = null;
+        $industryCode   = null;
+        $params         = null;
+        $start          = 0;
+        $limit          = 100;
+
+        try {
+            // Log
+            $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START Synchronization Users Accoutns (LAST STATUS) . ' . "\n";
+
+            // Industry code
+            if ($plugin->ks_muni) {
+                $params = array();
+                $params['name']             = $plugin->ks_muni;
+                $params['hierarchylevel']   = 1;
+                $rdoIC = $DB->get_record('ks_company',$params,'industrycode');
+
+                if ($rdoIC) {
+                    $industryCode = trim($rdoIC->industrycode);
+                }
+            }else {
+                $industryCode = 0;
+            }//if_muni
+
+            // Users to synchronize
+            $total = $DB->count_records('fs_imp_users',array('imported' => '0','status' => STATUS));
+
+            if ($total) {
+                for ($i=0;$i<=$total;$i=$i+100) {
+                    $rdo = $DB->get_records('fs_imp_users',array('imported' => '0','status' => STATUS),'','*',$start,$limit);
+
+                    // Prepare data
+                    if ($rdo) {
+                        $usersFS    = array();
+                        $lstUsersFS = null;
+
+                        foreach ($rdo as $instance) {
+                            // User account info
+                            $infoUser = new stdClass();
+                            $infoUser->id               = $instance->id;
+                            $infoUser->personalnumber   = trim($instance->fodselsnr);
+                            $infoUser->adfs             = trim(($instance->brukernavn ? $instance->brukernavn : 0));
+                            $infoUser->ressursnr        = trim(($instance->ressursnr ? $instance->ressursnr : 0));
+                            $infoUser->industry         = $industryCode;
+                            $infoUser->firstname        = trim($instance->fornavn) . ' ' . trim($instance->mellomnavn);
+                            $infoUser->lastname         = trim($instance->etternavn);
+                            $infoUser->email            = trim($instance->epost);
+                            $infoUser->action           = UPDATE;
+
+                            // add user
+                            $usersFS[$instance->id] = $infoUser;
+
+                            $lstUsersFS .= json_encode($infoUser) . "\n";
+                        }//for_rdo
+
+                        // Call web service
+                        $response = self::process_ks_service($plugin,KS_SYNC_USER_ACCOUNT,array('usersAccounts' => $lstUsersFS));
+
+                        if ($response) {
+                            if ($response['error'] == '200') {
+                                // Synchronize users accounts FS
+                                FSKS_USERS::synchronize_users_fs($usersFS,$response['usersAccounts']);
+                            }else {
+                                // Log
+                                $dbLog .= "Error WS: " . $response['message'] . "\n" ."\n";
+                            }//if_no_error
+                        }else {
+                            // Log
+                            $dbLog .= "Error WS: EMpty response object " . "\n" ."\n";
+                        }//if_else
+
+                    }//if_Rdo
+                }
+            }//if_total
+
+            // Log
+            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false) . ' FINISH Synchronization Users Accoutns (LAST STATUS). ' . "\n";
+            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+        }catch (Exception $ex) {
+            // Log
+            $dbLog = $ex->getMessage() . "\n" ."\n";
+            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH ERROR Synchronization Users Accoutns (LAST STATUS). ' . "\n";
+            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+
+            throw $ex;
+        }//try_catch
+    }//users_last_fs_synchronization
+
+    /**
+     * Description
      * Synchronization of companies between FS and KS
      *
      * @param           $pluginInfo
@@ -1270,8 +1422,6 @@ class FELLESDATA_CRON {
     private static function companies_fs_synchronization($pluginInfo,$fstExecution) {
         /* Variables    */
         global $CFG;
-        $toSynchronize  = null;
-        $synchronizeFS  = null;
         $toMail         = null;
         $notifyTo       = null;
         $response       = null;
@@ -1295,9 +1445,6 @@ class FELLESDATA_CRON {
                         self::send_notifications(SYNC_COMP,null,$notifyTo,$pluginInfo->fs_source);
                     }//if_notify
                 }else {
-                    // Synchronize only companies FS
-                    //FSKS_COMPANY::synchronize_companies_fs();
-
                     // Synchronize new companies
                     self::companies_new_fs_synchronization($pluginInfo);
 
@@ -1330,6 +1477,46 @@ class FELLESDATA_CRON {
         }//try_catch
     }//companies_fs_synchronization
 
+    /**
+     * Description
+     * Synchronization of companies between FS and KS
+     * LAST STATUS
+     *
+     * @param           $plugin
+     *
+     * @throws          Exception
+     *
+     * @creationDate    22/02/2017
+     * @author          eFaktor     (fbv)
+     */
+    private static function companies_last_fs_synchronization($plugin) {
+        /* Variables    */
+        global $CFG;
+        $toMail         = null;
+        $notifyTo       = null;
+        $response       = null;
+        $dbLog          = null;
+
+        try {
+            // Log
+            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START Companies FS/KS Synchronization (LAST STATUS). ' . "\n";
+            
+            // Synchronize no new companies
+            self::companies_no_new_fs_synchronization($plugin,true);
+
+            // Log
+            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Companies FS/KS Synchronization (LAST STATUS) . ' . "\n";
+            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+        }catch (Exception $ex) {
+            // Log
+            $dbLog  = $ex->getMessage() . "\n" . "\n";
+            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' Finish ERROR Companies FS/KS Synchronization (LAST STATUS). ' . "\n";
+            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+
+            throw $ex;
+        }//try_catch
+    }//companies_last_fs_synchronization
+    
     /**
      * Description
      * Synchronize companies created as a new from Tardis
@@ -1396,13 +1583,14 @@ class FELLESDATA_CRON {
      * Description 
      * Synchronize companies mapped
      * @param           Object  $plugin
+     * @param                   $status
      * 
      * @throws                  Exception
      * 
      * @creationDate        17/02/2017
      * @author              eFaktor     (fbv)
      */
-    private static function companies_no_new_fs_synchronization($plugin) {
+    private static function companies_no_new_fs_synchronization($plugin,$status = false) {
         /* Variables */
         global $CFG;
         $toSynchronize  = null;
@@ -1417,13 +1605,13 @@ class FELLESDATA_CRON {
             $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START Companies NO NEW FS/KS Synchronization . ' . "\n";
 
             // Get total
-            $total = FSKS_COMPANY::get_total_update_companiesfs_to_synchronize();
+            $total = FSKS_COMPANY::get_total_update_companiesfs_to_synchronize($status);
 
             // Synchronize
             if ($total) {
                 for ($i=0;$i<=$total;$i=$i+$limit) {
                     // Get companies to synchronize
-                    $toSynchronize = FSKS_COMPANY::get_update_companiesfs_to_synchronize($start,$limit);
+                    $toSynchronize = FSKS_COMPANY::get_update_companiesfs_to_synchronize($start,$limit,$status);
 
                     // Call webs service
                     if ($toSynchronize) {
@@ -1626,6 +1814,10 @@ class FELLESDATA_CRON {
         }//try_catch
     }//user_competence_synchronization
 
+    private static function user_competence_last_synchronization($pluginInfo,$service) {
+
+    }//user_competence_last_synchronization
+
     /**
      * Description
      * Unmap competence (company) from the users
@@ -1727,8 +1919,6 @@ class FELLESDATA_CRON {
                             if ($response['error'] == '200') {
                                 // Syncrhonize managers and reporters
                                 FSKS_USERS::synchronize_manager_reporter_fs($toSynchronize,$response['managerReporter']);
-
-                                //$DB->delete_records('fs_imp_managers_reporters',array('imported' => '1'));
                             }else {
                                 // Log
                                 $dbLog  .= "ERROR WS: " . $response['message'] . "\n" . "\n";
@@ -1751,6 +1941,68 @@ class FELLESDATA_CRON {
             throw $ex;
         }//try_catch
     }//manager_reporter_synchronization
+
+    /**
+     * Description
+     * Synchronization Managers Reporters between Fellesdata and KS
+     * LAST STATUC
+     *
+     * @param           $plugin
+     * @param           $service
+     *
+     * @throws          Exception
+     *
+     * @creationDate    22/02/2017
+     * @author          eFaktor     (fbv)
+     */
+    private static function manager_reporter_last_synchronization($plugin,$service) {
+        /* Variables    */
+        global $CFG;
+        $toSynchronize  = null;
+        $response       = null;
+        $dbLog          = null;
+        $total          = null;
+        $start          = 0;
+        $limit          = 100;
+
+        try {
+            // Log
+            $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START Manager Reporter Synchronization (LAST STATUS). ' . "\n";
+
+            // Managers and reporters to synchronize
+            $total = FSKS_USERS::get_total_managers_reporters_to_synchronize(true);
+            if ($total) {
+                for ($i=0;$i<=$total;$i=$i+100) {
+                    // To synchronize
+                    $toSynchronize = FSKS_USERS::get_managers_reporters_to_synchronize($start,$limit,true);
+
+                    // Call webs ervice
+                    if ($toSynchronize) {
+                        $response = self::process_ks_service($plugin,$service,array('managerReporter' => $toSynchronize));
+                        if ($response['error'] == '200') {
+                            // Syncrhonize managers and reporters
+                            FSKS_USERS::synchronize_manager_reporter_fs($toSynchronize,$response['managerReporter']);
+                        }else {
+                            // Log
+                            $dbLog  .= "ERROR WS: " . $response['message'] . "\n" . "\n";
+                            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' Finish ERROR Manaer Reporter Synchronization (LAST STATUS). ' . "\n";
+                        }//if_no_error
+                    }//if_toSynchronize
+                }//for
+            }//if_total
+
+            // Log
+            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Manager Reporter Synchronization (LAST STATUS). ' . "\n";
+            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+        }catch (Exception $ex) {
+            // Log
+            $dbLog  = $ex->getMessage() . "\n" . "\n";
+            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' Finish ERROR Manager Reporter Synchronization (LAST STATUS). ' . "\n";
+            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+
+            throw $ex;
+        }//try_catch
+    }//manager_reporter_last_synchronization
 
     /**
      * Description
