@@ -52,27 +52,6 @@ class STATUS_CRON {
             }else {
                 $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' ERROR Response null . ' . "\n";
             }//if_else_response
-
-
-
-            // Cal service
-            $params = array();
-            $params['code'] = "ABCD";//(String)$industry;
-            $response = self::process_service($plugin,'ws_competence',array('code' => 'ABCD'));
-
-            if ($response) {
-                if ($response['error'] == '200') {
-                    echo "COMPETENCE CODE: " . "</br>" . $response['competence'] . "</br>";
-                }else {
-                    // Log
-                    $dblog .= "Error WS: " . $response['message'] . "\n" ."\n";
-                }//if_no_error
-            }else {
-                $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' ERROR Response null . ' . "\n";
-            }//if_else_response
-
-            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Get KS competence data . ' . "\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
         }catch (Exception $ex) {
             // Log
             $dbLog = $ex->getMessage() . "\n" ."\n";
