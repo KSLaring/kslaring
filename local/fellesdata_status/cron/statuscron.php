@@ -33,8 +33,13 @@ class STATUS_CRON {
             // Get industry code
             $industry = STATUS::get_industry_code($plugin->ks_muni);
 
+            $params = array();
+            $info = new stdClass();
+            $info->code = $industry;
+            $params['competence'] = $info;
+
             // Cal service
-            $response = self::process_service($plugin,'wsCompetence',array('code' => $industry));
+            $response = self::process_service($plugin,'wsCompetence',$params);
             
             if ($response) {
                 if ($response['error'] == '200') {
@@ -93,9 +98,6 @@ class STATUS_CRON {
             // Paramters web service
             $fields = http_build_query( $params );
             $fields = str_replace( '&amp;', '&', $fields );
-
-            echo "--> " . $fields . "</br>";
-            //echo "Length: " . strlen( $fields ) . "</br>";
 
             // Call service
             $ch = curl_init($server);
