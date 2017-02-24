@@ -104,6 +104,7 @@ class STATUS_CRON {
             $fields = str_replace( '&amp;', '&', $fields );
 
             echo "--> " . $fields . "</br>";
+            echo "Length: " . strlen( $fields ) . "</br>";
 
             // Call service
             $ch = curl_init($server);
