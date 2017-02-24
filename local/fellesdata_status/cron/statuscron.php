@@ -98,11 +98,11 @@ class STATUS_CRON {
             $server = $domain . '/webservice/rest/server.php?wstoken=' . $token . '&wsfunction=' . $service .'&moodlewsrestformat=json';
 
             // Paramters web service
-            $fields = http_build_query( $params );
-            $fields = str_replace( '&amp;', '&', $fields );
+            //$fields = http_build_query( $params );
+            //$fields = str_replace( '&amp;', '&', $fields );
 
-            echo "--> " . $fields . "</br>";
-            echo "Length: " . strlen( $fields ) . "</br>";
+            //echo "--> " . $fields . "</br>";
+            //echo "Length: " . strlen( $fields ) . "</br>";
 
             // Call service
             $ch = curl_init($server);
@@ -110,8 +110,8 @@ class STATUS_CRON {
             curl_setopt( $ch, CURLOPT_SSL_VERIFYHOST,2 );
             curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
             curl_setopt( $ch, CURLOPT_POST, true );
-            curl_setopt( $ch, CURLOPT_HTTPHEADER, array( 'Content-Length: ' . strlen( $fields ) ) );
-            curl_setopt( $ch, CURLOPT_POSTFIELDS, $fields );
+            //curl_setopt( $ch, CURLOPT_HTTPHEADER, array( 'Content-Length: ' . strlen( $fields ) ) );
+            curl_setopt( $ch, CURLOPT_POSTFIELDS, '1201' );
 
             $response = curl_exec( $ch );
 
