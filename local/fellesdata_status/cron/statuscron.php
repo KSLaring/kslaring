@@ -35,12 +35,12 @@ class STATUS_CRON {
             
             // Service parameters
             $params = array();
-            $params['industry'] = "1201";//(String)$industry;
+            $params['code'] = "1201";//(String)$industry;
 
-            echo "Industry: " . $industry . " - " . $params['industry'] . "</br>";
+            echo "Industry: " . $industry . " - " . $params['code'] . "</br>";
 
             // Cal service
-            $response = self::process_service($plugin,WS_COMPETENCE,$params);
+            $response = self::process_service($plugin,'wsCompetence',$params);
             
             if ($response) {
                 if ($response['error'] == '200') {
