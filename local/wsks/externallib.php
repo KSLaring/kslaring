@@ -1221,7 +1221,7 @@ class local_wsks_external extends external_api {
         $result     = array();
 
         /* Parameter Validation */
-        $params = self::validate_parameters(self::ws_get_competence_parameters(), array('competence' => $competence));
+        $params = self::validate_parameters(self::ws_get_competence_parameters(), array('industry' => $competence));
 
         /* Web Service Response */
         $result['error']        = 200;
