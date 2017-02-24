@@ -35,9 +35,9 @@ class STATUS_CRON {
             
             // Service parameters
             $params = array();
-            $params['industry'] = "'" . $industry . "'";
+            $params['industry'] = (String)$industry;
 
-            echo "Industry: " . $industry . "</br>";
+            echo "Industry: " . $industry . " - " . $params['industry'] . "</br>";
 
             // Cal service
             $response = self::process_service($plugin,WS_COMPETENCE,$params);
