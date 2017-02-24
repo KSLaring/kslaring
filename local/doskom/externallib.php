@@ -478,7 +478,9 @@ class local_doskom_external extends external_api {
      */
     public static function wsGetAccomplishedCourses($criteria) {
         /* Variables */
+        global $CFG;
         $log = null;
+        $dblog = null;
         
         /* Parameter Validation */
         $params = self::validate_parameters(self::wsGetAccomplishedCourses_parameters(), array('criteria' => $criteria));
@@ -490,11 +492,18 @@ class local_doskom_external extends external_api {
         $result['courses']      = array();
 
         try {
+            // Log
+            $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START  Historical course completion . ' . "\n";
+            
             list($result['courses'],$log) = WS_DOSKOM::getHistoricalCoursesCompletion($criteria,$result);
-
+            
             if ($log) {
+                $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' Updating Log Historical course completion . ' . "\n";
                 WS_DOSKOM::update_log_historical($log);
             }//if_log
+
+            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' Finish  Historical course completion . ' . "\n";
+            error_log($dblog, 3, $CFG->dataroot . "/doskom.log");
             
             return $result;
         }catch (Exception $ex) {
@@ -503,6 +512,10 @@ class local_doskom_external extends external_api {
                 $result['msg_error']    = $ex->getMessage();
             }//if_error
 
+            $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' Finish  ERROR Historical course completion . ' . "\n";
+            $dblog .= 'Error --> ' . $ex->getTraceAsString() . "\n";
+            error_log($dblog, 3, $CFG->dataroot . "/doskom.log");
+            
             return $result;
         }//try_catch
     }//wsGetAccomplishedCourses
