@@ -35,7 +35,8 @@ class STATUS_CRON {
             
             // Service parameters
             $params = array();
-            $params['code'] = "1201";//(String)$industry;
+            $params = new stdClass();
+            $params->code = "1201";//(String)$industry;
 
             echo "Industry: " . $industry . " - " . $params['code'] . "</br>";
 
