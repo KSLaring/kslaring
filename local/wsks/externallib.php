@@ -1162,141 +1162,63 @@ class local_wsks_external extends external_api {
         }//try_catch
     }//wsUnMapCompany
 
-    /****************************/
-    /* ws_get_competence */
-    /****************************/
+    /****************/
+    /* wsCompetence */
+    /****************/
 
-
-    /**
-     * Description
-     * Input parameters for the service
-     *
-     * @return          external_function_parameters
-     *
-     * @creationDate    22/02/2017
-     * @author          eFaktor     (fbv)
-     */
-    public static function ws_get_competence_parameters() {
-        $industry   = new external_value(PARAM_TEXT,'Industry code');
-
-        return new external_function_parameters(array('industry'=> $industry));
-    }//ws_get_competence_parameters
-
-    /**
-     * Description
-     * Response for the service
-     *
-     * @return          external_single_structure
-     *
-     * @creationDate    22/07/2017
-     * @author          eFaktor     (fbv)
-     */
-    public static function ws_get_competence_returns() {
-        $error      = new external_value(PARAM_INT,'Error. True/False');
-        $msgerror   = new external_value(PARAM_TEXT,'Error Description');
-        $competence = new external_value(PARAM_TEXT,'Competenc for each user. Each line will be like that 
-                                                     {"id" : x, "userid" : xxx, "username" : yyyyy, "companyid" : xxxx ,"jobroles" : ppppp , "level" : y,}');
-
-
-        $existreturn = new external_single_structure(array('error'      => $error,
-                                                           'message'    => $msgerror,
-                                                           'competence' => $competence));
-
-        return $existreturn;
-    }//ws_clean_synchronization_returns
-
-    /**
-     * Description
-     *
-     * @return          array
-     * @throws          invalid_parameter_exception
-     * @throws          moodle_exception
-     *
-     * @creationDate    24/11/2016
-     * @author          eFaktor     (fbv)
-     */
-    public static function ws_get_competence($industry) {
-        /* Variables    */
-        global $CFG;
-        $result     = array();
-
-        /* Parameter Validation */
-        $params = self::validate_parameters(self::ws_get_competence_parameters(), array('industry' => $industry));
-
-        /* Web Service Response */
-        $result['error']        = 200;
-        $result['message']      = '';
-        $result['competence']   = '';
-        
-        try {
-            $dblog = "Industry --> " . $industry['industry'] . "\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
-
-            // Get competence
-            WS_FELLESDATA::competence_data($industry['industry'],$result);
-            
-            return $result;
-        }catch (Exception $ex) {
-            if ($result['error'] == '200') {
-                $result['error']    = 500;
-                $result['message']  = $ex->getMessage() . ' ' . $ex->getTraceAsString();
-            }//if_error
-
-            return $result;
-        }//try_catch
-    }///ws_clean_synchronization
-
-    public static function ws_competence_parameters() {
-        $code   = new external_value(PARAM_TEXT,'Industry');
+    public static function wsCompetence_parameters() {
+        $code = new external_value(PARAM_TEXT,'Industry code');
 
         return new external_function_parameters(array('code'=> $code));
-    }//ws_get_competence_parameters
+    }//wsCompetence_parameters
 
-    public static function ws_competence_returns() {
+    public static function wsCompetence_returns() {
         $error      = new external_value(PARAM_INT,'Error. True/False');
-        $msgerror   = new external_value(PARAM_TEXT,'Error Description');
-        $competence = new external_value(PARAM_TEXT,'Competenc for each user. Each line will be like that 
-                                                     {"id" : x, "userid" : xxx, "username" : yyyyy, "companyid" : xxxx ,"jobroles" : ppppp , "level" : y,}');
+        $msgError   = new external_value(PARAM_TEXT,'Error Description');
+        $competence = new external_value(PARAM_TEXT,'Competence data');
 
 
-        $existreturn = new external_single_structure(array('error'      => $error,
-            'message'    => $msgerror,
+
+        $existReturn = new external_single_structure(array('error'      => $error,
+            'message'    => $msgError,
             'competence' => $competence));
 
-        return $existreturn;
-    }//ws_clean_synchronization_returns
+        return $existReturn;
+    }//wsCompetence_returns
 
-
-    public static function ws_competence($code) {
+    public static function wsCompetence($code) {
         /* Variables    */
         global $CFG;
         $result     = array();
 
         /* Parameter Validation */
-        $params = self::validate_parameters(self::ws_competence_parameters(), array('code' => $code));
+        $params = self::validate_parameters(self::wsCompetence_parameters(), array('code' => $code));
 
-        /* Web Service Response */
+        /* Web Service response */
         $result['error']        = 200;
         $result['message']      = '';
-        $result['competence']   = '';
+        $result['competence']   = array();
 
         try {
-            $dblog = "Industry Code --> " . $code['code'] . "\n";
+            $dblog = "CODE --> " . $code['code'] . "\n";
             error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
 
-            // Get competence
-            WS_FELLESDATA::competence_data( $code['code'],$result);
+            /* Get Job Roles generics */
+            WS_FELLESDATA::competence_data($code['code'],$result);
 
             return $result;
         }catch (Exception $ex) {
             if ($result['error'] == '200') {
                 $result['error']    = 500;
-                $result['message']  = $ex->getMessage() . ' ' . $ex->getTraceAsString();
+                $result['message']  = $result['message']. ' ' . $ex->getMessage() . ' ' . $ex->getTraceAsString();
             }//if_error
 
             return $result;
         }//try_catch
-    }///ws_clean_synchronization
+    }//wsCompetence
+
+
+
 
     /*****************************/
     /*****************************/

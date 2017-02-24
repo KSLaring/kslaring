@@ -158,26 +158,16 @@ $fonUnMapOrganizationsConfig    = array(
                                        );
 
 /**
- * Get competence
+ * GetCompetence
  */
-$foncompetencesync          = 'ws_get_competence';
-$foncompetencesyncconfig    = array(
-                                'classname'     => $className,
-                                'methodname'    => $foncompetencesync,
-                                'classpath'     => $classPath,
-                                'description'   => 'Get competence.',
-                                'type'          => 'read',
-                                'capabilities'  => ''
-                            );
-
-$foncompsync          = 'ws_competence';
-$foncompsyncconfig    = array(
-    'classname'     => $className,
-    'methodname'    => $foncompsync,
-    'classpath'     => $classPath,
-    'description'   => 'Get competence.',
-    'type'          => 'read',
-    'capabilities'  => ''
+$fonCompetence       = 'wsCompetence';
+$fonCompetenceConfig = array(
+    'classname'    => $className,
+    'methodname'   => $fonCompetence,
+    'classpath'    => $classPath,
+    'description'  => 'Competence Data from KS',
+    'type'         => 'read',
+    'capabilities' => ''
 );
 
 /**
@@ -200,8 +190,7 @@ $functions = array(
                     $fonUsersAccounts		=> $fonUsersAccountsConfig,
                     $fonUnMapCompetence     => $fonUnMapCompetenceConfig,
                     $fonUnMapOrganizations  => $fonUnMapOrganizationsConfig,
-                    $foncompetencesync      => $foncompetencesyncconfig,
-                    $foncompsync            => $foncompsyncconfig
+                    $fonCompetence          => $fonCompetenceConfig
                     );
 
 /**
@@ -221,7 +210,7 @@ $serviceFS        = 'fellesdata';
 $serviceFSConfig  = array(
                           'functions'         => array($fonCompany,$fonHierarchy,$fonFSJobRoles,$fonKSJobRoles,$fonKSJobRolesGenerics,
                                                        $fonManagerReporter,$fonUserCompetence,$fonUsersAccounts,
-                                                       $fonUnMapCompetence,$fonUnMapOrganizations,$foncompetencesync,$foncompsync),
+                                                       $fonUnMapCompetence,$fonUnMapOrganizations,$fonCompetence),
                           'restrictedusers'   => 1,
                           'enabled'           => 1
 );
