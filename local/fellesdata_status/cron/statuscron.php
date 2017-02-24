@@ -103,7 +103,7 @@ class STATUS_CRON {
             $fields = http_build_query( $params );
             $fields = str_replace( '&amp;', '&', $fields );
 
-            echo $fields . "</br>";
+            echo "--> " . $fields . "</br>";
 
             // Call service
             $ch = curl_init($server);
