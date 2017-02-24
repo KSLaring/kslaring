@@ -19,9 +19,6 @@ define('MANAGER','manager');
 define('REPORTER','reporter');
 define('MAPPED_TARDIS','TARDIS');
 
-define('CLEAN_MANAGERS_REPORTERS',0);
-define('CLEAN_COMPETENCE',1);
-
 class WS_FELLESDATA {
     /**********/
     /* PUBLIC */

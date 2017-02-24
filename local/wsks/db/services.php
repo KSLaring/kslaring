@@ -190,7 +190,7 @@ $functions = array(
                     $fonUsersAccounts		=> $fonUsersAccountsConfig,
                     $fonUnMapCompetence     => $fonUnMapCompetenceConfig,
                     $fonUnMapOrganizations  => $fonUnMapOrganizationsConfig,
-                    $foncleansync           => $foncleansyncconfig
+                    $foncompetencesync      => $foncompetencesyncconfig
                     );
 
 /**
@@ -210,7 +210,7 @@ $serviceFS        = 'fellesdata';
 $serviceFSConfig  = array(
                           'functions'         => array($fonCompany,$fonHierarchy,$fonFSJobRoles,$fonKSJobRoles,$fonKSJobRolesGenerics,
                                                        $fonManagerReporter,$fonUserCompetence,$fonUsersAccounts,
-                                                       $fonUnMapCompetence,$fonUnMapOrganizations,$foncleansync),
+                                                       $fonUnMapCompetence,$fonUnMapOrganizations,$foncompetencesync),
                           'restrictedusers'   => 1,
                           'enabled'           => 1
 );
