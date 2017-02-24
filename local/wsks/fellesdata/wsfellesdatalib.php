@@ -639,9 +639,9 @@ class WS_FELLESDATA {
         try {
             // Log
             $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START GET COMPETENCE DATA . ' . "\n";
-
+            $dblog .= "Industry --> " . $data['industry'] . "\n";
             // get competence data
-            $result['competence'] = self::get_competence_data($data);
+            $result['competence'] = self::get_competence_data($data['industry']);
 
             // Log
             $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINSIH GET COMPETENCE DATA . ' . "\n";
@@ -667,7 +667,7 @@ class WS_FELLESDATA {
      * Description
      * Get competence data in a string
      *
-     * @param       array $data
+     * @param       $industry
      *
      * @return      null|string
      * @throws      Exception
@@ -675,7 +675,7 @@ class WS_FELLESDATA {
      * @creationDate    24/02/2017
      * @author          eFaktor     (fbv)
      */
-    private static function get_competence_data($data) {
+    private static function get_competence_data($industry) {
         /* Variables */
         global $DB;
         global $CFG;
@@ -690,7 +690,7 @@ class WS_FELLESDATA {
 
             // Search criteria
             $params = array();
-            $params['industry'] = $data['industry'];
+            $params['industry'] = $industry;
             $params['mapped']   = 'TARDIS';
 
             // SQL Isntruction
@@ -707,7 +707,7 @@ class WS_FELLESDATA {
                         JOIN  {user}						u 	ON 	u.id 			= uic.userid ";
 
             $dblog .= "SQL : ". "\n\n" . $sql . "\n\n";
-            $dblog .= "Industry : " . $data['industry'] . " - " . $params['industry'] . "\n";
+            $dblog .= "Industry : " . $industry . " - " . $params['industry'] . "\n";
             $dblog .= "mapped: " . $params['mapped'] . "\n";
 
             // Execute

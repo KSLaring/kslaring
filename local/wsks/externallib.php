@@ -1229,6 +1229,9 @@ class local_wsks_external extends external_api {
         $result['competence']   = '';
         
         try {
+            $dblog = "Industry --> " . $competence['industry'] . "\n";
+            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+            
             // Get competence
             WS_FELLESDATA::competence_data($competence,$result);
             
