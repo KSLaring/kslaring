@@ -1233,8 +1233,60 @@ class local_wsks_external extends external_api {
             error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
 
             // Get competence
-            WS_FELLESDATA::competence_data($industry,$result);
+            WS_FELLESDATA::competence_data($industry['industry'],$result);
             
+            return $result;
+        }catch (Exception $ex) {
+            if ($result['error'] == '200') {
+                $result['error']    = 500;
+                $result['message']  = $ex->getMessage() . ' ' . $ex->getTraceAsString();
+            }//if_error
+
+            return $result;
+        }//try_catch
+    }///ws_clean_synchronization
+
+    public static function ws_competence_parameters() {
+        $code   = new external_value(PARAM_TEXT,'Industry');
+
+        return new external_function_parameters(array('code'=> $code));
+    }//ws_get_competence_parameters
+
+    public static function ws_competence_returns() {
+        $error      = new external_value(PARAM_INT,'Error. True/False');
+        $msgerror   = new external_value(PARAM_TEXT,'Error Description');
+        $competence = new external_value(PARAM_TEXT,'Competenc for each user. Each line will be like that 
+                                                     {"id" : x, "userid" : xxx, "username" : yyyyy, "companyid" : xxxx ,"jobroles" : ppppp , "level" : y,}');
+
+
+        $existreturn = new external_single_structure(array('error'      => $error,
+            'message'    => $msgerror,
+            'competence' => $competence));
+
+        return $existreturn;
+    }//ws_clean_synchronization_returns
+
+
+    public static function ws_competence($code) {
+        /* Variables    */
+        global $CFG;
+        $result     = array();
+
+        /* Parameter Validation */
+        $params = self::validate_parameters(self::ws_competence_parameters(), array('code' => $code));
+
+        /* Web Service Response */
+        $result['error']        = 200;
+        $result['message']      = '';
+        $result['competence']   = '';
+
+        try {
+            $dblog = "Industry Code --> " . $code['code'] . "\n";
+            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+
+            // Get competence
+            WS_FELLESDATA::competence_data( $code['code'],$result);
+
             return $result;
         }catch (Exception $ex) {
             if ($result['error'] == '200') {

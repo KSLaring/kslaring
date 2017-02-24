@@ -170,6 +170,16 @@ $foncompetencesyncconfig    = array(
                                 'capabilities'  => ''
                             );
 
+$foncompsync          = 'ws_competence';
+$foncompsyncconfig    = array(
+    'classname'     => $className,
+    'methodname'    => $foncompsync,
+    'classpath'     => $classPath,
+    'description'   => 'Get competence.',
+    'type'          => 'read',
+    'capabilities'  => ''
+);
+
 /**
  * Get managers/reporters
  */
@@ -190,7 +200,8 @@ $functions = array(
                     $fonUsersAccounts		=> $fonUsersAccountsConfig,
                     $fonUnMapCompetence     => $fonUnMapCompetenceConfig,
                     $fonUnMapOrganizations  => $fonUnMapOrganizationsConfig,
-                    $foncompetencesync      => $foncompetencesyncconfig
+                    $foncompetencesync      => $foncompetencesyncconfig,
+                    $foncompsync            => $foncompsyncconfig
                     );
 
 /**
@@ -210,7 +221,7 @@ $serviceFS        = 'fellesdata';
 $serviceFSConfig  = array(
                           'functions'         => array($fonCompany,$fonHierarchy,$fonFSJobRoles,$fonKSJobRoles,$fonKSJobRolesGenerics,
                                                        $fonManagerReporter,$fonUserCompetence,$fonUsersAccounts,
-                                                       $fonUnMapCompetence,$fonUnMapOrganizations,$foncompetencesync),
+                                                       $fonUnMapCompetence,$fonUnMapOrganizations,$foncompetencesync,$foncompsync),
                           'restrictedusers'   => 1,
                           'enabled'           => 1
 );
