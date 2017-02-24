@@ -35,7 +35,7 @@ class STATUS_CRON {
             
             // Service parameters
             $params = array();
-            $params['industry'] = (String)$industry;
+            $params['industry'] = "1201";//(String)$industry;
 
             echo "Industry: " . $industry . " - " . $params['industry'] . "</br>";
 
@@ -102,6 +102,8 @@ class STATUS_CRON {
             // Paramters web service
             $fields = http_build_query( $params );
             $fields = str_replace( '&amp;', '&', $fields );
+
+            echo $fields . "</br>";
 
             // Call service
             $ch = curl_init($server);
