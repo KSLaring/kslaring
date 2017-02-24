@@ -36,12 +36,15 @@ class STATUS_CRON {
             $params = array();
             $info = new stdClass();
             $info->code = $industry;
+
+            $info = array('code' => $industry);
             $params['competence'] = $info;
 
             // Cal service
             $response = self::process_service($plugin,'wsCompetence',$params);
             
             if ($response) {
+                echo $response . "</br>";
                 if ($response['error'] == '200') {
                     echo "COMPETENCE: " . "</br>" . $response['competence'] . "</br>";
                 }else {
