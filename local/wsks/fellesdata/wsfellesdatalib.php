@@ -678,12 +678,16 @@ class WS_FELLESDATA {
     private static function get_competence_data($data) {
         /* Variables */
         global $DB;
+        global $CFG;
+        $dblog      = null;
         $rdo        = null;
         $sql        = null;
         $params     = null;
         $competence = null;
 
         try {
+            $dblog = "GET COMPETENCE DATA SQL " . "\n";
+
             // Search criteria
             $params = array();
             $params['industry'] = $data['industry'];
@@ -702,13 +706,21 @@ class WS_FELLESDATA {
                                                                 AND	co.industrycode	= :industry
                         JOIN  {user}						u 	ON 	u.id 			= uic.userid ";
 
+            $dblog .= "SQL : ". "\n\n" . $sql . "\n\n";
+
             // Execute
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 foreach ($rdo as $instance) {
-                    $competence = json_encode($instance) . "\n";
+                    $dblog .= $instance->id . "\n";
+                    $competence .= json_encode($instance) . "\n";
                 }//for_rdo
+
+                $dblog .= $competence . "\n\n";
             }//if_Rdo
+
+            $dblog .= "FINISH GET COMPETENCE DATA SQL " . "\n";
+            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
 
             return $competence;
         }catch (Exception $ex) {
