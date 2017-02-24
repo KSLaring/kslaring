@@ -38,7 +38,7 @@ class STATUS_CRON {
             $params = new stdClass();
             $params->code = "1201";//(String)$industry;
 
-            echo "Industry: " . $industry . " - " . $params['code'] . "</br>";
+            //echo "Industry: " . $industry . " - " . $params['code'] . "</br>";
 
             // Cal service
             $response = self::process_service($plugin,'wsCompetence',$params);
@@ -98,10 +98,10 @@ class STATUS_CRON {
             $server = $domain . '/webservice/rest/server.php?wstoken=' . $token . '&wsfunction=' . $service .'&moodlewsrestformat=json';
 
             // Paramters web service
-            //$fields = http_build_query( $params );
-            //$fields = str_replace( '&amp;', '&', $fields );
+            $fields = http_build_query( $params );
+            $fields = str_replace( '&amp;', '&', $fields );
 
-            //echo "--> " . $fields . "</br>";
+            echo "--> " . $fields . "</br>";
             //echo "Length: " . strlen( $fields ) . "</br>";
 
             // Call service
