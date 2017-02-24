@@ -58,7 +58,7 @@ class STATUS_CRON {
             // Cal service
             $params = array();
             $params['code'] = "1201";//(String)$industry;
-            $response = self::process_service($plugin,'ws_competence',$params);
+            $response = self::process_service($plugin,'ws_competence',array('code' => '1201'));
 
             if ($response) {
                 if ($response['error'] == '200') {
