@@ -19,6 +19,9 @@ define('MANAGER','manager');
 define('REPORTER','reporter');
 define('MAPPED_TARDIS','TARDIS');
 
+define('CLEAN_MANAGERS_REPORTERS',0);
+define('CLEAN_COMPETENCE',1);
+
 class WS_FELLESDATA {
     /**********/
     /* PUBLIC */
@@ -36,19 +39,19 @@ class WS_FELLESDATA {
      * Description
      * Get generics job roles
      */
-    public static function GenericsJobRoles($notIn,&$result) {
+    public static function generics_jobroles($notIn,&$result) {
         /* Variables    */
 
         try {
             /* Get generics job roles */
-            $result['jobroles'] = self::Get_GenericsJobRoles($notIn['notIn']);
+            $result['jobroles'] = self::get_generics_jobroles($notIn['notIn']);
         }catch (Exception $ex) {
             $result['error']    = 409;
             $result['message']  = $ex->getMessage();
 
             throw $ex;
         }//try_catch
-    }//GenericsJobRoles
+    }//generics_jobroles
 
     /**
      * @param           $hierarchy
@@ -62,19 +65,19 @@ class WS_FELLESDATA {
      * Description
      * Get job roles by level
      */
-    public static function JobRolesByLevel($hierarchy,&$result) {
+    public static function jobroles_by_level($hierarchy,&$result) {
         /* Variables */
 
         try {
             /* Job Roles by Level */
-            $result['jobroles'] = self::Get_JobRolesByLevel($hierarchy['top'],$hierarchy['notIn']);
+            $result['jobroles'] = self::get_jobroles_by_level($hierarchy['top'],$hierarchy['notIn']);
         }catch (Exception $ex) {
             $result['error']    = 409;
             $result['message']  = $ex->getMessage();
 
             throw $ex;
         }//try_catch
-    }//JobRolesByLevel
+    }//jobroles_by_level
 
     /**
      * @param           $top
@@ -89,7 +92,7 @@ class WS_FELLESDATA {
      * Get organization structure for a specific level
      * In this case, top level is company.
      */
-    public static function OrganizationStructureByTop($top,&$result) {
+    public static function organization_structure_by_top($top,&$result) {
         /* Variables */
         $infoTop = null;
 
@@ -98,14 +101,14 @@ class WS_FELLESDATA {
             $infoTop = (Object)$top;
 
             /* Get Organization Structure*/
-            $result['structure'] = self::Get_OrganizationStructureByTop($infoTop);
+            $result['structure'] = self::get_organization_structure_by_top($infoTop);
         }catch (Exception $ex) {
             $result['error']    = 409;
             $result['message']  = $ex->getMessage();
 
             throw $ex;
         }//try_catch
-    }//OrganizationStructureByTop
+    }//organization_structure_by_top
 
 
     /**
@@ -120,7 +123,7 @@ class WS_FELLESDATA {
      * Description
      * Synchronization between FS and KS companies
      */
-    public static function Synchronize_FSKS_Companies($companiesFS,&$result) {
+    public static function synchronize_fsks_companies($companiesFS,&$result) {
         /* Variables */
         global $CFG;
         $objCompany     = null;
@@ -140,7 +143,7 @@ class WS_FELLESDATA {
                 $objCompany = (Object)$company;
 
                 /* Process the company */
-                $companyId = self::ProcessFSCompany($objCompany);
+                $companyId = self::process_fs_company($objCompany);
 
                 /* Marked s imported    */
                 if ($companyId) {
@@ -171,7 +174,7 @@ class WS_FELLESDATA {
 
             throw $ex;
         }//try_catch
-    }//Synchronize_FSKS_Companies
+    }//synchronize_fsks_companies
 
     /**
      * @param           $jobRolesFS
@@ -185,7 +188,7 @@ class WS_FELLESDATA {
      * Description
      * Synchronize Job roles between FS and KS
      */
-    public static function Synchronize_FSKS_JobRoles($jobRolesFS,&$result) {
+    public static function synchronize_fsks_jobroles($jobRolesFS,&$result) {
         /* Variables */
         global $CFG;
         $objJobRole     = null;
@@ -205,7 +208,7 @@ class WS_FELLESDATA {
                 $objJobRole = (Object)$jobRole;
 
                 /* Process job role */
-                $jobRoleId = self::ProcessFSJobRoles($objJobRole);
+                $jobRoleId = self::process_fs_jobroles($objJobRole);
 
                 /* Marked as Imported   */
                 if ($jobRoleId) {
@@ -236,7 +239,7 @@ class WS_FELLESDATA {
 
             throw $ex;
         }//try_catch
-    }//Synchronize_FSKS_JobRoles
+    }//synchronize_fsks_jobroles
 
     /**
      * @param           $usersAccounts
@@ -250,7 +253,7 @@ class WS_FELLESDATA {
      * Description
      * Synchronize users accounts between FS and KS
      */
-    public static function Synchronize_UsersAccounts($usersAccounts,&$result) {
+    public static function synchronize_users_accounts($usersAccounts,&$result) {
         /* Variables    */
         global $CFG;
         $dir            = null;
@@ -292,7 +295,7 @@ class WS_FELLESDATA {
                         $infoAccount = json_decode($line);
                         
                         /* Process Account */
-                        $userId = self::ProcessUserAccount($infoAccount);
+                        $userId = self::process_user_account($infoAccount);
 
                         /* Marked as imported */
                         if($userId) {
@@ -323,7 +326,7 @@ class WS_FELLESDATA {
             
             throw $ex;
         }//try_catch
-    }//Synchronize_UsersAccounts
+    }//synchronize_users_accounts
 
     /**
      * @param           $userManagerReporter
@@ -337,7 +340,7 @@ class WS_FELLESDATA {
      * Description
      * Synchronize managers reporters from fellesdata
      */
-    public static function Synchronize_UserManagerReporter($userManagerReporter,&$result) {
+    public static function synchronize_user_manager_reporter($userManagerReporter,&$result) {
         /* Variables */
         global $CFG;
         $objManagerReporter     = null;
@@ -358,7 +361,7 @@ class WS_FELLESDATA {
                 $objManagerReporter = (Object)$managerReporter;
 
                 /* Process user Manager Reporter */
-                $synchronized = self::ProcessUserManagerReporter($objManagerReporter);
+                $synchronized = self::process_user_manager_reporter($objManagerReporter);
 
                 /* Marked as imported */
                 if ($synchronized) {
@@ -388,7 +391,7 @@ class WS_FELLESDATA {
 
             throw $ex;
         }//try_catch
-    }//Synchronize_UserManagerReporter
+    }//synchronize_user_manager_reporter
 
     /**
      * @param           $usersCompetence
@@ -402,7 +405,7 @@ class WS_FELLESDATA {
      * Description
      * Synchronize user competence between FS and KS
      */
-    public static function Synchronize_UserCompetence($usersCompetence,&$result) {
+    public static function synchronize_user_competence($usersCompetence,&$result) {
         /* Variables */
         global $CFG;
         $objCompetence      = null;
@@ -422,7 +425,7 @@ class WS_FELLESDATA {
                 $objCompetence = (Object)$competence;
 
                 /* Process the competence */
-                $competenceDataID = self::ProcessUserCompetence($objCompetence);
+                $competenceDataID = self::process_user_competence($objCompetence);
 
                 /* Marked as imported */
                 if ($competenceDataID) {
@@ -452,7 +455,7 @@ class WS_FELLESDATA {
 
             throw $ex;
         }//try_catch
-    }//Synchronize_UserCompetence
+    }//synchronize_user_competence
 
     /**
      * @param           $userMail
@@ -494,7 +497,7 @@ class WS_FELLESDATA {
      * Description
      * Unmap companies
      */
-    public static function UnMap_Companies($toUnMap,&$result) {
+    public static function unmap_companies($toUnMap,&$result) {
         /* Variables */
         global $DB,$CFG;
         $trans          = null;
@@ -558,7 +561,7 @@ class WS_FELLESDATA {
 
             throw $ex;
         }//try_Catch
-    }//UnMap_Companies
+    }//unmap_companies
 
     /**
      * @param           $toUnMap
@@ -572,7 +575,7 @@ class WS_FELLESDATA {
      * Description
      * Unmap user competence
      */
-    public static function UnMap_UserCompetence($toUnMap,&$result) {
+    public static function unmap_user_competence($toUnMap,&$result) {
         /* Variables */
         global $CFG;
         $dbLog          = null;
@@ -581,30 +584,28 @@ class WS_FELLESDATA {
         $info           = null;
 
         try {
-            /* Log  */
+            // Log
             $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START Un-Map user competence . ' . "\n";
 
-            /**
-             * Unmap competence --> delete competence
-             */
+            // Unmap competence --> delete competence
             if ($toUnMap) {
                 foreach ($toUnMap as $infoCompetence) {
-                    /* Convert to object */
+                    // Convert to object
                     $objCompetence = (Object)$infoCompetence;
 
-                    /* Unmap */
-                    $info = self::Process_UnMap_CompetenceUser($objCompetence);
+                    // Unmap
+                    $info = self::process_unmap_competence_user($objCompetence);
                     if ($info) {
-                        /* Add */
+                        // Add
                         $usersUnMapped[$objCompetence->key] = $info;
                     }//if_info
                 }//for_toUnMap 
             }//if_toUnmape
 
-            /* Add result   */
+            // Add result
             $result['usersUnMapped']    = $usersUnMapped;
 
-            /* Log  */
+            // Log
             $dbLog .= ' FINISH Un-Map user competence . ' . "\n";
             error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
         }catch (Exception $ex) {
@@ -618,11 +619,105 @@ class WS_FELLESDATA {
 
             throw $ex;
         }//try_catch
-    }//UnMap_UserCompetence
+    }//unmap_user_competence
+
+
+    /**
+     * Description
+     * Get competence data for all users in a string
+     *
+     * @param       array $data
+     * @param       array $result
+     *
+     * @throws            Exception
+     *
+     * @creationDate    24/02/2017
+     * @author          eFaktor     (fbv)
+     */
+    public static function competence_data($data,&$result) {
+        /* Variables */
+        global $CFG;
+        $dblog = null;
+
+        try {
+            // Log
+            $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START GET COMPETENCE DATA . ' . "\n";
+
+            // get competence data
+            $result['competence'] = self::get_competence_data($data);
+
+            // Log
+            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINSIH GET COMPETENCE DATA . ' . "\n";
+            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+        }catch (Exception $ex) {
+            $result['error']            = 409;
+            $result['message']          = $ex->getMessage();
+
+            // Log
+            $dblog = "ERROR: " . $ex->getMessage() . "\n" . "\n";
+            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). 'FINISH ERROR GET COMPETENCE DATA . ' . "\n";
+            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+
+            throw $ex;
+        }//try_catch
+    }//comptence_data
 
     /***********/
     /* PRIVATE */
     /***********/
+
+    /**
+     * Description
+     * Get competence data in a string
+     *
+     * @param       array $data
+     *
+     * @return      null|string
+     * @throws      Exception
+     *
+     * @creationDate    24/02/2017
+     * @author          eFaktor     (fbv)
+     */
+    private static function get_competence_data($data) {
+        /* Variables */
+        global $DB;
+        $rdo        = null;
+        $sql        = null;
+        $params     = null;
+        $competence = null;
+
+        try {
+            // Search criteria
+            $params = array();
+            $params['industry'] = $data['industry'];
+            $params['mapped']   = 'TARDIS';
+
+            // SQL Isntruction
+            $sql = " SELECT   uic.id,
+                              uic.userid,
+                              u.username,
+                              uic.companyid,
+                              uic.level,
+                              uic.jobroles
+                     FROM	  {user_info_competence_data}	uic
+                        JOIN  {report_gen_companydata}		co 	ON  co.id 			= uic.companyid
+                                                                AND co.mapped 		= :mapped
+                                                                AND	co.industrycode	= :industry
+                        JOIN  {user}						u 	ON 	u.id 			= uic.userid ";
+
+            // Execute
+            $rdo = $DB->get_records_sql($sql,$params);
+            if ($rdo) {
+                foreach ($rdo as $instance) {
+                    $competence = json_encode($instance) . "\n";
+                }//for_rdo
+            }//if_Rdo
+
+            return $competence;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//clean_competence_user
 
     /**
      * @param           $infoCompetence
@@ -637,7 +732,7 @@ class WS_FELLESDATA {
      * Description
      * unmap competence for a specific user
      */
-    private static function Process_UnMap_CompetenceUser($infoCompetence) {
+    private static function process_unmap_competence_user($infoCompetence) {
         /* Variables */
         global $DB;
         $trans          = null;
@@ -694,7 +789,7 @@ class WS_FELLESDATA {
 
             throw $ex;
         }//try_catch
-    }//Process_UnMap_CompetenceUser
+    }//process_unmap_competence_user
 
     /**
      * @param           $managerReporter
@@ -708,7 +803,7 @@ class WS_FELLESDATA {
      * Description
      * Process user Manager Reporter from Fellesdata
      */
-    private static function ProcessUserManagerReporter($managerReporter) {
+    private static function process_user_manager_reporter($managerReporter) {
         /* Variables */
         global $DB;
         $time                   = null;
@@ -746,7 +841,7 @@ class WS_FELLESDATA {
                 }//Manager&&Reporter
 
                 /* Get Info Manager */
-                list($infoManager,$infoReporter) = self::GetInfoManager($managerReporter->ksId,$managerReporter->level,$user->id);
+                list($infoManager,$infoReporter) = self::get_info_manager($managerReporter->ksId,$managerReporter->level,$user->id);
 
                 /* Apply Action */
                 switch ($managerReporter->action) {
@@ -755,14 +850,14 @@ class WS_FELLESDATA {
                         /* Add the user as manager if it's the case */
                         if ($manager) {
                             /* Check if the user is already manager or not */
-                            $IsManager = self::IsManagerReporter($infoManager,MANAGER);
+                            $IsManager = self::is_manager_reporter($infoManager,MANAGER);
                             if (!$IsManager) {
                                 /* Create   */
                                 $DB->insert_record('report_gen_company_manager',$infoManager);
                             }//if_manager
                         }else if($reporter) {
                             /* Check if the user is already reporter or not */
-                            $IsReporter = self::IsManagerReporter($infoReporter,REPORTER);
+                            $IsReporter = self::is_manager_reporter($infoReporter,REPORTER);
                             if (!$IsReporter) {
                                 /* Create */
                                 $DB->insert_record('report_gen_company_reporter',$infoReporter);
@@ -778,14 +873,14 @@ class WS_FELLESDATA {
                         /* Add the user as manager if it's the case */
                         if ($manager) {
                             /* Check if the user is already manager or not */
-                            $IsManager = self::IsManagerReporter($infoManager,MANAGER);
+                            $IsManager = self::is_manager_reporter($infoManager,MANAGER);
                             if (!$IsManager) {
                                 /* Create   */
                                 $DB->insert_record('report_gen_company_manager',$infoManager);
                             }//if_manager
                         }else if ($reporter) {
                             /* Check if the user is already reporter or not */
-                            $IsReporter = self::IsManagerReporter($infoReporter,REPORTER);
+                            $IsReporter = self::is_manager_reporter($infoReporter,REPORTER);
                             if (!$IsReporter) {
                                 /* Create */
                                 $DB->insert_record('report_gen_company_reporter',$infoReporter);
@@ -799,13 +894,13 @@ class WS_FELLESDATA {
                     case DELETE_ACTION:
                         /* Delete From Manager  */
                         if ($manager) {
-                            $IsManager = self::IsManagerReporter($infoManager,MANAGER);
+                            $IsManager = self::is_manager_reporter($infoManager,MANAGER);
                             if ($IsManager) {
                                 $DB->delete_records('report_gen_company_manager',array('id' => $IsManager));
                             }//if_Manager
                         }else if ($reporter) {
                             /* Delete From Reporter */
-                            $IsReporter = self::IsManagerReporter($infoReporter,REPORTER);
+                            $IsReporter = self::is_manager_reporter($infoReporter,REPORTER);
                             if ($IsReporter) {
                                 $DB->delete_records('report_gen_company_reporter',array('id' => $IsReporter));
                             }//if_reporter
@@ -828,7 +923,7 @@ class WS_FELLESDATA {
 
             throw $ex;
         }//try_catch
-    }//ProcessUserManagerReporter
+    }//process_user_manager_reporter
 
     /**
      * @param           $company
@@ -844,7 +939,7 @@ class WS_FELLESDATA {
      * Description
      * Get information to add the user as a manager and reporter
      */
-    private static function GetInfoManager($company,$level,$userId) {
+    private static function get_info_manager($company,$level,$userId) {
         /* Variables    */
         global $DB;
         $infoManager    = null;
@@ -1008,7 +1103,7 @@ class WS_FELLESDATA {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//GetInfoManager
+    }//get_info_manager
 
     /**
      * @param           $info
@@ -1023,7 +1118,7 @@ class WS_FELLESDATA {
      * Description
      * Check if the user is manager/reporter for a specific level
      */
-    private static function IsManagerReporter($info,$type) {
+    private static function is_manager_reporter($info,$type) {
         /* Variables    */
         global $DB;
         $sql    = null;
@@ -1122,10 +1217,10 @@ class WS_FELLESDATA {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//IsManagerReporter
+    }//is_manager_reporter
 
 
-    private static function ProcessUserCompetence($userCompetence) {
+    private static function process_user_competence($userCompetence) {
         /* Variables */
         global $DB;
         $time               = null;
@@ -1250,7 +1345,7 @@ class WS_FELLESDATA {
 
             throw $ex;
         }//try_catch
-    }//ProcessUserCompetence
+    }//process_user_competence
 
 
     /**
@@ -1277,7 +1372,7 @@ class WS_FELLESDATA {
      * Description
      * Add the gender
      */
-    private static function ProcessUserAccount($userAccount) {
+    private static function process_user_account($userAccount) {
         /* Variables */
         global $DB,$CFG;
         $time       = null;
@@ -1325,7 +1420,7 @@ class WS_FELLESDATA {
                     }else {
                         $rdoUser->firstname    = $userAccount->firstname;
                         $rdoUser->lastname     = $userAccount->lastname;
-                        $rdoUser->email        = self::ProcessRightEMail($rdoUser->email,$userAccount->email);
+                        $rdoUser->email        = self::process_right_email($rdoUser->email,$userAccount->email);
                         $rdoUser->timemodified = $time;
                         $rdoUser->deleted      = 0;
 
@@ -1342,7 +1437,7 @@ class WS_FELLESDATA {
                     if ($rdoUser) {
                         $rdoUser->firstname    = $userAccount->firstname;
                         $rdoUser->lastname     = $userAccount->lastname;
-                        $rdoUser->email        = self::ProcessRightEMail($rdoUser->email,$userAccount->email);
+                        $rdoUser->email        = self::process_right_email($rdoUser->email,$userAccount->email);
                         $rdoUser->timemodified = $time;
                         $rdoUser->deleted      = 0;
 
@@ -1361,7 +1456,7 @@ class WS_FELLESDATA {
                     /* Delete User  */
                     if ($rdoUser) {
                         /* Delete his/her connection with the municipality */
-                        self::RemoveConnectionMunicipality($rdoUser->id,$userAccount->industry);
+                        self::remove_connection_municipality($rdoUser->id,$userAccount->industry);
                     }else {
                         /* Execute  */
                         //$infoUser->deleted  = 1;
@@ -1424,7 +1519,7 @@ class WS_FELLESDATA {
 
             throw $ex;
         }//try_catch
-    }//ProcessUserAccount
+    }//process_user_account
 
     /**
      * @param           $userId
@@ -1439,7 +1534,7 @@ class WS_FELLESDATA {
      * Description
      * For users with delete action, their connection with municipality has to be removed
      */
-    private static function RemoveConnectionMunicipality($userId,$industryCode) {
+    private static function remove_connection_municipality($userId,$industryCode) {
         /* Variables */
         global $DB;
         $sql        = null;
@@ -1555,7 +1650,7 @@ class WS_FELLESDATA {
 
             throw $ex;
         }//try_catch
-    }//RemoveConnectionMunicipality
+    }//remove_connection_municipality
 
     /**
      * @param           $userEmail
@@ -1570,7 +1665,7 @@ class WS_FELLESDATA {
      * Description
      * Get the right email to update
      */
-    private static function ProcessRightEMail($userEmail,$newEmail) {
+    private static function process_right_email($userEmail,$newEmail) {
         /* Variables */
         $rightEmail    = null;
         $indexUser     = null;
@@ -1616,7 +1711,7 @@ class WS_FELLESDATA {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//ProcessRightEMail
+    }//process_right_email
 
 
     /**
@@ -1631,7 +1726,7 @@ class WS_FELLESDATA {
      * Description
      * Process the job role to synchronize
      */
-    private static function ProcessFSJobRoles($jobRoleInfo) {
+    private static function process_fs_jobroles($jobRoleInfo) {
         /* Variables */
         global $DB;
         $instanceJR     = null;
@@ -1673,7 +1768,7 @@ class WS_FELLESDATA {
 
             throw $ex;
         }//try_catch
-    }//ProcessFSJobRoles
+    }//process_fs_jobroles
 
     /**
      * @param           $jobRoleId
@@ -1819,7 +1914,7 @@ class WS_FELLESDATA {
      * Description
      * Add invoice data
      */
-    private static function ProcessFSCompany($companyInfo) {
+    private static function process_fs_company($companyInfo) {
         /* Variables */
         global $DB;
         $companyId          = null;
@@ -1970,13 +2065,6 @@ class WS_FELLESDATA {
                                 }//if_aux
                             }//for_rdo
                         }//if_rdo_jobrole
-
-                        /* Check there are none users connected with */
-                        //$rdoEmployee = $DB->get_records('user_info_competence_data',array('companyid' => $companyInfo->ksId));
-                        //if (!$rdoEmployee) {
-                        //}else {
-                        //    $companyId = 0;
-                        //}//if_no_employees
                     }//if_exists
 
                     break;
@@ -1992,7 +2080,7 @@ class WS_FELLESDATA {
 
             throw $ex;
         }//try_catch
-    }//ProcessFSCompany
+    }//process_fs_company
 
 
     /**
@@ -2009,7 +2097,7 @@ class WS_FELLESDATA {
      * In this case, top level is company.
      * Compatible with Lx version of Report manager
      */
-    private static function Get_OrganizationStructureByTop($topCompany) {
+    private static function get_organization_structure_by_top($topCompany) {
         /* Variables */
         global $DB, $CFG;
         $sql                = null;
@@ -2028,7 +2116,7 @@ class WS_FELLESDATA {
 
         try {
             /* Get the highest level of the hierarchy   */
-            $maxLevel = self::GetMaxLevelOrganization();
+            $maxLevel = self::get_max_level_organization();
 
             /* Search Criteria  */
             $params = array();
@@ -2067,7 +2155,7 @@ class WS_FELLESDATA {
                     $parents = implode(',',array_keys($orgStructure));
                     for($i=2;$i<=$maxLevel;$i++) {
                         /* Get Information About the rest hierarchy */
-                        $parents = self::GetMyLevels($parents,$i,$orgStructure,$notIn);
+                        $parents = self::get_my_levels($parents,$i,$orgStructure,$notIn);
                     }
                 }//if_MaxLevel
             }//if_Rdo
@@ -2084,7 +2172,7 @@ class WS_FELLESDATA {
 
             throw $ex;
         }//try_catch
-    }//Get_OrganizationStructureByLevel
+    }//get_organization_structure_by_top
 
     /**
      * @param           $parents
@@ -2101,7 +2189,7 @@ class WS_FELLESDATA {
      * Description
      * Get info of each memeber of the hierarchy
      */
-    private static function GetMyLevels($parents,$level,&$orgStructure,$notIn) {
+    private static function get_my_levels($parents,$level,&$orgStructure,$notIn) {
         /* Variables    */
         global $DB;
         $sql                = null;
@@ -2151,7 +2239,7 @@ class WS_FELLESDATA {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//GetMyLevels
+    }//get_my_levels
 
 
     /**
@@ -2167,7 +2255,7 @@ class WS_FELLESDATA {
      * Description
      * Get al generics job roles
      */
-    private static function Get_GenericsJobRoles($notIn) {
+    private static function get_generics_jobroles($notIn) {
         /* Variables */
         global $DB,$CFG;
         $sql            = null;
@@ -2176,7 +2264,7 @@ class WS_FELLESDATA {
         $jobRoles       = array();
         $dbLog          = null;
 
-        /* Log  */
+        // Log
         $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START KS Job Roles Generics . ' . "\n";
         error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
 
@@ -2222,7 +2310,7 @@ class WS_FELLESDATA {
 
             throw $ex;
         }//try_catch
-    }//Get_GenericsJobRoles
+    }//get_generics_jobroles
 
     /**
      * @param           $top
@@ -2237,7 +2325,7 @@ class WS_FELLESDATA {
      * Description
      * Get all job roles connected with a specific level zero
      */
-    private static function Get_JobRolesByLevel($top,$notIn) {
+    private static function get_jobroles_by_level($top,$notIn) {
         /* Variables */
         global $DB,$CFG;
         $rdo            = null;
@@ -2273,7 +2361,7 @@ class WS_FELLESDATA {
                 $infoJobRole->id            = $instance->id;
                 $infoJobRole->name          = $instance->name;
                 $infoJobRole->industryCode  = $instance->industrycode;
-                $infoJobRole->relation      = self::Get_JobRoleRelation($instance->myrelations);
+                $infoJobRole->relation      = self::get_jobrole_relation($instance->myrelations);
 
                 /* Add job role */
                 $jobRoles[$instance->id] = $infoJobRole;
@@ -2292,7 +2380,7 @@ class WS_FELLESDATA {
 
             throw $ex;
         }//try_catch
-    }//Get_JobRolesByLevel
+    }//get_jobroles_by_level
 
     /**
      * @param           $myRelations
@@ -2306,7 +2394,7 @@ class WS_FELLESDATA {
      * Description
      * Get all levels connected with the job role
      */
-    private static function Get_JobRoleRelation($myRelations) {
+    private static function get_jobrole_relation($myRelations) {
         /* Variables */
         global $DB;
         $rdo            = null;
@@ -2346,7 +2434,7 @@ class WS_FELLESDATA {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//Get_JobRoleRelation
+    }//get_jobrole_relation
 
     /**
      * @return          null
@@ -2359,7 +2447,7 @@ class WS_FELLESDATA {
      * Description
      * Get the highest level of the organization
      */
-    private static function GetMaxLevelOrganization() {
+    private static function get_max_level_organization() {
         /* Variables */
         global $DB;
         $sql = null;
@@ -2380,7 +2468,7 @@ class WS_FELLESDATA {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//GetMaxLevelOrganization
+    }//get_max_level_organization
 
 
 }//class_WS_FELLESDATA
