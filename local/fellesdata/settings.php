@@ -60,38 +60,7 @@ if ($hassiteconfig) {
 
     /* Municipality */
     $settings->add(new admin_setting_configtext('local_fellesdata/ks_muni',get_string('ks_municipality','local_fellesdata'),'','',PARAM_TEXT,50));
-
-
-    // Last status
-    $options = array();
-    $options[0] = get_string('stweekly', 'local_fellesdata');
-    $options[1] = get_string('stmonthly', 'local_fellesdata');
-    $settings->add(new admin_setting_configselect('local_fellesdata/fs_status',
-                                                  get_string('status','local_fellesdata'),
-                                                  get_string('status','local_fellesdata'),0,$options));
-
-    // Day execution
-    $options = array(
-        0 => new lang_string('sunday', 'calendar'),
-        1 => new lang_string('monday', 'calendar'),
-        2 => new lang_string('tuesday', 'calendar'),
-        3 => new lang_string('wednesday', 'calendar'),
-        4 => new lang_string('thursday', 'calendar'),
-        5 => new lang_string('friday', 'calendar'),
-        6 => new lang_string('saturday', 'calendar')
-    );
-    $settings->add(new admin_setting_configselect('local_fellesdata/fs_calendar_status', get_string('day','local_fellesdata'),
-        get_string('day','local_fellesdata'),
-        get_string('firstdayofweek', 'langconfig'),$options));
-
-    // Plugin
-    $plugin     = get_config('local_fellesdata');
-    if (!isset($plugin->laststatus)) {
-        set_config('laststatus',0,'local_fellesdata');
-    }//laststatus
-    if (!isset($plugin->nextstatus)) {
-        set_config('nextstatus',0,'local_fellesdata');
-    }//nextstatux
+    
 
     ///* Hierarchy Municipality   */
     //$settings->add(new admin_setting_configtext('local_fellesdata/ks_muni_level',get_string('ks_hierarchy','local_fellesdata'),'','',PARAM_TEXT,50));
