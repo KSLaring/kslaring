@@ -1179,10 +1179,7 @@ class local_wsks_external extends external_api {
     public static function ws_get_competence_parameters() {
         $industry   = new external_value(PARAM_TEXT,'Industry code');
 
-        // Info
-        $info = new external_single_structure(array('industry'  => $industry));
-
-        return new external_function_parameters(array('competence'=> new external_multiple_structure($info)));
+        return new external_function_parameters(array('industry'=> $industry));
     }//ws_get_competence_parameters
 
     /**
