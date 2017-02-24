@@ -639,7 +639,6 @@ class WS_FELLESDATA {
         try {
             // Log
             $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START GET COMPETENCE DATA . ' . "\n";
-            $dblog .= "Industry --> " . $data['industry'] . "\n";
             // get competence data
             $result['competence'] = self::get_competence_data($data['industry']);
 
@@ -678,16 +677,12 @@ class WS_FELLESDATA {
     private static function get_competence_data($industry) {
         /* Variables */
         global $DB;
-        global $CFG;
-        $dblog      = null;
         $rdo        = null;
         $sql        = null;
         $params     = null;
         $competence = null;
 
         try {
-            $dblog = "GET COMPETENCE DATA SQL " . "\n";
-
             // Search criteria
             $params = array();
             $params['industry'] = $industry;
@@ -706,23 +701,13 @@ class WS_FELLESDATA {
                                                                 AND	co.industrycode	= :industry
                         JOIN  {user}						u 	ON 	u.id 			= uic.userid ";
 
-            $dblog .= "SQL : ". "\n\n" . $sql . "\n\n";
-            $dblog .= "Industry : " . $industry . " - " . $params['industry'] . "\n";
-            $dblog .= "mapped: " . $params['mapped'] . "\n";
-
             // Execute
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 foreach ($rdo as $instance) {
-                    $dblog .= $instance->id . "\n";
                     $competence .= json_encode($instance) . "\n";
                 }//for_rdo
-
-                $dblog .= $competence . "\n\n";
             }//if_Rdo
-
-            $dblog .= "FINISH GET COMPETENCE DATA SQL " . "\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
 
             return $competence;
         }catch (Exception $ex) {

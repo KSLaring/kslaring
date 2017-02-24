@@ -1215,13 +1215,13 @@ class local_wsks_external extends external_api {
      * @creationDate    24/11/2016
      * @author          eFaktor     (fbv)
      */
-    public static function ws_get_competence($competence) {
+    public static function ws_get_competence($industry) {
         /* Variables    */
         global $CFG;
         $result     = array();
 
         /* Parameter Validation */
-        $params = self::validate_parameters(self::ws_get_competence_parameters(), array('industry' => $competence));
+        $params = self::validate_parameters(self::ws_get_competence_parameters(), array('industry' => $industry));
 
         /* Web Service Response */
         $result['error']        = 200;
@@ -1229,11 +1229,11 @@ class local_wsks_external extends external_api {
         $result['competence']   = '';
         
         try {
-            $dblog = "Industry --> " . $competence['industry'] . "\n";
+            $dblog = "Industry --> " . $industry['industry'] . "\n";
             error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
-            
+
             // Get competence
-            WS_FELLESDATA::competence_data($competence,$result);
+            WS_FELLESDATA::competence_data($industry,$result);
             
             return $result;
         }catch (Exception $ex) {
