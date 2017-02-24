@@ -222,12 +222,17 @@ class WS_DOSKOM {
     public static function getHistoricalCoursesCompletion($criteria,&$result){
         /* Variables    */
         global $DB;
+        global $CFG;
+        $dblog      = null;
         $historical = array();
         $log        = array();
         $infoLog    = null;
         $time       = null;
         
         try {
+            // Log
+            $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START  Historical course completion . ' . "\n";
+
             // Local time
             $time = time();
             
@@ -237,6 +242,10 @@ class WS_DOSKOM {
                 // Get sql instruction
                 $sql = self::get_sql_users_completions_in_period($criteria['dateFrom'],$criteria['dateTo'],$criteria['companyId']);
                 foreach ($rdo_courses as $course) {
+                    // Log course
+                    $dblog .= ' Course: ' . $course->id . "\n";
+                    
+                    // Search criteria
                     $courses = array();
                     $courses['courseId']    = $course->id;
                     $courses['courseName']  = $course->fullname;
@@ -261,6 +270,8 @@ class WS_DOSKOM {
                             $infoLog->user          = $instance->secret;
                             $infoLog->completion    = $instance->completiondate;
                             $infoLog->timesent      = $time;
+
+                            $dblog .= ' Info Log: ' . $instance->completiondate . "\n";
                             
                             // Add to the log
                             $log[] = $infoLog;
@@ -272,8 +283,12 @@ class WS_DOSKOM {
                         }
                     }//if_rdo_users
                 }//for_each_courses
+            }else {
+                $dblog .= ' No courses ' . "\n";
             }//if_rdo_courses
 
+            error_log($dblog, 3, $CFG->dataroot . "/doskom.log");
+            
             return array($historical,$log);
         }catch (Exception $ex) {
             $result['error']        = 409;
@@ -1131,7 +1146,7 @@ class WS_DOSKOM {
                         AND		(
                                   e.company 	    = :company
                                   OR
-                                  e.company	LIKE '%,"    . $company . ",%'
+                                  e.company	 LIKE '%,"    . $company . ",%'
                                   OR
                                   e.company  LIKE '"     . $company . ",%'
                                   OR
@@ -1283,7 +1298,7 @@ class WS_DOSKOM {
                               u.id,
                               u.secret,
                               FROM_UNIXTIME(cc.timecompleted,'%Y.%m.%d')as 'completiondate'
-                     FROM	  mdl_course_completions	cc
+                     FROM	  {course_completions}	cc
                         -- USERS DOSSSIER
                         JOIN  mdl_user				u		ON	u.id 			= cc.userid
                                                                 AND u.deleted	= 0
