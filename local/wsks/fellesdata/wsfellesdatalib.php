@@ -707,6 +707,8 @@ class WS_FELLESDATA {
                         JOIN  {user}						u 	ON 	u.id 			= uic.userid ";
 
             $dblog .= "SQL : ". "\n\n" . $sql . "\n\n";
+            $dblog .= "Industry : " . $data['industry'] . " - " . $params['industry'] . "\n";
+            $dblog .= "mapped: " . $params['mapped'] . "\n";
 
             // Execute
             $rdo = $DB->get_records_sql($sql,$params);
