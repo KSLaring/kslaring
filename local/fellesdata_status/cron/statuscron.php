@@ -32,16 +32,9 @@ class STATUS_CRON {
             
             // Get industry code
             $industry = STATUS::get_industry_code($plugin->ks_muni);
-            
-            // Service parameters
-            $params = array();
-            $params = new stdClass();
-            $params->code = "1201";//(String)$industry;
-
-            //echo "Industry: " . $industry . " - " . $params['code'] . "</br>";
 
             // Cal service
-            $response = self::process_service($plugin,'wsCompetence',$params);
+            $response = self::process_service($plugin,'wsCompetence',array('code' => $industry));
             
             if ($response) {
                 if ($response['error'] == '200') {
@@ -110,8 +103,8 @@ class STATUS_CRON {
             curl_setopt( $ch, CURLOPT_SSL_VERIFYHOST,2 );
             curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
             curl_setopt( $ch, CURLOPT_POST, true );
-            //curl_setopt( $ch, CURLOPT_HTTPHEADER, array( 'Content-Length: ' . strlen( $fields ) ) );
-            curl_setopt( $ch, CURLOPT_POSTFIELDS, '1201' );
+            curl_setopt( $ch, CURLOPT_HTTPHEADER, array( 'Content-Length: ' . strlen( $fields ) ) );
+            curl_setopt( $ch, CURLOPT_POSTFIELDS, $fields);
 
             $response = curl_exec( $ch );
 
