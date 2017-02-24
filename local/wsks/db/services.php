@@ -158,6 +158,24 @@ $fonUnMapOrganizationsConfig    = array(
                                        );
 
 /**
+ * Get competence
+ */
+$foncompetencesync          = 'ws_get_competence';
+$foncompetencesyncconfig    = array(
+                                'classname'     => $className,
+                                'methodname'    => $foncompetencesync,
+                                'classpath'     => $classPath,
+                                'description'   => 'Get competence.',
+                                'type'          => 'read',
+                                'capabilities'  => ''
+                            );
+
+/**
+ * Get managers/reporters
+ */
+
+
+/**
  * Functions to install
  */
 $functions = array(
@@ -171,7 +189,9 @@ $functions = array(
                     $fonUserCompetence      => $fonUserCompetenceConfig,
                     $fonUsersAccounts		=> $fonUsersAccountsConfig,
                     $fonUnMapCompetence     => $fonUnMapCompetenceConfig,
-                    $fonUnMapOrganizations  => $fonUnMapOrganizationsConfig);
+                    $fonUnMapOrganizations  => $fonUnMapOrganizationsConfig,
+                    $foncompetencesync      => $foncompetencesyncconfig
+                    );
 
 /**
  * ADFS Service
@@ -190,7 +210,7 @@ $serviceFS        = 'fellesdata';
 $serviceFSConfig  = array(
                           'functions'         => array($fonCompany,$fonHierarchy,$fonFSJobRoles,$fonKSJobRoles,$fonKSJobRolesGenerics,
                                                        $fonManagerReporter,$fonUserCompetence,$fonUsersAccounts,
-                                                       $fonUnMapCompetence,$fonUnMapOrganizations),
+                                                       $fonUnMapCompetence,$fonUnMapOrganizations,$foncompetencesync),
                           'restrictedusers'   => 1,
                           'enabled'           => 1
 );

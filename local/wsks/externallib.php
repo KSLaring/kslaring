@@ -123,7 +123,7 @@ class local_wsks_external extends external_api {
             require_once('../../user/profile/field/gender/lib/genderlib.php');
             
             /* Create or Update User ADFS   */
-            $result['url'] = WS_ADFS::Process_UserADFS($userADFS,$result);
+            $result['url'] = WS_ADFS::process_user_adfs($userADFS,$result);
 
             return $result;
         }catch (Exception $ex) {
@@ -261,7 +261,7 @@ class local_wsks_external extends external_api {
 
         try {
             /* Synchronize companies */
-            WS_FELLESDATA::Synchronize_FSKS_Companies($companiesFS,$result);
+            WS_FELLESDATA::synchronize_fsks_companies($companiesFS,$result);
 
             return $result;
         }catch (Exception $ex) {
@@ -360,7 +360,7 @@ class local_wsks_external extends external_api {
 
         try {
             /* Get Organization Structure */
-            WS_FELLESDATA::OrganizationStructureByTop($topCompany,$result);
+            WS_FELLESDATA::organization_structure_by_top($topCompany,$result);
 
             return $result;
         }catch (Exception $ex) {
@@ -471,7 +471,7 @@ class local_wsks_external extends external_api {
 
         try {
             /* Synchronize Job Roles */
-            WS_FELLESDATA::Synchronize_FSKS_JobRoles($jobRolesFS,$result);
+            WS_FELLESDATA::synchronize_fsks_jobroles($jobRolesFS,$result);
 
             return $result;
         }catch (Exception $ex) {
@@ -567,7 +567,7 @@ class local_wsks_external extends external_api {
 
         try {
             /* Get Job Roles connected with a level */
-            WS_FELLESDATA::JobRolesByLevel($hierarchy,$result);
+            WS_FELLESDATA::jobroles_by_level($hierarchy,$result);
 
             return $result;
         }catch (Exception $ex) {
@@ -654,7 +654,7 @@ class local_wsks_external extends external_api {
 
         try {
             /* Get Job Roles generics */
-            WS_FELLESDATA::GenericsJobRoles($notIn,$result);
+            WS_FELLESDATA::generics_jobroles($notIn,$result);
 
             return $result;
         }catch (Exception $ex) {
@@ -757,7 +757,7 @@ class local_wsks_external extends external_api {
 
         try {
             /* Synchronize Managers Reporters */
-            WS_FELLESDATA::Synchronize_UserManagerReporter($userManagerReporter,$result);
+            WS_FELLESDATA::synchronize_user_manager_reporter($userManagerReporter,$result);
 
             return $result;
         }catch (Exception $ex) {
@@ -862,7 +862,7 @@ class local_wsks_external extends external_api {
 
         try {
             /* Synchronization */
-            WS_FELLESDATA::Synchronize_UserCompetence($usersCompetence,$result);
+            WS_FELLESDATA::synchronize_user_competence($usersCompetence,$result);
 
             return $result;
         }catch (Exception $ex) {
@@ -965,7 +965,7 @@ class local_wsks_external extends external_api {
             require_once('../../user/profile/field/gender/lib/genderlib.php');
             
             /* Synchronization */
-            WS_FELLESDATA::Synchronize_UsersAccounts($usersAccounts,$result);
+            WS_FELLESDATA::synchronize_users_accounts($usersAccounts,$result);
 
             return $result;
         }catch (Exception $ex) {
@@ -1059,7 +1059,7 @@ class local_wsks_external extends external_api {
 
         try {
             /* Unmap User Competence */
-            WS_FELLESDATA::UnMap_UserCompetence($usersUnMapCompetence,$result);
+            WS_FELLESDATA::unmap_user_competence($usersUnMapCompetence,$result);
             
             return $result;
         }catch (Exception $ex) {
@@ -1149,7 +1149,7 @@ class local_wsks_external extends external_api {
 
         try {
             /* Unmap Companies */
-            WS_FELLESDATA::UnMap_Companies($toUnMap,$result);
+            WS_FELLESDATA::unmap_companies($toUnMap,$result);
             
             return $result;
         }catch (Exception $ex) {
@@ -1161,6 +1161,90 @@ class local_wsks_external extends external_api {
             return $result;
         }//try_catch
     }//wsUnMapCompany
+
+    /****************************/
+    /* ws_get_competence */
+    /****************************/
+
+
+    /**
+     * Description
+     * Input parameters for the service
+     *
+     * @return          external_function_parameters
+     *
+     * @creationDate    22/02/2017
+     * @author          eFaktor     (fbv)
+     */
+    public static function ws_get_competence_parameters() {
+        $industry   = new external_value(PARAM_TEXT,'Industry code');
+
+        // Info
+        $info = new external_single_structure(array('industry'  => $industry));
+
+        return new external_function_parameters(array('competence'=> new external_multiple_structure($info)));
+    }//ws_get_competence_parameters
+
+    /**
+     * Description
+     * Response for the service
+     *
+     * @return          external_single_structure
+     *
+     * @creationDate    22/07/2017
+     * @author          eFaktor     (fbv)
+     */
+    public static function ws_get_competence_returns() {
+        $error      = new external_value(PARAM_INT,'Error. True/False');
+        $msgerror   = new external_value(PARAM_TEXT,'Error Description');
+        $competence = new external_value(PARAM_TEXT,'Competenc for each user. Each line will be like that 
+                                                     {"id" : x, "userid" : xxx, "username" : yyyyy, "companyid" : xxxx ,"jobroles" : ppppp , "level" : y,}');
+
+
+        $existreturn = new external_single_structure(array('error'      => $error,
+                                                           'message'    => $msgerror,
+                                                           'competence' => $competence));
+
+        return $existreturn;
+    }//ws_clean_synchronization_returns
+
+    /**
+     * Description
+     *
+     * @return          array
+     * @throws          invalid_parameter_exception
+     * @throws          moodle_exception
+     *
+     * @creationDate    24/11/2016
+     * @author          eFaktor     (fbv)
+     */
+    public static function ws_get_competence($competence) {
+        /* Variables    */
+        global $CFG;
+        $result     = array();
+
+        /* Parameter Validation */
+        $params = self::validate_parameters(self::ws_get_competence_parameters(), array('competence' => $competence));
+
+        /* Web Service Response */
+        $result['error']        = 200;
+        $result['message']      = '';
+        $result['competence']   = '';
+        
+        try {
+            // Get competence
+            WS_FELLESDATA::competence_data($competence,$result);
+            
+            return $result;
+        }catch (Exception $ex) {
+            if ($result['error'] == '200') {
+                $result['error']    = 500;
+                $result['message']  = $ex->getMessage() . ' ' . $ex->getTraceAsString();
+            }//if_error
+
+            return $result;
+        }//try_catch
+    }///ws_clean_synchronization
 
     /*****************************/
     /*****************************/
