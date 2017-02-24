@@ -1168,8 +1168,9 @@ class local_wsks_external extends external_api {
 
     public static function wsCompetence_parameters() {
         $code = new external_value(PARAM_TEXT,'Industry code');
+        $competence = new external_single_structure(array('code' => $code));
 
-        return new external_function_parameters(array('code'=> $code));
+        return new external_function_parameters(array('competence'=> new external_multiple_structure($competence)));
     }//wsCompetence_parameters
 
     public static function wsCompetence_returns() {
@@ -1186,13 +1187,13 @@ class local_wsks_external extends external_api {
         return $existReturn;
     }//wsCompetence_returns
 
-    public static function wsCompetence($code) {
+    public static function wsCompetence($competence) {
         /* Variables    */
         global $CFG;
         $result     = array();
 
         /* Parameter Validation */
-        $params = self::validate_parameters(self::wsCompetence_parameters(), array('code' => $code));
+        $params = self::validate_parameters(self::wsCompetence_parameters(), array('competence' => $competence));
 
         /* Web Service response */
         $result['error']        = 200;
@@ -1200,11 +1201,14 @@ class local_wsks_external extends external_api {
         $result['competence']   = array();
 
         try {
-            $dblog = "CODE --> " . $code['code'] . "\n";
+            $industry = $competence['competence'];
+            $industry = (Object)$industry;
+
+            $dblog = "CODE --> " .  $industry->code . "\n";
             error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
 
             /* Get Job Roles generics */
-            WS_FELLESDATA::competence_data($code['code'],$result);
+            WS_FELLESDATA::competence_data($industry->code,$result);
 
             return $result;
         }catch (Exception $ex) {
