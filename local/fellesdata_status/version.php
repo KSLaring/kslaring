@@ -11,6 +11,9 @@
  *
  */
 
-$plugin->version    =  '2017022302';         /* The plugin current version (DATE: YYYYMMDDXX) */
+$plugin->version    =  '2017022400';         /* The plugin current version (DATE: YYYYMMDDXX) */
 $plugin->component  =  'local_fellesdata_status';
+
+/* Dependencies */
+$plugin->dependencies = array('local_felllesdata'  => 2017022002);
  
