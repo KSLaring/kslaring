@@ -241,6 +241,8 @@ class WS_DOSKOM {
             if ($rdo_courses) {
                 // Get sql instruction
                 $sql = self::get_sql_users_completions_in_period($criteria['dateFrom'],$criteria['dateTo'],$criteria['companyId']);
+
+                $dblog .= "DATE FROM : " . $criteria['dateFrom'] . " - " . " DATE TO: " . $criteria['dateTo'] . " --> Company: " . $criteria['companyId'] . "</br>";
                 foreach ($rdo_courses as $course) {
                     // Log course
                     $dblog .= ' Course: ' . $course->id . "\n";
@@ -1300,11 +1302,11 @@ class WS_DOSKOM {
                               FROM_UNIXTIME(cc.timecompleted,'%Y.%m.%d')as 'completiondate'
                      FROM	  {course_completions}	cc
                         -- USERS DOSSSIER
-                        JOIN  mdl_user				u		ON	u.id 			= cc.userid
-                                                                AND u.deleted	= 0
-                                                                AND	u.auth		= 'saml'
-                                                                AND u.source    IN ('DOSKOM','KOMMIT')
-                                                                AND u.secret	LIKE '"   . $secret . "%'
+                        JOIN  {user}				u	  ON  u.id 		= cc.userid
+                                                          AND u.deleted	= 0
+                                                          AND u.auth	= 'saml'
+                                                          AND u.source  IN ('DOSKOM','KOMMIT')
+                                                          AND u.secret	LIKE '"   . $secret . "%'
                      WHERE	  cc.course = :course
                         AND	  cc.timecompleted BETWEEN " . $from->getTimestamp() . " AND " . $to->getTimestamp();
 

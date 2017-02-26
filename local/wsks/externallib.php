@@ -1162,86 +1162,67 @@ class local_wsks_external extends external_api {
         }//try_catch
     }//wsUnMapCompany
 
-    /****************************/
-    /* ws_get_competence */
-    /****************************/
+    /****************/
+    /* wsCompetence */
+    /****************/
 
+    public static function wsCompetence_parameters() {
+        $code = new external_value(PARAM_TEXT,'Industry code');
+        $competence = new external_single_structure(array('code' => $code));
 
-    /**
-     * Description
-     * Input parameters for the service
-     *
-     * @return          external_function_parameters
-     *
-     * @creationDate    22/02/2017
-     * @author          eFaktor     (fbv)
-     */
-    public static function ws_get_competence_parameters() {
-        $industry   = new external_value(PARAM_TEXT,'Industry code');
+        return new external_function_parameters(array('competence'=> new external_multiple_structure($competence)));
+    }//wsCompetence_parameters
 
-        return new external_function_parameters(array('industry'=> $industry));
-    }//ws_get_competence_parameters
-
-    /**
-     * Description
-     * Response for the service
-     *
-     * @return          external_single_structure
-     *
-     * @creationDate    22/07/2017
-     * @author          eFaktor     (fbv)
-     */
-    public static function ws_get_competence_returns() {
+    public static function wsCompetence_returns() {
         $error      = new external_value(PARAM_INT,'Error. True/False');
-        $msgerror   = new external_value(PARAM_TEXT,'Error Description');
-        $competence = new external_value(PARAM_TEXT,'Competenc for each user. Each line will be like that 
-                                                     {"id" : x, "userid" : xxx, "username" : yyyyy, "companyid" : xxxx ,"jobroles" : ppppp , "level" : y,}');
+        $msgError   = new external_value(PARAM_TEXT,'Error Description');
+        $competence = new external_value(PARAM_TEXT,'Competence data');
 
 
-        $existreturn = new external_single_structure(array('error'      => $error,
-                                                           'message'    => $msgerror,
-                                                           'competence' => $competence));
 
-        return $existreturn;
-    }//ws_clean_synchronization_returns
+        $existReturn = new external_single_structure(array('error'      => $error,
+            'message'    => $msgError,
+            'competence' => $competence));
 
-    /**
-     * Description
-     *
-     * @return          array
-     * @throws          invalid_parameter_exception
-     * @throws          moodle_exception
-     *
-     * @creationDate    24/11/2016
-     * @author          eFaktor     (fbv)
-     */
-    public static function ws_get_competence($competence) {
+        return $existReturn;
+    }//wsCompetence_returns
+
+    public static function wsCompetence($competence) {
         /* Variables    */
         global $CFG;
         $result     = array();
 
         /* Parameter Validation */
-        $params = self::validate_parameters(self::ws_get_competence_parameters(), array('industry' => $competence));
+        $params = self::validate_parameters(self::wsCompetence_parameters(), array('competence' => $competence));
 
-        /* Web Service Response */
+        /* Web Service response */
         $result['error']        = 200;
         $result['message']      = '';
-        $result['competence']   = '';
-        
+        $result['competence']   = array();
+
         try {
-            // Get competence
-            WS_FELLESDATA::competence_data($competence,$result);
-            
+            $industry = $competence['competence'];
+            $industry = (Object)$industry;
+
+            $dblog = "CODE --> " .  $industry->code . "\n";
+            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+
+            /* Get Job Roles generics */
+            WS_FELLESDATA::competence_data($industry->code,$result);
+
             return $result;
         }catch (Exception $ex) {
             if ($result['error'] == '200') {
                 $result['error']    = 500;
-                $result['message']  = $ex->getMessage() . ' ' . $ex->getTraceAsString();
+                $result['message']  = $result['message']. ' ' . $ex->getMessage() . ' ' . $ex->getTraceAsString();
             }//if_error
 
             return $result;
         }//try_catch
-    }///ws_clean_synchronization
+    }//wsCompetence
+
+
+
 
     /*****************************/
     /*****************************/

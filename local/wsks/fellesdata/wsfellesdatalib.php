@@ -639,9 +639,8 @@ class WS_FELLESDATA {
         try {
             // Log
             $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START GET COMPETENCE DATA . ' . "\n";
-
             // get competence data
-            $result['competence'] = self::get_competence_data($data);
+            $result['competence'] = self::get_competence_data($data['industry']);
 
             // Log
             $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINSIH GET COMPETENCE DATA . ' . "\n";
@@ -667,7 +666,7 @@ class WS_FELLESDATA {
      * Description
      * Get competence data in a string
      *
-     * @param       array $data
+     * @param       $industry
      *
      * @return      null|string
      * @throws      Exception
@@ -675,22 +674,18 @@ class WS_FELLESDATA {
      * @creationDate    24/02/2017
      * @author          eFaktor     (fbv)
      */
-    private static function get_competence_data($data) {
+    private static function get_competence_data($industry) {
         /* Variables */
         global $DB;
-        global $CFG;
-        $dblog      = null;
         $rdo        = null;
         $sql        = null;
         $params     = null;
         $competence = null;
 
         try {
-            $dblog = "GET COMPETENCE DATA SQL " . "\n";
-
             // Search criteria
             $params = array();
-            $params['industry'] = $data['industry'];
+            $params['industry'] = $industry;
             $params['mapped']   = 'TARDIS';
 
             // SQL Isntruction
@@ -706,21 +701,13 @@ class WS_FELLESDATA {
                                                                 AND	co.industrycode	= :industry
                         JOIN  {user}						u 	ON 	u.id 			= uic.userid ";
 
-            $dblog .= "SQL : ". "\n\n" . $sql . "\n\n";
-
             // Execute
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 foreach ($rdo as $instance) {
-                    $dblog .= $instance->id . "\n";
                     $competence .= json_encode($instance) . "\n";
                 }//for_rdo
-
-                $dblog .= $competence . "\n\n";
             }//if_Rdo
-
-            $dblog .= "FINISH GET COMPETENCE DATA SQL " . "\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
 
             return $competence;
         }catch (Exception $ex) {
