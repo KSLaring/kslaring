@@ -87,3 +87,5 @@ $string['request_just_rejected'] = 'Du har allerede avslått at <strong>{$a->com
 $string['request_just_approved'] = 'Forespørselen for arbeidsstedet <strong>{$a->company}</strong> og for brukeren <strong>{$a->user}</strong> er allerede godkjent.';
 
 $string['alert_approve'] = 'Vennligst vær oppmerksom på at du legger til korrekt arbeidssted på deg selv. Lederen for valgt arbeidssted blir automatisk varslet og kan avslå at du legger til arbeidsstedet hvis dette er feil.';
+
+$string['comp_delete'] = 'This user has already been removed from this workplace.';

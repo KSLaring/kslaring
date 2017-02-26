@@ -844,7 +844,7 @@ class Competence {
      * Description
      * Remove send notification to revert situation
      *
-     * @param           int $competenceRequest  Competence id
+     * @param               $competenceRequest  Competence id
      * @param           int $managerId          Manager id
      *
      * @return          bool
@@ -1725,8 +1725,10 @@ class Competence {
             $competenceRequest = $DB->get_record('user_info_competence_data',array('token' => $token));
 
             // Get Company Name
-            $companies = self::get_company_name($competenceRequest->companyid);
-            $competenceRequest->company   = $companies[$competenceRequest->companyid];
+            if ($competenceRequest) {
+                $companies = self::get_company_name($competenceRequest->companyid);
+                $competenceRequest->company   = $companies[$competenceRequest->companyid];
+            }//if_competenceRequest
 
             return $competenceRequest;
         }catch (Exception $ex) {
