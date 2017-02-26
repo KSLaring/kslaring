@@ -475,6 +475,7 @@ class enrol_waitinglist_plugin extends enrol_plugin {
     public function unenrol_user(stdClass $instance, $userid) {
         /* Variables */
         global $CFG;
+        global $DB;
         $user        = null;
         $course      = null;
         $context     = null;
@@ -485,6 +486,9 @@ class enrol_waitinglist_plugin extends enrol_plugin {
         try {
             /* First unenrol    */
             parent::unenrol_user($instance,$userid);
+
+            //remove from waiting list
+            $DB->delete_records(ENROL_WAITINGLIST_TABLE_QUEUE,array('userid'=>$userid));
 
             /* Extra information */
             $user       = get_complete_user_data('id',$userid);
