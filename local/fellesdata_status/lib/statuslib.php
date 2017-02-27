@@ -18,6 +18,65 @@ class STATUS {
     /* PUBLIC */
     /**********/
 
+    public static function backup_temporary_fellesdata($type) {
+        /* Variables */
+        global $CFG;
+        $file           = null;
+        $backupstatus   = null;
+        $content        = null;
+        $path           = null;
+        $time           = null;
+
+        try {
+            // Local time
+            $time = time();
+
+            $backupstatus = $CFG->dataroot . '/fellesdata/backup_status';
+            if (!file_exists($backupstatus)) {
+                mkdir($backupstatus);
+            }//if_backup
+
+            switch ($type) {
+                case IMP_USERS:
+                    // IMP USERS
+                    $path = $backupstatus . "/fs_imp_users_" . $time . ".txt";
+                    self::backup_imp_fs_tables($path,'fs_imp_users');
+
+                    break;
+
+                case IMP_COMPANIES:
+                    // IMP COMPANIES
+                    $path = $backupstatus . "/fs_imp_company_" . $time . ".txt";
+                    self::backup_imp_fs_tables($path,'fs_imp_company');
+
+                    break;
+
+                case IMP_JOBROLES:
+                    // IMP JOBROLES
+                    $path = $backupstatus . "/fs_imp_jobroles_" . $time . ".txt";
+                    self::backup_imp_fs_tables($path,'fs_imp_jobroles');
+
+                    break;
+
+                case IMP_MANAGERS_REPORTERS:
+                    // IMP MANAGERS_REPORTERS
+                    $path = $backupstatus . "/fs_imp_managers_reporters_" . $time . ".txt";
+                    self::backup_imp_fs_tables($path,'fs_imp_managers_reporters');
+
+                    break;
+
+                case IMP_COMPETENCE_JR:
+                    // IMP COMPETENCE JR
+                    $path = $backupstatus . "/fs_imp_users_jr_" . $time . ".txt";
+                    self::backup_imp_fs_tables($path,'fs_imp_users_jr');
+
+                    break;
+            }//type
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//backup_temporary_fellesdata
+    
     /**
      * Description
      * Get industry code
@@ -121,10 +180,12 @@ class STATUS {
             throw $ex;
         }//try_catch
     }//save_competence
+
     
     /***********/
     /* PRIVATE */
     /***********/
+    
 
     /**
      * Description

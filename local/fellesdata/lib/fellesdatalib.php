@@ -1777,7 +1777,9 @@ class FSKS_USERS {
                 $infoUser->firstaccess  = $time;
                 $infoUser->calendartype = $CFG->calendartype;
                 $infoUser->mnethostid   = $CFG->mnet_localhost_id;
+                $infoUser->lang         = 'no';
             }else {
+                $rdoUser->lang          = 'no';
                 $userId = $rdoUser->id;
                 // Two merge accounts
                 if ($userFS->adfs) {

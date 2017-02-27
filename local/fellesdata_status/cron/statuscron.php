@@ -16,7 +16,359 @@ class STATUS_CRON {
     /* PUBLIC  */
     /***********/
 
-    public static function competence_data($plugin) {
+    public static function test($plugin) {
+        try {
+            require_once('../../fellesdata/lib/fellesdatalib.php');
+            // Get competence from KS
+            self::competence_data($plugin);
+
+            // Get managers reporters from KS
+
+            // Import last status from fellesdata
+            self::import_status($plugin);
+
+
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }
+
+    /***********/
+    /* PRIVATE */
+    /***********/
+
+    /**
+     * Description
+     * Import last status from tardis
+     *
+     * @param        object $plugin
+     *
+     * @throws              Exception
+     *
+     * @creationDate    27/02/2017
+     * @author          eFaktor     (fbv)
+     */
+    private static function import_status($plugin) {
+        /* Variables    */
+        global $CFG;
+        $dblog        = null;
+
+        try {
+            $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Import Fellesdata STATUS. ' . "\n";
+
+            // Import FS Users
+            //self::import_status_users($plugin);
+
+            // Import FS Companies
+            //self::import_status_orgstructure($plugin);
+
+            // Import FS Job roles
+            //self::import_status_jobroles($plugin);
+
+            // Import FS User Competence
+            //self::import_status_managers_reporters($plugin);
+
+            // Import FS User Competence JR
+            self::import_status_user_competence($plugin);
+
+            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Import Fellesdata STATUS. ' . "\n";
+            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+        }catch (Exception $ex) {
+            // Log
+            $dblog  = "Error: " . $ex->getMessage() . "\n" . "\n";
+            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Import Fellesdata STATUS. ' . "\n";
+            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+
+            throw $ex;
+        }//try_catch
+    }//import_fellesdata
+
+    /**
+     * Description
+     * Get last status of all users from tardis
+     *
+     * @param           object $plugin
+     *
+     * @throws                 Exception
+     *
+     * @creationDate    27/02/2017
+     * @author          eFaktor (fbv)
+     */
+    private static function import_status_users($plugin) {
+        /* Variables    */
+        global $CFG;
+        $path       = null;
+        $content    = null;
+        $response   = null;
+        $dblog      = null;
+
+        try {
+            // Log
+            $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START Import STATUS Users . ' . "\n";
+
+            // Call web service
+            $response = self::process_tardis_status($plugin,TRADIS_FS_USERS);
+
+            // Import data into temporary tables
+            if ($response) {
+                // Open file
+                $path = $CFG->dataroot . '/fellesdata/' . TRADIS_FS_USERS . '.txt';
+                if (file_exists($path)) {
+                    // Get last status
+                    $content = file($path);
+
+                    if (FS::save_temporary_fellesdata($content,IMP_USERS,true)) {
+                        FS::backup_temporary_fellesdata(IMP_USERS);
+                    }
+                }//if_exists
+            }//if_fsResponse
+
+            // Log
+            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Import STATUS Users . ' . "\n";
+            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+        }catch (Exception $ex) {
+            // Log
+            $dblog  = "Error: " . $ex->getMessage() . "\n" . "\n";
+            $dblog .= $ex->getTraceAsString() . "\n";
+            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' ERROR Import STATUS Users . ' . "\n";
+            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+
+            throw $ex;
+        }//try_catch
+    }//import_status_users
+
+    /**
+     * Description
+     * Get last status of all organizations from Tardis
+     *
+     * @param       object  $plugin
+     *
+     * @throws              Exception
+     *
+     * @creationDate        27/02/2017
+     * @author              eFaktor     (fbv)
+     */
+    private static function import_status_orgstructure($plugin) {
+        /* Variables    */
+        global $CFG;
+        $path       = null;
+        $content    = null;
+        $response   = null;
+        $dblog      = null;
+
+        try {
+            // Log
+            $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START Import STATUS ORG Structure . ' . "\n";
+
+            // Call web service
+            $response = self::process_tardis_status($plugin,TRADIS_FS_COMPANIES);
+
+            // Import data into temporary tables
+            if ($response) {
+                // Open file
+                $path = $CFG->dataroot . '/fellesdata/' . TRADIS_FS_COMPANIES . '.txt';
+                if (file_exists($path)) {
+                    // Get last status
+                    $content = file($path);
+
+                    if (FS::save_temporary_fellesdata($content,IMP_COMPANIES,true)) {
+                        FS::backup_temporary_fellesdata(IMP_COMPANIES);
+                    }//if_save_temporary
+                }//if_exists
+            }else {
+                $dblog .= ' ERROR Import STATUS ORG Structure - RESPONSE NULL. ' . "\n";
+            }//if_fsResponse
+
+            // Log
+            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Import STATUS ORG Structure . ' . "\n";
+            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+        }catch (Exception $ex) {
+            // Log
+            $dblog  = "Error: " . $ex->getMessage() . "\n" . "\n";
+            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' ERROR Import STATUS ORG Structure . ' . "\n";
+            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+
+            throw $ex;
+        }//try_catch
+    }//import_status_orgstructure
+
+    /**
+     * Description
+     * Get last satus of all jobroles from tardis
+     *
+     * @param       object  $plugin
+     *
+     * @throws              Exception
+     *
+     * @creationDate        27/02/2017
+     * @author              eFaktor     (fbv)
+     */
+    private static function import_status_jobroles($plugin) {
+        /* Variables    */
+        global $CFG;
+        $path       = null;
+        $content    = null;
+        $response   = null;
+        $dblog      = null;
+
+        try {
+            // Log
+            $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START Import STATUS JOB ROLES . ' . "\n";
+
+            // Call web service
+            $response = self::process_tardis_status($plugin,TRADIS_FS_JOBROLES);
+
+            // Import data into temporary tables
+            if ($response) {
+                // Open file
+                $path = $CFG->dataroot . '/fellesdata/' . TRADIS_FS_JOBROLES . '.txt';
+                if (file_exists($path)) {
+                    // Get last status
+                    $content = file($path);
+
+                    if (FS::save_temporary_fellesdata($content,IMP_JOBROLES,true)) {
+                        FS::backup_temporary_fellesdata(IMP_JOBROLES);
+                    }//if_save_temporay
+                }//if_exists
+            }else {
+                $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' ERROR Import STATUS JOB ROLES - Response null . ' . "\n";
+            }//if_fsResponse
+
+            // Log
+            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Import STATUS JOB ROLES . ' . "\n";
+            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+        }catch (Exception $ex) {
+            /* Log  */
+            $dblog  = "Error: " . $ex->getMessage() . "\n" . "\n";
+            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' ERROR Import STATUS Job Roles . ' . "\n";
+            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+
+            throw $ex;
+        }//try_catch
+    }//import_status_jobroles
+
+    /**
+     * Description
+     * Get last status of all managers/reportes from Tardis
+     *
+     * @param       object  $plugin
+     *
+     * @throws              Exception
+     *
+     * @creationDate        27/02/2017
+     * @author              eFaktor     (fbv)
+     */
+    private static function import_status_managers_reporters($plugin) {
+        /* Variables    */
+        global $CFG;
+        $path      = null;
+        $content   = null;
+        $response  = null;
+        $dblog     = null;
+
+        try {
+            // Log
+            $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START Import STATUS MANAGERRS REPORTERS . ' . "\n";
+
+            // Call web service
+            $response = self::process_tardis_status($plugin,TRADIS_FS_MANAGERS_REPORTERS);
+
+            // Import data into temporary tables
+            if ($response) {
+                // Open file
+                $path = $CFG->dataroot . '/fellesdata/' . TRADIS_FS_MANAGERS_REPORTERS . '.txt';
+                if (file_exists($path)) {
+                    // Get last status
+                    $content = file($path);
+
+                    if (FS::save_temporary_fellesdata($content,IMP_MANAGERS_REPORTERS,true)) {
+                        FS::backup_temporary_fellesdata(IMP_MANAGERS_REPORTERS);
+                    }//if_save_temporary
+                }//if_exists
+            }else {
+                $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' ERROR Import STATUS MANAGERRS REPORTERS - Response null. ' . "\n";
+            }//if_fsResponse
+
+            // Log
+            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Import STATUS MANAGERRS REPORTERS . ' . "\n";
+            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+        }catch (Exception $ex) {
+            // log
+            $dblog  = "Error: " . $ex->getMessage() . "\n" . "\n";
+            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' ERROR Import STATUS Managers Reporters . ' . "\n";
+            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+
+            throw $ex;
+        }//try_catch
+    }//import_status_managers_reporters
+
+    /**
+     * Description
+     * Get competence users from tardis
+     *
+     * @param       object  $plugin
+     *
+     * @throws              Exception
+     *
+     * @creationDate        27/02/2017
+     * @author              eFaktor     (fbv)
+     */
+    private static function import_status_user_competence($plugin) {
+        /* Variables    */
+        global $CFG;
+        $path        = null;
+        $content     = null;
+        $response    = null;
+        $dblog       = null;
+
+        try {
+            // Log
+            $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START Import STATUS FS USERS COMPETENCE . ' . "\n";
+
+            // Call web service
+            $response = self::process_tardis_status($plugin,TRADIS_FS_USERS_JOBROLES);
+
+            // Import data into temporary tables
+            if ($response) {
+                // Open file
+                $path = $CFG->dataroot . '/fellesdata/' . TRADIS_FS_USERS_JOBROLES . '.txt';
+                if (file_exists($path)) {
+                    // Get last status
+                    $content = file($path);
+
+                    if (FS::save_temporary_fellesdata($content,IMP_COMPETENCE_JR,true)) {
+                        FS::backup_temporary_fellesdata(IMP_COMPETENCE_JR);
+                    }//if_status
+                }//if_exists
+            }else {
+                $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' ERROR Import STATUS USER COMPETENCE JR - NULL RESPONSE . ' . "\n";
+            }//if_data
+
+            // Log
+            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINSH Import STATUS USER COMPETENCE JR . ' . "\n";
+            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+        }catch (Exception $ex) {
+            // Log
+            $dblog  = "Error: " . $ex->getMessage() . "\n" . "\n";
+            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' ERROR Import STATUS User Competence . ' . "\n";
+            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+
+            throw $ex;
+        }//try_catch
+    }//import_status_user_competence
+
+    /**
+     * Description
+     * Get competence data from KS
+     *
+     * @param       $plugin
+     *
+     * @throws      Exception
+     *
+     * @creationDate    25/02/2017
+     * @author          eFaktor     (fbv)
+     */
+    private static function competence_data($plugin) {
         /* Variables */
         global $CFG;
         $dblog      = null;
@@ -61,10 +413,6 @@ class STATUS_CRON {
             throw $ex;
         }//try_catch
     }//competence_data
-    
-    /***********/
-    /* PRIVATE */
-    /***********/
     
     /**
      * Description
@@ -135,4 +483,95 @@ class STATUS_CRON {
             throw $ex;
         }//try_catch
     }//process_ks_service
+
+    /**
+     * Description
+     * Call Fellesdata Web service to import last status connected with companies, users...
+     *
+     * @param           $plugin
+     * @param           $service
+     *
+     * @return          mixed|null
+     * @throws          Exception
+     *
+     * @creationDate    27/02/2017
+     * @author          eFaktor     (fbv)
+     */
+    private static function process_tardis_status($plugin,$service) {
+        /* Variables    */
+        global $CFG;
+        $dir            = null;
+        $backup         = null;
+        $file           = null;
+        $path           = null;
+        $url            = null;
+        $from           = null;
+        $to             = null;
+        $date           = null;
+        $admin          = null;
+
+        try {
+            // Get parameters service
+            $to     = mktime(1, 60, 0, date("m"), date("d"), date("Y"));
+            $to     = gmdate('Y-m-d\TH:i:s\Z',$to);
+            $from   = gmdate('Y-m-d\TH:i:s\Z',0);
+
+            // Build url end point
+            $url = $plugin->fs_point . '/' . $service . '?fromDate=' . $from . '&toDate=' . $to;
+
+            // Call web service
+            $ch = curl_init($url);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false );
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST,2 );
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true );
+            curl_setopt($ch, CURLOPT_POST, false );
+            curl_setopt($ch, CURLOPT_USERPWD, $plugin->fs_username . ":" . $plugin->fs_password);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+                    'User-Agent: Moodle 1.0',
+                    'Content-Type: application/json')
+            );
+
+            $response   = curl_exec( $ch );
+            curl_close( $ch );
+
+            // Format data
+            if ($response === false) {
+                return null;
+            }else {
+                // Check if exists temporary directory
+                $dir = $CFG->dataroot . '/fellesdata';
+                if (!file_exists($dir)) {
+                    mkdir($dir);
+                }//if_dir
+
+                $backup = $CFG->dataroot . '/fellesdata/backup';
+                if (!file_exists($backup)) {
+                    mkdir($backup);
+                }//if_backup
+
+                // Clean all response
+                $path = $dir . '/' . $service . '.txt';
+                if (file_exists($path)) {
+                    // Move the file to the new directory
+                    copy($path,$backup . '/' . $service . '_' . time() . '.txt');
+
+                    unlink($path);
+                }
+
+                // Create a new response file
+                $file = fopen($path,'w');
+                fwrite($file,$response);
+                fclose($file);
+
+                if (isset($response->error)) {
+                    mtrace($response->message);
+                    return false;
+                }else {
+                    return true;
+                }
+            }//if_response
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//process_tradis_service
 }//STATUS_CRON
