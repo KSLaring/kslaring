@@ -60,7 +60,108 @@ class STATUS {
         }//try_catch
     }//get_industry_code
 
+    /**
+     * Description
+     * Save competence data coming rom the service
+     *
+     * @param       String $competence
+     * @throws      Exception
+     *
+     * @creationDate    27/02/2017
+     * @author          eFaktor     (fbv)
+     */
+    public static function save_competence($competence) {
+        /* Variables */
+        global $CFG;
+        $dir    = null;
+        $backup = null;
+        $path   = null;
+        $dblog  = null;
+
+        try {
+            // Log
+            $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START FELLESDATA STATUS Import competence data . ' . "\n";
+
+            // Check if exists temporary directory
+            $dir = $CFG->dataroot . '/fellesdata';
+            if (!file_exists($dir)) {
+                mkdir($dir);
+            }//if_dir
+
+            $backup = $CFG->dataroot . '/fellesdata/backup';
+            if (!file_exists($backup)) {
+                mkdir($backup);
+            }//if_backup
+
+            // Clean all response
+            $path = $dir . '/' . WS_COMPETENCE . '.txt';
+            if (file_exists($path)) {
+                // Move the file to the new directory
+                copy($path,$backup . '/' . WS_COMPETENCE . '_' . time() . '.txt');
+
+                unlink($path);
+            }//if_file_exist
+
+            // Create a new response file
+            $file = fopen($path,'w');
+            fwrite($file,$competence);
+            fclose($file);
+
+            // Import into DB
+            self::import_competence_data($path);
+
+            // Log
+            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH FELLESDATA STATUS Import competence data. ' . "\n";
+            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+        }catch (Exception $ex) {
+            $dbLog = $ex->getMessage() . "\n" ."\n";
+            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH FELLESDATA STATUS ERROR Import competence data. ' . "\n";
+            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+
+            throw $ex;
+        }//try_catch
+    }//save_competence
+    
     /***********/
     /* PRIVATE */
     /***********/
+
+    /**
+     * Description
+     * Impot the content of the file into the DB
+     * 
+     * @param           String $competence
+     *
+     * @throws          Exception
+     *
+     * @creationDate    27/02/2017
+     * @author          eFaktor     (fbv)
+     */
+    private static function import_competence_data($competence) {
+        /* Variables */
+        global $DB;
+        $content     = null;
+        $instance    = null;
+        $line        = null;
+        $key         = null;
+        
+        try {
+            // Local time
+            $time = time();
+            
+            // Get content
+            $content = file($competence);
+
+            // Each line file
+            foreach($content as $key=>$line) {
+                $instance    = json_decode($line);
+                $instance->timemodified = $time;
+
+                // Add record
+                $DB->insert_record('user_info_competence_data',$instance);
+            }//for_line
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//import_competence_data
 }//status

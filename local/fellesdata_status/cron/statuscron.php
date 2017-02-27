@@ -28,7 +28,7 @@ class STATUS_CRON {
         
         try {
             // Log
-            $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START Get KS competence data . ' . "\n";
+            $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START FELLESDATA STATUS Get KS competence data . ' . "\n";
             
             // Get industry code
             $industry = STATUS::get_industry_code($plugin->ks_muni);
@@ -39,9 +39,10 @@ class STATUS_CRON {
             $response = self::process_service($plugin,'wsCompetence',$params);
             
             if ($response) {
-                echo $response . "</br>";
                 if ($response['error'] == '200') {
                     echo "COMPETENCE: " . "</br>" . $response['competence'] . "</br>";
+
+                    STATUS::save_competence($response['competence']);
                 }else {
                     // Log
                     $dblog .= "Error WS: " . $response['message'] . "\n" ."\n";
@@ -49,10 +50,14 @@ class STATUS_CRON {
             }else {
                 $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' ERROR Response null . ' . "\n";
             }//if_else_response
+
+            // Log
+            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH FELLESDATA STATUS Get KS competence data . ' . "\n";
+            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
         }catch (Exception $ex) {
             // Log
             $dbLog = $ex->getMessage() . "\n" ."\n";
-            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH ERROR Get KS competence data . ' . "\n";
+            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH FELLESDATA STATUS ERROR Get KS competence data . ' . "\n";
             error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
             
             throw $ex;
@@ -62,7 +67,7 @@ class STATUS_CRON {
     /***********/
     /* PRIVATE */
     /***********/
-
+    
     /**
      * Description
      * KS Web Services to import data from KS site and synchronize data between fellesdata and KS
