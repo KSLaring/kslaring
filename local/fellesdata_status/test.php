@@ -22,7 +22,7 @@ echo $OUTPUT->header();
 echo "Start STATUS .... " . "</br>";
 
 $plugin     = get_config('local_fellesdata');
-STATUS_CRON::competence_data($plugin);
+STATUS_CRON::test($plugin);
 
 echo "Finish STATUS .... " . "</br>";
 
