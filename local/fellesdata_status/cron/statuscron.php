@@ -32,13 +32,8 @@ class STATUS_CRON {
             
             // Get industry code
             $industry = STATUS::get_industry_code($plugin->ks_muni);
-
             $params = array();
-            $info = new stdClass();
-            $info->code = $industry;
-
-            $info = array('code' => $industry);
-            $params['competence'] = $info;
+            $params['competence'] = $industry;
 
             // Cal service
             $response = self::process_service($plugin,'wsCompetence',$params);
