@@ -623,7 +623,7 @@ class WS_FELLESDATA {
      * Description
      * Get competence data for all users in a string
      *
-     * @param       array $data
+     * @param             $industry
      * @param       array $result
      *
      * @throws            Exception
@@ -631,7 +631,7 @@ class WS_FELLESDATA {
      * @creationDate    24/02/2017
      * @author          eFaktor     (fbv)
      */
-    public static function competence_data($data,&$result) {
+    public static function competence_data($industry,&$result) {
         /* Variables */
         global $CFG;
         $dblog = null;
@@ -640,7 +640,7 @@ class WS_FELLESDATA {
             // Log
             $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START GET COMPETENCE DATA . ' . "\n";
             // get competence data
-            $result['competence'] = self::get_competence_data($data['industry']);
+            $result['competence'] = self::get_competence_data($industry);
 
             // Log
             $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINSIH GET COMPETENCE DATA . ' . "\n";

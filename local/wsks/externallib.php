@@ -1168,9 +1168,8 @@ class local_wsks_external extends external_api {
 
     public static function wsCompetence_parameters() {
         $code = new external_value(PARAM_TEXT,'Industry code');
-        $competence = new external_single_structure(array('code' => $code));
 
-        return new external_function_parameters(array('competence'=> new external_multiple_structure($competence)));
+        return new external_function_parameters(array('competence'=> $code));
     }//wsCompetence_parameters
 
     public static function wsCompetence_returns() {
@@ -1201,14 +1200,8 @@ class local_wsks_external extends external_api {
         $result['competence']   = array();
 
         try {
-            $industry = $competence['competence'];
-            $industry = (Object)$industry;
-
-            $dblog = "CODE --> " .  $industry->code . "\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
-
             /* Get Job Roles generics */
-            WS_FELLESDATA::competence_data($industry->code,$result);
+            WS_FELLESDATA::competence_data($competence,$result);
 
             return $result;
         }catch (Exception $ex) {
