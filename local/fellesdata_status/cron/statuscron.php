@@ -40,8 +40,6 @@ class STATUS_CRON {
             
             if ($response) {
                 if ($response['error'] == '200') {
-                    echo "COMPETENCE: " . "</br>" . $response['competence'] . "</br>";
-
                     STATUS::save_competence($response['competence']);
                 }else {
                     // Log
