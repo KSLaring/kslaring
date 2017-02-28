@@ -28,7 +28,7 @@
           {
             "group": "region",
             "name": "Trondheim Fylkeskommune",
-            "amount": 10,
+            "amount": 0,
             "checked": 0
           }
         ]
@@ -96,7 +96,7 @@
           {
             "group": "type",
             "name": "Topics",
-            "amount": 0,
+            "amount": 1,
             "checked": 0
           }
         ],
