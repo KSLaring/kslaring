@@ -82,6 +82,7 @@ class STATUS_CRON {
         $total      = null;
         $todelete   = null;
         $params     = null;
+        $response   = null;
         $start      = 0;
         $limit      = 500;
         
@@ -95,13 +96,13 @@ class STATUS_CRON {
                 for ($i=0;$i<=$total;$i=$i+$limit) {
                     // get to delete
                     $todelete = STATUS::competence_to_delete_ks($start,$limit);
-                    
+
                     // Params web service
                     $params = array();
                     $params['competence'] = $todelete;
 
                     // Cal service
-                    $response = self::process_service($plugin,WS_DEL_COMPETENCE,$params);
+                    //$response = self::process_service($plugin,WS_DEL_COMPETENCE,$params);
 
                     if ($response) {
                         if ($response['error'] == '200') {

@@ -209,9 +209,10 @@ class STATUS {
                      ORDER BY fs.fodselsnr ";
             
             // Execute
-            $rdo = $DB->get_records_sql($sql,$params);
+            $rdo = $DB->get_records_sql($sql,$params,$start,$limit);
             if ($rdo) {
                 foreach ($rdo as $instance) {
+                    echo "USER: " . $instance->user . "</br>";
                     // Add instance
                     $todelete[$instance->user] = $instance;
                 }//if_instance
