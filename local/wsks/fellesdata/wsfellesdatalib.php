@@ -639,11 +639,12 @@ class WS_FELLESDATA {
         try {
             // Log
             $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START GET COMPETENCE DATA . ' . "\n";
+            
             // get competence data
             $result['competence'] = self::get_competence_data($industry);
 
             // Log
-            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINSIH GET COMPETENCE DATA . ' . "\n";
+            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH GET COMPETENCE DATA . ' . "\n";
             error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
         }catch (Exception $ex) {
             $result['error']            = 409;
@@ -658,6 +659,72 @@ class WS_FELLESDATA {
         }//try_catch
     }//comptence_data
 
+    /**
+     * Description
+     * Delete competence data
+     * 
+     * @param           array $competence
+     * @param           array $result
+     *
+     * @throws                Exception
+     *
+     * @creationDate        28/02/2017
+     * @author              eFaktor     (fbv)
+     */
+    public static function delete_competence_data($competence,&$result) {
+        /* Variables */
+        global $CFG;
+        global $DB;
+        $dblog      = null;
+        $instance   = null;
+        $info       = null;
+        $keys       = null;
+        
+        try {
+            // Log
+            $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START DELETE COMPETENCE DATA . ' . "\n";
+
+           // Delete competence
+            if ($competence) {
+                foreach ($competence as $info) {
+                    // Convert to object
+                    $instance = (Object)$info;
+
+                    // Delete competence
+                    $sql = " DELETE 
+                             FROM   {user_info_competence_data} 
+                             WHERE  userid = :user 
+                                AND companyid IN ($instance->companies) ";
+
+                    $rdo = $DB->execute($sql,array('user' => $instance->user));
+                    if ($rdo) {
+                        if ($keys) {
+                            $keys .= ',' . $instance->keys;
+                        }else {
+                            $keys = $instance->keys;
+                        }
+                    }//if_rdo
+                }//for_competence
+            }//if_competence
+
+            $result['deleted'] = $keys;
+
+            // Log
+            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH DELETE COMPETENCE DATA . ' . "\n";
+            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+        }catch (Exception $ex) {
+            $result['error']            = 409;
+            $result['message']          = $ex->getMessage();
+
+            // Log
+            $dblog = "ERROR: " . $ex->getMessage() . "\n" . "\n";
+            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). 'FINISH ERROR DELETE COMPETENCE DATA . ' . "\n";
+            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+
+            throw $ex;
+        }//try_catch
+    }//delete_competence_data
+    
     /***********/
     /* PRIVATE */
     /***********/

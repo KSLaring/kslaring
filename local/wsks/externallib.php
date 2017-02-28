@@ -1166,12 +1166,30 @@ class local_wsks_external extends external_api {
     /* wsCompetence */
     /****************/
 
+    /**
+     * Description
+     * Input parameters for the service
+     *
+     * @return          external_function_parameters
+     *
+     * @creationDate    27/02/2017
+     * @author          eFaktor     (fbv)
+     */
     public static function wsCompetence_parameters() {
         $code = new external_value(PARAM_TEXT,'Industry code');
 
         return new external_function_parameters(array('competence'=> $code));
     }//wsCompetence_parameters
 
+    /**
+     * Description
+     * Response of the service
+     *
+     * @return          external_single_structure
+     *
+     * @creationDate    27/02/2016
+     * @author          eFaktor     (fbv)
+     */
     public static function wsCompetence_returns() {
         $error      = new external_value(PARAM_INT,'Error. True/False');
         $msgError   = new external_value(PARAM_TEXT,'Error Description');
@@ -1183,9 +1201,23 @@ class local_wsks_external extends external_api {
             'message'    => $msgError,
             'competence' => $competence));
 
+
         return $existReturn;
     }//wsCompetence_returns
 
+    /**
+     * Description
+     * Get user competence
+     *
+     * @param           $competence
+     *
+     * @return          array
+     * @throws          invalid_parameter_exception
+     * @throws          moodle_exception
+     *
+     * @creationDate    27/02/2017
+     * @author          eFaktor     (fbv)
+     */
     public static function wsCompetence($competence) {
         /* Variables    */
         global $CFG;
@@ -1197,10 +1229,9 @@ class local_wsks_external extends external_api {
         /* Web Service response */
         $result['error']        = 200;
         $result['message']      = '';
-        $result['competence']   = array();
+        $result['competence']   = '';
 
         try {
-            /* Get Job Roles generics */
             WS_FELLESDATA::competence_data($competence,$result);
 
             return $result;
@@ -1215,6 +1246,95 @@ class local_wsks_external extends external_api {
     }//wsCompetence
 
 
+    /************************/
+    /* ws_delete_competence */
+    /************************/
+
+    /**
+     * Description
+     * Input parameters service
+     *
+     * @return          external_function_parameters
+     *
+     * @creationDate    28/02/2017
+     * @author          eFaktor     (fbv)
+     */
+    public static function ws_delete_competence_parameters() {
+        $user       = new external_value(PARAM_INT,'Users id');
+        $companies  = new external_value(PARAM_TEXT,'Companies');
+        $keys       = new external_value(PARAM_TEXT,'keys');
+
+        // Info competence
+        $competence = new external_single_structure(array('user'        => $user,
+                                                          'companies'   => $companies,
+                                                          'keys'        => $keys));
+
+        return new external_function_parameters(array('competence'=> $competence));
+    }//ws_delete_competence_parameters
+
+    /**
+     * Description
+     * Response of the service
+     *
+     * @return          external_single_structure
+     *
+     * @creationDate    28/02/2017
+     * @author          eFaktor     (fbv)
+     */
+    public static function ws_delete_competence_returns() {
+        $error      = new external_value(PARAM_INT,'Error. True/False');
+        $msgError   = new external_value(PARAM_TEXT,'Error Description');
+        $deleted    = new external_value(PARAM_TEXT,'Competence data deleted');
+
+        $existReturn = new external_single_structure(array('error'      => $error,
+                                                           'message'    => $msgError,
+                                                           'deleted'    => $deleted));
+
+
+        return $existReturn;
+    }//ws_delete_competence
+
+    /**
+     * Description
+     * Delete competence
+     * 
+     * @param           array $competence
+     *
+     * @return          array
+     *
+     * @throws          invalid_parameter_exception
+     * @throws          moodle_exception
+     *
+     * @creationDate    28/02/2017
+     * @author          eFaktor      (fbv)
+     */
+    public static function ws_delete_competence($competence) {
+        /* Variables    */
+        global $CFG;
+        $result     = array();
+
+        /* Parameter Validation */
+        $params = self::validate_parameters(self::ws_delete_competence_parameters(), array('competence' => $competence));
+
+        /* Web Service response */
+        $result['error']     = 200;
+        $result['message']   = '';
+        $result['deleted']   = '';
+
+        try {
+            /* Get Job Roles generics */
+            WS_FELLESDATA::delete_competence_data($competence,$result);
+
+            return $result;
+        }catch (Exception $ex) {
+            if ($result['error'] == '200') {
+                $result['error']    = 500;
+                $result['message']  = $result['message']. ' ' . $ex->getMessage() . ' ' . $ex->getTraceAsString();
+            }//if_error
+
+            return $result;
+        }//try_catch
+    }//ws_delete_competence
 
 
     /*****************************/
