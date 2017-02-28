@@ -185,9 +185,9 @@ class STATUS {
             $params['action']   = STATUS;
 
             // SQL Instruction
-            $sql = " SELECT		uic.userid,
+            $sql = " SELECT		uic.userid as 'user',
                                 uic.companies,
-                                uic.ids
+                                uic.ids as 'keys'
                      FROM	    {fs_imp_users_jr}	  		fs
                         JOIN    {user}              		u       ON  u.idnumber 			= fs.fodselsnr
                                                                     AND u.deleted  			= 0
@@ -210,21 +210,20 @@ class STATUS {
             
             // Execute
             $rdo = $DB->get_records_sql($sql,$params,0,1);
-            if ($rdo) {
-                foreach ($rdo as $instance) {
+            //if ($rdo) {
+            //    foreach ($rdo as $instance) {
+            //        // Add instance
+            //        $info = new stdClass();
+             //       $info->user         = $instance->userid;
+              //      $info->companies    = $instance->companies;
+               //     $info->keys         = $instance->ids;
 
-                    echo "USER: " . $instance->user . "</br>";
-                    // Add instance
-                    $info = new stdClass();
-                    $info->user         = $instance->userid;
-                    $info->companies    = $instance->companies;
-                    $info->keys         = $instance->ids;
+                //    $todelete[] = $info;
+                //}//if_instance
+            //}//if_rdo
 
-                    $todelete[] = $info;
-                }//if_instance
-            }//if_rdo
-            
-            return $todelete;
+
+            return $rdo;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
