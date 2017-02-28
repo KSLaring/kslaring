@@ -18,6 +18,9 @@
   color: #003876;
   border-radius: 0;
 }
+.btn.btn-link:hover {
+  color: #003876;
+}
 .btn.toggle-annotations {
   color: #b3c3d6;
 }
