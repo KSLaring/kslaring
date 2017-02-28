@@ -171,6 +171,19 @@ $fonCompetenceConfig = array(
 );
 
 /**
+ * Delete competence from status
+ */
+$fondelcompetence       = 'ws_delete_competence';
+$fondelcompetenceconfig = array(
+    'classname'    => $className,
+    'methodname'   => $fondelcompetence,
+    'classpath'    => $classPath,
+    'description'  => 'Competence Data from KS',
+    'type'         => 'read',
+    'capabilities' => ''
+);
+
+/**
  * Get managers/reporters
  */
 
@@ -190,7 +203,8 @@ $functions = array(
                     $fonUsersAccounts		=> $fonUsersAccountsConfig,
                     $fonUnMapCompetence     => $fonUnMapCompetenceConfig,
                     $fonUnMapOrganizations  => $fonUnMapOrganizationsConfig,
-                    $fonCompetence          => $fonCompetenceConfig
+                    $fonCompetence          => $fonCompetenceConfig,
+                    $fondelcompetence       => $fondelcompetenceconfig
                     );
 
 /**
@@ -210,7 +224,7 @@ $serviceFS        = 'fellesdata';
 $serviceFSConfig  = array(
                           'functions'         => array($fonCompany,$fonHierarchy,$fonFSJobRoles,$fonKSJobRoles,$fonKSJobRolesGenerics,
                                                        $fonManagerReporter,$fonUserCompetence,$fonUsersAccounts,
-                                                       $fonUnMapCompetence,$fonUnMapOrganizations,$fonCompetence),
+                                                       $fonUnMapCompetence,$fonUnMapOrganizations,$fonCompetence,$fondelcompetence),
                           'restrictedusers'   => 1,
                           'enabled'           => 1
 );
