@@ -205,10 +205,17 @@ class STATUS {
         $instance    = null;
         $line        = null;
         $key         = null;
+        $trans       = null;
+
+        // Start transaction
+        $trans = $DB->start_delegated_transaction();
         
         try {
             // Local time
             $time = time();
+            
+            // First delete all old records
+            $DB->delete_records('user_info_competence_data');
             
             // Get content
             $content = file($competence);
@@ -221,7 +228,13 @@ class STATUS {
                 // Add record
                 $DB->insert_record('user_info_competence_data',$instance);
             }//for_line
+            
+            // Commit
+            $trans->allow_commit();
         }catch (Exception $ex) {
+            // Rollback
+            $trans->rollback($ex);
+            
             throw $ex;
         }//try_catch
     }//import_competence_data
