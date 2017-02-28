@@ -2095,7 +2095,7 @@ class FSKS_USERS {
 
             $sql = " SELECT	fs.id				as 'key',
                             fs.fodselsnr 		as 'personalnumber',
-                            ksfs.fscompany		as 'fsId',	
+                            ksfs.fscompany		as 'fsid',	
                             ks.companyid		as 'company',
                             ks.hierarchylevel   as 'level',
                             fsk_jr.ksjobrole 	as 'jobrole',
@@ -2341,7 +2341,7 @@ class FSKS_USERS {
 
             // Get Info User Job Role (FS)
             $params = array();
-            $params['personalnumber']   = $competenceFS->personalNumber;
+            $params['personalnumber']   = $competenceFS->personalnumber;
             $params['companyid']        = $competenceFS->company;
             $params['ksjrcode']         = $competenceFS->jobrole;
             $rdo = $DB->get_record('fs_users_competence',$params);
@@ -2364,7 +2364,7 @@ class FSKS_USERS {
                     }else {
                         // New Entry
                         $infoCompetence = new stdClass();
-                        $infoCompetence->personalnumber = $competenceFS->personalNumber;
+                        $infoCompetence->personalnumber = $competenceFS->personalnumber;
                         $infoCompetence->companyid      = $competenceFS->company;
                         $infoCompetence->jrcode         = $competenceFS->fsjobroles;
                         $infoCompetence->ksjrcode       = $competenceFS->jobrole;
