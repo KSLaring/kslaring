@@ -1,0 +1,157 @@
+{
+  "courses": [
+    {
+      "id": 24,
+      "name": "Testing course",
+      "img": "/local/playground/coursesearch/assets/meeting.png",
+      "summary": "This course is meant for testing of content and design.",
+      "link": "/local/course_page/home_page.php?id=",
+      "tags": [
+        {
+          "group": "region",
+          "name": "Oppland Fylkeskommune"
+        },
+        {
+          "group": "municipality",
+          "name": "Lillehammer"
+        },
+        {
+          "group": "type",
+          "name": "Netcourse"
+        },
+        {
+          "group": "topics",
+          "name": "IT"
+        },
+        {
+          "group": "topics",
+          "name": "Kultur"
+        }
+      ]
+    },
+    {
+      "id": 26,
+      "name": "Fra Office 2003 til 2010 - obligatorisk",
+      "img": "/local/playground/coursesearch/assets/office2010.jpg",
+      "summary": "Disse leksjonene viser forskjellene mellom Word 2003 og Word 2010 og noen av de nye funksjonene knyttet opp mot basiskompetansen til en informasjonsmedarbeider i Midt-Telemarkkommunene.",
+      "link": "/local/course_page/home_page.php?id=",
+      "tags": [
+        {
+          "group": "region",
+          "name": "Oppland Fylkeskommune"
+        },
+        {
+          "group": "municipality",
+          "name": "Gjøvik"
+        },
+        {
+          "group": "type",
+          "name": "Netcourse"
+        },
+        {
+          "group": "topics",
+          "name": "IT"
+        },
+        {
+          "group": "topics",
+          "name": "Oppvekst"
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "name": "Classroom course",
+      "img": "/local/playground/coursesearch/assets/ks_placeholder.jpg",
+      "summary": "Vivamus ante lectus, volutpat quis adipiscing a, bibendum at massa.",
+      "link": "/local/course_page/home_page.php?id=",
+      "tags": [
+        {
+          "group": "region",
+          "name": "Oslo Fylkeskommune"
+        },
+        {
+          "group": "municipality",
+          "name": "Oslo"
+        },
+        {
+          "group": "type",
+          "name": "Classroom"
+        },
+        {
+          "group": "topics",
+          "name": "Oppvekst"
+        },
+        {
+          "group": "topics",
+          "name": "Kultur"
+        },
+        {
+          "group": "topics",
+          "name": "Velferd"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Netcourse-g pellentesque et velit justo maecenas",
+      "img": "/local/playground/coursesearch/assets/suitcase.jpg",
+      "summary": "Nulla non consectetur urna, in.",
+      "link": "/local/course_page/home_page.php?id=",
+      "tags": [
+        {
+          "group": "region",
+          "name": "Akershus Fylkeskommune"
+        },
+        {
+          "group": "municipality",
+          "name": "Åseral"
+        },
+        {
+          "group": "type",
+          "name": "Netcourse"
+        },
+        {
+          "group": "topics",
+          "name": "IT"
+        },
+        {
+          "group": "topics",
+          "name": "Oppvekst"
+        },
+        {
+          "group": "topics",
+          "name": "Økonomisk planlegging og analyse"
+        }
+      ]
+    },
+    {
+      "id": 31,
+      "name": "Topics course",
+      "img": "/local/playground/coursesearch/assets/kurs.jpg",
+      "summary": "Quisque faucibus venenatis ligula, quis eleifend sem ultrices et. Nulla libero libero, ultricies id ex at, iaculis suscipit mi. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Fusce sapien justo, condimentum vitae risus in, sollicitudin interdum nulla. Vivamus vitae maximus metus, id sodales metus. Aliquam rhoncus elit orci, ut ullamcorper.",
+      "link": "/course/view.php?id=",
+      "tags": [
+        {
+          "group": "region",
+          "name": "Akershus Fylkeskommune"
+        },
+        {
+          "group": "municipality",
+          "name": "Åseral"
+        },
+        {
+          "group": "type",
+          "name": "Netcourse"
+        },
+        {
+          "group": "topics",
+          "name": "Helse"
+        },
+        {
+          "group": "topics",
+          "name": "Velferd"
+        }
+      ]
+    }
+  ]
+}

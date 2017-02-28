@@ -1,0 +1,158 @@
+{
+  "tags": {
+    "groups": [
+      {
+        "name": "region",
+        "title": "Region",
+        "shown": [
+          {
+            "group": "region",
+            "name": "Oppland Fylkeskommune",
+            "amount": 44,
+            "checked": 0
+          },
+          {
+            "group": "region",
+            "name": "Akershus Fylkeskommune",
+            "amount": 32,
+            "checked": 0
+          },
+          {
+            "group": "region",
+            "name": "Oslo Fylkeskommune",
+            "amount": 15,
+            "checked": 0
+          }
+        ],
+        "hidden": [
+          {
+            "group": "region",
+            "name": "Trondheim Fylkeskommune",
+            "amount": 10,
+            "checked": 0
+          }
+        ]
+      },
+      {
+        "name": "municipality",
+        "title": "Municipality",
+        "shown": [
+          {
+            "group": "municipality",
+            "name": "Lillehammer",
+            "amount": 45,
+            "checked": 0
+          },
+          {
+            "group": "municipality",
+            "name": "Gjøvik",
+            "amount": 23,
+            "checked": 0
+          },
+          {
+            "group": "municipality",
+            "name": "Oslo",
+            "amount": 12,
+            "checked": 0
+          }
+        ],
+        "hidden": [
+          {
+            "group": "municipality",
+            "name": "Åseral",
+            "amount": 10,
+            "checked": 0
+          },
+          {
+            "group": "municipality",
+            "name": "Sandnes",
+            "amount": 0,
+            "checked": 0
+          },
+          {
+            "group": "municipality",
+            "name": "Rennebu",
+            "amount": 0,
+            "checked": 0
+          }
+        ]
+      },
+      {
+        "name": "type",
+        "title": "Type",
+        "shown": [
+          {
+            "group": "type",
+            "name": "Netcourse",
+            "amount": 122,
+            "checked": 0
+          },
+          {
+            "group": "type",
+            "name": "Classroom",
+            "amount": 220,
+            "checked": 0
+          },
+          {
+            "group": "type",
+            "name": "Topics",
+            "amount": 0,
+            "checked": 0
+          }
+        ],
+        "hidden": [
+          {
+            "group": "type",
+            "name": "Weeks",
+            "amount": 0,
+            "checked": 0
+          }
+        ]
+      },
+      {
+        "name": "topics",
+        "title": "Topics",
+        "shown": [
+          {
+            "group": "topics",
+            "name": "IT",
+            "amount": 230,
+            "checked": 0
+          },
+          {
+            "group": "topics",
+            "name": "Oppvekst",
+            "amount": 65,
+            "checked": 0
+          },
+          {
+            "group": "topics",
+            "name": "Helse",
+            "amount": 24,
+            "checked": 0
+          },
+          {
+            "group": "topics",
+            "name": "Velferd",
+            "amount": 12,
+            "checked": 0
+          }
+        ],
+        "hidden": [
+          {
+            "group": "topics",
+            "name": "Kultur",
+            "amount": 124,
+            "checked": 0
+          },
+          {
+            "group": "topics",
+            "name": "Økonomisk planlegging og analyse",
+            "amount": 42,
+            "checked": 0
+          }
+        ]
+      }
+    ]
+  }
+}

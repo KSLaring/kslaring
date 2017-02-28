@@ -1,0 +1,22 @@
+{{#tags}}
+    {{#groups}}
+        <fieldset class="{{{name}}} collapse-group">
+            <h4>{{{title}}}</h4>
+            {{#shown}}
+                <label class="checkbox" data-group="{{{group}}}" data-name="{{{name}}}">
+                    <input type="checkbox"{{#checked}} checked="checked"{{/checked}} value="">
+                    {{{name}}} <span class="amount">{{{amount}}}</span>
+                </label>
+            {{/shown}}
+            <div class="collapse" id="viewmore{{{name}}}">
+                {{#hidden}}
+                    <label class="checkbox" data-group="{{{group}}}" data-name="{{{name}}}">
+                        <input type="checkbox"{{#checked}} checked="checked"{{/checked}} value="">
+                        {{{name}}} <span class="amount">{{{amount}}}</span>
+                    </label>
+                {{/hidden}}
+            </div>
+            <a class="btn btn-link showdetails" data-toggle="collapse" data-target="#viewmore{{{name}}}"></a>
+        </fieldset>
+    {{/groups}}
+{{/tags}}

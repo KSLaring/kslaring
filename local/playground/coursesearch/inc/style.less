@@ -1,0 +1,232 @@
+@kommitBlueLight: #00aef0;
+@kommitBlueGayLight: #b5c5da;
+@kommitBlue: #0e7b9e;
+@kommitBlueDark: #003876;
+@kommitGray: #7e7e7e;
+@kommitGrayWarm: #e8e8e8;
+@kommitGreyDark: #1a1a1a;
+@kommitGrayLight: #f2f2f3;
+@kommitMenuBg: #f9f9f9;
+
+@kommitRed: #bf4126;
+@kommitOrange: #f9b233;
+
+// Grays
+// -------------------------
+@black: #000;
+@grayDarker: #222;
+@grayDark: #333333;
+@gray: #555;
+@grayMid: #999;
+@grayLight: #ccc;
+@grayLighter: #eee;
+@white: #fff;
+
+// Scaffolding
+// -------------------------
+@bodyBackground: @white;
+@textColor: @grayDark;
+
+// Links
+// -------------------------
+@linkColor: @kommitBlueDark;
+@linkColorHover: darken(@linkColor, 15%);
+
+#page-course-search {
+    #page-header {
+        display: none;
+    }
+}
+
+#annotations {
+    padding: 0 1em;
+
+    dt {
+        margin-top: .5em;
+    }
+    dl {
+        margin: .2em 0 1em;
+    }
+}
+
+.btn {
+    &.btn-link {
+        background-color: transparent;
+        background-image: none;
+        border-color: transparent;
+        cursor: pointer;
+        color: @linkColor;
+        border-radius: 0;
+    }
+    &.toggle-annotations {
+        color: tint(@linkColor, 70%);
+    }
+}
+
+.row-fluid {
+    [class*="span"] {
+        &:first-of-type {
+            margin-left: 0;
+        }
+    }
+}
+
+#catalog-area {
+    margin-bottom: 1em;
+}
+
+#display-area {
+    //border: 1px solid @white;
+}
+
+#search-area {
+    //border: 1px solid @white;
+    min-height: 10em;
+}
+
+#tag-area {
+    padding: .1em 0 .8em;
+}
+
+#result-area {
+    //border: 1px solid @white;
+    margin-top: 1em;
+    min-height: 10em;
+}
+
+#search-area {
+    background-color: @white;
+    padding: 1em .7em;
+
+    .collapse-group {
+        margin-bottom: 1em;
+
+        h4 {
+            font-size: 1em;
+        }
+
+        .btn {
+            padding-left: 0;
+        }
+    }
+}
+
+.checkbox {
+    input[type="checkbox"] {
+        margin-top: 3px;
+    }
+    .amount {
+        display: inline-block;
+        float: right;
+    }
+}
+
+.selected-tags {
+    li {
+        display: inline-block;
+    }
+}
+
+.btn-tag {
+    background-color: @kommitGrayWarm;
+    border: 1px solid darken(@kommitGrayWarm, 10%);
+    color: @textColor;
+
+    [class^="icon-"] {
+        margin-top: 2px;
+        margin-left: .3em;
+    }
+}
+
+#search-area {
+    #course-search {
+        margin-bottom: .5em;
+        border-radius: 0;
+    }
+
+    .course-search-btn {
+        margin-top: 0;
+        vertical-align: top;
+    }
+}
+
+.in.collapse + a.btn.showdetails:after {
+    content: 'Show less ...';
+}
+
+.collapse + a.btn.showdetails:after {
+    content: 'Show more ...';
+}
+
+.course-list {
+    .course-list-item {
+        margin-bottom: 2em;
+
+        &.hide-item {
+            display: none;
+        }
+    }
+    .course-title {
+        margin-top: 0;
+    }
+    .course-tag-list {
+        margin-bottom: .5em;
+
+        li {
+            background-color: @kommitGrayWarm;
+            border: 1px solid darken(@kommitGrayWarm, 10%);
+            color: @textColor;
+            display: inline-block;
+            padding: 0 .3em;
+        }
+    }
+    .btn {
+        &.btn-link {
+            padding-left: 0;
+        }
+    }
+}
+
+.course-cards {
+    .course-card-item {
+        background-color: @white;
+        display: inline-block;
+        margin: 0 1% 1em 1%;
+        min-height: 17em;
+        padding: .5em 2%;
+        vertical-align: top;
+        width: 27%;
+
+        &:nth-of-type(3n) {
+            margin-right: 0;
+            //border-right: 1px solid #faa;
+        }
+        &:nth-of-type(3n+1) {
+            margin-left: 0;
+            //border-left: 1px solid #faa;
+        }
+
+        &.hide-item {
+            display: none;
+        }
+
+        .course-img {
+            text-align: center;
+
+            img {
+                max-height: 8em;
+
+                &.img-responsive {
+                    //width: 100%;
+                }
+            }
+        }
+        .course-desc {
+            max-height: 9em;
+            overflow: hidden;
+        }
+        .course-summary {
+            height: 4em;
+        }
+    }
+}
