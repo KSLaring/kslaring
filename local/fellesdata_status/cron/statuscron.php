@@ -11,7 +11,7 @@
  *
  */
 
-require_once('../../../local/fellesdata/lib/fellesdatalib.php');
+
 
 class STATUS_CRON {
     /***********/
