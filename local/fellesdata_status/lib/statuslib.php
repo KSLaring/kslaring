@@ -11,13 +11,8 @@
  *
  */
 
-define('WS_COMPETENCE','ws_get_competence');
-
-define('IMP_STATUS_USERS',0);
-define('IMP_STATUS_COMPANIES',1);
-define('IMP_STATUS_JOBROLES',2);
-define('IMP_STATUS_MANAGERS_REPORTERS',3);
-define('IMP_STATUS_COMPETENCE_JR',4);
+define('WS_COMPETENCE','wsCompetence');
+define('WS_DEL_COMPETENCE','ws_delete_competence');
 
 class STATUS {
     /**********/
@@ -128,10 +123,126 @@ class STATUS {
         }//try_catch
     }//save_competence
 
+    public static function total_competence_to_delete_ks() {
+        /* Variables */
+        global $DB;
+        $sql    = null;
+        $rdo    = null;
+        $params = null;
+
+        try {
+            //Search criteria
+            $params = array();
+            $params['imported'] = 0;
+            $params['action']   = STATUS;
+
+            // SQL Instruction
+            $sql = " SELECT		count(*) as 'total'
+                     FROM	    {fs_imp_users_jr}	  		fs
+                        JOIN    {user}              		u       ON  u.idnumber 			= fs.fodselsnr
+                                                                    AND u.deleted  			= 0
+                        -- COMPANY
+                        JOIN	{ksfs_company}				ksfs 	ON 	ksfs.fscompany 		= fs.ORG_ENHET_ID
+                        JOIN	{ks_company}		  		ks	    ON	ks.companyid		= ksfs.kscompany
+
+                        JOIN	(
+                                    SELECT	username,
+                                            GROUP_CONCAT(DISTINCT companyid ORDER BY companyid SEPARATOR ',') 	as 'companies',
+                                            GROUP_CONCAT(DISTINCT id ORDER BY companyid SEPARATOR ',') 			as 'ids'
+                                    FROM	{user_info_competence_data}	
+                                    GROUP BY username    
+                                ) uic 	ON fs.fodselsnr = uic.username
+                                        AND LOCATE(ks.companyid,uic.companies) = 0
+                     WHERE		fs.imported = :imported
+                        AND		fs.action 	= :action ";
+
+            // Execute
+            $rdo = $DB->get_record_sql($sql,$params);
+            if ($rdo) {
+                return $rdo->total;
+            }else {
+                return null;
+            }//if_else
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//total_competence_to_delete_ks
+
+    public static function competence_to_delete_ks($start,$limit) {
+        /* Variables */
+        global $CFG;
+        global $DB;
+        $dblog      = null;
+        $sql        = null;
+        $rdo        = null;
+        $params     = null;
+        $todelete   = array();
+
+        try {
+            //Search criteria
+            $params = array();
+            $params['imported'] = 0;
+            $params['action']   = STATUS;
+
+            // SQL Instruction
+            $sql = " SELECT		uic.userid    as 'user',
+                                uic.companies,
+                                uic.ids       as 'keys'
+                     FROM	    {fs_imp_users_jr}	  		fs
+                        JOIN    {user}              		u       ON  u.idnumber 			= fs.fodselsnr
+                                                                    AND u.deleted  			= 0
+                        -- COMPANY
+                        JOIN	{ksfs_company}				ksfs 	ON 	ksfs.fscompany 		= fs.ORG_ENHET_ID
+                        JOIN	{ks_company}		  		ks	    ON	ks.companyid		= ksfs.kscompany
+                        -- COMPETENCE
+                        JOIN	(
+                                    SELECT	 username,
+                                             userid,
+                                             GROUP_CONCAT(DISTINCT companyid ORDER BY companyid SEPARATOR ',') 	as 'companies',
+                                             GROUP_CONCAT(DISTINCT id ORDER BY companyid SEPARATOR ',') 		as 'ids'
+                                    FROM	 {user_info_competence_data}	
+                                    GROUP BY username    
+                                ) uic 	ON fs.fodselsnr = uic.username
+                                        AND LOCATE(ks.companyid,uic.companies) = 0
+                     WHERE		fs.imported = :imported
+                        AND		fs.action 	= :action
+                     ORDER BY fs.fodselsnr ";
+            
+            // Execute
+            $rdo = $DB->get_records_sql($sql,$params);
+            if ($rdo) {
+                foreach ($rdo as $instance) {
+                    // Add instance
+                    $todelete[$instance->user] = $instance;
+                }//if_instance
+            }//if_rdo
+            
+            return $todelete;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//competence_to_delete_ks
+
+    public static function synchronize_competence_deleted($deleted) {
+        /* Variables */
+        global $DB;
+        $sql = null;
+
+        try {
+            // SQL Instruction
+            $sql = " DELETE FROM {mdl_user_info_competence_data}
+                     WHERE id IN ($deleted) ";
+
+            // Execute
+            $DB->execute($sql);
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//synchronize_competence_deleted
+
     /***********/
     /* PRIVATE */
     /***********/
-
 
     /**
      * Description

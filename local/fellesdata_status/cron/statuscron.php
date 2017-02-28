@@ -22,14 +22,15 @@ class STATUS_CRON {
         try {
 
             // Get competence from KS
-            self::competence_data($plugin);
+            //self::competence_data($plugin);
 
             // Get managers reporters from KS
 
             // Import last status from fellesdata
-            self::import_status($plugin);
+            //self::import_status($plugin);
 
-
+            // Syncronization
+            self::synchronization($plugin);
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -38,6 +39,95 @@ class STATUS_CRON {
     /***********/
     /* PRIVATE */
     /***********/
+
+    private static function synchronization($plugin) {
+        /* Variables */
+        global $CFG;
+        $dblog = null;
+
+        try {
+            // Log
+            $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START Synchronization Fellesdata STATUS. ' . "\n";
+
+            // Synchronization FS Users
+
+            // Synchronization FS Companies
+
+            // Synchronization FS Job roles
+
+            // Synchronization FS Managers/Reporters
+
+            // Synchronization FS User Competence to Delete
+            self::sync_status_delete_competence($plugin);
+
+            // Synchronization FS User Competence
+            
+            // Log
+            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Synchronization Fellesdata STATUS. ' . "\n";
+            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+        }catch (Exception $ex) {
+            // Log
+            $dblog  = "Error: " . $ex->getMessage() . "\n" . "\n";
+            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Synchronization Fellesdata STATUS. ' . "\n";
+            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+
+            throw $ex;
+        }//try_catch
+    }//synchronization
+
+    private static function sync_status_delete_competence($plugin) {
+        /* Variables */
+        global $CFG;
+        $dblog      = null;
+        $total      = null;
+        $todelete   = null;
+        $params     = null;
+        $start      = 0;
+        $limit      = 500;
+        
+        try {
+            // Log
+            $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START Synchronization STATUS delete competence. ' . "\n";
+            
+            // Get total to delete
+            $total = STATUS::total_competence_to_delete_ks();
+            if ($total) {
+                for ($i=0;$i<=$total;$i=$i+$limit) {
+                    // get to delete
+                    $todelete = STATUS::competence_to_delete_ks($start,$limit);
+                    
+                    // Params web service
+                    $params = array();
+                    $params['competence'] = $todelete;
+
+                    // Cal service
+                    $response = self::process_service($plugin,WS_DEL_COMPETENCE,$params);
+
+                    if ($response) {
+                        if ($response['error'] == '200') {
+                            STATUS::synchronize_competence_deleted($response['deleted']);
+                        }else {
+                            // Log
+                            $dblog .= "Error WS: " . $response['message'] . "\n" ."\n";
+                        }//if_no_error
+                    }else {
+                        $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' ERROR Response null . ' . "\n";
+                    }//if_else_response
+                }//for
+            }//if_total
+            
+            // Log
+            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Synchronization STATUS delete competence. ' . "\n";
+            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+        }catch (Exception $ex) {
+            // Log
+            $dblog  = "Error: " . $ex->getMessage() . "\n" . "\n";
+            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Synchronization STATUS delete competence. ' . "\n";
+            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+
+            throw $ex;
+        }//try_Catch
+    }//sync_status_competence
 
     /**
      * Description
@@ -56,7 +146,7 @@ class STATUS_CRON {
         $dblog        = null;
 
         try {
-            $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Import Fellesdata STATUS. ' . "\n";
+            $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START Import Fellesdata STATUS. ' . "\n";
 
             // Import FS Users
             //self::import_status_users($plugin);
@@ -73,6 +163,7 @@ class STATUS_CRON {
             // Import FS User Competence JR
             self::import_status_user_competence($plugin);
 
+            // Log
             $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Import Fellesdata STATUS. ' . "\n";
             error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
         }catch (Exception $ex) {
@@ -390,7 +481,7 @@ class STATUS_CRON {
             $params['competence'] = $industry;
 
             // Cal service
-            $response = self::process_service($plugin,'wsCompetence',$params);
+            $response = self::process_service($plugin,WS_COMPETENCE,$params);
             
             if ($response) {
                 if ($response['error'] == '200') {
