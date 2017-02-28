@@ -2084,6 +2084,7 @@ class FSKS_USERS {
         $usersComp      = null;
         $infoComp       = null;
         $toDeleteFromKS = false;
+        $dbLog = null;
 
         try {
             // Search Criteria
@@ -2092,7 +2093,7 @@ class FSKS_USERS {
             $params['action']   = DELETE;
 
             $sql = " SELECT	fs.id				as 'key',
-                            fs.fodselsnr 		as 'personalNumber',
+                            fs.fodselsnr 		as 'personalnumber',
                             ksfs.fscompany		as 'fsId',	
                             ks.companyid		as 'company',
                             ks.hierarchylevel   as 'level',
@@ -2125,9 +2126,14 @@ class FSKS_USERS {
                       ORDER BY fs.fodselsnr
                       LIMIT $start,$limit ";
 
+            $dbLog .= "SQL : " . "\n\n";
+            $dbLog .= $sql . "\n\n";
+            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+            
             // Execute
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
+
                 /**
                 foreach ($rdo as $instance) {
                     if ($toDelete) {
