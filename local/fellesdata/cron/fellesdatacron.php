@@ -1459,7 +1459,7 @@ class FELLESDATA_CRON {
                 // User competence to synchronize
                 $total = FSKS_USERS::get_total_users_competence_to_synchronize($toDelete,$status);
                 if ($total) {
-                    for ($i=0;$i<=$total;$i=$i+100) {
+                    for ($i=0;$i<=$total;$i=$i+$limit) {
                         $toSynchronize = FSKS_USERS::user_competence_to_synchronize($toDelete,$status,$start,$limit);
 
                         // Call web service

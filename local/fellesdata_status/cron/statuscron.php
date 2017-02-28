@@ -58,7 +58,7 @@ class STATUS_CRON {
             // Synchronization FS Managers/Reporters
 
             // Synchronization FS User Competence to Delete
-            self::sync_status_delete_competence($plugin);
+            //self::sync_status_delete_competence($plugin);
 
             // Synchronization FS User Competence
             self::sync_status_competence($plugin);
