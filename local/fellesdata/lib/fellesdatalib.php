@@ -1545,10 +1545,11 @@ class FSKS_USERS {
 
                 if ($objCompetence->imported) {
                     // Get Info
-                    $infoUser = $usersCompetence[$objCompetence->key];
+                    echo "KEY: " . $objCompetence->key . "</br>";
+                    //$infoUser = $usersCompetence[$objCompetence->key];
 
                     // Synchronize User Competence
-                    self::synchronize_competence_fs($infoUser);
+                    //self::synchronize_competence_fs($infoUser);
                 }//if_imported
             }//for_competencesImported
         }catch (Exception $ex) {
@@ -2129,7 +2130,7 @@ class FSKS_USERS {
             $dbLog .= "SQL : " . "\n\n";
             $dbLog .= $sql . "\n\n";
             error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
-            
+
             // Execute
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
