@@ -214,7 +214,7 @@ class STATUS {
                 foreach ($rdo as $instance) {
                     echo "USER: " . $instance->user . "</br>";
                     // Add instance
-                    $todelete[$instance->user] = $instance;
+                    $todelete[] = $instance;
                 }//if_instance
             }//if_rdo
             

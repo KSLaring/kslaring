@@ -102,7 +102,7 @@ class STATUS_CRON {
                     $params['competence'] = $todelete;
 
                     // Cal service
-                    //$response = self::process_service($plugin,WS_DEL_COMPETENCE,$params);
+                    $response = self::process_service($plugin,WS_DEL_COMPETENCE,$params);
 
                     if ($response) {
                         if ($response['error'] == '200') {
