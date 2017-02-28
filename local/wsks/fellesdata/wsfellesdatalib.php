@@ -1307,7 +1307,7 @@ class WS_FELLESDATA {
             $time = time();
 
             /* Get data user */
-            $user = $DB->get_record('user',array('username' => $userCompetence->personalNumber,'deleted' => '0'),'id');
+            $user = $DB->get_record('user',array('username' => $userCompetence->personalnumber,'deleted' => '0'),'id');
 
             /* Check if user exists */
             if ($user) {

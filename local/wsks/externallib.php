@@ -795,7 +795,7 @@ class local_wsks_external extends external_api {
         $impKeys        = new external_value(PARAM_TEXT,'KEYS IMP FS JR');
         $action         = new external_value(PARAM_INT,'Action. Add/Update/Delete');
 
-        $userCompetence = new external_single_structure(array('personalNumber'  => $personalNumber,
+        $userCompetence = new external_single_structure(array('personalnumber'  => $personalNumber,
                                                               'key'             => $key,
                                                               'jobrole'         => $jobRole,
                                                               'fsjobroles'      => $fsjobRoles,
@@ -1297,7 +1297,7 @@ class local_wsks_external extends external_api {
     /**
      * Description
      * Delete competence
-     * 
+     *
      * @param           array $competence
      *
      * @return          array
