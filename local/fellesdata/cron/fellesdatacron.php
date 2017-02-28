@@ -1451,7 +1451,7 @@ class FELLESDATA_CRON {
         $response       = null;
         $dbLog          = null;
         $start          = 0;
-        $limit          = 500;
+        $limit          = 1000;
 
         try {
             // check if the synchronization can be run
