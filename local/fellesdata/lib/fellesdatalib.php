@@ -1396,6 +1396,7 @@ class FSKS_USERS {
      * User competence to synchronize
      *
      * @param       bool $toDelete
+     * @param       bool $status
      * @param            $start
      * @param            $limit
      *
@@ -1405,13 +1406,13 @@ class FSKS_USERS {
      * @creationDate    14/06/2016
      * @author          eFaktor     (fbv)
      */
-    public static function user_competence_to_synchronize($toDelete = false,$start,$limit) {
+    public static function user_competence_to_synchronize($toDelete = false,$status = false,$start,$limit) {
         /* Variables    */
         $toSynchronize = null;
 
         try {
             // Get Users Competence  to synchronize
-            $toSynchronize = self::get_users_competence_to_synchronize($toDelete,$start,$limit);
+            $toSynchronize = self::get_users_competence_to_synchronize($toDelete,$status,$start,$limit);
 
             return $toSynchronize;
         }catch (Exception $ex) {
@@ -1560,6 +1561,7 @@ class FSKS_USERS {
      * Get total users to synchronize
      *
      * @param           $toDelete
+     * @param           $status
      *
      * @return          int|null
      * @throws          Exception
@@ -1567,7 +1569,7 @@ class FSKS_USERS {
      * @creationDate    22/06/2016
      * @author          eFaktor     (fbv)
      */
-    public static function get_total_users_competence_to_synchronize($toDelete) {
+    public static function get_total_users_competence_to_synchronize($toDelete,$status = false) {
         /* Variables */
         global $DB;
         $params         = null;
@@ -1582,7 +1584,7 @@ class FSKS_USERS {
 
             // SQL Instruction
             $sql = " SELECT	DISTINCT 
-                                fs.id
+                                count(fs.id) as 'total'
                      FROM	    {fs_imp_users_jr}	  fs
                         JOIN    {user}                u         ON      u.idnumber = fs.fodselsnr
                                                                 AND     u.deleted  = 0
@@ -1594,20 +1596,19 @@ class FSKS_USERS {
                      WHERE		fs.imported = :imported ";
 
             // To Delete
-            if ($toDelete) {
+            if ($status) {
+                $params['action'] = STATUS;
+                $sql .= " AND fs.action = :action ";
+            }else if ($toDelete) {
                 $sql .= " AND fs.action = :action ";
             }else {
                 $sql .= " AND fs.action != :action ";
-            }//if_delte
-
-            // GROUP / ORDER
-            $sql .= " GROUP BY fs.fodselsnr,ksfs.fscompany
-                      ORDER BY fs.fodselsnr ";
+            }//if_else
 
             // Execute
-            $rdo = $DB->get_records_sql($sql,$params);
+            $rdo = $DB->get_record_sql($sql,$params);
             if ($rdo) {
-                return count($rdo);
+                return $rdo->total;
             }else {
                 return null;
             }//if_Rdo;
@@ -2074,7 +2075,7 @@ class FSKS_USERS {
      * @creationDate    14/06/2016
      * @author          eFaktor     (fbv)
      */
-    private static function get_users_competence_to_synchronize($toDelete,$start,$limit) {
+    private static function get_users_competence_to_synchronize($toDelete,$status,$start,$limit) {
         /* Variables */
         global $DB,$CFG;
         $params         = null;
@@ -2090,31 +2091,34 @@ class FSKS_USERS {
             $params['imported'] = 0;
             $params['action']   = DELETE;
 
-            // SQL Instruction
-            $sql = " SELECT		fs.id,
-			                    fs.fodselsnr,
-			                    ksfs.fscompany,
-                                ks.companyid,
-                                ks.hierarchylevel,
-                                fsk_jr.ksjobrole,
-                                GROUP_CONCAT(DISTINCT fs.stillingskode ORDER BY fs.stillingskode SEPARATOR ',') as 'fsjobroles',
-                                GROUP_CONCAT(DISTINCT fs.id ORDER BY fs.id SEPARATOR ',') as 'impkeys'
-                     FROM	    {fs_imp_users_jr}	  fs
-                        JOIN    {user}                u         ON      u.idnumber = fs.fodselsnr
-                                                                AND     u.deleted  = 0
+            $sql = " SELECT	fs.id				as 'key',
+                            fs.fodselsnr 		as 'personalNumber',
+                            ksfs.fscompany		as 'fsId',	
+                            ks.companyid		as 'company',
+                            ks.hierarchylevel   as 'level',
+                            fsk_jr.ksjobrole 	as 'jobrole',
+                            GROUP_CONCAT(DISTINCT fs.stillingskode ORDER BY fs.stillingskode SEPARATOR ',') as 'fsjobroles',
+                            GROUP_CONCAT(DISTINCT fs.id ORDER BY fs.id SEPARATOR ',') as 'impkeys',
+                            fs.action
+                     FROM	    {fs_imp_users_jr}	fs
+                        JOIN    {user}              u       ON      u.idnumber 			= fs.fodselsnr
+                                                            AND     u.deleted  			= 0
                         -- COMPANY
-                        JOIN	{ksfs_company}		  ksfs 		ON 		ksfs.fscompany 		= fs.ORG_ENHET_ID
-                        JOIN	{ks_company}		  ks	    ON		ks.companyid		= ksfs.kscompany
+                        JOIN	{ksfs_company}		ksfs 	ON 		ksfs.fscompany 		= fs.ORG_ENHET_ID
+                        JOIN	{ks_company}		ks	    ON		ks.companyid		= ksfs.kscompany
                         -- JOB ROLE
-                        JOIN	{ksfs_jobroles}		  fsk_jr 	ON 		fsk_jr.fsjobrole 	= fs.stillingskode
+                        JOIN	{ksfs_jobroles}		fsk_jr 	ON 		fsk_jr.fsjobrole 	= fs.stillingskode
                      WHERE		fs.imported = :imported ";
 
-            // To Delete
-            if ($toDelete) {
+            // Action
+            if ($status) {
+                $params['action'] = STATUS;
+                $sql .= " AND fs.action = :action ";
+            }else if ($toDelete) {
                 $sql .= " AND fs.action = :action ";
             }else {
                 $sql .= " AND fs.action != :action ";
-            }//if_delte
+            }//if_else
 
             // GROUP / ORDER
             $sql .= " GROUP BY fs.fodselsnr,ksfs.fscompany
@@ -2124,6 +2128,7 @@ class FSKS_USERS {
             // Execute
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
+                /**
                 foreach ($rdo as $instance) {
                     if ($toDelete) {
                         $toDeleteFromKS = self::delete_from_competence_fs($instance);
@@ -2161,6 +2166,7 @@ class FSKS_USERS {
                         $usersComp[$instance->id] = $infoComp;
                     }//id_delte
                 }//for_rdo
+                 * */
             }else {
                 // Log
                 $dbLog  = "User Competence - GetUsersCompetence_ToSynchronize NO RDO".  "\n\n";
@@ -2168,7 +2174,7 @@ class FSKS_USERS {
                 error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
             }//if_Rdo
 
-            return $usersComp;
+            return $rdo;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -2338,6 +2344,7 @@ class FSKS_USERS {
                 // Check if already exists
                 case ADD:
                 case UPDATE:
+                case STATUS:
                     if ($rdo) {
                         // Update
                         $rdo->synchronized = 1;

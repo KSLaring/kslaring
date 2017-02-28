@@ -61,7 +61,8 @@ class STATUS_CRON {
             self::sync_status_delete_competence($plugin);
 
             // Synchronization FS User Competence
-            
+            self::sync_status_competence($plugin);
+
             // Log
             $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Synchronization Fellesdata STATUS. ' . "\n";
             error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
@@ -75,6 +76,67 @@ class STATUS_CRON {
         }//try_catch
     }//synchronization
 
+    private static function sync_status_competence($plugin) {
+        /* Variables    */
+        global $CFG;
+        $competence  = null;
+        $response    = null;
+        $dblog       = null;
+        $start       = 0;
+        $limit       = 500;
+
+        try {
+            // Log
+            $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START Synchronization STATUS competence. ' . "\n";
+
+            // User competence to synchronize
+            $total = FSKS_USERS::get_total_users_competence_to_synchronize(false,true);
+            if ($total) {
+                for ($i=0;$i<=$total;$i=$i+$limit) {
+                    $competence = FSKS_USERS::user_competence_to_synchronize(false,true,$start,$limit);
+
+                    // Call web service
+                    // Params web service
+                    $params = array();
+                    $params['usersCompetence'] = $competence;
+
+                    $response = self::process_service($plugin,KS_USER_COMPETENCE,$params);
+                    if ($response['error'] == '200') {
+                        // Synchronize user competence
+                        FSKS_USERS::synchronize_user_competence_fs($competence,$response['usersCompetence']);
+                    }else {
+                        // Log
+                        $dbLog  = "ERROR WS: " . $response['message'] . "\n" . "\n";
+                        $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' Finish ERROR Synchronization STATUS competence . ' . "\n";
+                        error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+                    }//if_no_error
+                }//for_rdo
+            }//if_totla
+
+            // Log
+            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Synchronization STATUS competence. ' . "\n";
+            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+        }catch (Exception $ex) {
+            // Log
+            $dblog  = "Error: " . $ex->getMessage() . "\n" . "\n";
+            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Synchronization STATUS competence. ' . "\n";
+            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+
+            throw $ex;
+        }//try_catch
+    }//sync_status_competence
+
+    /**
+     * Description
+     * Synchronization of all competence data that has to be deleted
+     * 
+     * @param           object  $plugin
+     * 
+     * @throws                  Exception
+     * 
+     * @creationDate    28/02/2017
+     * @author          eFaktor     (fbv)
+     */
     private static function sync_status_delete_competence($plugin) {
         /* Variables */
         global $CFG;

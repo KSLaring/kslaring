@@ -123,6 +123,16 @@ class STATUS {
         }//try_catch
     }//save_competence
 
+    /**
+     * Description
+     * Get total of records to delete
+     * 
+     * @return          null
+     * @throws          Exception
+     * 
+     * @creationDate    28/02/2017
+     * @author          eFaktor     (fbv)
+     */
     public static function total_competence_to_delete_ks() {
         /* Variables */
         global $DB;
@@ -168,6 +178,18 @@ class STATUS {
         }//try_catch
     }//total_competence_to_delete_ks
 
+    /**
+     * Description
+     * Get all comptence that have to be deleted
+     * @param           $start
+     * @param           $limit
+     * 
+     * @return          array|null
+     * @throws          Exception
+     * 
+     * @creationDate    28/02/2017
+     * @author          eFaktor     (fbv)
+     */
     public static function competence_to_delete_ks($start,$limit) {
         /* Variables */
         global $CFG;
@@ -217,6 +239,17 @@ class STATUS {
         }//try_catch
     }//competence_to_delete_ks
 
+    /**
+     * Description
+     * Synchronized competence that have been deleted
+     * 
+     * @param       string  $deleted     Competence deleted
+     * 
+     * @throws              Exception
+     * 
+     * @creationDate        28/02/2017
+     * @author              eFaktor     (fbv)
+     */
     public static function synchronize_competence_deleted($deleted) {
         /* Variables */
         global $DB;

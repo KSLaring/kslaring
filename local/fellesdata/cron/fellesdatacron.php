@@ -1434,32 +1434,33 @@ class FELLESDATA_CRON {
      * Description
      * Synchronization User Competence
      *
-     * @param           $pluginInfo
-     * @param           $service
+     * @param                   $pluginInfo
+     * @param                $service
      * @param           bool $toDelete
+     * @param           bool $status
      *
      * @throws          Exception
      *
      * @creationDate    14/06/2016
      * @author          eFaktor     (fbv)
      */
-    private static function user_competence_synchronization($pluginInfo,$service,$toDelete = false) {
+    private static function user_competence_synchronization($pluginInfo,$service,$toDelete = false,$status = false) {
         /* Variables    */
         global $CFG;
         $toSynchronize  = null;
         $response       = null;
         $dbLog          = null;
         $start          = 0;
-        $limit          = 100;
+        $limit          = 500;
 
         try {
             // check if the synchronization can be run
             if (suspicious::run_synchronization(IMP_SUSP_COMPETENCE_JR)) {
                 // User competence to synchronize
-                $total = FSKS_USERS::get_total_users_competence_to_synchronize($toDelete);
+                $total = FSKS_USERS::get_total_users_competence_to_synchronize($toDelete,$status);
                 if ($total) {
                     for ($i=0;$i<=$total;$i=$i+100) {
-                        $toSynchronize = FSKS_USERS::user_competence_to_synchronize($toDelete,$start,$limit);
+                        $toSynchronize = FSKS_USERS::user_competence_to_synchronize($toDelete,$status,$start,$limit);
 
                         // Call web service
                         if ($toSynchronize) {
@@ -1470,8 +1471,6 @@ class FELLESDATA_CRON {
                             if ($response['error'] == '200') {
                                 // Synchronize user competence
                                 FSKS_USERS::synchronize_user_competence_fs($toSynchronize,$response['usersCompetence']);
-
-                                //$DB->delete_records('fs_users_competence',array('imported' => '1'));
                             }else {
                                 // Log
                                 $dbLog  = "ERROR WS: " . $response['message'] . "\n" . "\n";
