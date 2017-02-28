@@ -11,6 +11,8 @@
  *
  */
 
+require_once('../../fellesdata/lib/fellesdatalib.php');
+
 class STATUS_CRON {
     /***********/
     /* PUBLIC  */
@@ -18,7 +20,7 @@ class STATUS_CRON {
 
     public static function test($plugin) {
         try {
-            require_once('../../fellesdata/lib/fellesdatalib.php');
+
             // Get competence from KS
             self::competence_data($plugin);
 
