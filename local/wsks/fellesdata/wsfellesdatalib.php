@@ -1470,8 +1470,10 @@ class WS_FELLESDATA {
                 $infoUser->firstaccess  = $time;
                 $infoUser->calendartype = $CFG->calendartype;
                 $infoUser->mnethostid   = $CFG->mnet_localhost_id;
+                $infoUser->lang         = 'no';
             }else {
                 $userId = $rdoUser->id;
+                $infoUser->lang = 'no';
             }//if_not_info_user
 
             /* Apply Action */
