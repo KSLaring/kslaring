@@ -2093,12 +2093,12 @@ class FSKS_USERS {
             $params['imported'] = 0;
             $params['action']   = DELETE;
 
-            $sql = " SELECT	fs.id				as 'key',
-                            fs.fodselsnr 		as 'personalnumber',
-                            ksfs.fscompany		as 'fsid',	
-                            ks.companyid		as 'company',
-                            ks.hierarchylevel   as 'level',
-                            fsk_jr.ksjobrole 	as 'jobrole',
+            $sql = " SELECT	fs.id				  as 'key',
+                            trim(fs.fodselsnr) 	  as 'personalnumber',
+                            ksfs.fscompany		  as 'fsid',	
+                            ks.companyid		  as 'company',
+                            ks.hierarchylevel     as 'level',
+                            fsk_jr.ksjobrole 	  as 'jobrole',
                             GROUP_CONCAT(DISTINCT fs.stillingskode ORDER BY fs.stillingskode SEPARATOR ',') as 'fsjobroles',
                             GROUP_CONCAT(DISTINCT fs.id ORDER BY fs.id SEPARATOR ',') as 'impkeys',
                             fs.action
@@ -2134,7 +2134,9 @@ class FSKS_USERS {
             // Execute
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
-
+                foreach ($rdo as $instance) {
+                    echo $instance->personalnumber . "</br>";
+                }
                 /**
                 foreach ($rdo as $instance) {
                     if ($toDelete) {
