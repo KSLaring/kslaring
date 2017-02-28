@@ -800,7 +800,7 @@ class local_wsks_external extends external_api {
                                                               'jobrole'         => $jobRole,
                                                               'fsjobroles'      => $fsjobRoles,
                                                               'company'         => $companyID,
-                                                              'fsId'            => $fsId,
+                                                              'fsid'            => $fsId,
                                                               'level'           => $level,
                                                               'impkeys'         => $impKeys,
                                                               'action'          => $action));
