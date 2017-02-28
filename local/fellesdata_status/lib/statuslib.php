@@ -209,19 +209,7 @@ class STATUS {
                      ORDER BY fs.fodselsnr ";
             
             // Execute
-            $rdo = $DB->get_records_sql($sql,$params,0,1);
-            //if ($rdo) {
-            //    foreach ($rdo as $instance) {
-            //        // Add instance
-            //        $info = new stdClass();
-             //       $info->user         = $instance->userid;
-              //      $info->companies    = $instance->companies;
-               //     $info->keys         = $instance->ids;
-
-                //    $todelete[] = $info;
-                //}//if_instance
-            //}//if_rdo
-
+            $rdo = $DB->get_records_sql($sql,$params,$start,$limit);
 
             return $rdo;
         }catch (Exception $ex) {
@@ -236,7 +224,7 @@ class STATUS {
 
         try {
             // SQL Instruction
-            $sql = " DELETE FROM {mdl_user_info_competence_data}
+            $sql = " DELETE FROM {user_info_competence_data}
                      WHERE id IN ($deleted) ";
 
             // Execute
