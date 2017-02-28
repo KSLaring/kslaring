@@ -1269,7 +1269,7 @@ class local_wsks_external extends external_api {
                                                           'companies'   => $companies,
                                                           'keys'        => $keys));
 
-        return new external_function_parameters(array('competence'=> $competence));
+        return new external_function_parameters(array('competence'=> new external_multiple_structure($competence)));
     }//ws_delete_competence_parameters
 
     /**
