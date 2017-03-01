@@ -21,24 +21,21 @@ $PAGE->set_url('/local/wsks/test.php');
 /* Print Header */
 echo $OUTPUT->header();
 
-echo "TEST ING Function Web SErvices " . "</br>";
+// Save file
+$dir = $CFG->dataroot . '/fellesdata';
+// File
+$path = $dir . '/wsUserCompetence.txt';
 
-$top = array();
-$top['company'] = 'Bergen';
-$top['level'] = 0;
-$top['notIn'] = 0;
+// Process content
+if (file_exists($path)) {
+    // Get content
+    $data = file($path);
 
-$result = array();
-
-WS_FELLESDATA::OrganizationStructureByTop($top,$result);
-
-$response = $result['structure'];
-echo "TOTAL : " . count($response). "</br>";
-foreach ($response as $company) {
-    echo "HI --> " . $company->id  . " - " . $company->name . " - Parent : " . $company->parent . "</br>";
+    // Synchronization
+    foreach ($data as $key => $line) {
+        echo "Line: " . $line . "</br>";
+    }
 }
-
-echo "</br>-----</br>";
 
 /* Print Footer */
 echo $OUTPUT->footer();
