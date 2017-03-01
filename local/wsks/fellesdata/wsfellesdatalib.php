@@ -750,10 +750,125 @@ class WS_FELLESDATA {
             throw $ex;
         }//try_catch
     }//delete_competence_data
-    
+
+    /**
+     * Description
+     * Get managers/reporters
+     *
+     * @param           String $industry
+     * @param           String $result
+     *
+     * @throws          Exception
+     *
+     * @creationDate    01/03/2017
+     * @author          eFaktor     (fbv)
+     */
+    public static function managers_reporters($industry,&$result) {
+        /* Variables */
+        global $CFG;
+        $dblog = null;
+
+        try {
+            // Log
+            $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START GET Managers Reporters. ' . "\n";
+
+            // Get managers
+            $result['managers']     = self::get_managers_reporters_ks($industry,MANAGER);
+            // Get reporters
+            $result['reporters']    = self::get_managers_reporters_ks($industry,REPORTER);
+
+            // Log
+            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH GET Managers Reporters . ' . "\n";
+            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+        }catch (Exception $ex) {
+            $result['error']            = 409;
+            $result['message']          = $ex->getMessage();
+
+            // Log
+            $dblog = "ERROR: " . $ex->getMessage() . "\n" . "\n";
+            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). 'FINISH ERROR Get Managers Reporters . ' . "\n";
+            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+
+            throw $ex;
+        }//try_catch
+    }//managers_reporters
+
     /***********/
     /* PRIVATE */
     /***********/
+
+    /**
+     * Description
+     * Get managers/reporters from KS
+     *
+     * @param       String $industry
+     * @param       String $type
+     *
+     * @return      null|string
+     * @throws      Exception
+     *
+     * @creationDate    01/03/2017
+     * @author          eFaktor     (fbv)
+     */
+    private static function get_managers_reporters_ks($industry,$type) {
+        /* Variables */
+        global $DB;
+        $rdo        = null;
+        $sql        = null;
+        $params     = null;
+        $data       = null;
+        $table      = null;
+        $field      = null;
+
+        try {
+            // Search criteria
+            $params = array();
+            $params['industry2'] = $industry;
+            $params['mapped2']   = 'TARDIS';
+            $params['industry3'] = $industry;
+            $params['mapped3']   = 'TARDIS';
+
+            // Select table
+            switch ($type) {
+                case MANAGER:
+                    $table = 'report_gen_company_manager';
+                    $field = 're.managerid';
+
+                    break;
+                case REPORTER:
+                    $table = 'report_gen_company_reporter';
+                    $field = 're.reporterid';
+
+                    break;
+            }//switch_Type
+
+            // SQL Instruction
+            $sql = " SELECT       $field as 'userid',
+                                  u.username,
+                                  re.leveltwo,
+                                  re.levelthree
+                     FROM		  {$table}	re
+                        JOIN	  {user}						u		ON u.id 				= $field
+                        -- Level Two
+                        JOIN 	  {report_gen_companydata}		co_two 	ON 	co_two.id 			= re.leveltwo
+                                                                        AND	co_two.mapped 		= :mapped2
+                                                                        AND co_two.industrycode = :industry2
+                        -- Level Three
+                        LEFT JOIN	{report_gen_companydata}	co		ON 	co.id 			    = re.levelthree
+                                                                        AND co.mapped 		    = :mapped3
+                                                                        AND co.industrycode     = :industry3 ";
+
+            // Execute
+            $rdo = $DB->get_records_sql($sql,$params);
+            if ($rdo) {
+                $data = json_encode($rdo);
+            }//if_Rdo
+
+            return $data;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//get_managers_ks
 
     /**
      * Description
@@ -797,9 +912,7 @@ class WS_FELLESDATA {
             // Execute
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
-                foreach ($rdo as $instance) {
-                    $competence .= json_encode($instance) . "\n";
-                }//for_rdo
+                $competence =  json_encode($rdo);
             }//if_Rdo
 
             return $competence;
@@ -920,7 +1033,7 @@ class WS_FELLESDATA {
                 /* Manager && Reporter  */
                 if (($managerReporter->prioritet == 1) ||
                     ($managerReporter->prioritet == 2)) {
-                    $manager = 1;
+                    $manager  = 1;
                     $reporter = 1;
                 }//Manager&&Reporter
                 /* Reporter */
@@ -1092,7 +1205,7 @@ class WS_FELLESDATA {
                                 -- LEVEL ZERO
                                 JOIN  {report_gen_company_relation}	cr_zero		ON	cr_zero.companyid 		= co.id
                                 JOIN  {report_gen_companydata}		co_zero		ON	co_zero.id				= cr_zero.parentid
-                                                                                    AND	co_zero.hierarchylevel 	= 0
+                                                                                AND	co_zero.hierarchylevel 	= 0
                              WHERE	co.id             = :company
                                 AND	co.hierarchylevel = :level ";
 
@@ -1122,11 +1235,11 @@ class WS_FELLESDATA {
                                 -- LEVEL ONE
                                 JOIN  {report_gen_company_relation}	cr_one 		ON 	cr_one.companyid 		= co.id
                                 JOIN  {report_gen_companydata}		co_one		ON	co_one.id 				= cr_one.parentid
-                                                                                    AND co_one.hierarchylevel 	= 1
+                                                                                AND co_one.hierarchylevel 	= 1
                                 -- LEVEL ZERO
                                 JOIN  {report_gen_company_relation}	cr_zero		ON	cr_zero.companyid 		= co_one.id
                                 JOIN  {report_gen_companydata}		co_zero		ON	co_zero.id				= cr_zero.parentid
-                                                                                    AND	co_zero.hierarchylevel 	= 0
+                                                                                AND	co_zero.hierarchylevel 	= 0
                              WHERE	co.id 				= :company
                                 AND	co.hierarchylevel 	= :level ";
 
@@ -1157,11 +1270,11 @@ class WS_FELLESDATA {
                                 -- LEVEL TWO
                                 JOIN  {report_gen_company_relation}	cr_two		ON 	cr_two.companyid		= co.id
                                 JOIN  {report_gen_companydata}		co_two		ON  co_two.id				= cr_two.parentid
-                                                                                    AND	co_two.hierarchylevel	= 2
+                                                                                AND	co_two.hierarchylevel	= 2
                                 -- LEVEL ONE
                                 JOIN  {report_gen_company_relation}	cr_one 		ON 	cr_one.companyid 		= co_two.id
                                 JOIN  {report_gen_companydata}		co_one		ON	co_one.id 				= cr_one.parentid
-                                                                                    AND co_one.hierarchylevel 	= 1
+                                                                                AND co_one.hierarchylevel 	= 1
                                 -- LEVEL ZERO
                                 JOIN  {report_gen_company_relation}	cr_zero		ON	cr_zero.companyid 		= co_one.id
                                 JOIN  {report_gen_companydata}		co_zero		ON	co_zero.id				= cr_zero.parentid
