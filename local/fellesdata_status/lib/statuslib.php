@@ -303,10 +303,10 @@ class STATUS {
             
             // Get content
             $content = file($competence);
+            $content = json_decode($content);
 
             // Each line file
-            foreach($content as $key=>$line) {
-                $instance    = json_decode($line);
+            foreach($content as $key=>$instance) {
                 $instance->timemodified = $time;
 
                 // Add record

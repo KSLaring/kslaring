@@ -22,7 +22,7 @@ function fellesdata_status_cron() {
         // Plugin info
         $plugin = get_config('local_fellesdata');
         
-        STATUS_CRON::cron($plugin);
+        //STATUS_CRON::cron($plugin);
     }catch (Exception $ex) {
         throw $ex;
     }

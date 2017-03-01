@@ -45,10 +45,10 @@ class STATUS_CRON {
             // Get managers reporters from KS
 
             // Import last status from fellesdata
-            //self::import_status($plugin);
+            self::import_status($plugin);
 
             // Syncronization
-            self::synchronization($plugin);
+            //self::synchronization($plugin);
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -79,7 +79,7 @@ class STATUS_CRON {
             //self::sync_status_delete_competence($plugin);
 
             // Synchronization FS User Competence
-            self::sync_status_competence($plugin);
+            //self::sync_status_competence($plugin);
 
             // Log
             $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Synchronization Fellesdata STATUS. ' . "\n";
@@ -93,125 +93,6 @@ class STATUS_CRON {
             throw $ex;
         }//try_catch
     }//synchronization
-
-    private static function sync_status_competence($plugin) {
-        /* Variables    */
-        global $CFG;
-        $competence     = null;
-        $rdocompetence  = null;
-        $response       = null;
-        $dblog          = null;
-        $start          = 0;
-        $limit          = 5;
-
-        try {
-            // Log
-            $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START Synchronization STATUS competence. ' . "\n";
-
-            // User competence to synchronize
-            //$total = FSKS_USERS::get_total_users_competence_to_synchronize(false,true);
-            //if ($total) {
-            //    for ($i=0;$i<=$total;$i=$i+$limit) {
-                    list($competence,$rdocompetence) = FSKS_USERS::user_competence_to_synchronize(false,true,$start,$limit);
-            
-                    // Call web service
-                    // Params web service
-                    $params = array();
-                    $params['usersCompetence'] = $competence;
-
-                    $response = self::process_service($plugin,KS_USER_COMPETENCE,$params);
-                    if ($response['error'] == '200') {
-                        echo "INSIDE" . "</br>";
-                        // Synchronize user competence
-                        FSKS_USERS::synchronize_user_competence_fs($rdocompetence,$response['usersCompetence']);
-                    }else {
-                        // Log
-                      $dbLog  = "ERROR WS: " . $response['message'] . "\n" . "\n";
-                      $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' Finish ERROR Synchronization STATUS competence . ' . "\n";
-                      error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
-                    }//if_no_error
-
-             //   }//for_rdo
-            //}//if_totla
-
-            // Log
-            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Synchronization STATUS competence. ' . "\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
-        }catch (Exception $ex) {
-            // Log
-            $dblog  = "Error: " . $ex->getMessage() . "\n" . "\n";
-            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Synchronization STATUS competence. ' . "\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
-
-            throw $ex;
-        }//try_catch
-    }//sync_status_competence
-
-    /**
-     * Description
-     * Synchronization of all competence data that has to be deleted
-     * 
-     * @param           object  $plugin
-     * 
-     * @throws                  Exception
-     * 
-     * @creationDate    28/02/2017
-     * @author          eFaktor     (fbv)
-     */
-    private static function sync_status_delete_competence($plugin) {
-        /* Variables */
-        global $CFG;
-        $dblog      = null;
-        $total      = null;
-        $todelete   = null;
-        $params     = null;
-        $response   = null;
-        $start      = 0;
-        $limit      = 500;
-        
-        try {
-            // Log
-            $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START Synchronization STATUS delete competence. ' . "\n";
-            
-            // Get total to delete
-            $total = STATUS::total_competence_to_delete_ks();
-            if ($total) {
-                for ($i=0;$i<=$total;$i=$i+$limit) {
-                    // get to delete
-                    $todelete = STATUS::competence_to_delete_ks($start,$limit);
-
-                    // Params web service
-                    $params = array();
-                    $params['competence'] = $todelete;
-
-                    // Cal service
-                    $response = self::process_service($plugin,WS_DEL_COMPETENCE,$params);
-
-                    if ($response) {
-                        if ($response['error'] == '200') {
-                            STATUS::synchronize_competence_deleted($response['deleted']);
-                        }else {
-                            // Log
-                            $dblog .= "Error WS: " . $response['message'] . "\n" ."\n";
-                        }//if_no_error
-                    }else {
-                        $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' ERROR Response null . ' . "\n";
-                    }//if_else_response
-                }//for
-            }//if_total
-            
-            // Log
-            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Synchronization STATUS delete competence. ' . "\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
-        }catch (Exception $ex) {
-            // Log
-            $dblog  = "Error: " . $ex->getMessage() . "\n" . "\n";
-            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Synchronization STATUS delete competence. ' . "\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
-
-            throw $ex;
-        }//try_Catch
-    }//sync_status_competence
 
     /**
      * Description
@@ -242,10 +123,10 @@ class STATUS_CRON {
             //self::import_status_jobroles($plugin);
 
             // Import FS User Competence
-            //self::import_status_managers_reporters($plugin);
+            self::import_status_managers_reporters($plugin);
 
             // Import FS User Competence JR
-            self::import_status_user_competence($plugin);
+            //self::import_status_user_competence($plugin);
 
             // Log
             $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Import Fellesdata STATUS. ' . "\n";
@@ -590,7 +471,138 @@ class STATUS_CRON {
             throw $ex;
         }//try_catch
     }//competence_data
-    
+
+    /**
+     * Description
+     * Synchronization status competence
+     *
+     * @param       Object  $plugin
+     *
+     * @throws              Exception
+     *
+     * @creationDate    01/03/2017
+     * @author          eFaktor     (fbv)
+     */
+    private static function sync_status_competence($plugin) {
+        /* Variables    */
+        global $CFG;
+        $competence     = null;
+        $rdocompetence  = null;
+        $response       = null;
+        $dblog          = null;
+        $start          = 0;
+        $limit          = 500;
+
+        try {
+            // Log
+            $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START Synchronization STATUS competence. ' . "\n";
+
+            // User competence to synchronize
+            $total = FSKS_USERS::get_total_users_competence_to_synchronize(false,true);
+            if ($total) {
+                for ($i=0;$i<=$total;$i=$i+$limit) {
+                    list($competence,$rdocompetence) = FSKS_USERS::user_competence_to_synchronize(false,true,$start,$limit);
+
+                    // Call web service
+                    if ($competence) {
+                        // Params web service
+                        $params = array();
+                        $params['usersCompetence'] = $competence;
+
+                        $response = self::process_service($plugin,KS_USER_COMPETENCE,$params);
+                        if ($response['error'] == '200') {
+                            // Synchronize user competence
+                            FSKS_USERS::synchronize_user_competence_fs($rdocompetence,$response['usersCompetence']);
+                        }else {
+                            // Log
+                            $dbLog  = "ERROR WS: " . $response['message'] . "\n" . "\n";
+                            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' Finish ERROR Synchronization STATUS competence . ' . "\n";
+                            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+                        }//if_no_error
+
+                    }//if_competence
+               }//for_rdo
+            }//if_totla
+
+            // Log
+            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Synchronization STATUS competence. ' . "\n";
+            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+        }catch (Exception $ex) {
+            // Log
+            $dblog  = "Error: " . $ex->getMessage() . "\n" . "\n";
+            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Synchronization STATUS competence. ' . "\n";
+            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+
+            throw $ex;
+        }//try_catch
+    }//sync_status_competence
+
+    /**
+     * Description
+     * Synchronization of all competence data that has to be deleted
+     *
+     * @param           object  $plugin
+     *
+     * @throws                  Exception
+     *
+     * @creationDate    28/02/2017
+     * @author          eFaktor     (fbv)
+     */
+    private static function sync_status_delete_competence($plugin) {
+        /* Variables */
+        global $CFG;
+        $dblog      = null;
+        $total      = null;
+        $todelete   = null;
+        $params     = null;
+        $response   = null;
+        $start      = 0;
+        $limit      = 500;
+
+        try {
+            // Log
+            $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START Synchronization STATUS delete competence. ' . "\n";
+
+            // Get total to delete
+            $total = STATUS::total_competence_to_delete_ks();
+            if ($total) {
+                for ($i=0;$i<=$total;$i=$i+$limit) {
+                    // get to delete
+                    $todelete = STATUS::competence_to_delete_ks($start,$limit);
+
+                    // Params web service
+                    $params = array();
+                    $params['competence'] = $todelete;
+
+                    // Cal service
+                    $response = self::process_service($plugin,WS_DEL_COMPETENCE,$params);
+
+                    if ($response) {
+                        if ($response['error'] == '200') {
+                            STATUS::synchronize_competence_deleted($response['deleted']);
+                        }else {
+                            // Log
+                            $dblog .= "Error WS: " . $response['message'] . "\n" ."\n";
+                        }//if_no_error
+                    }else {
+                        $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' ERROR Response null . ' . "\n";
+                    }//if_else_response
+                }//for
+            }//if_total
+
+            // Log
+            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Synchronization STATUS delete competence. ' . "\n";
+            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+        }catch (Exception $ex) {
+            // Log
+            $dblog  = "Error: " . $ex->getMessage() . "\n" . "\n";
+            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Synchronization STATUS delete competence. ' . "\n";
+            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+
+            throw $ex;
+        }//try_Catch
+    }//sync_status_competence
+
     /**
      * Description
      * KS Web Services to import data from KS site and synchronize data between fellesdata and KS

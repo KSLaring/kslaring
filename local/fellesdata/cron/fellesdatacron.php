@@ -1451,7 +1451,7 @@ class FELLESDATA_CRON {
         $response       = null;
         $dbLog          = null;
         $start          = 0;
-        $limit          = 1000;
+        $limit          = 500;
 
         try {
             // check if the synchronization can be run
@@ -1460,17 +1460,17 @@ class FELLESDATA_CRON {
                 $total = FSKS_USERS::get_total_users_competence_to_synchronize($toDelete,$status);
                 if ($total) {
                     for ($i=0;$i<=$total;$i=$i+$limit) {
-                        $toSynchronize = FSKS_USERS::user_competence_to_synchronize($toDelete,$status,$start,$limit);
+                        list($competence,$rdocompetence) = FSKS_USERS::user_competence_to_synchronize($toDelete,$status,$start,$limit);
 
                         // Call web service
-                        if ($toSynchronize) {
+                        if ($competence) {
                             // Params web service
                             $params = array();
-                            $params['usersCompetence'] = $toSynchronize;
+                            $params['usersCompetence'] = $competence;
                             $response = self::process_ks_service($pluginInfo,$service,$params);
                             if ($response['error'] == '200') {
                                 // Synchronize user competence
-                                FSKS_USERS::synchronize_user_competence_fs($toSynchronize,$response['usersCompetence']);
+                                FSKS_USERS::synchronize_user_competence_fs($rdocompetence,$response['usersCompetence']);
                             }else {
                                 // Log
                                 $dbLog  = "ERROR WS: " . $response['message'] . "\n" . "\n";

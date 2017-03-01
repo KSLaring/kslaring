@@ -1,56 +1,28 @@
 <?php
 /**
- * Fellesdata Status Integration - Script installaton DB
+ * Fellesdata Status - Script UPGRADE installaton DB
  *
- * @package         local/fellesdata_status
+ * @package         local/fellesdata
  * @subpackage      db
  * @copyright       2014        eFaktor {@link http://www.efaktor.no}
  *
- * @creationDate    01/02/2017
+ * @creationDate    01/03/2017
  * @author          eFaktor     (fbv)
  *
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-function xmldb_local_fellesdata_status_install() {
+function xmldb_local_fellesdata_status_upgrade($oldversion) {
     /* Variables */
     global $DB;
-    $tblcompetence  = null;
     $tblmanagers    = null;
     $tblreporters   = null;
 
     // Get manager
     $dbman = $DB->get_manager();
-
-    try {
-        // Competence data
-        if (!$dbman->table_exists('user_info_competence_data')) {
-            // create table
-            $tblcompetence = new xmldb_table('user_info_competence_data');
-
-            // Fields
-            // Id - Primary key
-            $tblcompetence->add_field('id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
-            // User id
-            $tblcompetence->add_field('userid',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
-            // Username
-            $tblcompetence->add_field('username',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
-            // Company      --> Company.
-            $tblcompetence->add_field('companyid',XMLDB_TYPE_INTEGER,'10',null, null, null,null);
-            // Level
-            $tblcompetence->add_field('level',XMLDB_TYPE_INTEGER,'2',null, null, null,null);
-            // Job roles
-            $tblcompetence->add_field('jobroles',XMLDB_TYPE_TEXT,null,null, null, null,null);
-            // Time modified
-            $tblcompetence->add_field('timemodified',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
-
-            // Keys
-            $tblcompetence->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
-
-            $dbman->create_table($tblcompetence);
-        }//if_table_exists_competence_data
-
+    
+    if ($oldversion < 2017030100) {
         // Managers
         if (!$dbman->table_exists('user_managers')) {
             // create table
@@ -100,7 +72,7 @@ function xmldb_local_fellesdata_status_install() {
 
             $dbman->create_table($tblreporters);
         }//if_reporters
-    }catch (Exception $ex) {
-        throw $ex;
-    }//try_catch
-}//xmldb_local_fellesdata_status_install
+    }//if_old_version
+    
+    return true;
+}//xmldb_local_fellesdata_status_upgrade

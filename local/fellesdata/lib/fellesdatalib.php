@@ -1239,7 +1239,7 @@ class FSKS_USERS {
         $params             = null;
         $sql                = null;
         $rdo                = null;
-        $managersReporters  = array();
+        $managersreporters  = null;
         $info               = null;
 
         try {
@@ -1248,11 +1248,11 @@ class FSKS_USERS {
             $params['imported'] = 0;
 
             // SQL Instruction
-            $sql = " SELECT	  fs.id,
-                              fs.fodselsnr,
-                              fsk.fscompany,
-                              fsk.kscompany,
-                              ks.hierarchylevel,
+            $sql = " SELECT	  fs.id 				as 'key',
+                              trim(fs.fodselsnr) 	as 'personalnumber',
+                              fsk.fscompany 		as 'fsid',
+                              fsk.kscompany 		as 'ksid',
+                              ks.hierarchylevel 	as 'level',
                               fs.prioritet,
                               fs.action
                      FROM	  {fs_imp_managers_reporters}   fs
@@ -1271,28 +1271,10 @@ class FSKS_USERS {
             // Execute
             $rdo = $DB->get_records_sql($sql,$params,$start,$limit);
             if ($rdo) {
-                foreach ($rdo as $instance) {
-                    // Info Competence
-                    $info = new stdClass();
-                    $info->key              = $instance->id;
-                    $info->personalNumber   = trim($instance->fodselsnr);
-                    $info->ksId             = $instance->kscompany;
-                    $info->fsId             = $instance->fscompany;
-                    $info->level            = $instance->hierarchylevel;
-                    $info->prioritet        = $instance->prioritet;
-                    if ($status) {
-                        $info->action       = ADD;
-                    }else {
-                        $info->action       = $instance->action;
-                    }//if_status
-
-
-                    // Add Competence
-                    $managersReporters[$instance->id] = $info;
-                }//for_Rdo
+                $managersreporters = json_encode($rdo);
             }//if_rdo
 
-            return $managersReporters;
+            return array($managersreporters,$rdo);
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -2129,7 +2111,6 @@ class FSKS_USERS {
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 $lstCompetence = json_encode($rdo);
-                //$lstCompetence = str_replace('},',"}\n{",$lstCompetence);
             }else {
                 // Log
                 $dblog  = "User Competence - GetUsersCompetence_ToSynchronize NO RDO".  "\n\n";
