@@ -393,7 +393,7 @@ class WS_FELLESDATA {
     /**
      * Description
      * Synchronize user competence between FS and KS
-     * 
+     *
      * @param           String $competence
      * @param           array  $result
      *
@@ -440,15 +440,16 @@ class WS_FELLESDATA {
                 // Get content
                 $data = file($path);
 
+                $data = json_decode($data);
                 // Synchronization
-                foreach($data as $key=>$line) {
-                    if ($line) {
-                        $infocompetence = json_decode($line);
+                foreach($data as $key=>$infocompetence) {
+                    //if ($infocompetence) {
+                       $dblog .= "Line : " . $infocompetence->key . " - " . $infocompetence->personalnumber . "\n";
+                    //    $infocompetence = json_decode($line);
 
                         // Process competence
                         $competenceid = self::process_user_competence($infocompetence);
 
-                        /* Marked as imported */
                         // Marked as imported
                         if ($competenceid) {
                             $infoimported = new stdClass();
@@ -460,7 +461,7 @@ class WS_FELLESDATA {
                         }//if_competenceDataID
 
                         $result['usersCompetence'] = $imported;
-                    }//if_line
+                    //}//if_line
                 }//for_line_File
             }//if_file_exists
 
