@@ -843,7 +843,8 @@ class WS_FELLESDATA {
             }//switch_Type
 
             // SQL Instruction
-            $sql = " SELECT       $field as 'userid',
+            $sql = " SELECT       re.id,
+                                  $field as 'userid',
                                   u.username,
                                   re.leveltwo,
                                   re.levelthree
