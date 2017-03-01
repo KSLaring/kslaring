@@ -784,28 +784,9 @@ class local_wsks_external extends external_api {
      * Web service to synchronize user competence between FS and KS - Parameters
      */
     public static function wsUserCompetence_parameters() {
-        /* User Competence Info */
-        $personalNumber = new external_value(PARAM_TEXT,'Personal Number');
-        $key            = new external_value(PARAM_TEXT,'Key');
-        $jobRole        = new external_value(PARAM_TEXT,'Job Roles Id');
-        $fsjobRoles     = new external_value(PARAM_TEXT,'FS job roles');
-        $companyID      = new external_value(PARAM_INT,'Company Id');
-        $fsId           = new external_value(PARAM_TEXT,'FS Company Id');
-        $level          = new external_value(PARAM_INT,'Level');
-        $impKeys        = new external_value(PARAM_TEXT,'KEYS IMP FS JR');
-        $action         = new external_value(PARAM_INT,'Action. Add/Update/Delete');
+        $lstcompetence       = new external_value(PARAM_TEXT,'List of competence ');
 
-        $userCompetence = new external_single_structure(array('personalnumber'  => $personalNumber,
-                                                              'key'             => $key,
-                                                              'jobrole'         => $jobRole,
-                                                              'fsjobroles'      => $fsjobRoles,
-                                                              'company'         => $companyID,
-                                                              'fsid'            => $fsId,
-                                                              'level'           => $level,
-                                                              'impkeys'         => $impKeys,
-                                                              'action'          => $action));
-
-        return new external_function_parameters(array('usersCompetence'=> new external_multiple_structure($userCompetence)));
+        return new external_function_parameters(array('usersCompetence'=> $lstcompetence));
     }//wsUserCompetence_parameters
 
     /**
@@ -849,7 +830,6 @@ class local_wsks_external extends external_api {
      */
     public static function wsUserCompetence($usersCompetence) {
         /* Variables    */
-        global $CFG;
         $result     = array();
 
         /* Parameter Validation */
@@ -861,6 +841,7 @@ class local_wsks_external extends external_api {
         $result['usersCompetence']  = array();
 
         try {
+
             /* Synchronization */
             WS_FELLESDATA::synchronize_user_competence($usersCompetence,$result);
 

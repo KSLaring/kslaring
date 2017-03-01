@@ -391,60 +391,87 @@ class WS_FELLESDATA {
     }//synchronize_user_manager_reporter
 
     /**
-     * @param           $usersCompetence
-     * @param           $result
+     * Description
+     * Synchronize user competence between FS and KS
+     * 
+     * @param           String $competence
+     * @param           array  $result
      *
      * @throws          Exception
      *
      * @creationDate    14/06/2016
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Synchronize user competence between FS and KS
      */
-    public static function synchronize_user_competence($usersCompetence,&$result) {
+    public static function synchronize_user_competence($competence,&$result) {
         /* Variables */
         global $CFG;
-        $objCompetence      = null;
-        $competenceDataID   = null;
-        $infoImported       = null;
-        $imported           = array();
-        $dbLog              = null;
-
-        /* Log  */
-        $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START Synchronization User Competence. ' . "\n";
-        error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+        $data           = null;
+        $dir            = null;
+        $path           = null;
+        $filecompetence = null;
+        $imported       = array();
+        $infoimported   = null;
+        $infocompetence = null;
+        $competenceid   = null;
+        $dblog          = null;
 
         try {
-            /* Synchronization competence between FS and KS */
-            foreach ($usersCompetence as $key => $competence) {
-                /* Convert to object    */
-                $objCompetence = (Object)$competence;
+            // Log
+            $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START Synchronization User Competence. ' . "\n";
 
-                /* Process the competence */
-                $competenceDataID = self::process_user_competence($objCompetence);
+            // Save file
+            $dir = $CFG->dataroot . '/fellesdata';
+            if (!file_exists($dir)) {
+                mkdir($dir);
+            }
 
-                /* Marked as imported */
-                if ($competenceDataID) {
-                    $infoImported = new stdClass();
-                    $infoImported->personalNumber   = $objCompetence->personalnumber;
-                    $infoImported->imported         = 1;
-                    $infoImported->key              = $objCompetence->key;
+            // File
+            $path = $dir . '/wsUserCompetence.txt';
 
-                    $imported[$objCompetence->key] = $infoImported;
-                }//if_competenceDataID
-            }//for_competences
+            // Clean old data
+            // Save new data
+            unlink($path);
+            $filecompetence = fopen($path,'w');
+            fwrite($filecompetence,$competence);
+            fclose($filecompetence);
 
-            $result['usersCompetence'] = $imported;
+            // Process content
+            if (file_exists($path)) {
+                // Get content
+                $data = file($path);
 
-            /* Log  */
-            $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Synchronization User Competence. ' . "\n";
-            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+                // Synchronization
+                foreach($data as $key=>$line) {
+                    if ($line) {
+                        $infocompetence = json_decode($line);
+
+                        // Process competence
+                        $competenceid = self::process_user_competence($infocompetence);
+
+                        /* Marked as imported */
+                        // Marked as imported
+                        if ($competenceid) {
+                            $infoimported = new stdClass();
+                            $infoimported->personalNumber   = $infocompetence->personalnumber;
+                            $infoimported->imported         = 1;
+                            $infoimported->key              = $infocompetence->key;
+
+                            $imported[$infocompetence->key] = $infoimported;
+                        }//if_competenceDataID
+
+                        $result['usersCompetence'] = $imported;
+                    }//if_line
+                }//for_line_File
+            }//if_file_exists
+
+            // Log
+            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Synchronization User Competence. ' . "\n";
+            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
         }catch (Exception $ex) {
-            /* Log  */
-            $dbLog = $ex->getMessage() . "\n\n";
-            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH ERROR Synchronization User Competence. ' . "\n";
-            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+            // Log
+            $dblog = $ex->getMessage() . "\n\n";
+            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH ERROR Synchronization User Competence. ' . "\n";
+            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
 
             $result['error']            = 409;
             $result['message']          = $ex->getMessage();
@@ -453,6 +480,7 @@ class WS_FELLESDATA {
             throw $ex;
         }//try_catch
     }//synchronize_user_competence
+
 
     /**
      * @param           $userMail
