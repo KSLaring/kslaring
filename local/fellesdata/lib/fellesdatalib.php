@@ -1545,13 +1545,11 @@ class FSKS_USERS {
 
                 if ($objCompetence->imported) {
                     // Get Info
-                    echo "KEY: " . $objCompetence->key . "</br>";
-                    //$infoUser = $usersCompetence[$objCompetence->key];
+                    $infoUser = $usersCompetence[$objCompetence->key];
+                    echo "Info User: " . $infoUser->personalnumber . "</br>";
 
                     // Synchronize User Competence
                     //self::synchronize_competence_fs($infoUser);
-                }else {
-                    echo "HOLA " . $objCompetence->key . "</br>";
                 }//if_imported
             }//for_competencesImported
         }catch (Exception $ex) {
@@ -2095,24 +2093,24 @@ class FSKS_USERS {
             $params['imported'] = 0;
             $params['action']   = DELETE;
 
-            $sql = " SELECT	fs.id				  as 'key',
-                            trim(fs.fodselsnr) 	  as 'personalnumber',
-                            ksfs.fscompany		  as 'fsid',	
-                            ks.companyid		  as 'company',
-                            ks.hierarchylevel     as 'level',
-                            fsk_jr.ksjobrole 	  as 'jobrole',
-                            GROUP_CONCAT(DISTINCT fs.stillingskode ORDER BY fs.stillingskode SEPARATOR ',') as 'fsjobroles',
-                            GROUP_CONCAT(DISTINCT fs.id ORDER BY fs.id SEPARATOR ',')                       as 'impkeys',
-                            IF(fs.action=3,1,fs.action) 													as 'action'
-                     FROM	    {fs_imp_users_jr}	fs
-                        JOIN    {user}              u       ON      u.idnumber 			= fs.fodselsnr
-                                                            AND     u.deleted  			= 0
+            $sql = " SELECT	  fs.id				  as 'key',
+                              trim(fs.fodselsnr)  as 'personalnumber',
+                              ksfs.fscompany	  as 'fsid',	
+                              ks.companyid		  as 'company',
+                              ks.hierarchylevel   as 'level',
+                              fsk_jr.ksjobrole 	  as 'jobrole',
+                              GROUP_CONCAT(DISTINCT fs.stillingskode ORDER BY fs.stillingskode SEPARATOR ',') as 'fsjobroles',
+                              GROUP_CONCAT(DISTINCT fs.id ORDER BY fs.id SEPARATOR ',')                       as 'impkeys',
+                              IF(fs.action=3,1,fs.action) 													  as 'action'
+                     FROM	  {fs_imp_users_jr}	  fs
+                        JOIN  {user}              u       ON    u.idnumber 			= fs.fodselsnr
+                                                          AND   u.deleted  			= 0
                         -- COMPANY
-                        JOIN	{ksfs_company}		ksfs 	ON 		ksfs.fscompany 		= fs.ORG_ENHET_ID
-                        JOIN	{ks_company}		ks	    ON		ks.companyid		= ksfs.kscompany
+                        JOIN  {ksfs_company}	  ksfs 	  ON    ksfs.fscompany 		= fs.ORG_ENHET_ID
+                        JOIN  {ks_company}		  ks	  ON	ks.companyid		= ksfs.kscompany
                         -- JOB ROLE
-                        JOIN	{ksfs_jobroles}		fsk_jr 	ON 		fsk_jr.fsjobrole 	= fs.stillingskode
-                     WHERE		fs.imported = :imported ";
+                        JOIN  {ksfs_jobroles}	  fsk_jr  ON 	fsk_jr.fsjobrole 	= fs.stillingskode
+                     WHERE	  fs.imported = :imported ";
 
             // Action
             if ($status) {
@@ -2129,58 +2127,9 @@ class FSKS_USERS {
                       ORDER BY fs.fodselsnr
                       LIMIT $start,$limit ";
 
-            $dbLog .= "SQL : " . "\n\n";
-            $dbLog .= $sql . "\n\n";
-            $dbLog .= "Action : " . $params['action'] . "\n\n";
-
             // Execute
             $rdo = $DB->get_records_sql($sql,$params);
-            if ($rdo) {
-                $dbLog .= " Inside " . "\n\n";
-
-                foreach ($rdo as $instance) {
-                    echo $instance->personalnumber . "</br>";
-                }
-                /**
-                foreach ($rdo as $instance) {
-                    if ($toDelete) {
-                        $toDeleteFromKS = self::delete_from_competence_fs($instance);
-
-                        if ($toDeleteFromKS) {
-                            // Info Competence JR
-                            $infoComp = new stdClass();
-                            $infoComp->key              = $instance->id;
-                            $infoComp->personalNumber   = trim($instance->fodselsnr);
-                            $infoComp->jobrole          = $instance->ksjobrole;
-                            $infoComp->fsjobroles       = $instance->fsjobroles;
-                            $infoComp->fsId             = $instance->fscompany;
-                            $infoComp->company          = $instance->companyid;
-                            $infoComp->level            = $instance->hierarchylevel;
-                            $infoComp->impkeys          = $instance->impkeys;
-                            $infoComp->action           = DELETE;
-
-                            // Add competence
-                            $usersComp[$instance->id] = $infoComp;
-                        }
-                    }else {
-                        // Info Competence JR
-                        $infoComp = new stdClass();
-                        $infoComp->key              = $instance->id;
-                        $infoComp->personalNumber   = trim($instance->fodselsnr);
-                        $infoComp->jobrole          = $instance->ksjobrole;
-                        $infoComp->fsjobroles       = $instance->fsjobroles;
-                        $infoComp->fsId             = $instance->fscompany;
-                        $infoComp->company          = $instance->companyid;
-                        $infoComp->level            = $instance->hierarchylevel;
-                        $infoComp->impkeys          = $instance->impkeys;
-                        $infoComp->action           = ADD;
-
-                        // Add competence
-                        $usersComp[$instance->id] = $infoComp;
-                    }//id_delte
-                }//for_rdo
-                 * */
-            }else {
+            if (!$rdo) {
                 // Log
                 $dbLog  = "User Competence - GetUsersCompetence_ToSynchronize NO RDO".  "\n\n";
                 $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH GetUsersCompetence_ToSynchronize . ' . "\n";
