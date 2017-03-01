@@ -30,7 +30,7 @@ class STATUS_CRON {
             //self::import_status($plugin);
 
             // Syncronization
-            self::synchronization($plugin);
+            //self::synchronization($plugin);
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
