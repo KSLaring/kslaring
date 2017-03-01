@@ -30,10 +30,12 @@ $path = $dir . '/wsUserCompetence.txt';
 if (file_exists($path)) {
     // Get content
     $data = file($path);
+    $data = file_get_contents($path);
 
+    $mydata = json_decode($data);
     // Synchronization
-    foreach ($data as $key => $line) {
-        echo "Line: " . $line . "</br>";
+    foreach ($mydata as $key => $line) {
+        echo "Line: " . $key . " - " . $line->key . " - " . $line->personalnumber . "</br>";
     }
 }
 
