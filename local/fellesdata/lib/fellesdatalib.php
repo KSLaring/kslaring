@@ -2139,7 +2139,7 @@ class FSKS_USERS {
                 error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
             }//if_rdo
 
-            return $lstCompetence;
+            return array($lstCompetence,$rdo);
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch

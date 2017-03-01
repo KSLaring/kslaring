@@ -79,11 +79,12 @@ class STATUS_CRON {
     private static function sync_status_competence($plugin) {
         /* Variables    */
         global $CFG;
-        $competence  = null;
-        $response    = null;
-        $dblog       = null;
-        $start       = 0;
-        $limit       = 5;
+        $competence     = null;
+        $rdocompetence  = null;
+        $response       = null;
+        $dblog          = null;
+        $start          = 0;
+        $limit          = 5;
 
         try {
             // Log
@@ -93,7 +94,7 @@ class STATUS_CRON {
             //$total = FSKS_USERS::get_total_users_competence_to_synchronize(false,true);
             //if ($total) {
             //    for ($i=0;$i<=$total;$i=$i+$limit) {
-                    $competence = FSKS_USERS::user_competence_to_synchronize(false,true,$start,$limit);
+                    list($competence,$rdocompetence) = FSKS_USERS::user_competence_to_synchronize(false,true,$start,$limit);
 
                     // Call web service
                     // Params web service
@@ -103,7 +104,7 @@ class STATUS_CRON {
                     $response = self::process_service($plugin,KS_USER_COMPETENCE,$params);
                     if ($response['error'] == '200') {
                         // Synchronize user competence
-                        FSKS_USERS::synchronize_user_competence_fs($competence,$response['usersCompetence']);
+                        FSKS_USERS::synchronize_user_competence_fs($rdocompetence,$response['usersCompetence']);
                     }else {
                         // Log
                         $dbLog  = "ERROR WS: " . $response['message'] . "\n" . "\n";
