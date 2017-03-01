@@ -1546,7 +1546,7 @@ class FSKS_USERS {
                 if ($objCompetence->imported) {
                     // Get Info
                     $infoUser = $usersCompetence[$objCompetence->key];
-                    echo "Info User: " . $infoUser->personalnumber . "</br>";
+                    echo "Info User: " . $infoUser->personalnumber . " - " . $objCompetence->key . "</br>";
 
                     // Synchronize User Competence
                     //self::synchronize_competence_fs($infoUser);
