@@ -438,11 +438,11 @@ class WS_FELLESDATA {
             // Process content
             if (file_exists($path)) {
                 // Get content
-                $data = file($path);
-
-                $data = json_decode($data);
+                $data   = file_get_contents($path);
+                $mydata = json_decode($data);
+                
                 // Synchronization
-                foreach($data as $key=>$infocompetence) {
+                foreach($mydata as $key=>$infocompetence) {
                     //if ($infocompetence) {
                        $dblog .= "Line : " . $infocompetence->key . " - " . $infocompetence->personalnumber . "\n";
                     //    $infocompetence = json_decode($line);
