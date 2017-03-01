@@ -2130,7 +2130,7 @@ class FSKS_USERS {
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 foreach ($rdo as $instance) {
-                    $lstCompetence .= json_encode($instance);
+                    $lstCompetence .= json_encode($instance) . "\n";
                 }//for_rdo
             }else {
                 // Log
