@@ -2128,9 +2128,11 @@ class FSKS_USERS {
             // Execute
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
+                //
+                //
                 //foreach ($rdo as $instance) {
-                    $lstCompetence .= json_encode($rdo) . "\n";
-                    //$lstCompetence = str_replace('},',"}\n",$lstCompetence);
+                //    $lstCompetence .= json_encode($rdo) . "\n";
+                    $lstCompetence = str_replace('},',"}\n{",$lstCompetence);
                 //}//for_rdo
             }else {
                 // Log
