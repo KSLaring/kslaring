@@ -83,7 +83,7 @@ class STATUS_CRON {
         $response    = null;
         $dblog       = null;
         $start       = 0;
-        $limit       = 1000;
+        $limit       = 500;
 
         try {
             // Log
