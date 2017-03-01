@@ -2131,7 +2131,7 @@ class FSKS_USERS {
                 //
                 //
                 //foreach ($rdo as $instance) {
-                //    $lstCompetence .= json_encode($rdo) . "\n";
+                    $lstCompetence = json_encode($rdo);
                     $lstCompetence = str_replace('},',"}\n{",$lstCompetence);
                 //}//for_rdo
             }else {
