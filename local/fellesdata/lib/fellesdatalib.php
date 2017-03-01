@@ -2129,11 +2129,13 @@ class FSKS_USERS {
 
             $dbLog .= "SQL : " . "\n\n";
             $dbLog .= $sql . "\n\n";
-            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+            $dbLog .= "Action : " . $params['action'] . "\n\n";
 
             // Execute
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
+                $dbLog .= " Inside " . "\n\n";
+
                 foreach ($rdo as $instance) {
                     echo $instance->personalnumber . "</br>";
                 }
@@ -2180,8 +2182,9 @@ class FSKS_USERS {
                 // Log
                 $dbLog  = "User Competence - GetUsersCompetence_ToSynchronize NO RDO".  "\n\n";
                 $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH GetUsersCompetence_ToSynchronize . ' . "\n";
-                error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
             }//if_Rdo
+
+            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
 
             return $rdo;
         }catch (Exception $ex) {
