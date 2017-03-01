@@ -18,7 +18,25 @@ class STATUS_CRON {
     /* PUBLIC  */
     /***********/
 
-    public static function test($plugin) {
+    public static function cron($plugin) {
+        try {
+
+            // Get competence from KS
+            //self::competence_data($plugin);
+
+            // Get managers reporters from KS
+
+            // Import last status from fellesdata
+            //self::import_status($plugin);
+
+            // Syncronization
+            self::synchronization($plugin);
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }
+
+    public static function text($plugin) {
         try {
 
             // Get competence from KS
@@ -116,7 +134,17 @@ class STATUS_CRON {
             $filecompetence = fopen($path,'w');
             fwrite($filecompetence,$competence);
             fclose($filecompetence);
-            
+
+            // Process content
+            if (file_exists($path)) {
+                // Get content
+                $data = file($path);
+
+                // Synchronization
+                foreach($data as $key=>$line) {
+                    echo $line . "</br>";        
+                }
+            }
                     //$response = self::process_service($plugin,KS_USER_COMPETENCE,$params);
             //if ($response['error'] == '200') {
                         // Synchronize user competence

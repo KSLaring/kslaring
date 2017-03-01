@@ -15,7 +15,14 @@ function fellesdata_status_cron() {
     $plugin         = null;
 
     try {
+        require_once('cron/statuscron.php');
+        require_once('lib/statuslib.php');
+        require_once('../fellesdata/lib/fellesdatalib.php');
 
+        // Plugin info
+        $plugin = get_config('local_fellesdata');
+        
+        STATUS_CRON::cron($plugin);
     }catch (Exception $ex) {
         throw $ex;
     }
