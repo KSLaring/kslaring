@@ -1546,10 +1546,9 @@ class FSKS_USERS {
                 if ($objCompetence->imported) {
                     // Get Info
                     $infoUser = $usersCompetence[$objCompetence->key];
-                    echo "Info User: " . $infoUser->personalnumber . " - " . $objCompetence->key . "</br>";
 
                     // Synchronize User Competence
-                    //self::synchronize_competence_fs($infoUser);
+                    self::synchronize_competence_fs($infoUser);
                 }//if_imported
             }//for_competencesImported
         }catch (Exception $ex) {
@@ -2338,6 +2337,8 @@ class FSKS_USERS {
                 case DELETE:
                     // Delete if exists
                     if ($rdo) {
+                        //self::delete_from_competence_fs($rdo);
+                        
                         $DB->delete_records('fs_users_competence',array('id' => $rdo->id));
 
                         // Synchronized
