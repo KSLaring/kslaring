@@ -2128,9 +2128,12 @@ class FSKS_USERS {
             // Execute
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
-                foreach ($rdo as $instance) {
-                    $lstCompetence .= json_encode($instance) . "\n";
-                }//for_rdo
+                //foreach ($rdo as $instance) {
+                    $lstCompetence = json_encode($rdo) . "\n";
+                    $lstCompetence = str_replace('},',"}\n",$lstCompetence);
+                
+                echo $lstCompetence;
+                //}//for_rdo
             }else {
                 // Log
                 $dblog  = "User Competence - GetUsersCompetence_ToSynchronize NO RDO".  "\n\n";
