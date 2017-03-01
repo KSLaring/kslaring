@@ -92,7 +92,7 @@ class STATUS_CRON {
             // User competence to synchronize
             //$total = FSKS_USERS::get_total_users_competence_to_synchronize(false,true);
             //if ($total) {
-                //for ($i=0;$i<=$total;$i=$i+$limit) {
+             //   for ($i=0;$i<=$total;$i=$i+$limit) {
                     $competence = FSKS_USERS::user_competence_to_synchronize(false,true,$start,$limit);
 
                     // Call web service
@@ -110,7 +110,7 @@ class STATUS_CRON {
                         $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' Finish ERROR Synchronization STATUS competence . ' . "\n";
                         error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
                     }//if_no_error
-                //}//for_rdo
+             //   }//for_rdo
             //}//if_totla
 
             // Log

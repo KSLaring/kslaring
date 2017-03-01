@@ -1550,6 +1550,8 @@ class FSKS_USERS {
 
                     // Synchronize User Competence
                     //self::synchronize_competence_fs($infoUser);
+                }else {
+                    echo "HOLA " . $objCompetence->key . "</br>";
                 }//if_imported
             }//for_competencesImported
         }catch (Exception $ex) {
@@ -2100,8 +2102,8 @@ class FSKS_USERS {
                             ks.hierarchylevel     as 'level',
                             fsk_jr.ksjobrole 	  as 'jobrole',
                             GROUP_CONCAT(DISTINCT fs.stillingskode ORDER BY fs.stillingskode SEPARATOR ',') as 'fsjobroles',
-                            GROUP_CONCAT(DISTINCT fs.id ORDER BY fs.id SEPARATOR ',') as 'impkeys',
-                            fs.action
+                            GROUP_CONCAT(DISTINCT fs.id ORDER BY fs.id SEPARATOR ',')                       as 'impkeys',
+                            IF(fs.action=3,1,fs.action) 													as 'action'
                      FROM	    {fs_imp_users_jr}	fs
                         JOIN    {user}              u       ON      u.idnumber 			= fs.fodselsnr
                                                             AND     u.deleted  			= 0
