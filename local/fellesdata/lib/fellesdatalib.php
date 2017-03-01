@@ -2123,8 +2123,7 @@ class FSKS_USERS {
 
             // GROUP / ORDER
             $sql .= " GROUP BY fs.fodselsnr,ksfs.fscompany
-                      ORDER BY fs.fodselsnr
-                      LIMIT $start,$limit ";
+                      ORDER BY fs.fodselsnr ";
 
             // Execute
             $rdo = $DB->get_records_sql($sql,$params);
