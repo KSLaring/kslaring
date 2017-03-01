@@ -440,29 +440,26 @@ class WS_FELLESDATA {
                 // Get content
                 $data   = file_get_contents($path);
                 $mydata = json_decode($data);
-                
+
                 // Synchronization
                 foreach($mydata as $key=>$infocompetence) {
-                    //if ($infocompetence) {
-                       $dblog .= "Line : " . $infocompetence->key . " - " . $infocompetence->personalnumber . "\n";
-                    //    $infocompetence = json_decode($line);
+                    // Process competence
+                    $competenceid = self::process_user_competence($infocompetence);
 
-                        // Process competence
-                        $competenceid = self::process_user_competence($infocompetence);
+                    // Marked as imported
+                    if ($competenceid) {
+                        $infoimported = new stdClass();
+                        $infoimported->personalNumber   = $infocompetence->personalnumber;
+                        $infoimported->imported         = 1;
+                        $infoimported->key              = $infocompetence->key;
 
-                        // Marked as imported
-                        if ($competenceid) {
-                            $infoimported = new stdClass();
-                            $infoimported->personalNumber   = $infocompetence->personalnumber;
-                            $infoimported->imported         = 1;
-                            $infoimported->key              = $infocompetence->key;
-
-                            $imported[$infocompetence->key] = $infoimported;
-                        }//if_competenceDataID
-
-                        $result['usersCompetence'] = $imported;
-                    //}//if_line
+                        $imported[$infocompetence->key] = $infoimported;
+                    }//if_competenceDataID
                 }//for_line_File
+
+                if ($imported) {
+                    $result['usersCompetence'] = $imported;
+                }//if_imported
             }//if_file_exists
 
             // Log
