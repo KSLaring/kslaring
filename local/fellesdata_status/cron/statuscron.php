@@ -83,16 +83,16 @@ class STATUS_CRON {
         $response    = null;
         $dblog       = null;
         $start       = 0;
-        $limit       = 10;
+        $limit       = 1000;
 
         try {
             // Log
             $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START Synchronization STATUS competence. ' . "\n";
 
             // User competence to synchronize
-            //$total = FSKS_USERS::get_total_users_competence_to_synchronize(false,true);
-            //if ($total) {
-             //   for ($i=0;$i<=$total;$i=$i+$limit) {
+            $total = FSKS_USERS::get_total_users_competence_to_synchronize(false,true);
+            if ($total) {
+                for ($i=0;$i<=$total;$i=$i+$limit) {
                     $competence = FSKS_USERS::user_competence_to_synchronize(false,true,$start,$limit);
 
                     // Call web service
@@ -110,8 +110,8 @@ class STATUS_CRON {
                         $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' Finish ERROR Synchronization STATUS competence . ' . "\n";
                         error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
                     }//if_no_error
-             //   }//for_rdo
-            //}//if_totla
+                }//for_rdo
+            }//if_totla
 
             // Log
             $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Synchronization STATUS competence. ' . "\n";
