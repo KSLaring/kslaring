@@ -108,6 +108,15 @@ class STATUS_CRON {
             fwrite($filecompetence,$competence);
             fclose($filecompetence);
 
+            if (file_exists($path)) {
+                // Get content
+                $data = file($path);
+
+                // Synchronization
+                foreach($data as $key=>$line) {
+                    echo "Line: " . $line . "</br>";
+                }
+            }
                     // Call web service
                     // Params web service
                     $params = array();
