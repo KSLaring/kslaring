@@ -2083,8 +2083,8 @@ class FSKS_USERS {
         $rdo            = null;
         $usersComp      = null;
         $infoComp       = null;
-        $toDeleteFromKS = false;
-        $dbLog = null;
+        $lstCompetence  = null;
+        $dblog          = null;
 
         try {
             // Search Criteria
@@ -2128,16 +2128,16 @@ class FSKS_USERS {
 
             // Execute
             $rdo = $DB->get_records_sql($sql,$params);
-            $lstCompetence = null;
             if ($rdo) {
-                $lstCompetence = json_encode($rdo);
+                foreach ($rdo as $instance) {
+                    $lstCompetence = json_encode($instance);
+                }//for_rdo
             }else {
                 // Log
-                $dbLog  = "User Competence - GetUsersCompetence_ToSynchronize NO RDO".  "\n\n";
-                $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH GetUsersCompetence_ToSynchronize . ' . "\n";
-            }//if_Rdo
-
-            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+                $dblog  = "User Competence - GetUsersCompetence_ToSynchronize NO RDO".  "\n\n";
+                $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH GetUsersCompetence_ToSynchronize . ' . "\n";
+                error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+            }//if_rdo
 
             return $lstCompetence;
         }catch (Exception $ex) {
