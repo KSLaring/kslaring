@@ -121,8 +121,9 @@ class STATUS_CRON {
 
                     $response = self::process_service($plugin,KS_USER_COMPETENCE,$params);
                     if ($response['error'] == '200') {
+                        echo "INSIDE" . "</br>";
                         // Synchronize user competence
-                      FSKS_USERS::synchronize_user_competence_fs($rdocompetence,$response['usersCompetence']);
+                        FSKS_USERS::synchronize_user_competence_fs($rdocompetence,$response['usersCompetence']);
                     }else {
                         // Log
                       $dbLog  = "ERROR WS: " . $response['message'] . "\n" . "\n";
