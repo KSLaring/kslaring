@@ -83,35 +83,48 @@ class STATUS_CRON {
         $response    = null;
         $dblog       = null;
         $start       = 0;
-        $limit       = 500;
+        $limit       = 5;
 
         try {
             // Log
             $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START Synchronization STATUS competence. ' . "\n";
 
             // User competence to synchronize
-            $total = FSKS_USERS::get_total_users_competence_to_synchronize(false,true);
-            if ($total) {
-                for ($i=0;$i<=$total;$i=$i+$limit) {
+            //$total = FSKS_USERS::get_total_users_competence_to_synchronize(false,true);
+            //if ($total) {
+            //    for ($i=0;$i<=$total;$i=$i+$limit) {
                     $competence = FSKS_USERS::user_competence_to_synchronize(false,true,$start,$limit);
+
+                    echo $competence . "</br>";
+
+            // File
+            $dir = $CFG->dataroot . '/fellesdata';
+            $path = $dir . '/wsUserCompetence.txt';
+
+            // Clean old data
+            // Save new data
+            unlink($path);
+            $filecompetence = fopen($path,'w');
+            fwrite($filecompetence,$competence);
+            fclose($filecompetence);
 
                     // Call web service
                     // Params web service
                     $params = array();
                     $params['usersCompetence'] = $competence;
 
-                    $response = self::process_service($plugin,KS_USER_COMPETENCE,$params);
-                    if ($response['error'] == '200') {
+                    //$response = self::process_service($plugin,KS_USER_COMPETENCE,$params);
+                    //if ($response['error'] == '200') {
                         // Synchronize user competence
-                        FSKS_USERS::synchronize_user_competence_fs($competence,$response['usersCompetence']);
-                    }else {
+                    //    FSKS_USERS::synchronize_user_competence_fs($competence,$response['usersCompetence']);
+                    //}else {
                         // Log
-                        $dbLog  = "ERROR WS: " . $response['message'] . "\n" . "\n";
-                        $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' Finish ERROR Synchronization STATUS competence . ' . "\n";
-                        error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
-                    }//if_no_error
-                }//for_rdo
-            }//if_totla
+                    //    $dbLog  = "ERROR WS: " . $response['message'] . "\n" . "\n";
+                    //    $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' Finish ERROR Synchronization STATUS competence . ' . "\n";
+                    //    error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+                    //}//if_no_error
+             //   }//for_rdo
+            //}//if_totla
 
             // Log
             $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Synchronization STATUS competence. ' . "\n";

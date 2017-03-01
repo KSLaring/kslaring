@@ -2128,7 +2128,10 @@ class FSKS_USERS {
 
             // Execute
             $rdo = $DB->get_records_sql($sql,$params);
-            if (!$rdo) {
+            $lstCompetence = null;
+            if ($rdo) {
+                $lstCompetence = json_encode($rdo);
+            }else {
                 // Log
                 $dbLog  = "User Competence - GetUsersCompetence_ToSynchronize NO RDO".  "\n\n";
                 $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH GetUsersCompetence_ToSynchronize . ' . "\n";
@@ -2136,7 +2139,7 @@ class FSKS_USERS {
 
             error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
 
-            return $rdo;
+            return $lstCompetence;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
