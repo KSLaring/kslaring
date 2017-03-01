@@ -36,7 +36,7 @@ class STATUS_CRON {
         }//try_catch
     }
 
-    public static function text($plugin) {
+    public static function test($plugin) {
         try {
 
             // Get competence from KS
