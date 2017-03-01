@@ -1543,15 +1543,13 @@ class FSKS_USERS {
                 // Convert to object
                 $objCompetence = (Object)$competence;
 
-                echo $objCompetence->key . " - " . $objCompetence->imported . "</br>";
-
-                //if ($objCompetence->imported) {
+                if ($objCompetence->imported) {
                     // Get Info
-                //    $infoUser = $usersCompetence[$objCompetence->key];
+                    $infoUser = $usersCompetence[$objCompetence->key];
 
                     // Synchronize User Competence
-                //    self::synchronize_competence_fs($infoUser);
-                //}//if_imported
+                    self::synchronize_competence_fs($infoUser);
+                }//if_imported
             }//for_competencesImported
         }catch (Exception $ex) {
             throw $ex;
