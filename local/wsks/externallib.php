@@ -1318,6 +1318,84 @@ class local_wsks_external extends external_api {
     }//ws_delete_competence
 
 
+    /*************************/
+    /* ws_managers_reporters */
+    /*************************/
+
+    public static function ws_managers_reporters_parameters() {
+        $code = new external_value(PARAM_TEXT,'Industry code');
+
+        return new external_function_parameters(array('industry'=> $code));
+    }//ws_managers_reporters_parameters
+
+    /**
+     * Description
+     * Response of the service
+     *
+     * @return          external_single_structure
+     *
+     * @creationDate    01/03/2016
+     * @author          eFaktor     (fbv)
+     */
+    public static function ws_managers_reporters_returns() {
+        $error      = new external_value(PARAM_INT,'Error. True/False');
+        $msgError   = new external_value(PARAM_TEXT,'Error Description');
+        $managers   = new external_value(PARAM_TEXT,'Managers');
+        $reporters  = new external_value(PARAM_TEXT,'Reporters');
+
+
+
+        $existReturn = new external_single_structure(array('error'      => $error,
+                                                           'message'   => $msgError,
+                                                           'managers'  => $managers,
+                                                           'reporters' => $reporters));
+
+
+        return $existReturn;
+    }//ws_managers_reporters_returns
+
+    /**
+     * Description
+     * Get managers_reporters from KS
+     *
+     * @param           $industry
+     *
+     * @return          array
+     * @throws          invalid_parameter_exception
+     * @throws          moodle_exception
+     *
+     * @creationDate    01/03/2017
+     * @author          eFaktor     (fbv)
+     */
+    public static function ws_managers_reporters($industry) {
+        /* Variables    */
+        global $CFG;
+        $result     = array();
+
+        /* Parameter Validation */
+        $params = self::validate_parameters(self::ws_managers_reporters_parameters(), array('industry' => $industry));
+
+        /* Web Service response */
+        $result['error']        = 200;
+        $result['message']      = '';
+        $result['managers']     = '';
+        $result['reporters']    = '';
+
+        try {
+            // Get managers/reporters
+            WS_FELLESDATA::managers_reporters($industry,$result);
+            
+            return $result;
+        }catch (Exception $ex) {
+            if ($result['error'] == '200') {
+                $result['error']    = 500;
+                $result['message']  = $result['message']. ' ' . $ex->getMessage() . ' ' . $ex->getTraceAsString();
+            }//if_error
+
+            return $result;
+        }//try_catch
+    }//wsCompetence
+
     /*****************************/
     /*****************************/
     /*****************************/
