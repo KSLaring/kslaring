@@ -406,11 +406,7 @@ class STATUS {
         try {
             // Local time
             $time = time();
-
-            // First delete all old records
-            $DB->delete_records('user_managers');
-            $DB->delete_records('user_reporters');
-
+            
             // Get content
             $content = file_get_contents($path);
             $content = json_decode($content);
@@ -418,10 +414,14 @@ class STATUS {
             // Select table
             switch ($type) {
                 case MANAGERS:
+                    // First delete all old records
+                    $DB->delete_records('user_managers');
                     $table = 'user_managers';
 
                     break;
                 case REPORTERS:
+                    // First delete all old records
+                    $DB->delete_records('user_reporters');
                     $table = 'user_reporters';
 
                     break;
