@@ -13,6 +13,9 @@
 
 define('WS_COMPETENCE','wsCompetence');
 define('WS_DEL_COMPETENCE','ws_delete_competence');
+define('WS_MANAGERS_REPORTERS','ws_managers_reporters');
+define('MANAGERS','managers');
+define('REPORTERS','reporters');
 
 class STATUS {
     /**********/
@@ -81,7 +84,7 @@ class STATUS {
 
         try {
             // Log
-            $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START FELLESDATA STATUS Import competence data . ' . "\n";
+            $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START FELLESDATA STATUS Save competence data . ' . "\n";
 
             // Check if exists temporary directory
             $dir = $CFG->dataroot . '/fellesdata';
@@ -112,16 +115,68 @@ class STATUS {
             self::import_competence_data($path);
 
             // Log
-            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH FELLESDATA STATUS Import competence data. ' . "\n";
+            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH FELLESDATA STATUS Save competence data. ' . "\n";
             error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
         }catch (Exception $ex) {
-            $dbLog = $ex->getMessage() . "\n" ."\n";
-            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH FELLESDATA STATUS ERROR Import competence data. ' . "\n";
+            $dbLog = "ERROR: " . $ex->getMessage() . "\n" ."\n";
+            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH FELLESDATA STATUS ERROR Save competence data. ' . "\n";
             error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
 
             throw $ex;
         }//try_catch
     }//save_competence
+
+    public static function save_managers_reporters($data,$type) {
+        /* Variables */
+        global $CFG;
+        $dir        = null;
+        $backup = null;
+        $path   = null;
+        $dblog  = null;
+
+        try {
+            // Log
+            $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START FELLESDATA STATUS Save Managers Reporters . ' . "\n";
+
+            // Check if exists temporary directory
+            $dir = $CFG->dataroot . '/fellesdata';
+            if (!file_exists($dir)) {
+                mkdir($dir);
+            }//if_dir
+
+            $backup = $CFG->dataroot . '/fellesdata/backup';
+            if (!file_exists($backup)) {
+                mkdir($backup);
+            }//if_backup
+
+            // Clean
+            $path = $dir . '/ws_' . $type .'.txt';
+            if (file_exists($path)) {
+                // Move the file to the new directory
+                copy($path,$backup . '/ws_' . $type .'_' . time() . '.txt');
+
+                unlink($path);
+            }//if_file_exist
+
+            // Create a new response file
+            $file = fopen($path,'w');
+            fwrite($file,$data);
+            fclose($file);
+            
+            // Save Managers/Reporters
+            self::import_managers_reporters($path,$type);
+            
+            // Log
+            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH FELLESDATA STATUS Save competence data. ' . "\n";
+            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+        }catch (Exception $ex) {
+            $dbLog = "ERROR: " . $ex->getMessage() . "\n" ."\n";
+            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH FELLESDATA STATUS Save Managers Reporters. ' . "\n";
+            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+
+            throw $ex;
+        }//try_catch
+    }//save_managers_reporters
 
     /**
      * Description
@@ -273,7 +328,7 @@ class STATUS {
 
     /**
      * Description
-     * Impot the content of the file into the DB
+     * Import the content of the file into the DB
      * 
      * @param           String $competence
      *
@@ -322,4 +377,69 @@ class STATUS {
             throw $ex;
         }//try_catch
     }//import_competence_data
+
+    /**
+     * Description
+     * Import the content of the file into the DB
+     * 
+     * @param           String  $data
+     * @param           String  $type
+     * 
+     * @throws                  Exception
+     * 
+     * @creationDate    02/03/2017
+     * @author          eFaktor     (fbv)
+     */
+    private static function import_managers_reporters($data,$type) {
+        /* Variables */
+        global $DB;
+        $content     = null;
+        $instance    = null;
+        $line        = null;
+        $key         = null;
+        $table       = null;
+        $trans       = null;
+
+        // Start transaction
+        $trans = $DB->start_delegated_transaction();
+
+        try {
+            // Local time
+            $time = time();
+
+            // First delete all old records
+            $DB->delete_records('user_managers');
+            $DB->delete_records('user_reporters');
+
+            // Get content
+            $content = file($data);
+            $content = json_decode($content);
+
+            // Select table
+            switch ($type) {
+                case MANAGERS:
+                    $table = 'user_managers';
+
+                    break;
+                case REPORTERS:
+                    $table = 'user_reporters';
+
+                    break;
+            }//switch
+
+            // Each line file
+            foreach($content as $key=>$instance) {
+                $instance->timemodified = $time;
+
+                // Add record
+                $DB->insert_record($table,$instance);
+            }//for_line
+
+            // Commit
+            $trans->allow_commit();
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//import_managers_reporters
+
 }//status

@@ -25,7 +25,7 @@ class STATUS_CRON {
             //self::competence_data($plugin);
 
             // Get managers reporters from KS
-
+            
             // Import last status from fellesdata
             //self::import_status($plugin);
 
@@ -37,15 +37,21 @@ class STATUS_CRON {
     }
 
     public static function test($plugin) {
+        /* Variables */
+        $industry = null;
+
         try {
+            // Get industry code
+            $industry = STATUS::get_industry_code($plugin->ks_muni);
 
             // Get competence from KS
-            //self::competence_data($plugin);
+            //self::competence_data($plugin,$industry);
 
             // Get managers reporters from KS
+            self::managers_reporters($plugin,$industry);
 
             // Import last status from fellesdata
-            self::import_status($plugin);
+            //self::import_status($plugin);
 
             // Syncronization
             //self::synchronization($plugin);
@@ -58,6 +64,123 @@ class STATUS_CRON {
     /* PRIVATE */
     /***********/
 
+    /**
+     * Description
+     * Get competence data from KS
+     *
+     * @param       $plugin
+     * @param       $industry
+     *
+     * @throws      Exception
+     *
+     * @creationDate    25/02/2017
+     * @author          eFaktor     (fbv)
+     */
+    private static function competence_data($plugin,$industry) {
+        /* Variables */
+        global $CFG;
+        $dblog      = null;
+        $params     = null;
+        $response   = null;
+        $file       = null;
+        $path       = null;
+
+        try {
+            // Log
+            $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START FELLESDATA STATUS Get KS competence data . ' . "\n";
+
+            // Cal service
+            $params = array();
+            $params['competence'] = $industry;
+            $response = self::process_service($plugin,WS_COMPETENCE,$params);
+
+            if ($response) {
+                if ($response['error'] == '200') {
+                    STATUS::save_competence($response['competence']);
+                }else {
+                    // Log
+                    $dblog .= "Error WS: " . $response['message'] . "\n" ."\n";
+                }//if_no_error
+            }else {
+                $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' ERROR Response null . ' . "\n";
+            }//if_else_response
+
+            // Log
+            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH FELLESDATA STATUS Get KS competence data . ' . "\n";
+            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+        }catch (Exception $ex) {
+            // Log
+            $dbLog = $ex->getMessage() . "\n" ."\n";
+            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH FELLESDATA STATUS ERROR Get KS competence data . ' . "\n";
+            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+
+            throw $ex;
+        }//try_catch
+    }//competence_data
+
+    /**
+     * Description
+     * Get managers/reporters from KS
+     *
+     * @param           Object $plugin
+     * @param           String $industry
+     *
+     * @throws          Exception
+     *
+     * @creationDate    02/03/2017
+     * @author          eFaktor     (fbv)
+     */
+    private static function managers_reporters($plugin,$industry) {
+        /* Variables */
+        global $CFG;
+        $dblog      = null;
+        $params     = null;
+        $response   = null;
+        $file       = null;
+        $path       = null;
+
+        try {
+            // Log
+            $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START FELLESDATA STATUS KS Managers/Reporters . ' . "\n";
+
+            // Cal service
+            $params = array();
+            $params['industry'] = $industry;
+            $response = self::process_service($plugin,WS_MANAGERS_REPORTERS,$params);
+
+            // Proces response
+            if ($response) {
+                if ($response['error'] == '200') {
+                    // Save managers
+                    if ($response['managers']) {
+                        STATUS::save_managers_reporters($response['managers'],MANAGERS);
+                    }//managers
+
+                    // Save reporters
+                    if ($response['reporters']) {
+                        STATUS::save_managers_reporters($response['reporters'],REPORTERS);
+                    }//reporters
+                }else {
+                    // Log
+                    $dblog .= "Error WS: " . $response['message'] . "\n" ."\n";
+                }//if_no_error
+            }else {
+                $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' ERROR Response null . ' . "\n";
+            }//if_else_response
+
+            // Log
+            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH FELLESDATA STATUS KS Managers/Reporters. ' . "\n";
+            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+        }catch (Exception $ex) {
+            // Log
+            $dbLog = $ex->getMessage() . "\n" ."\n";
+            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH FELLESDATA STATUS ERROR KS Managers/Reporters. ' . "\n";
+            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+
+            throw $ex;
+        }//try_catch
+    }//managers_reporters
+    
     private static function synchronization($plugin) {
         /* Variables */
         global $CFG;
@@ -414,63 +537,6 @@ class STATUS_CRON {
             throw $ex;
         }//try_catch
     }//import_status_user_competence
-
-    /**
-     * Description
-     * Get competence data from KS
-     *
-     * @param       $plugin
-     *
-     * @throws      Exception
-     *
-     * @creationDate    25/02/2017
-     * @author          eFaktor     (fbv)
-     */
-    private static function competence_data($plugin) {
-        /* Variables */
-        global $CFG;
-        $dblog      = null;
-        $industry   = null;
-        $params     = null;
-        $response   = null;
-        $file       = null;
-        $path       = null;
-        
-        try {
-            // Log
-            $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START FELLESDATA STATUS Get KS competence data . ' . "\n";
-            
-            // Get industry code
-            $industry = STATUS::get_industry_code($plugin->ks_muni);
-            $params = array();
-            $params['competence'] = $industry;
-
-            // Cal service
-            $response = self::process_service($plugin,WS_COMPETENCE,$params);
-            
-            if ($response) {
-                if ($response['error'] == '200') {
-                    STATUS::save_competence($response['competence']);
-                }else {
-                    // Log
-                    $dblog .= "Error WS: " . $response['message'] . "\n" ."\n";
-                }//if_no_error
-            }else {
-                $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' ERROR Response null . ' . "\n";
-            }//if_else_response
-
-            // Log
-            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH FELLESDATA STATUS Get KS competence data . ' . "\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
-        }catch (Exception $ex) {
-            // Log
-            $dbLog = $ex->getMessage() . "\n" ."\n";
-            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH FELLESDATA STATUS ERROR Get KS competence data . ' . "\n";
-            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
-            
-            throw $ex;
-        }//try_catch
-    }//competence_data
 
     /**
      * Description
