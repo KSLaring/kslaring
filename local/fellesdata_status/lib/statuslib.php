@@ -390,7 +390,7 @@ class STATUS {
      * @creationDate    02/03/2017
      * @author          eFaktor     (fbv)
      */
-    private static function import_managers_reporters($data,$type) {
+    private static function import_managers_reporters($path,$type) {
         /* Variables */
         global $DB;
         $content     = null;
@@ -412,7 +412,7 @@ class STATUS {
             $DB->delete_records('user_reporters');
 
             // Get content
-            $content = file($data);
+            $content = file_get_contents($path);
             $content = json_decode($content);
 
             // Select table
