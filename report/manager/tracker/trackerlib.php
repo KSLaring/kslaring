@@ -912,6 +912,7 @@ class TrackerManager {
     private static function get_tracker_not_connected($user_id,$competence) {
         /* Variables    */
         global $DB;
+        $dbMan          = null;
         $connected      = 0;
         $completed      = array();
         $not_completed  = array();
@@ -921,8 +922,13 @@ class TrackerManager {
         $params         = null;
         $rdo            = null;
         $sql            = null;
+        $sqlWhere       = null;
+        $sqlLeft        = null;
+        $sqlFrom        = null;
 
         try {
+            $dbMan = $DB->get_manager();
+
             // Complete user data
             $user = get_complete_user_data('id',$user_id);
 
@@ -946,26 +952,34 @@ class TrackerManager {
             $sql = " SELECT	      c.id,
                                   c.fullname,
                                   IF (cc.timecompleted,cc.timecompleted,0)                                        as 'completed',
-                                  GROUP_CONCAT(DISTINCT CONCAT(e.enrol,'#',e.id) ORDER BY e.enrol SEPARATOR ',')  as 'enrolments',
-                                  ewq.unenrolenddate,
-                                  ewq.methodtype
-                     FROM		  {course}					  c
-                        LEFT JOIN {course_completions}  	  cc  ON	cc.course           = c.id
-                                                                  AND   cc.userid           = :user
-                        JOIN	  {enrol} 					  e	  ON 	e.courseid 	        = c.id
-                                                                  AND	e.status 	        = 0
-                        JOIN	  {user_enrolments}			  ue  ON 	ue.enrolid 	        = e.id
-                                                                  AND	ue.status	        = 0
-                                                                  AND   ue.userid           = :ue_user
-	                    LEFT JOIN {enrol_waitinglist_method}  ewq ON    ewq.waitinglistid   = e.id
-													              AND   ewq.methodtype like 'self'
-                                                                  AND   ewq.status		    =  1
-                     WHERE		c.id NOT IN ($connected)
-                        AND     c.visible = 1
-                     GROUP BY	c.id
-                     ORDER BY	c.fullname ";
+                                  GROUP_CONCAT(DISTINCT CONCAT(e.enrol,'#',e.id) ORDER BY e.enrol SEPARATOR ',')  as 'enrolments' ";
+
+            $sqlFrom    = "  FROM		  {course}					  c
+                                LEFT JOIN {course_completions}  	  cc  ON	cc.course           = c.id
+                                                                          AND   cc.userid           = :user
+                                JOIN	  {enrol} 					  e	  ON 	e.courseid 	        = c.id
+                                                                          AND	e.status 	        = 0
+                                JOIN	  {user_enrolments}			  ue  ON 	ue.enrolid 	        = e.id
+                                                                          AND	ue.status	        = 0
+                                                                          AND   ue.userid           = :ue_user ";
+            // Sql Left
+            if ($dbMan->table_exists('enrol_waitinglist_method')) {
+                $sql .= "  ,ewq.unenrolenddate,
+                            ewq.methodtype ";
+
+                $sqlLeft = " LEFT JOIN {enrol_waitinglist_method}  ewq  ON    ewq.waitinglistid   = e.id
+													                    AND   ewq.methodtype like 'self'
+                                                                        AND   ewq.status		  =  1 ";
+            }//if_exist
+
+            // SQL Where
+            $sqlWhere = " WHERE		c.id NOT IN ($connected)
+                            AND     c.visible = 1
+                          GROUP BY	c.id
+                          ORDER BY	c.fullname ";
 
             // Execute
+            $sql .= $sqlFrom . $sqlLeft . $sqlWhere;
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 foreach ($rdo as $instance) {
@@ -975,7 +989,11 @@ class TrackerManager {
                     $info->name         = $instance->fullname;
                     $info->completed    = $instance->completed;
                     if (!$instance->completed) {
-                        $info->unEnrol = self::check_can_unenrol(explode(',',$instance->enrolments),$user,$instance->id,$instance->unenrolenddate,$instance->methodtype);
+                        if (isset($instance->methodtype)) {
+                            $info->unEnrol = self::check_can_unenrol(explode(',',$instance->enrolments),$user,$instance->id,$instance->unenrolenddate,$instance->methodtype);
+                        }else {
+                            $info->unEnrol = self::check_can_unenrol(explode(',',$instance->enrolments),$user,$instance->id,null,null);
+                        }
                     }else {
                         $info->unEnrol = false;
                     }//if_completed

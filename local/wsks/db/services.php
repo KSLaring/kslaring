@@ -158,20 +158,64 @@ $fonUnMapOrganizationsConfig    = array(
                                        );
 
 /**
+ * GetCompetence
+ */
+$fonCompetence       = 'wsCompetence';
+$fonCompetenceConfig = array(
+    'classname'    => $className,
+    'methodname'   => $fonCompetence,
+    'classpath'    => $classPath,
+    'description'  => 'Competence Data from KS',
+    'type'         => 'read',
+    'capabilities' => ''
+);
+
+/**
+ * Delete competence from status
+ */
+$fondelcompetence       = 'ws_delete_competence';
+$fondelcompetenceconfig = array(
+    'classname'    => $className,
+    'methodname'   => $fondelcompetence,
+    'classpath'    => $classPath,
+    'description'  => 'Competence Data from KS',
+    'type'         => 'read',
+    'capabilities' => ''
+);
+
+/**
+ * Get managers/reporters
+ */
+$fonManagers       = 'ws_managers_reporters';
+$fonManagersConfig  = array(
+    'classname'    => $className,
+    'methodname'   => $fonManagers,
+    'classpath'    => $classPath,
+    'description'  => 'Managers Reporters from KS',
+    'type'         => 'read',
+    'capabilities' => ''
+);
+
+
+/**
  * Functions to install
  */
 $functions = array(
-                    $functionName           => $functionConfig,
-                    $fonCompany 			=> $fonCompanyConfig,
-                    $fonHierarchy			=> $fonHierarchyConfig,
-                    $fonFSJobRoles			=> $fonFSJobRolesConfig,
-                    $fonKSJobRoles	        => $fonKSJobRolesConfig,
-                    $fonKSJobRolesGenerics	=> $fonKSJobRolesGenericsConfig,
-                    $fonManagerReporter     => $fonManagerReporterConfig,
-                    $fonUserCompetence      => $fonUserCompetenceConfig,
-                    $fonUsersAccounts		=> $fonUsersAccountsConfig,
-                    $fonUnMapCompetence     => $fonUnMapCompetenceConfig,
-                    $fonUnMapOrganizations  => $fonUnMapOrganizationsConfig);
+                        $functionName           => $functionConfig,
+                        $fonCompany 			=> $fonCompanyConfig,
+                        $fonHierarchy			=> $fonHierarchyConfig,
+                        $fonFSJobRoles			=> $fonFSJobRolesConfig,
+                        $fonKSJobRoles	        => $fonKSJobRolesConfig,
+                        $fonKSJobRolesGenerics	=> $fonKSJobRolesGenericsConfig,
+                        $fonManagerReporter     => $fonManagerReporterConfig,
+                        $fonUserCompetence      => $fonUserCompetenceConfig,
+                        $fonUsersAccounts		=> $fonUsersAccountsConfig,
+                        $fonUnMapCompetence     => $fonUnMapCompetenceConfig,
+                        $fonUnMapOrganizations  => $fonUnMapOrganizationsConfig,
+                        $fonCompetence          => $fonCompetenceConfig,
+                        $fondelcompetence       => $fondelcompetenceconfig,
+                        $fonManagers            => $fonManagersConfig
+                    );
 
 /**
  * ADFS Service
@@ -190,7 +234,7 @@ $serviceFS        = 'fellesdata';
 $serviceFSConfig  = array(
                           'functions'         => array($fonCompany,$fonHierarchy,$fonFSJobRoles,$fonKSJobRoles,$fonKSJobRolesGenerics,
                                                        $fonManagerReporter,$fonUserCompetence,$fonUsersAccounts,
-                                                       $fonUnMapCompetence,$fonUnMapOrganizations),
+                                                       $fonUnMapCompetence,$fonUnMapOrganizations,$fonCompetence,$fondelcompetence,$fonManagers),
                           'restrictedusers'   => 1,
                           'enabled'           => 1
 );

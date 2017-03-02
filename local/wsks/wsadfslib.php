@@ -29,7 +29,7 @@ class WS_ADFS {
      * Description
      * Process the user from ADFS. Create or update.
      */
-    public static function Process_UserADFS($userADFS,&$result) {
+    public static function process_user_adfs($userADFS,&$result) {
         /* Variables    */
         global $CFG;
         $userId     = null;
@@ -69,7 +69,7 @@ class WS_ADFS {
 
             throw $ex;
         }//try_catch
-    }//UserADFS
+    }//process_user_adfs
 
     /***********/
     /* PRIVATE */

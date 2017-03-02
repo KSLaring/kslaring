@@ -45,7 +45,7 @@ if ($login) {
     require_once('../../first_access/locallib.php');
 
     if (!isguestuser($user)) {
-        if (FirstAccess::HasToUpdate_Profile($USER->id)) {
+        if (FirstAccess::has_to_update_profile($USER->id)) {
             redirect(new moodle_url('/local/first_access/index.php',array('id'=>$USER->id)));
             die();
         }else {
