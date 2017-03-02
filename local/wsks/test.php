@@ -27,17 +27,21 @@ $dir = $CFG->dataroot . '/fellesdata';
 $path = $dir . '/wsUserCompetence.txt';
 
 // Process content
-if (file_exists($path)) {
+//if (file_exists($path)) {
     // Get content
-    $data = file($path);
-    $data = file_get_contents($path);
+    //$data = file($path);
+    //$data = file_get_contents($path);
 
-    $mydata = json_decode($data);
+    //$mydata = json_decode($data);
     // Synchronization
-    foreach ($mydata as $key => $line) {
-        echo "Line: " . $key . " - " . $line->key . " - " . $line->personalnumber . "</br>";
-    }
-}
+    //foreach ($mydata as $key => $line) {
+    //    echo "Line: " . $key . " - " . $line->key . " - " . $line->personalnumber . "</br>";
+    //}
+//}
+
+//$managers = WS_FELLESDATA::get_managers_reporters_ks('1201','manager');
+
+echo "</br>" . $managers . "</br>";
 
 /* Print Footer */
 echo $OUTPUT->footer();
