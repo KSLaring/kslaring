@@ -848,7 +848,7 @@ class WS_FELLESDATA {
                                   u.username,
                                   re.leveltwo,
                                   re.levelthree
-                     FROM		  {$table}	re
+                     FROM		  {" .$table . "}	re
                         JOIN	  {user}						u		ON u.id 				= $field
                         -- Level Two
                         JOIN 	  {report_gen_companydata}		co_two 	ON 	co_two.id 			= re.leveltwo
