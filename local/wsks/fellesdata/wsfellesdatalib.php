@@ -793,6 +793,80 @@ class WS_FELLESDATA {
         }//try_catch
     }//managers_reporters
 
+    /**
+     * Description
+     * Clean managers/reporters
+     * 
+     * @param       array   $data
+     * @param       String  $type
+     * @param               $result
+     * 
+     * @throws      Exception
+     * 
+     * @creationDate    02/03/2017
+     * @author          eFaktor     (fbv)
+     */
+    public static function clean_managers_reporters($data,$type,&$result) {
+        /* Variables */
+        global $DB;
+        global $CFG;
+        $dblog      = null;
+        $rdo        = null;
+        $params     = null;
+        $table      = null;
+        $field      = null;
+        $deleted    = null;
+        
+        try {
+            // Log
+            $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START Delete Managers Reporters (Status). ' . "\n";
+
+            // Select table
+            switch ($type) {
+                case MANAGER:
+                    $table = 'report_gen_company_manager';
+                    $field = 'managerid';
+                    break;
+                case REPORTER:
+                    $table = 'report_gen_company_reporter';
+                    $field = 'reporterid';
+
+                    break;
+            }//switch
+
+            // Delete records
+            $params = array();
+            foreach ($data as $instance) {
+                $params['id']   = $instance->key;
+                $params[$field] = $instance->user;
+                
+                $DB->delete_records($table,$params);
+                
+                if ($deleted) {
+                    $deleted .= ',' . $instance->key;
+                }else {
+                    $deleted = $instance->key;
+                }//if_deleted
+            }//for_data
+
+            $result['deleted'] = $deleted;
+            
+            // Log
+            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Delete Managers Reporters (Status). ' . "\n";
+            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+        }catch (Exception $ex) {
+            $result['error']            = 409;
+            $result['message']          = $ex->getMessage();
+
+            // Log
+            $dblog = "ERROR: " . $ex->getMessage() . "\n" . "\n";
+            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). 'FINISH Delete Managers Reporters (Status) . ' . "\n";
+            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+
+            throw $ex;
+        }//try_catch
+    }//clean_managers_reporters
+
     /***********/
     /* PRIVATE */
     /***********/

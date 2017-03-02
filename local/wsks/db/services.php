@@ -175,12 +175,12 @@ $fonCompetenceConfig = array(
  */
 $fondelcompetence       = 'ws_delete_competence';
 $fondelcompetenceconfig = array(
-    'classname'    => $className,
-    'methodname'   => $fondelcompetence,
-    'classpath'    => $classPath,
-    'description'  => 'Competence Data from KS',
-    'type'         => 'read',
-    'capabilities' => ''
+                                'classname'    => $className,
+                                'methodname'   => $fondelcompetence,
+                                'classpath'    => $classPath,
+                                'description'  => 'Competence Data from KS',
+                                'type'         => 'read',
+                                'capabilities' => ''
 );
 
 /**
@@ -188,14 +188,26 @@ $fondelcompetenceconfig = array(
  */
 $fonManagers       = 'ws_managers_reporters';
 $fonManagersConfig  = array(
-    'classname'    => $className,
-    'methodname'   => $fonManagers,
-    'classpath'    => $classPath,
-    'description'  => 'Managers Reporters from KS',
-    'type'         => 'read',
-    'capabilities' => ''
+                            'classname'    => $className,
+                            'methodname'   => $fonManagers,
+                            'classpath'    => $classPath,
+                            'description'  => 'Managers Reporters from KS',
+                            'type'         => 'read',
+                            'capabilities' => ''
 );
 
+/**
+ * Delete managers_reporters status
+ */
+$fonmanagersdel = 'ws_clean_managers_reporters';
+$fonmanagersdelconfig = array(
+                            'classname'    => $className,
+                            'methodname'   => $fonmanagersdel,
+                            'classpath'    => $classPath,
+                            'description'  => 'Clean managers reporters status KS',
+                            'type'         => 'read',
+                            'capabilities' => ''
+);
 
 /**
  * Functions to install
@@ -214,7 +226,8 @@ $functions = array(
                         $fonUnMapOrganizations  => $fonUnMapOrganizationsConfig,
                         $fonCompetence          => $fonCompetenceConfig,
                         $fondelcompetence       => $fondelcompetenceconfig,
-                        $fonManagers            => $fonManagersConfig
+                        $fonManagers            => $fonManagersConfig,
+                        $fonmanagersdel         => $fonmanagersdelconfig
                     );
 
 /**
@@ -234,7 +247,8 @@ $serviceFS        = 'fellesdata';
 $serviceFSConfig  = array(
                           'functions'         => array($fonCompany,$fonHierarchy,$fonFSJobRoles,$fonKSJobRoles,$fonKSJobRolesGenerics,
                                                        $fonManagerReporter,$fonUserCompetence,$fonUsersAccounts,
-                                                       $fonUnMapCompetence,$fonUnMapOrganizations,$fonCompetence,$fondelcompetence,$fonManagers),
+                                                       $fonUnMapCompetence,$fonUnMapOrganizations,$fonCompetence,$fondelcompetence,
+                                                       $fonManagers,$fonmanagersdel),
                           'restrictedusers'   => 1,
                           'enabled'           => 1
 );
