@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<libraries>
+    <library>
+        <location>lib/luciepub/LuciEPUB.php</location>
+        <name>luciEPUB</name>
+        <version>0.16</version>
+        <license>GNU Affero General Public License</license>
+        <licenseversion>3.0</licenseversion>
+    </library>
+    <library>
+        <location>lib/liciepub/LuciZip.php</location>
+        <name>LuciZip</name>
+        <version>1.50</version>
+        <license>GNU Lesser General Public License</license>
+        <licenseversion>2.1</licenseversion>
+    </library>
+</libraries>
