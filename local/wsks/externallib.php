@@ -681,25 +681,12 @@ class local_wsks_external extends external_api {
      * Web service to synchronize managers reporters between FS and KS - Parameters
      */
     public static function wsManagerReporter_parameters() {
-        /* Manager Reporter Info */
-        $personalNumber = new external_value(PARAM_TEXT,'Personal Number');
-        $fsId           = new external_value(PARAM_TEXT,'FS Company Id');
-        $companyID      = new external_value(PARAM_INT,'Company Id KS');
-        $level          = new external_value(PARAM_INT,'Level');
-        $priority       = new external_value(PARAM_INT,'prioritet');
-        $key            = new external_value(PARAM_INT,'key');
-        $action         = new external_value(PARAM_INT,'Action. Add/Update/Delete');
+        // Managers/reporters List
+        $lstmanagers = new external_value(PARAM_TEXT,'Managers/Reporters list');
 
-        /* Manager Reporter */
-        $userManagerReporter = new external_single_structure(array('personalNumber'  => $personalNumber,
-                                                                   'fsId'            => $fsId,
-                                                                   'ksId'            => $companyID,
-                                                                   'level'           => $level,
-                                                                   'key'             => $key,
-                                                                   'prioritet'       => $priority,
-                                                                   'action'          => $action));
 
-        return new external_function_parameters(array('managerReporter'=> new external_multiple_structure($userManagerReporter)));
+
+        return new external_function_parameters(array('managerReporter'=> $lstmanagers));
     }//wsManagerReporter_parameters
 
     /**
