@@ -1435,7 +1435,7 @@ class FSKS_USERS {
      * Synchronize Manager && Reporters
      *
      * @param           $usersTo
-     * @param           $competencesImported
+     * @param           $managersImported
      *
      * @throws          Exception
      *
@@ -1941,23 +1941,9 @@ class FSKS_USERS {
             // Apply action
             switch ($infoUserFS->action) {
                 case ADD:
-                    // Check if already exists
-                    if ($rdo) {
-                        $rdo->synchronized = 1;
-
-                        // Execute
-                        $DB->update_record('fs_users_company',$rdo);
-                    }else {
-                        // Execute
-                        $DB->insert_record('fs_users_company',$infoFS);
-                    }//if_exists
-
-                    // Synchronized
-                    $sync = true;
-
-                    break;
                 case UPDATE:
-                    // Update if exists
+                case STATUS:
+                    // Check if already exists
                     if ($rdo) {
                         $rdo->companyid          = $infoUserFS->fsid;
                         $rdo->personalnumber     = $infoUserFS->personalnumber;
@@ -1974,6 +1960,8 @@ class FSKS_USERS {
                         // Execute
                         $DB->insert_record('fs_users_company',$infoFS);
                     }//if_exists
+                    // Synchronized
+                    $sync = true;
 
                     break;
                 case DELETE:

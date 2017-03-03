@@ -198,13 +198,12 @@ class STATUS_CRON {
 
             // Synchronization FS Managers/Reporters to delete
             // Managers
-            echo "Syn DELETE MANAGERS" . "</br>";
-            self::sync_status_delete_managers_reporters($plugin,MANAGERS);
+            //self::sync_status_delete_managers_reporters($plugin,MANAGERS);
             // Reporters
-            echo "Sync DELETE REPORTERS" . "</br>";
-            self::sync_status_delete_managers_reporters($plugin,REPORTERS);
+            //self::sync_status_delete_managers_reporters($plugin,REPORTERS);
 
             // Synchronization FS Managers/Reporters
+            self::sync_status_managers_reporters($plugin);
 
             // Synchronization FS User Competence to Delete
             //self::sync_status_delete_competence($plugin);
@@ -719,7 +718,6 @@ class STATUS_CRON {
 
                     if ($response) {
                         if ($response['error'] == '200') {
-                            echo "TO DELETE: " . $response['deleted'] . "</br>";
                             if ($response['deleted']) {
                                 STATUS::synchronize_managers_reporters_deleted($type,$response['deleted']);
                             }//if_deleted
@@ -744,6 +742,56 @@ class STATUS_CRON {
             throw $ex;
         }//try_catch
     }//sync_status_delete_managers_reporters
+    
+    private static function sync_status_managers_reporters($plugin) {
+        /* Variables    */
+        global $CFG;
+        $toSynchronize  = null;
+        $rdomanagers    = null;
+        $response       = null;
+        $dbLog          = null;
+        $total          = null;
+        $start          = 0;
+        $limit          = 500;
+
+        try {
+            // Log
+            $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START Manager Reporter Synchronization (STATUS) . ' . "\n";
+
+            // Managers and reporters to synchronize
+            $total = FSKS_USERS::get_total_managers_reporters_to_synchronize();
+            if ($total) {
+                for ($i=0;$i<=$total;$i=$i+500) {
+                    // To synchronize
+                    list($toSynchronize,$rdomanagers) = FSKS_USERS::get_managers_reporters_to_synchronize($start,$limit);
+
+                    // Call webs ervice
+                    if ($toSynchronize) {
+                        $response = self::process_service($plugin,KS_MANAGER_REPORTER,array('managerReporter' => $toSynchronize));
+                        if ($response['error'] == '200') {
+                            // Syncrhonize managers and reporters
+                            FSKS_USERS::synchronize_manager_reporter_fs($rdomanagers,$response['managerReporter']);
+                        }else {
+                            // Log
+                            $dbLog  .= "ERROR WS: " . $response['message'] . "\n" . "\n";
+                            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' Finish ERROR Manager Reporter Synchronization (STATUS) . ' . "\n";
+                        }//if_no_error
+                    }//if_toSynchronize
+                }//for
+            }//if_total
+
+            // Log
+            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Manager Reporter Synchronization (STATUS). ' . "\n";
+            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+        }catch (Exception $ex) {
+            // Log
+            $dbLog  = $ex->getMessage() . "\n" . "\n";
+            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' Finish ERROR Manager Reporter Synchronization (STATUS). ' . "\n";
+            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+
+            throw $ex;
+        }//try_catch
+    }//sync_status_managers_reporters
     
     /**
      * Description
