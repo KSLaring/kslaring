@@ -186,7 +186,7 @@ $fondelcompetenceconfig = array(
 /**
  * Get managers/reporters
  */
-$fonManagers       = 'ws_managers_reporters';
+$fonManagers       = 'ws_get_managers_reporters';
 $fonManagersConfig  = array(
                             'classname'    => $className,
                             'methodname'   => $fonManagers,

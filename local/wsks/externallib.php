@@ -1318,11 +1318,11 @@ class local_wsks_external extends external_api {
      * @creationDate    02/03/2017
      * @author          eFaktor     (fbv)
      */
-    public static function ws_managers_reporters_parameters() {
+    public static function ws_get_managers_reporters_parameters() {
         $code = new external_value(PARAM_TEXT,'Industry code');
 
         return new external_function_parameters(array('industry'=> $code));
-    }//ws_managers_reporters_parameters
+    }//ws_get_managers_reporters_parameters
 
     /**
      * Description
@@ -1333,7 +1333,7 @@ class local_wsks_external extends external_api {
      * @creationDate    01/03/2016
      * @author          eFaktor     (fbv)
      */
-    public static function ws_managers_reporters_returns() {
+    public static function ws_get_managers_reporters_returns() {
         $error      = new external_value(PARAM_INT,'Error. True/False');
         $msgError   = new external_value(PARAM_TEXT,'Error Description');
         $managers   = new external_value(PARAM_TEXT,'Managers');
@@ -1348,7 +1348,7 @@ class local_wsks_external extends external_api {
 
 
         return $existReturn;
-    }//ws_managers_reporters_returns
+    }//ws_get_managers_reporters_returns
 
     /**
      * Description
@@ -1363,13 +1363,13 @@ class local_wsks_external extends external_api {
      * @creationDate    01/03/2017
      * @author          eFaktor     (fbv)
      */
-    public static function ws_managers_reporters($industry) {
+    public static function ws_get_managers_reporters($industry) {
         /* Variables    */
         global $CFG;
         $result     = array();
 
         /* Parameter Validation */
-        $params = self::validate_parameters(self::ws_managers_reporters_parameters(), array('industry' => $industry));
+        $params = self::validate_parameters(self::ws_get_managers_reporters_parameters(), array('industry' => $industry));
 
         /* Web Service response */
         $result['error']        = 200;
@@ -1390,7 +1390,7 @@ class local_wsks_external extends external_api {
 
             return $result;
         }//try_catch
-    }//wsCompetence
+    }//ws_get_managers_reporters
 
     /*****************************/
     /* ws_clean_managers_reporters */
