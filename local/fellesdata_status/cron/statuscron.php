@@ -720,7 +720,9 @@ class STATUS_CRON {
                     if ($response) {
                         if ($response['error'] == '200') {
                             echo "TO DELETE: " . $response['deleted'] . "</br>";
-                            STATUS::synchronize_managers_reporters_deleted($type,$response['deleted']);
+                            if ($response['deleted']) {
+                                STATUS::synchronize_managers_reporters_deleted($type,$response['deleted']);
+                            }//if_deleted
                         }else {
                             // Log
                             $dblog .= "Error WS: " . $response['message'] . "\n" ."\n";

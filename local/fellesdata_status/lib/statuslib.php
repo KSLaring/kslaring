@@ -16,8 +16,8 @@ define('WS_DEL_COMPETENCE','ws_delete_competence');
 define('WS_MANAGERS_REPORTERS','ws_managers_reporters');
 define('WS_CLEAN_MANAGERS_REPORTERS','ws_clean_managers_reporters');
 
-define('MANAGERS','managers');
-define('REPORTERS','reporters');
+define('MANAGERS','manager');
+define('REPORTERS','reporter');
 
 class STATUS {
     /**********/
