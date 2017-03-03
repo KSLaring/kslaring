@@ -1322,6 +1322,15 @@ class local_wsks_external extends external_api {
     /* ws_managers_reporters */
     /*************************/
 
+    /**
+     * Description
+     * Parameters service
+     *
+     * @return      external_function_parameters
+     *
+     * @creationDate    02/03/2017
+     * @author          eFaktor     (fbv)
+     */
     public static function ws_managers_reporters_parameters() {
         $code = new external_value(PARAM_TEXT,'Industry code');
 
@@ -1395,6 +1404,96 @@ class local_wsks_external extends external_api {
             return $result;
         }//try_catch
     }//wsCompetence
+
+    /*****************************/
+    /* ws_clean_managers_reporters */
+    /*****************************/
+
+    /**
+     * Description
+     * Parameters service to clean managers/reporters
+     *
+     * @return      external_function_parameters
+     *
+     * @creationDate    02/03/2017
+     * @author          eFaktor     (fbv)
+     */
+    public static function ws_clean_managers_reporters_parameters() {
+        $user       = new external_value(PARAM_INT,'Users id');
+        $keys       = new external_value(PARAM_TEXT,'keys');
+        $type       = new external_value(PARAM_TEXT,'Type. Managers or Reporters');
+
+        // Info managers reporters
+        $data = new external_single_structure(array('user'  => $user,
+                                                    'key'   => $keys));
+
+        return new external_function_parameters(array('type' => $type,
+                                                      'data' => new external_multiple_structure($data)));
+    }//ws_clean_managers_reporters_parameters
+
+    /**
+     * Description
+     * Response of service to clean managers/reporters
+     *
+     * @return          external_single_structure
+     *
+     * @creationDate    02/03/2017
+     * @author          eFaktor     (fbv)
+     */
+    public static function ws_clean_managers_reporters_returns() {
+        $error      = new external_value(PARAM_INT,'Error. True/False');
+        $msgError   = new external_value(PARAM_TEXT,'Error Description');
+        $deleted    = new external_value(PARAM_TEXT,'Data deleted');
+
+        $existReturn = new external_single_structure(array('error'      => $error,
+                                                           'message'    => $msgError,
+                                                           'deleted'    => $deleted));
+
+
+        return $existReturn;
+    }//ws_clean_managers_reporters
+
+    /**
+     * Description
+     * Service to clean managers/reporters
+     * 
+     * @param       array  $data
+     * @param       string $type
+     *
+     * @return      array
+     * @throws      invalid_parameter_exception
+     * @throws      moodle_exception
+     *
+     * @creationDate    02/03/2017
+     * @author          eFaktor     (fbv)
+     */
+    public static function ws_clean_managers_reporters($data,$type) {
+        /* Variables    */
+        global $CFG;
+        $result     = array();
+
+        // Validation parameters
+        $params = self::validate_parameters(self::ws_clean_managers_reporters_parameters(), array('data' => $data,'type' => $type));
+
+        // Response web service
+        $result['error']     = 200;
+        $result['message']   = '';
+        $result['deleted']   = '';
+
+        try {
+            // Clean managers/reporters
+            WS_FELLESDATA::clean_managers_reporters($data,$type,$result);
+
+            return $result;
+        }catch (Exception $ex) {
+            if ($result['error'] == '200') {
+                $result['error']    = 500;
+                $result['message']  = $result['message']. ' ' . $ex->getMessage() . ' ' . $ex->getTraceAsString();
+            }//if_error
+
+            return $result;
+        }//try_catch
+    }//ws_clean_managers_reporters
 
     /*****************************/
     /*****************************/
