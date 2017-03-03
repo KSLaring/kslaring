@@ -1409,8 +1409,11 @@ class local_wsks_external extends external_api {
         $users      = new external_value(PARAM_TEXT,'{"user" : xxxx, "key": yyyy}');
         $type       = new external_value(PARAM_TEXT,'Type. Managers or Reporters');
         
-        return new external_function_parameters(array('type' => $type,
-                                                      'data' => $users));
+        // info
+        $data = new external_single_structure(array('type'      => $type,
+                                                    'data'    => $users));
+        
+        return new external_function_parameters(array('managersreporters' => $data));
     }//ws_clean_managers_reporters_parameters
 
     /**
@@ -1439,8 +1442,7 @@ class local_wsks_external extends external_api {
      * Description
      * Service to clean managers/reporters
      * 
-     * @param       array  $data
-     * @param       string $type
+     * @param       array  $managersreporters
      *
      * @return      array
      * @throws      invalid_parameter_exception
@@ -1449,12 +1451,15 @@ class local_wsks_external extends external_api {
      * @creationDate    02/03/2017
      * @author          eFaktor     (fbv)
      */
-    public static function ws_clean_managers_reporters($data,$type) {
+    public static function ws_clean_managers_reporters($managersreporters) {
         /* Variables    */
+        global $CFG;
+        $dblog = null;
+        
         $result     = array();
 
         // Validation parameters
-        $params = self::validate_parameters(self::ws_clean_managers_reporters_parameters(), array('data' => $data,'type' => $type));
+        $params = self::validate_parameters(self::ws_clean_managers_reporters_parameters(), array('managersreporters' =>$managersreporters));
 
         // Response web service
         $result['error']     = 200;
@@ -1462,11 +1467,23 @@ class local_wsks_external extends external_api {
         $result['deleted']   = '';
 
         try {
+            // Log
+            $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START CLEAN MANAGERS REPORTERS . ' . "\n\n";
+            
             // Clean managers/reporters
-            WS_FELLESDATA::clean_managers_reporters($data,$type,$result);
+            WS_FELLESDATA::clean_managers_reporters($managersreporters['data'],$managersreporters['type'],$result);
+
+            // Log
+            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH CLEAN MANAGERS REPORTERS . ' . "\n\n";
+            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
 
             return $result;
         }catch (Exception $ex) {
+            // Log
+            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' ERROR FINISH CLEAN MANAGERS REPORTERS . ' . "\n\n";
+            $dblog .= " ERROR : " . $ex->getMessage() . "\n\n";
+            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+
             if ($result['error'] == '200') {
                 $result['error']    = 500;
                 $result['message']  = $result['message']. ' ' . $ex->getMessage() . ' ' . $ex->getTraceAsString();
