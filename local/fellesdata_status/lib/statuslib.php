@@ -360,7 +360,7 @@ class STATUS {
             }//switch
 
             // SQL Instruction
-            $sql = " SELECT  count(DISTINCT ma.id) as 'total'
+            $sql = " SELECT  count(DISTINCT mr.id) as 'total'
                      FROM		{". $table . "} 			mr
                         JOIN	{fs_imp_managers_reporters}	fs	ON  fs.FODSELSNR    = mr.username
                          										AND fs.action       = :action
@@ -442,7 +442,7 @@ class STATUS {
     /**
      * Description
      * Synchronization of managers/reporters that have been deleted
-     * 
+     *
      * @param           $type
      * @param           $deleted
      *
