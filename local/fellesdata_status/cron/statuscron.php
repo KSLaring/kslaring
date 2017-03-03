@@ -48,13 +48,13 @@ class STATUS_CRON {
             //self::competence_data($plugin,$industry);
 
             // Get managers reporters from KS
-            self::managers_reporters($plugin,$industry);
+            //self::managers_reporters($plugin,$industry);
 
             // Import last status from fellesdata
             //self::import_status($plugin);
 
             // Syncronization
-            //self::synchronization($plugin);
+            self::synchronization($plugin);
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -196,6 +196,12 @@ class STATUS_CRON {
 
             // Synchronization FS Job roles
 
+            // Synchronization FS Managers/Reporters to delete
+            // Managers
+            self::sync_status_delete_managers_reporters($plugin,MANAGERS);
+            // Reporters
+            self::sync_status_delete_managers_reporters($plugin,REPORTERS);
+
             // Synchronization FS Managers/Reporters
 
             // Synchronization FS User Competence to Delete
@@ -246,7 +252,7 @@ class STATUS_CRON {
             //self::import_status_jobroles($plugin);
 
             // Import FS User Competence
-            self::import_status_managers_reporters($plugin);
+            //self::import_status_managers_reporters($plugin);
 
             // Import FS User Competence JR
             //self::import_status_user_competence($plugin);
@@ -640,7 +646,7 @@ class STATUS_CRON {
                     $params = array();
                     $params['competence'] = $todelete;
 
-                    // Cal service
+                    // Call service
                     $response = self::process_service($plugin,WS_DEL_COMPETENCE,$params);
 
                     if ($response) {
@@ -667,8 +673,70 @@ class STATUS_CRON {
 
             throw $ex;
         }//try_Catch
-    }//sync_status_competence
+    }//sync_status_delete_competence
 
+    /**
+     * Description
+     * Synchronization of the managers/reporters that have to be deleted from KS (STATUS)
+     *
+     * @param           Object  $plugin
+     * @param           String  $type
+     *
+     * @throws                  Exception
+     *
+     * @creationDate    03/03/2017
+     * @author          eFaktor     (fbv)
+     */
+    private static function sync_status_delete_managers_reporters($plugin,$type) {
+        /* Variables */
+        global $CFG;
+        $dblog      = null;
+        $total      = null;
+        $todelete   = null;
+        $params     = null;
+        $response   = null;
+        $start      = 0;
+        $limit      = 500;
+        
+        try {
+            // Log
+            $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START Synchronization STATUS delete managers/reporters. ' . "\n";
+
+            // Get total to delete
+            $total = STATUS::total_managers_reporters_to_delete($type);
+            if ($total) {
+                for ($i=0;$i<=$total;$i=$i+$limit) {
+                    // Get to delete
+                    $todelete = STATUS::managers_reporters_to_delete_ks($type,$start,$limit);
+
+                    // Call service
+                    $response = self::process_service($plugin,WS_CLEAN_MANAGERS_REPORTERS,$params);
+
+                    if ($response) {
+                        if ($response['error'] == '200') {
+                            STATUS::synchronize_managers_reporters_deleted($type,$response['deleted']);
+                        }else {
+                            // Log
+                            $dblog .= "Error WS: " . $response['message'] . "\n" ."\n";
+                        }//if_no_error
+                    }else {
+                        $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' ERROR Response null . ' . "\n";
+                    }//if_else_response
+                }//for
+            }//if_total
+            
+            // Log
+            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Synchronization STATUS delete managers/reporters. ' . "\n";
+            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+        }catch (Exception $ex) {
+            // Log
+            $dblog  = "Error: " . $ex->getMessage() . "\n" . "\n";
+            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Synchronization STATUS delete competence. ' . "\n";
+            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+            throw $ex;
+        }//try_catch
+    }//sync_status_delete_managers_reporters
+    
     /**
      * Description
      * KS Web Services to import data from KS site and synchronize data between fellesdata and KS

@@ -1442,24 +1442,18 @@ class FSKS_USERS {
      * @creationDate    14/06/2016
      * @author          eFaktor     (fbv)
      */
-    public static function synchronize_manager_reporter_fs($usersTo,$competencesImported) {
+    public static function synchronize_manager_reporter_fs($usersTo,$managersImported) {
         /* Variables    */
         $infoUser       = null;
-        $objCompetence  = null;
 
         try {
             // Synchronize Manager && Reporter
-            foreach ($competencesImported as $competence) {
-                // Convert to object
-                $objCompetence = (Object)$competence;
-                
-                if ($objCompetence->imported) {
-                    // Get Info
-                    $infoUser = $usersTo[$objCompetence->key];
+            foreach ($managersImported as $manager) {
+                // Get Info
+                $infoUser = $usersTo[$manager->key];
 
-                    // Synchronize Manager&&Reporter
-                    self::get_synchronize_manager_reporter_fs($infoUser,$objCompetence->key);
-                }//if_imported
+                // Synchronize Manager&&Reporter
+                self::get_synchronize_manager_reporter_fs($infoUser,$manager->key);
             }//for_competencesImported
         }catch (Exception $ex) {
             throw $ex;
@@ -1928,8 +1922,8 @@ class FSKS_USERS {
 
             // GEt info fs_user_company
             $params = array();
-            $params['personalnumber']    = $infoUserFS->personalNumber;
-            $params['companyid']         = $infoUserFS->fsId;
+            $params['personalnumber']    = $infoUserFS->personalnumber;
+            $params['companyid']         = $infoUserFS->fsid;
             // Execute
             $rdo = $DB->get_record('fs_users_company',$params);
 
@@ -1937,8 +1931,8 @@ class FSKS_USERS {
             if (!$rdo) {
                 // Create Entry
                 $infoFS = new stdClass();
-                $infoFS->companyid          = $infoUserFS->fsId;
-                $infoFS->personalnumber     = $infoUserFS->personalNumber;
+                $infoFS->companyid          = $infoUserFS->fsid;
+                $infoFS->personalnumber     = $infoUserFS->personalnumber;
                 $infoFS->level              = $infoUserFS->level;
                 $infoFS->priority           = $infoUserFS->prioritet;
                 $infoFS->synchronized       = 1;
@@ -1965,8 +1959,8 @@ class FSKS_USERS {
                 case UPDATE:
                     // Update if exists
                     if ($rdo) {
-                        $rdo->companyid          = $infoUserFS->fsId;
-                        $rdo->personalnumber     = $infoUserFS->personalNumber;
+                        $rdo->companyid          = $infoUserFS->fsid;
+                        $rdo->personalnumber     = $infoUserFS->personalnumber;
                         $rdo->level              = $infoUserFS->level;
                         $rdo->priority           = $infoUserFS->prioritet;
                         $rdo->synchronized       = 1;
@@ -2082,7 +2076,7 @@ class FSKS_USERS {
                               fsk_jr.ksjobrole 	  as 'jobrole',
                               GROUP_CONCAT(DISTINCT fs.stillingskode ORDER BY fs.stillingskode SEPARATOR ',') as 'fsjobroles',
                               GROUP_CONCAT(DISTINCT fs.id ORDER BY fs.id SEPARATOR ',')                       as 'impkeys',
-                              IF(fs.action=3,1,fs.action) 													  as 'action'
+                              fs.action 													                  as 'action'
                      FROM	  {fs_imp_users_jr}	  fs
                         JOIN  {user}              u       ON    u.idnumber 			= fs.fodselsnr
                                                           AND   u.deleted  			= 0
@@ -2108,7 +2102,7 @@ class FSKS_USERS {
                       ORDER BY fs.fodselsnr ";
 
             // Execute
-            $rdo = $DB->get_records_sql($sql,$params);
+            $rdo = $DB->get_records_sql($sql,$params,$start,$limit);
             if ($rdo) {
                 $lstCompetence = json_encode($rdo);
             }else {

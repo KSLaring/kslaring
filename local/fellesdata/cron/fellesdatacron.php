@@ -1570,11 +1570,12 @@ class FELLESDATA_CRON {
         /* Variables    */
         global $CFG;
         $toSynchronize  = null;
+        $rdomanagers    = null;
         $response       = null;
         $dbLog          = null;
         $total          = null;
         $start          = 0;
-        $limit          = 100;
+        $limit          = 500;
 
         try {
             // Log
@@ -1585,16 +1586,16 @@ class FELLESDATA_CRON {
                 // Managers and reporters to synchronize
                 $total = FSKS_USERS::get_total_managers_reporters_to_synchronize();
                 if ($total) {
-                    for ($i=0;$i<=$total;$i=$i+100) {
+                    for ($i=0;$i<=$total;$i=$i+500) {
                         // To synchronize
-                        $toSynchronize = FSKS_USERS::get_managers_reporters_to_synchronize($start,$limit);
+                        list($toSynchronize,$rdomanagers) = FSKS_USERS::get_managers_reporters_to_synchronize($start,$limit);
 
                         // Call webs ervice
                         if ($toSynchronize) {
                             $response = self::process_ks_service($pluginInfo,$service,array('managerReporter' => $toSynchronize));
                             if ($response['error'] == '200') {
                                 // Syncrhonize managers and reporters
-                                FSKS_USERS::synchronize_manager_reporter_fs($toSynchronize,$response['managerReporter']);
+                                FSKS_USERS::synchronize_manager_reporter_fs($rdomanagers,$response['managerReporter']);
                             }else {
                                 // Log
                                 $dbLog  .= "ERROR WS: " . $response['message'] . "\n" . "\n";

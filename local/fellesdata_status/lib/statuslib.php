@@ -14,6 +14,8 @@
 define('WS_COMPETENCE','wsCompetence');
 define('WS_DEL_COMPETENCE','ws_delete_competence');
 define('WS_MANAGERS_REPORTERS','ws_managers_reporters');
+define('WS_CLEAN_MANAGERS_REPORTERS','ws_clean_managers_reporters');
+
 define('MANAGERS','managers');
 define('REPORTERS','reporters');
 
@@ -247,13 +249,11 @@ class STATUS {
      */
     public static function competence_to_delete_ks($start,$limit) {
         /* Variables */
-        global $CFG;
         global $DB;
         $dblog      = null;
         $sql        = null;
         $rdo        = null;
         $params     = null;
-        $todelete   = array();
 
         try {
             //Search criteria
@@ -321,6 +321,166 @@ class STATUS {
             throw $ex;
         }//try_catch
     }//synchronize_competence_deleted
+
+    /**
+     * Description
+     * Get total managers/reporters to delete
+     *
+     * @param       string  $type
+     *
+     * @return              null
+     * @throws              Exception
+     *
+     * @creationDate    03/03/2017
+     * @author          eFaktor     (fbv)
+     */
+    public static function total_managers_reporters_to_delete($type) {
+        /* Variables */
+        global $DB;
+        $table  = null;
+        $field  = null;
+        $sql    = null;
+        $params = null;
+
+        try {
+            //Search criteria
+            $params = array();
+            $params['imported'] = 0;
+            $params['action']   = STATUS;
+
+            switch ($type) {
+                case MANAGERS:
+                    $table = "user_managers";
+
+                    break;
+                case REPORTERS:
+                    $table = "user_reporters";
+
+                    break;
+            }//switch
+
+            // SQL Instruction
+            $sql = " SELECT  count(DISTINCT ma.id) as 'total'
+                     FROM		{". $table . "} 			mr
+                        JOIN	{fs_imp_managers_reporters}	fs	ON  fs.FODSELSNR    = mr.username
+                         										AND fs.action       = :action
+                                                                AND fs.imported     = :imported ";
+
+            // Execute
+            $rdo = $DB->get_record_sql($sql,$params);
+            if ($rdo) {
+                return $rdo->total;
+            }else {
+                return null;
+            }//if_rdo
+
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//total_managers_reporters_to_delete
+
+    /**
+     * Description
+     * Get managers/reporters to delete from KS (STATUS)
+     * @param       String  $type
+     * @param               $start
+     * @param               $limit
+     *
+     * @return          null|string
+     * @throws          Exception
+     *
+     * @creationDate    03/03/2017
+     * @author          eFaktor     (fbv)
+     */
+    public static function managers_reporters_to_delete_ks($type,$start,$limit) {
+        /* Variables */
+        global $DB;
+        $table      = null;
+        $field      = null;
+        $sql        = null;
+        $todelete   = null;
+        $params     = null;
+
+        try {
+            //Search criteria
+            $params = array();
+            $params['imported'] = 0;
+            $params['action']   = STATUS;
+
+            switch ($type) {
+                case MANAGERS:
+                    $table = "user_managers";
+
+                    break;
+                case REPORTERS:
+                    $table = "user_reporters";
+
+                    break;
+            }//switch
+
+            // SQL Instruction
+            $sql = " SELECT  DISTINCT 
+                                  mr.id     as 'key',
+                                  mr.userid as 'user'
+                     FROM		{" . $table . "} 		    mr
+                        JOIN	{fs_imp_managers_reporters}	fs	ON  fs.FODSELSNR = mr.username
+                                                                AND fs.action 	 = :action
+                                                                AND fs.imported  = :imported ";
+            
+            // Execute
+            $rdo = $DB->get_records_sql($sql,$params,$start,$limit);
+            if ($rdo) {
+                $todelete = json_encode($rdo);
+            }//if_rdo
+            
+            return $todelete;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//managers_reporters_to_delete
+
+    /**
+     * Description
+     * Synchronization of managers/reporters that have been deleted
+     * 
+     * @param           $type
+     * @param           $deleted
+     *
+     * @throws          Exception
+     *
+     * @creationDate    03/03/2017
+     * @author          eFaktor     (fbv)
+     */
+    public static function synchronize_managers_reporters_deleted($type,$deleted) {
+        /* Variables */
+        global $DB;
+        $table      = null;
+        $field      = null;
+
+        try {
+            // Select table
+            switch ($type) {
+                case MANAGERS:
+                    $table = "user_managers";
+
+                    break;
+                case REPORTERS:
+                    $table = "user_reporters";
+
+                    break;
+            }//switch_type
+
+            // SQL Instruction
+            $sql = " DELETE 
+                     FROM {" . $table . "} 
+                     WHERE id IN ($deleted) ";
+
+            // Execute
+            $DB->execute($sql);
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//synchronize_managers_reporters_deleted
 
     /***********/
     /* PRIVATE */
