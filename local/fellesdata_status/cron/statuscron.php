@@ -774,7 +774,7 @@ class STATUS_CRON {
             if ($total) {
                 for ($i=0;$i<=$total;$i=$i+500) {
                     // To synchronize
-                    list($toSynchronize,$rdomanagers) = FSKS_USERS::get_managers_reporters_to_synchronize($start,$limit);
+                    list($toSynchronize,$rdomanagers) = FSKS_USERS::get_managers_reporters_to_synchronize($start,$limit,true);
 
                     // Call webs ervice
                     if ($toSynchronize) {
