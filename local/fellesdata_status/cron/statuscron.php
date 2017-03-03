@@ -198,8 +198,10 @@ class STATUS_CRON {
 
             // Synchronization FS Managers/Reporters to delete
             // Managers
+            echo "Syn DELETE MANAGERS" . "</br>";
             self::sync_status_delete_managers_reporters($plugin,MANAGERS);
             // Reporters
+            echo "Sync DELETE REPORTERS" . "</br>";
             self::sync_status_delete_managers_reporters($plugin,REPORTERS);
 
             // Synchronization FS Managers/Reporters
@@ -690,13 +692,13 @@ class STATUS_CRON {
     private static function sync_status_delete_managers_reporters($plugin,$type) {
         /* Variables */
         global $CFG;
-        $dblog      = null;
-        $total      = null;
-        $todelete   = null;
-        $params     = null;
-        $response   = null;
-        $start      = 0;
-        $limit      = 500;
+        $dblog       = null;
+        $total       = null;
+        $todeleted   = null;
+        $params      = null;
+        $response    = null;
+        $start       = 0;
+        $limit       = 500;
         
         try {
             // Log
@@ -707,13 +709,17 @@ class STATUS_CRON {
             if ($total) {
                 for ($i=0;$i<=$total;$i=$i+$limit) {
                     // Get to delete
-                    $todelete = STATUS::managers_reporters_to_delete_ks($type,$start,$limit);
+                    $todeleted = STATUS::managers_reporters_to_delete_ks($type,$start,$limit);
 
                     // Call service
+                    $params = array();
+                    $params['type'] = $type;
+                    $params['data'] = $todeleted;
                     $response = self::process_service($plugin,WS_CLEAN_MANAGERS_REPORTERS,$params);
 
                     if ($response) {
                         if ($response['error'] == '200') {
+                            echo "TO DELETE: " . $response['deleted'] . "</br>";
                             STATUS::synchronize_managers_reporters_deleted($type,$response['deleted']);
                         }else {
                             // Log
