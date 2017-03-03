@@ -742,7 +742,18 @@ class STATUS_CRON {
             throw $ex;
         }//try_catch
     }//sync_status_delete_managers_reporters
-    
+
+    /**
+     * Description
+     * Synchronization of managers/resporters. Status
+     *
+     * @param           Object  $plugin
+     *
+     * @throws                  Exception
+     *
+     * @creationDate    03/03/2017
+     * @author          eFaktor     (fbv)
+     */
     private static function sync_status_managers_reporters($plugin) {
         /* Variables    */
         global $CFG;
