@@ -1410,7 +1410,7 @@ class local_wsks_external extends external_api {
         $type       = new external_value(PARAM_TEXT,'Type. Managers or Reporters');
         
         return new external_function_parameters(array('type' => $type,
-                                                      'data' => $type));
+                                                      'data' => $users));
     }//ws_clean_managers_reporters_parameters
 
     /**
