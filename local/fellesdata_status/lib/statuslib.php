@@ -13,7 +13,7 @@
 
 define('WS_COMPETENCE','wsCompetence');
 define('WS_DEL_COMPETENCE','ws_delete_competence');
-define('WS_MANAGERS_REPORTERS','ws_managers_reporters');
+define('WS_MANAGERS_REPORTERS','ws_get_managers_reporters');
 define('WS_CLEAN_MANAGERS_REPORTERS','ws_clean_managers_reporters');
 
 define('MANAGERS','manager');
