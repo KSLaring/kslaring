@@ -853,6 +853,9 @@ class WS_FELLESDATA {
         $table      = null;
         $field      = null;
         $deleted    = null;
+        $path       = null;
+        $file       = null;
+        $content    = null;
         
         try {
             // Log
@@ -871,20 +874,45 @@ class WS_FELLESDATA {
                     break;
             }//switch
 
+            // Save file
+            $dir = $CFG->dataroot . '/fellesdata';
+            if (!file_exists($dir)) {
+                mkdir($dir);
+            }
+
+            // File
+            $path = $dir . '/clean_' . $type . '.txt';
+
+            // Clean old data
+            if ($path) {
+                unlink($path);
+            }
+            // Save new data
+            $file = fopen($path,'w');
+            fwrite($file,$data);
+            fclose($file);
+
             // Delete records
-            $params = array();
-            foreach ($data as $instance) {
-                $params['id']   = $instance->key;
-                $params[$field] = $instance->user;
-                
-                $DB->delete_records($table,$params);
-                
-                if ($deleted) {
-                    $deleted .= ',' . $instance->key;
-                }else {
-                    $deleted = $instance->key;
-                }//if_deleted
-            }//for_data
+            if (file_exists($path)) {
+                // Get content
+                $content   = file_get_contents($path);
+                $content   = json_decode($content);
+
+                // Delete records
+                $params = array();
+                foreach ($content as $instance) {
+                    $params['id']   = $instance->key;
+                    $params[$field] = $instance->user;
+
+                    $DB->delete_records($table,$params);
+
+                    if ($deleted) {
+                        $deleted .= ',' . $instance->key;
+                    }else {
+                        $deleted = $instance->key;
+                    }//if_deleted
+                }//for_data
+            }//if_file_exists
 
             $result['deleted'] = $deleted;
             
