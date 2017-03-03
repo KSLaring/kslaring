@@ -1406,16 +1406,11 @@ class local_wsks_external extends external_api {
      * @author          eFaktor     (fbv)
      */
     public static function ws_clean_managers_reporters_parameters() {
-        $user       = new external_value(PARAM_INT,'Users id');
-        $keys       = new external_value(PARAM_TEXT,'keys');
+        $users      = new external_value(PARAM_TEXT,'{"user" : xxxx, "key": yyyy}');
         $type       = new external_value(PARAM_TEXT,'Type. Managers or Reporters');
-
-        // Info managers reporters
-        $data = new external_single_structure(array('user'  => $user,
-                                                    'key'   => $keys));
-
+        
         return new external_function_parameters(array('type' => $type,
-                                                      'data' => new external_multiple_structure($data)));
+                                                      'data' => $type));
     }//ws_clean_managers_reporters_parameters
 
     /**
@@ -1456,7 +1451,6 @@ class local_wsks_external extends external_api {
      */
     public static function ws_clean_managers_reporters($data,$type) {
         /* Variables    */
-        global $CFG;
         $result     = array();
 
         // Validation parameters
