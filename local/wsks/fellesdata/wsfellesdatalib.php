@@ -334,53 +334,83 @@ class WS_FELLESDATA {
      * @creationDate    14/06/2016
      * @author          eFaktor     (fbv)
      *
+     * @updateDate      03/03/2017
+     * @author          eFaktor     (fbv)
+     *
      * Description
      * Synchronize managers reporters from fellesdata
      */
     public static function synchronize_user_manager_reporter($userManagerReporter,&$result) {
         /* Variables */
         global $CFG;
-        $objManagerReporter     = null;
-        $managerReporter        = null;
-        $synchronized           = null;
-        $infoImported           = null;
-        $imported               = array();
-        $dbLog                  = null;
+        $dblog              = null;
+        $dir                = null;
+        $path               = null;
+        $lstmanagers        = null;
+        $data               = null;
+        $key                = null;
+        $info               = null;
+        $synchronized       = null;
+        $infoImported       = null;
+        $imported           = array();
 
-        /* Log  */
-        $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START Synchronization User Manager Reporter  . ' . "\n";
-        error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
 
         try {
-            /* Synchronize user manager reporter between FS and KS */
-            foreach ($userManagerReporter as $managerReporter) {
-                /* Convert to object    */
-                $objManagerReporter = (Object)$managerReporter;
+            // Log
+            $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START Synchronization User Manager Reporter  . ' . "\n";
 
-                /* Process user Manager Reporter */
-                $synchronized = self::process_user_manager_reporter($objManagerReporter);
+            // Save file
+            $dir = $CFG->dataroot . '/fellesdata';
+            if (!file_exists($dir)) {
+                mkdir($dir);
+            }
 
-                /* Marked as imported */
-                if ($synchronized) {
-                    $infoImported = new stdClass();
-                    $infoImported->personalNumber   = $objManagerReporter->personalNumber;
-                    $infoImported->imported         = 1;
-                    $infoImported->key              = $objManagerReporter->key;
+            // File
+            $path = $dir . '/wsManagersReporters.txt';
 
-                    $imported[$objManagerReporter->key] = $infoImported;
-                }//if_competenceData
-            }//for_competences
+            // Clean old data
+            if (file_exists($path)) {
+                unlink($path);
+            }
+
+            // Save new data
+            $file = fopen($path,'w');
+            fwrite($file,$userManagerReporter);
+            fclose($file);
+
+            // Process Content
+            if (file_exists($path)) {
+                // Get content
+                $data        = file_get_contents($path);
+                $lstmanagers = json_decode($data);
+
+                // Synchronization
+                foreach($lstmanagers as $key=>$info) {
+                    // Process manager
+                    $synchronized = self::process_user_manager_reporter($info);
+
+                    // MArk as imported
+                    if ($synchronized) {
+                        $infoImported = new stdClass();
+                        $infoImported->personalNumber   = $info->personalnumber;
+                        $infoImported->imported         = 1;
+                        $infoImported->key              = $info->key;
+
+                        $imported[$info->key] = $infoImported;
+                    }//if_competenceData
+                }//for_managers
+            }//file_exists
 
             $result['managerReporter'] = $imported;
 
-            /* Log  */
-            $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' Finish Synchronization User Manager Reporter  . ' . "\n";
-            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+            // Log
+            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' Finish Synchronization User Manager Reporter  . ' . "\n";
+            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
         }catch (Exception $ex) {
-            /* Log  */
-            $dbLog  = $ex->getMessage() . "\n" . "\n";
-            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' Finish ERROR Synchronization User Manager Reporter  . ' . "\n";
-            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+            // Log
+            $dblog  = $ex->getMessage() . "\n" . "\n";
+            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' Finish ERROR Synchronization User Manager Reporter  . ' . "\n";
+            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
 
             $result['error']            = 409;
             $result['message']          = $ex->getMessage();
@@ -400,6 +430,9 @@ class WS_FELLESDATA {
      * @throws          Exception
      *
      * @creationDate    14/06/2016
+     * @author          eFaktor     (fbv)
+     *
+     * @updateDate      28/02/2017
      * @author          eFaktor     (fbv)
      */
     public static function synchronize_user_competence($competence,&$result) {
@@ -429,8 +462,11 @@ class WS_FELLESDATA {
             $path = $dir . '/wsUserCompetence.txt';
 
             // Clean old data
+            if (file_exists($path)) {
+                unlink($path);
+            }//if_file_exst
+
             // Save new data
-            unlink($path);
             $filecompetence = fopen($path,'w');
             fwrite($filecompetence,$competence);
             fclose($filecompetence);
@@ -1101,7 +1137,7 @@ class WS_FELLESDATA {
 
         try {
             /* Get User data */
-            $user = $DB->get_record('user',array('username' => $managerReporter->personalNumber,'deleted' => '0'),'id');
+            $user = $DB->get_record('user',array('username' => $managerReporter->personalnumber,'deleted' => '0'),'id');
 
             /* Check If Exist */
             if ($user) {
@@ -1118,7 +1154,7 @@ class WS_FELLESDATA {
                 }//Manager&&Reporter
 
                 /* Get Info Manager */
-                list($infoManager,$infoReporter) = self::get_info_manager($managerReporter->ksId,$managerReporter->level,$user->id);
+                list($infoManager,$infoReporter) = self::get_info_manager($managerReporter->ksid,$managerReporter->level,$user->id);
 
                 /* Apply Action */
                 switch ($managerReporter->action) {
