@@ -14,6 +14,7 @@
 define('ADD_ACTION',0);
 define('UPDATE_ACTION',1);
 define('DELETE_ACTION',2);
+define('STATUS_ACTION',3);
 
 define('MANAGER','manager');
 define('REPORTER','reporter');
@@ -1159,79 +1160,57 @@ class WS_FELLESDATA {
                 /* Apply Action */
                 switch ($managerReporter->action) {
                     case ADD_ACTION:
-
-                        /* Add the user as manager if it's the case */
+                    case UPDATE_ACTION:
+                    case STATUS_ACTION:
+                        // Add the user as manager if it's the case
                         if ($manager) {
-                            /* Check if the user is already manager or not */
+                            // Check if the user is already manager or not 
                             $IsManager = self::is_manager_reporter($infoManager,MANAGER);
                             if (!$IsManager) {
-                                /* Create   */
+                                // Create
                                 $DB->insert_record('report_gen_company_manager',$infoManager);
                             }//if_manager
                         }else if($reporter) {
-                            /* Check if the user is already reporter or not */
+                            // Check if the user is already reporter or not
                             $IsReporter = self::is_manager_reporter($infoReporter,REPORTER);
                             if (!$IsReporter) {
-                                /* Create */
+                                // Create
                                 $DB->insert_record('report_gen_company_reporter',$infoReporter);
                             }//if_reporter
                         }
 
-                        /* Synchronized */
-                        $sync = true;
-
-                        break;
-                    case UPDATE_ACTION:
-
-                        /* Add the user as manager if it's the case */
-                        if ($manager) {
-                            /* Check if the user is already manager or not */
-                            $IsManager = self::is_manager_reporter($infoManager,MANAGER);
-                            if (!$IsManager) {
-                                /* Create   */
-                                $DB->insert_record('report_gen_company_manager',$infoManager);
-                            }//if_manager
-                        }else if ($reporter) {
-                            /* Check if the user is already reporter or not */
-                            $IsReporter = self::is_manager_reporter($infoReporter,REPORTER);
-                            if (!$IsReporter) {
-                                /* Create */
-                                $DB->insert_record('report_gen_company_reporter',$infoReporter);
-                            }//if_reporter
-                        }
-
-                        /* Synchronized */
+                        // Synchronize
                         $sync = true;
 
                         break;
                     case DELETE_ACTION:
-                        /* Delete From Manager  */
+                        // Delete From Manager
                         if ($manager) {
                             $IsManager = self::is_manager_reporter($infoManager,MANAGER);
                             if ($IsManager) {
                                 $DB->delete_records('report_gen_company_manager',array('id' => $IsManager));
                             }//if_Manager
                         }else if ($reporter) {
-                            /* Delete From Reporter */
+                            // Delete From Reporter
                             $IsReporter = self::is_manager_reporter($infoReporter,REPORTER);
                             if ($IsReporter) {
                                 $DB->delete_records('report_gen_company_reporter',array('id' => $IsReporter));
                             }//if_reporter
                         }//if_manager
 
-                        /* Synchronized */
+                        // Synchronized
                         $sync = true;
 
                         break;
                 }//action
             }//if_user
 
-            /* Commit */
+            // Commit
             $trans->allow_commit();
 
             return $sync;
         }catch (Exception $ex) {
-            /* Rollback */
+            // Rollback
             $trans->rollback($ex);
 
             throw $ex;
@@ -1600,6 +1579,7 @@ class WS_FELLESDATA {
                 switch ($userCompetence->action) {
                     case ADD_ACTION:
                     case UPDATE_ACTION:
+                    case STATUS_ACTION:
                         if ($competenceData) {
                             /* Update */
                             /* Extract current job roles */
