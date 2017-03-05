@@ -124,47 +124,74 @@ class WS_FELLESDATA {
     public static function synchronize_fsks_companies($companiesFS,&$result) {
         /* Variables */
         global $CFG;
-        $objCompany     = null;
+        $file           = null;
+        $path           = null;
+        $content        = null;
+        $company        = null;
         $companyId      = null;
+        $dir            = null;
+        $dblog          = null;
         $imported       = array();
         $infoImported   = null;
-        $dbLog = null;
-
-        /* Log  */
-        $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START Synchronize FSKS Companies . ' . "\n";
-        error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
 
         try {
-            /* Synchronization between FS and KS companies */
-            foreach ($companiesFS as $key => $company) {
-                /* Convert to object    */
-                $objCompany = (Object)$company;
+            // Log
+            $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START Synchronize FSKS Companies . ' . "\n";
 
-                /* Process the company */
-                $companyId = self::process_fs_company($objCompany);
+            // Save file
+            $dir = $CFG->dataroot . '/fellesdata';
+            if (!file_exists($dir)) {
+                mkdir($dir);
+            }
 
-                /* Marked s imported    */
-                if ($companyId) {
-                    $infoImported = new stdClass();
-                    $infoImported->fsId     = $objCompany->fsId;
-                    $infoImported->ksId     = $companyId;
-                    $infoImported->imported = 1;
-                    $infoImported->key      = $objCompany->fsId;
+            // File
+            $path = $dir . '/wsFSCompanies.txt';
 
-                    $imported[$objCompany->fsId] = $infoImported;
-                }//if_companyId
-            }//for_FS_companies
+            // Clean old data
+            if (file_exists($path)) {
+                unlink($path);
+            }
 
+            // Save new data
+            $file = fopen($path,'w');
+            fwrite($file,$companiesFS);
+            fclose($file);
+
+            // Process Content
+            if (file_exists($path)) {
+                // Get content
+                $content= file_get_contents($path);
+                $content = json_decode($content);
+
+                // Synchronization between FS and KS
+                foreach ($content as $company) {
+                    // Process the company
+                    $companyId = self::process_fs_company($company);
+
+                    // Mark as imported
+                    if ($companyId) {
+                        $infoImported = new stdClass();
+                        $infoImported->fsId     = $company->fsid;
+                        $infoImported->ksId     = $companyId;
+                        $infoImported->imported = 1;
+                        $infoImported->key      = $company->fsid;
+
+                        $imported[$company->fsId] = $infoImported;
+                    }//if_companyId
+                }//company
+            }//if_path
+
+            // Add result
             $result['companies'] = $imported;
 
-            /* Log  */
-            $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Synchronize FSKS Companies . ' . "\n";
-            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+            // Log
+            $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Synchronize FSKS Companies . ' . "\n";
+            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
         }catch (Exception $ex) {
             /* Log  */
-            $dbLog  = $ex->getMessage() . "\n\n";
-            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH ERROR Synchronize FSKS Companies . ' . "\n";
-            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+            $dblog  = $ex->getMessage() . "\n\n";
+            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH ERROR Synchronize FSKS Companies . ' . "\n";
+            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
 
             $result['error']     = 409;
             $result['message']   = $ex->getMessage();
@@ -2249,72 +2276,53 @@ class WS_FELLESDATA {
         $sync               = null;
         $trans              = null;
 
-        /* Begin transaction */
+        // Begin transaction
         $trans = $DB->start_delegated_transaction();
 
         try {
-            /* Local Time */
+            // Local time
             $time = time();
 
-            /* Check if already exists  */
-            $rdo = $DB->get_record('report_gen_companydata',array('id' => $companyInfo->ksId));
+            // Check if already exists
+            $rdo = $DB->get_record('report_gen_companydata',array('id' => $companyInfo->ksid));
 
-            /* Extract Info Company  */
+            // Extract info company
             $instanceCompany = new stdClass();
             $instanceCompany->name              = $companyInfo->name;
             $instanceCompany->industrycode      = $companyInfo->industry;
             $instanceCompany->hierarchylevel    = $companyInfo->level;
             $instanceCompany->public            = $companyInfo->public;
             // Invoice data
-            if ($companyInfo->ansvar) {
-                $instanceCompany->ansvar        = $companyInfo->ansvar;
-            }//if_ansvar
-            if ($companyInfo->tjeneste) {
-                $instanceCompany->tjeneste      = $companyInfo->tjeneste;
-            }//if_tjeneste
-            if ($companyInfo->adresseOne) {
-                $instanceCompany->adresse1      = $companyInfo->adresseOne;
-            }//if_adresseOne
-            if ($companyInfo->adresseTwo) {
-                $instanceCompany->adresse2      = $companyInfo->adresseTwo;
-            }//if_adresseTwo
-            if ($companyInfo->adresseThree) {
-                $instanceCompany->adresse3      = $companyInfo->adresseThree;
-            }//if_adresseThree
-            if ($companyInfo->postnr) {
-                $instanceCompany->postnr        = $companyInfo->postnr;
-            }//if_postnr
-            if ($companyInfo->poststed) {
-                $instanceCompany->poststed      = $companyInfo->poststed;
-            }//if_poststed
-            if ($companyInfo->epost) {
-                $instanceCompany->epost         = $companyInfo->epost;
-            }//if_epost
-
+            $instanceCompany->ansvar            = ($companyInfo->ansvar     ? $companyInfo->ansvar      : null);
+            $instanceCompany->tjeneste          = ($companyInfo->tjeneste   ? $companyInfo->tjenester   : null);
+            $instanceCompany->adresse1          = ($companyInfo->adresse1   ? $companyInfo->adresse1    : null);
+            $instanceCompany->adresse2          = ($companyInfo->adresse2   ? $companyInfo->adresse2    : null);
+            $instanceCompany->adresse3          = ($companyInfo->adresse3   ? $companyInfo->adresse3    : null);
+            $instanceCompany->postnr            = ($companyInfo->postnr     ? $companyInfo->postnr      : null);
+            $instanceCompany->poststed          = ($companyInfo->poststed   ? $companyInfo->poststed    : null);
+            $instanceCompany->epost             = ($companyInfo->epost      ? $companyInfo->epost       : null);
             $instanceCompany->mapped            = MAPPED_TARDIS;
-
-            /* Invoice Data */
             $instanceCompany->modified          = $time;
 
-            /* Apply Action */
+            // Apply action
             switch ($companyInfo->action) {
                 case ADD_ACTION:
                     if (!$rdo) {
-                        /* Execute  */
+                        // Execute
                         $companyId = $DB->insert_record('report_gen_companydata',$instanceCompany);
 
-                        /* Relation Parent  */
+                        // Relation parent
                         if ($companyInfo->parent) {
                             $instanceParent = new stdClass();
                             $instanceParent->companyid  = $companyId;
                             $instanceParent->parentid   = $companyInfo->parent;
                             $instanceParent->modified   = $time;
 
-                            /* Execute  */
+                            // Execute
                             $DB->insert_record('report_gen_company_relation',$instanceParent);
                         }//if_parent
                     }else {
-                        /* Execute  */
+                        // Execute
                         $companyId           = $rdo->id;
                         $instanceCompany->id = $rdo->id;
                         $DB->update_record('report_gen_companydata',$instanceCompany);
@@ -2323,27 +2331,27 @@ class WS_FELLESDATA {
                     break;
                 case UPDATE_ACTION:
                     if (!$rdo) {
-                        /* Execute  */
+                        // Execute
                         $companyId = $DB->insert_record('report_gen_companydata',$instanceCompany);
                     }else {
-                        /* Execute  */
+                        // Execute
                         $companyId           = $rdo->id;
                         $instanceCompany->id = $rdo->id;
                         $DB->update_record('report_gen_companydata',$instanceCompany);
                     }
 
-                    /* Create Relation */
+                    // Creation relation
                     if ($companyInfo->parent) {
-                        /* Check if Already Exists  */
-                        $rdo = $DB->get_record('report_gen_company_relation',array('companyid' => $companyInfo->ksId,'parentid' => $companyInfo->parent),'id');
+                        // Check if already exists
+                        $rdo = $DB->get_record('report_gen_company_relation',array('companyid' => $companyInfo->ksid,'parentid' => $companyInfo->parent),'id');
                         if (!$rdo) {
-                            /* Create Relation */
+                            // Create relation
                             $instanceParent = new stdClass();
-                            $instanceParent->companyid  = $companyInfo->ksId;
+                            $instanceParent->companyid  = $companyInfo->ksid;
                             $instanceParent->parentid   = $companyInfo->parent;
                             $instanceParent->modified   = $time;
 
-                            /* Execute  */
+                            // Execute
                             $DB->insert_record('report_gen_company_relation',$instanceParent);
                         }//if_!rdo
                     }//if_parent
@@ -2352,26 +2360,26 @@ class WS_FELLESDATA {
                 case DELETE_ACTION:
                     if ($rdo) {
                         $companyId = $rdo->id;
-                        /* Delete  Company */
-                        $DB->delete_records('report_gen_companydata',array('id' => $companyInfo->ksId));
+                        // Delete company
+                        $DB->delete_records('report_gen_companydata',array('id' => $companyInfo->ksid));
 
-                        /* Delete Relations */
-                        $DB->delete_records('report_gen_company_relation',array('companyid' => $companyInfo->ksId));
+                        // Delete relations
+                        $DB->delete_records('report_gen_company_relation',array('companyid' => $companyInfo->ksid));
 
-                        // Delete user_info_competence_data
-                        $DB->delete_records('user_info_competence_data',array('companyid' => $companyInfo->ksId));
+                        // Delete user competence data
+                        $DB->delete_records('user_info_competence_data',array('companyid' => $companyInfo->ksid));
 
                         // Delete report_managers
-                        $DB->delete_records('report_gen_company_manager',array('levelthree' => $companyInfo->ksId));
+                        $DB->delete_records('report_gen_company_manager',array('levelthree' => $companyInfo->ksid));
 
                         // Delete report_reporters
-                        $DB->delete_records('report_gen_company_reporter',array('levelthree' => $companyInfo->ksId));
+                        $DB->delete_records('report_gen_company_reporter',array('levelthree' => $companyInfo->ksid));
 
                         // Delete report_super_user
-                        $DB->delete_records('report_gen_super_user',array('levelthree' => $companyInfo->ksId));
+                        $DB->delete_records('report_gen_super_user',array('levelthree' => $companyInfo->ksid));
 
                         // Job roles
-                        $rdoJR = $DB->get_records('report_gen_jobrole_relation',array('levelthree' => $companyInfo->ksId));
+                        $rdoJR = $DB->get_records('report_gen_jobrole_relation',array('levelthree' => $companyInfo->ksid));
                         if ($rdoJR) {
                             foreach ($rdoJR as $instance) {
                                 // Delete job role connected
@@ -2393,12 +2401,12 @@ class WS_FELLESDATA {
                     break;
             }//company_Action
 
-            /* Commit */
+            // Commit
             $trans->allow_commit();
             
             return $companyId;
         }catch (Exception $ex) {
-            /* Rollback */
+            // Rollback
             $trans->rollback($ex);
 
             throw $ex;

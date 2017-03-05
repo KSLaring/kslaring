@@ -164,44 +164,12 @@ class local_wsks_external extends external_api {
      * Add invoice data
      */
     public static function wsFSCompany_parameters() {
-        /* Company Info */
-        $companyFSID            = new external_value(PARAM_TEXT,'Fellesdata Id');
-        $companyKSID            = new external_value(PARAM_INT,'Company KS ID. Update and Delete');
-        $companyName            = new external_value(PARAM_TEXT,'Company Name');
-        $companyIndustryCode    = new external_value(PARAM_TEXT,'Industry Code');
-        $companyLevel           = new external_value(PARAM_INT,'Company Level');
-        $companyParent          = new external_value(PARAM_INT,'Company Parent');
-        $action                 = new external_value(PARAM_INT,'Action. Add/Update/Delete');
-        /* Public /Private  */
-        $companyPublic          = new external_value(PARAM_INT,'Private or Public');
-        /* Invoice Data */
-        $companyAnsvar          = new external_value(PARAM_TEXT,'Company Ansvar');
-        $companyTjneste         = new external_value(PARAM_TEXT,'Company Tjeneste');
-        $companyAdrOne          = new external_value(PARAM_TEXT,'Adresse 1');
-        $companyAdrTwo          = new external_value(PARAM_TEXT,'Adresse 2');
-        $companyAdrThree        = new external_value(PARAM_TEXT,'Adresse 3');
-        $companyPostNr          = new external_value(PARAM_TEXT,'Post NR');
-        $companyPostSted        = new external_value(PARAM_TEXT,'Post Sted');
-        $companyEPost           = new external_value(PARAM_TEXT,'ePost');
+        $companies = new external_value(PARAM_TEXT,'Companie. String like
+                                                    {"fsid": xxx, "ksid" : xxx, "name" : xxxx, "industry" : yyyy, "level" : zzzz, "parent" : rrrr,
+                                                     "public" : zzzz, "ansvar": xxxx, "tjeneste" : yyyyy, "adresse1" : xxxx, "adresse2": xxxx, "adresse3" : xxx,
+                                                     "postnr" : xxx, "poststed": xxxx, "epost" : xxxx, "action": xxxx}');
 
-        $companiesFS = new external_single_structure(array( 'fsId'          => $companyFSID,
-                                                            'ksId'          => $companyKSID,
-                                                            'name'          => $companyName,
-                                                            'industry'      => $companyIndustryCode,
-                                                            'level'         => $companyLevel,
-                                                            'parent'        => $companyParent,
-                                                            'public'        => $companyPublic,
-                                                            'ansvar'        => $companyAnsvar,
-                                                            'tjeneste'      => $companyTjneste,
-                                                            'adresseOne'    => $companyAdrOne,
-                                                            'adresseTwo'    => $companyAdrTwo,
-                                                            'adresseThree'  => $companyAdrThree,
-                                                            'postnr'        => $companyPostNr,
-                                                            'poststed'      => $companyPostSted,
-                                                            'epost'         => $companyEPost,
-                                                            'action'        => $action));
-
-        return new external_function_parameters(array('companiesFS'=> new external_multiple_structure($companiesFS)));
+        return new external_function_parameters(array('companiesFS'=> $companies));
     }//wsFSCompany_parameters
 
     /**
