@@ -622,7 +622,7 @@ class WS_FELLESDATA {
 
                     // Delete user competence data
                     $DB->delete_records('user_info_competence_data',array('companyid' => $objOrg->kscompany));
-                    
+
                     // Job roles
                     $rdoJR = $DB->get_records('report_gen_jobrole_relation',array('levelthree' => $objOrg->kscompany));
                     if ($rdoJR) {
@@ -2359,6 +2359,7 @@ class WS_FELLESDATA {
 
                     break;
                 case UPDATE_ACTION:
+                case STATUS_ACTION:
                     if (!$rdo) {
                         // Execute
                         $companyId = $DB->insert_record('report_gen_companydata',$instanceCompany);
