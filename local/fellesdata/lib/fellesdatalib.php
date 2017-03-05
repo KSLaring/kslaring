@@ -325,8 +325,7 @@ class FSKS_COMPANY {
             $params['new']          = 1;
 
             // SQL Instruction
-            $sql = " SELECT	DISTINCT 
-                                  fs.id,
+            $sql = " SELECT	    DISTINCT 
                                   fs.companyid                   as 'fsid',
                                   IF(ks_fs.id,ks_fs.kscompany,0) as 'ksid',
                                   fs.name,
@@ -439,7 +438,7 @@ class FSKS_COMPANY {
             $params['synchronized'] = 0;
 
             // SQL Instruction
-            $sql = " SELECT	  fs.id,
+            $sql = " SELECT	  DISTINCT 
                               fs.companyid                    as 'fsid',
                               fk.kscompany                    as 'ksid',
                               fs.name,
@@ -566,7 +565,7 @@ class FSKS_COMPANY {
                 if ($objCompany->imported) {
                     // Get Company
                     $infoCompany        = $companiesFSKS[$objCompany->fsId];
-                    //$infoCompany->ksId  = $objCompany->ksid;
+                    $infoCompany->ksid  = $objCompany->ksId;
 
                     // Synchronize Company
                     self::synchronize_company_ksfs($infoCompany,$objCompany->fsId);
