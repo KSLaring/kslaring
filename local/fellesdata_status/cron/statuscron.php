@@ -51,10 +51,10 @@ class STATUS_CRON {
             //self::managers_reporters($plugin,$industry);
 
             // Import last status from fellesdata
-            self::import_status($plugin);
+            //self::import_status($plugin);
 
             // Syncronization
-            //self::synchronization($plugin);
+            self::synchronization($plugin);
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -193,7 +193,8 @@ class STATUS_CRON {
             // Synchronization FS Users
 
             // Synchronization FS Companies
-
+            self::sync_status_fs_organizations($plugin);
+            
             // Synchronization FS Job roles
 
             // Synchronization FS Managers/Reporters to delete
@@ -203,7 +204,7 @@ class STATUS_CRON {
             //self::sync_status_delete_managers_reporters($plugin,REPORTERS);
 
             // Synchronization FS Managers/Reporters
-            self::sync_status_managers_reporters($plugin);
+            //self::sync_status_managers_reporters($plugin);
 
             // Synchronization FS User Competence to Delete
             //self::sync_status_delete_competence($plugin);
@@ -247,7 +248,7 @@ class STATUS_CRON {
             //self::import_status_users($plugin);
 
             // Import FS Companies
-            self::import_status_orgstructure($plugin);
+            //self::import_status_orgstructure($plugin);
 
             // Import FS Job roles
             //self::import_status_jobroles($plugin);
@@ -803,6 +804,153 @@ class STATUS_CRON {
             throw $ex;
         }//try_catch
     }//sync_status_managers_reporters
+
+    /**
+     * Description
+     * Synchronize last status of fs companies
+     *
+     * @param           Object  $plugin
+     * @throws                  Exception
+     *
+     * @creationDate    05/03/2017
+     * @author          eFaktor     (fbv)
+     */
+    private static function sync_status_fs_organizations($plugin) {
+        /* Variables */
+        global $CFG;
+        $dblog = null;
+        
+        try {
+            // Log
+            $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START FS Organizations Synchronization (STATUS) . ' . "\n";
+
+            // First new companies --> Send notifications
+            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' STATUS New companies. Notifications . ' . "\n";
+            STATUS::synchronization_status_new_companies($plugin);
+
+            // Companies don't exists any more
+            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' STATUS  Companies to delete . ' . "\n";
+            self::synchronization_status_companies_no_exist($plugin);
+
+            // Existing companies
+            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' STATUS Existing companies . ' . "\n";
+            self::synchronization_status_existing_companies($plugin);
+
+            // Log
+            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH FS Organizations Synchronization (STATUS) . ' . "\n";
+            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+        }catch (Exception $ex) {
+            // Log
+            $dblog  = $ex->getMessage() . "\n" . "\n";
+            $dblog .= $dblog(time(),'%d.%m.%Y', 99, false). ' Finish ERROR FS Organizations Synchronization (STATUS). ' . "\n";
+            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+
+            throw $ex;
+        }//try_catch
+    }//sync_status_fs_organizations
+
+    /**
+     * Description
+     * Synchronize companies that don't exist any more
+     * 
+     * @param           Object  $plugin
+     * 
+     * @throws                  Exception
+     * 
+     * @creationDate    05/03/2017
+     * @author          eFaktor     (fbv)
+     */
+    private static function synchronization_status_companies_no_exist($plugin) {
+        /* Variables */
+        global $CFG;
+        $dblog = null;
+        $rdocompanies   = null;
+        $todelete       = null;
+        $response       = null;
+        $total          = null;
+        $start          = 0;
+        $limit          = 500;
+        
+        try {
+            // Get total
+            $total = STATUS::get_status_total_companies_to_delete();
+            if ($total) {
+                for ($i=0;$i<=$total;$i=$i+$limit) {
+                    // Get companies to delete
+                    list($todelete,$rdocompanies) = STATUS::get_status_companies_to_delete($start,$limit);
+
+                    // Call webs service
+                    if ($todelete) {
+                        $params     = array('companiesFS' => $todelete);
+                        $response   = self::process_service($plugin,KS_SYNC_FS_COMPANY,$params);
+
+                        if ($response) {
+                            if ($response['error'] == '200') {
+                                FSKS_COMPANY::synchronize_companies_ksfs($rdocompanies,$response['companies']);
+                            }else {
+                                /* Log  */
+                                $dblog  .= "ERROR WS: " . $response['message'] . "\n\n";
+                                $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' Finish ERROR Status compenies to delete . ' . "\n";
+                            }//if_no_error
+                        }//if_response
+                    }//if_toSynchronize
+                }//for
+            }//if_total
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//synchronization_status_companies_no_exist
+
+    /**
+     * Description
+     * Synchronize status of existing companies
+     * @param           Object  $plugin
+     *
+     * @throws                  Exception
+     *
+     * @creationDate    05/03/2017
+     * @author          eFaktor     (fbv)
+     */
+    private static function synchronization_status_existing_companies($plugin) {
+        /* Variables */
+        global $CFG;
+        $dblog = null;
+        $rdocompanies   = null;
+        $toSynchronize  = null;
+        $response       = null;
+        $total          = null;
+        $start          = 0;
+        $limit          = 500;
+
+        try {
+            // Get total
+            $total = STATUS::get_total_status_existing_companies();
+            if ($total) {
+                for ($i=0;$i<=$total;$i=$i+$limit) {
+                    // Get companies to delete
+                    list($toSynchronize,$rdocompanies) = STATUS::get_status_existing_companies($start,$limit);
+
+                    // Call webs service
+                    if ($toSynchronize) {
+                        $params     = array('companiesFS' => $toSynchronize);
+                        $response   = self::process_service($plugin,KS_SYNC_FS_COMPANY,$params);
+
+                        if ($response) {
+                            if ($response['error'] == '200') {
+                                FSKS_COMPANY::synchronize_companies_ksfs($rdocompanies,$response['companies']);
+                            }else {
+                                /* Log  */
+                                $dblog  .= "ERROR WS: " . $response['message'] . "\n\n";
+                                $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' Finish ERROR Status existing companies . ' . "\n";
+                            }//if_no_error
+                        }//if_response
+                    }//if_toSynchronize
+                }//for
+            }//if_total
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//synchronization_status_existing_companies
     
     /**
      * Description

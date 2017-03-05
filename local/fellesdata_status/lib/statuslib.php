@@ -128,6 +128,17 @@ class STATUS {
         }//try_catch
     }//save_competence
 
+    /**
+     * Description
+     * Import managers/reporters status
+     * @param           $data
+     * @param           $type
+     *
+     * @throws          Exception
+     *
+     * @creationDate    01/03/2017
+     * @author          eFaktor     (fbv)
+     */
     public static function save_managers_reporters($data,$type) {
         /* Variables */
         global $CFG;
@@ -482,6 +493,252 @@ class STATUS {
         }//try_catch
     }//synchronize_managers_reporters_deleted
 
+    /**
+     * Description
+     * Synchronize new companies
+     * 
+     * @param           Object $plugin
+     * 
+     * @throws                 Exception
+     * 
+     * @creationDate    05/03/2017
+     * @author          eFaktor     (fbv)
+     */
+    public static function synchronization_status_new_companies($plugin) {
+        /* Variables */
+        $newcompanies = null;
+        $notifyTo     = null;
+        
+        try {
+            // Get new comapnies
+            $newcompanies = self::get_new_fs_organizations($plugin);
+            if ($newcompanies) {
+                // Notifications
+                if ($plugin->mail_notification) {
+                    $notifyTo   = explode(',',$plugin->mail_notification);
+
+                    // Send notifications
+                    STATUS::send_notification($newcompanies,$notifyTo);
+                }//if_mail_notifications
+                
+            }//if_newcompanies
+        }catch (Exception $ex){
+            throw $ex;
+        }//try_catch
+    }//synchronization_status_new_comapnies
+
+    /**
+     * Description
+     * Get total companies that do not exist any more and they have to be deleted
+     *
+     * @return          null
+     * @throws          Exception
+     *
+     * @creationDate    05/03/2017
+     * @author          eFaktor     (fbv)
+     */
+    public static function get_status_total_companies_to_delete() {
+        /* Variables */
+        global $DB;
+        $rdo    = null;
+        $sql    = null;
+
+        try {
+            // SQL Instruction
+            $sql = " SELECT	count(DISTINCT fs.id) as 'total'		
+                     FROM	  		{fs_company}		fs
+                        -- INFO KS
+                        JOIN  		{ksfs_company}	    fk 		ON 	fk.fscompany 	    = fs.companyid
+                        -- INFO PARENT
+                        JOIN  		{ks_company}		ks_pa	ON 	ks_pa.companyid     = fk.kscompany
+                        LEFT JOIN   {fs_imp_company}	fs_imp 	ON 	fs_imp.org_enhet_id = fs.companyid
+                     WHERE 	fs_imp.id IS NULL ";
+
+            // Execute
+            $rdo = $DB->get_record_sql($sql);
+            if ($rdo) {
+                return $rdo->total;
+            }else {
+                return null;
+            }//if_rdo
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//get_status_total_companies_to_delete
+
+    /**
+     * Description
+     * Get companies that do not exist any more and they have to be deleted
+     *
+     * @param           integer $start
+     * @param           integer $limit
+     *
+     * @return                  array
+     * @throws                  Exception
+     *
+     * @creationDate    05/03/2017
+     * @author          eFaktor     (fbv)
+     */
+    public static function get_status_companies_to_delete($start,$limit) {
+        /* Variables */
+        global $DB;
+        $rdo        = null;
+        $sql        = null;
+        $companies  = null;
+
+        try {
+            // SQL Instruction
+            $sql = " SELECT	      fs.id,
+                                  fs.companyid                    as 'fsid',
+                                  fk.kscompany                    as 'ksid',
+                                  fs.name,
+                                  fs.level,
+                                  fs.parent,
+                                  ks_pa.industrycode              as 'industry',
+                                  IF(fs.privat,0,1) 	          as 'public',
+                                  IF(fs.ansvar,fs.ansvar,0)       as 'ansvar',
+                                  IF(fs.tjeneste,fs.tjeneste,0)   as 'tjeneste',
+                                  IF(fs.adresse1,fs.adresse1,0)   as 'adresse1',
+                                  IF(fs.adresse2,fs.adresse2,0)   as 'adresse2',
+                                  IF(fs.adresse3,fs.adresse3,0)   as 'adresse3',
+                                  IF(fs.postnr,fs.postnr,0)       as 'postnr',
+                                  IF(fs.poststed,fs.poststed,0)   as 'poststed',
+                                  IF(fs.epost,fs.epost,0)         as 'epost',
+                                  '2' 							  as 'action'
+                     FROM	  	  {fs_company}		fs
+                        -- INFO KS
+                        JOIN  	  {ksfs_company}	fk 		ON 	fk.fscompany 	    = fs.companyid
+                        -- INFO PARENT
+                        JOIN  	  {ks_company}		ks_pa	ON 	ks_pa.companyid     = fk.kscompany
+                        LEFT JOIN {fs_imp_company}	fs_imp 	ON 	fs_imp.org_enhet_id = fs.companyid
+                     WHERE 	fs_imp.id IS NULL ";
+
+            // Execute
+            $rdo = $DB->get_records_sql($sql,null,$start,$limit);
+            if ($rdo) {
+                $companies = json_encode($rdo);
+            }//if_rdo
+
+            return array($companies,$rdo);
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//get_status_companies_to_delete
+
+    /**
+     * Description
+     * Get total status existing companies
+     *
+     * @return          null
+     *
+     * @throws          Exception
+     *
+     * @creationDate    05/03/2017
+     * @author          eFaktor     (fbv)
+     */
+    public static function get_total_status_existing_companies() {
+        /* Variables */
+        global $DB;
+        $rdo    = null;
+        $sql    = null;
+        $params = null;
+
+        try {
+            // Search criteria
+            $params = array();
+            $params['action']   = STATUS;
+            $params['imported'] = 0;
+
+            // SQL Instruction
+            $sql = " SELECT	  count(DISTINCT fs.id) as 'total'		
+                     FROM	  {fs_company}		fs
+                        -- INFO KS
+                        JOIN  {ksfs_company}	fk 		ON 	fk.fscompany 	    = fs.companyid
+                        -- INFO PARENT
+                        JOIN  {ks_company}		ks_pa	ON 	ks_pa.companyid     = fk.kscompany
+                        JOIN  {fs_imp_company}	fs_imp 	ON 	fs_imp.org_enhet_id = fs.companyid
+                     WHERE 	  fs_imp.action 	= :action
+                        AND   fs_imp.imported 	= :imported ";
+
+            // Execute
+            $rdo = $DB->get_record_sql($sql,$params);
+            if ($rdo) {
+                return $rdo->total;
+            }else {
+                return null;
+            }
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//get_total_status_existing_companies
+
+    /**
+     * Description
+     * Get existing companies
+     * 
+     * @param       integer $start
+     * @param       integer $limit
+     * 
+     * @return              array
+     * @throws              Exception
+     * 
+     * @creationDate    05/03/2017
+     * @author          eFaktor     (fbv)
+     */
+    public static function get_status_existing_companies($start,$limit) {
+        /* Variables */
+        global $DB;
+        $rdo        = null;
+        $companies  = null;
+        $sql        = null;
+        $params     = null;
+
+        try {
+            // Search criteria
+            $params = array();
+            $params['action']   = STATUS;
+            $params['imported'] = 0;
+
+            // SQL Instruction
+            $sql = " SELECT	DISTINCT 
+                              fs.id,
+                              fs.companyid                    as 'fsid',
+                              fk.kscompany                    as 'ksid',
+                              fs.name,
+                              fs.level,
+                              fs.parent,
+                              ks_pa.industrycode              as 'industry',
+                              IF(fs.privat,0,1) 	          as 'public',
+                              IF(fs.ansvar,fs.ansvar,0)       as 'ansvar',
+                              IF(fs.tjeneste,fs.tjeneste,0)   as 'tjeneste',
+                              IF(fs.adresse1,fs.adresse1,0)   as 'adresse1',
+                              IF(fs.adresse2,fs.adresse2,0)   as 'adresse2',
+                              IF(fs.adresse3,fs.adresse3,0)   as 'adresse3',
+                              IF(fs.postnr,fs.postnr,0)       as 'postnr',
+                              IF(fs.poststed,fs.poststed,0)   as 'poststed',
+                              IF(fs.epost,fs.epost,0)         as 'epost',
+                              fs_imp.action
+                     FROM	  {fs_company}		fs
+                        -- INFO KS
+                        JOIN  {ksfs_company}	fk 		ON 	fk.fscompany 	    = fs.companyid
+                        -- INFO PARENT
+                        JOIN  {ks_company}		ks_pa	ON 	ks_pa.companyid     = fk.kscompany
+                        JOIN  {fs_imp_company}	fs_imp 	ON 	fs_imp.org_enhet_id = fs.companyid
+                     WHERE 	  fs_imp.action 	= :action
+                        AND	  fs_imp.imported = :imported ";
+
+            // Execute
+            $rdo = $DB->get_records_sql($sql,$params);
+            if ($rdo) {
+                $companies = json_encode($rdo);
+            }//if_Rdo
+
+            return array($companies,$rdo);
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_Catch
+    }//get_status_existing_companies
+
     /***********/
     /* PRIVATE */
     /***********/
@@ -602,4 +859,91 @@ class STATUS {
         }//try_catch
     }//import_managers_reporters
 
+    /**
+     * Description
+     *
+     * @param           Object $plugin
+     *
+     * @return                 null
+     * @throws                 Exception
+     *
+     * @creationDate    05/03/2017
+     * @author          eFaktor     (fbv)
+     */
+    private static function get_new_fs_organizations($plugin) {
+        /* Variables */
+        global $DB;
+        $sql            = null;
+        $rdo            = null;
+        $params         = null;
+        $newcompanies   = null;
+        $levels         = null;
+        try {
+            // Get levels
+            $levels = "(" . $plugin->map_two . "," . $plugin->map_three . ")";
+
+            // SQL Instruction
+            $sql = " SELECT			fs_imp.id,
+                                    fs_imp.ORG_NAVN
+                     FROM			{fs_imp_company}	fs_imp
+                        LEFT JOIN	{fs_company}		fs		ON fs.companyid = fs_imp.ORG_ENHET_ID
+                     WHERE 	        fs.id IS NULL
+                        AND         fs_imp.org_nivaa IN ($levels) 
+                     LIMIT 0,5 ";
+
+            // Execute
+            $rdo = $DB->get_records_sql($sql);
+            foreach ($rdo as $instance) {
+                $newcompanies[$instance->id] = $instance->org_navn;
+            }//for_rdo
+
+            return $newcompanies;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//get_new_fs_organizations
+
+    /**
+     * Description
+     * Send notifications
+     *
+     * @param           array $toMail
+     * @param           array $notifyTo
+     *
+     * @throws                Exception
+     *
+     * @creationDate    05/03/2017
+     * @author          eFaktor     (fbv)
+     */
+    private static function send_notification($toMail,$notifyTo) {
+        /* Variables */
+        global $USER,$SITE,$CFG;
+        $urlMapping = null;
+        $subject    = null;
+        $body       = null;
+        $info       = null;
+        $to         = null;
+
+        try {
+            // url mapping
+            $urlMapping = new moodle_url('/local/fellesdata/mapping/mapping_org.php',array('m' => 'co'));
+
+            // Subject
+            $subject = (string)new lang_string('subject','local_fellesdata',$SITE->shortname,$USER->lang);
+
+            // Body to sent
+            $info = new stdClass();
+            $info->companies = implode(',',$toMail);
+            $info->mapping  = $urlMapping;
+            $body = (string)new lang_string('body_company_to_sync','local_fellesdata',$info,$USER->lang);
+
+            // send
+            foreach ($notifyTo as $to) {
+                $USER->email    = $to;
+                email_to_user($USER, $SITE->shortname, $subject, $body,$body);
+            }//for_Each
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//send_notification
 }//status
