@@ -851,11 +851,13 @@ class FSKS_COMPANY {
             // Company Info to check if already exists or no
             $params = array();
             $params['companyid'] = $companyKSFS->fsid;
+            echo "FSID: " . $companyKSFS->fsid . "</br>";
             $rdoCompany = $DB->get_record('fs_company',$params,'id');
 
             //  Apply Synchronization
             switch ($companyKSFS->action) {
                 case ADD:
+                case STATUS:
                     if ($rdoCompany) {
                         $rdoCompany->synchronized  = 1;
                         $rdoCompany->timemodified  = $time;
@@ -937,14 +939,12 @@ class FSKS_COMPANY {
                     break;
                 case DELETE:
                     // Delete from fs_company
-                    if ($rdoCompany) {
-                        $DB->delete_records('fs_company',array('companyid' => $companyKSFS->fsid));
+                    $DB->delete_records('fs_company',array('companyid' => $companyKSFS->fsid));
 
-                        // Delete Relations
-                        $DB->delete_records('ksfs_company',array('fscompany' => $companyKSFS->fsid));
+                    // Delete Relations
+                    $DB->delete_records('ksfs_company',array('fscompany' => $companyKSFS->fsid));
 
-                        $DB->delete_records('ks_company',array('companyid' => $companyKSFS->ksid));
-                    }//if_company
+                    $DB->delete_records('ks_company',array('companyid' => $companyKSFS->ksid));
 
                     // Synchronized
                     $sync = true;

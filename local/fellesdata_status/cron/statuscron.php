@@ -826,7 +826,7 @@ class STATUS_CRON {
 
             // First new companies --> Send notifications
             $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' STATUS New companies. Notifications . ' . "\n";
-            STATUS::synchronization_status_new_companies($plugin);
+            //STATUS::synchronization_status_new_companies($plugin);
 
             // Companies don't exists any more
             $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' STATUS  Companies to delete . ' . "\n";
@@ -834,7 +834,7 @@ class STATUS_CRON {
 
             // Existing companies
             $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' STATUS Existing companies . ' . "\n";
-            self::synchronization_status_existing_companies($plugin);
+            //self::synchronization_status_existing_companies($plugin);
 
             // Log
             $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH FS Organizations Synchronization (STATUS) . ' . "\n";
