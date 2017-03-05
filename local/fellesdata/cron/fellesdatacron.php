@@ -59,7 +59,8 @@ class FELLESDATA_CRON {
 
             // Unmap process
             if (!$fstExecution) {
-                self::unmapping($plugin);
+                $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START  UNMAP Organizations. ' . "\n";
+                self::unmap_organizations($plugin,KS_UNMAP_COMPANY);
             }//fstExecution_tounmap
 
             // Import KS
@@ -205,45 +206,6 @@ class FELLESDATA_CRON {
     /***********/
     /* PRIVATE */
     /***********/
-
-    /**
-     * Description
-     * Unmap process
-     * - Unmap user compentence
-     * - Unmap managers reportes
-     * - Unmap organizations
-     *
-     * @param       object  $plugin
-     *
-     * @throws              Exception
-     *
-     * @creationDate        20/02/2017
-     * @author              eFaktor     (fbv)
-     */
-    private static function unmapping($plugin) {
-        /* Variables */
-        global $CFG;
-        $dblog = null;
-
-        try {
-            // Unmap user competence
-            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' START  UNMAP User competence. ' . "\n";
-            self::unmap_user_competence($plugin,KS_UNMAP_USER_COMPETENCE);
-
-            // Unmap managers
-            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' START  UNMAP Manager/Reporter. ' . "\n";
-            self::unmap_managers_reporters($plugin,KS_MANAGER_REPORTER);
-
-            // Unmap organizations
-            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' START  UNMAP Organizations. ' . "\n";
-            self::unmap_organizations($plugin,KS_UNMAP_COMPANY);
-
-            // Log
-            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//unmapping
 
     /**
      * Description
@@ -1213,12 +1175,13 @@ class FELLESDATA_CRON {
     private static function companies_new_fs_synchronization($plugin) {
         /* Variables */
         global $CFG;
+        $rdocompanies   = null;
         $toSynchronize  = null;
         $response       = null;
         $dbLog          = null;
         $total          = null;
         $start          = 0;
-        $limit          = 50;
+        $limit          = 500;
 
         try {
             // Log
@@ -1231,7 +1194,7 @@ class FELLESDATA_CRON {
             if ($total) {
                 for ($i=0;$i<=$total;$i=$i+$limit) {
                     // Get companies to synchronize
-                    $toSynchronize = FSKS_COMPANY::get_new_companiesfs_to_synchronize($start,$limit);
+                    list($toSynchronize,$rdocompanies) = FSKS_COMPANY::get_new_companiesfs_to_synchronize($start,$limit);
                     
                     // Call webs service
                     if ($toSynchronize) {
@@ -1240,7 +1203,7 @@ class FELLESDATA_CRON {
 
                         if ($response) {
                             if ($response['error'] == '200') {
-                                FSKS_COMPANY::synchronize_companies_ksfs($toSynchronize,$response['companies']);
+                                FSKS_COMPANY::synchronize_companies_ksfs($rdocompanies,$response['companies']);
                             }else {
                                 /* Log  */
                                 $dbLog  .= "ERROR WS: " . $response['message'] . "\n\n";
@@ -1274,6 +1237,7 @@ class FELLESDATA_CRON {
     private static function companies_no_new_fs_synchronization($plugin) {
         /* Variables */
         global $CFG;
+        $rdocompanies   = null;
         $toSynchronize  = null;
         $response       = null;
         $dbLog          = null;
@@ -1292,7 +1256,7 @@ class FELLESDATA_CRON {
             if ($total) {
                 for ($i=0;$i<=$total;$i=$i+$limit) {
                     // Get companies to synchronize
-                    $toSynchronize = FSKS_COMPANY::get_update_companiesfs_to_synchronize($start,$limit);
+                    list($toSynchronize,$rdocompanies) = FSKS_COMPANY::get_update_companiesfs_to_synchronize($start,$limit);
 
                     // Call webs service
                     if ($toSynchronize) {
@@ -1301,7 +1265,7 @@ class FELLESDATA_CRON {
 
                         if ($response) {
                             if ($response['error'] == '200') {
-                                FSKS_COMPANY::synchronize_companies_ksfs($toSynchronize,$response['companies']);
+                                FSKS_COMPANY::synchronize_companies_ksfs($rdocompanies,$response['companies']);
                             }else {
                                 /* Log  */
                                 $dbLog  .= "ERROR WS: " . $response['message'] . "\n\n";

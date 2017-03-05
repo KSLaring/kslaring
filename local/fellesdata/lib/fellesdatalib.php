@@ -327,11 +327,11 @@ class FSKS_COMPANY {
             // SQL Instruction
             $sql = " SELECT	DISTINCT 
                                   fs.id,
-                                  fs.companyid,
-                                  IF(ks_fs.id,ks_fs.kscompany,0) as 'ks',
+                                  fs.companyid                   as 'fsid',
+                                  IF(ks_fs.id,ks_fs.kscompany,0) as 'ksid',
                                   fs.name,
                                   fs.level,
-                                  ks.industrycode,
+                                  ks.industrycode                 as 'industry',
                                   fs.parent,
                                   IF(fs.privat,0,1)               as 'public',
                                   IF(fs.ansvar,fs.ansvar,0)       as 'ansvar',
@@ -341,7 +341,8 @@ class FSKS_COMPANY {
                                   IF(fs.adresse3,fs.adresse3,0)   as 'adresse3',
                                   IF(fs.postnr,fs.postnr,0)       as 'postnr',
                                   IF(fs.poststed,fs.poststed,0)   as 'poststed',
-                                  IF(fs.epost,fs.epost,0)         as 'epost'
+                                  IF(fs.epost,fs.epost,0)         as 'epost',
+                                  '0'                             as 'action'
                      FROM		  {fs_company}	  fs
                         JOIN      {ks_company}	  ks 	ON ks.companyid     = fs.parent
                         LEFT JOIN {ksfs_company}  ks_fs	ON ks_fs.fscompany 	= fs.companyid
@@ -353,32 +354,10 @@ class FSKS_COMPANY {
             // Execute
             $rdo = $DB->get_records_sql($sql,$params,$start,$end);
             if ($rdo) {
-                foreach ($rdo as $instance) {
-                    // Info Company
-                    $infoCompany = new stdClass();
-                    $infoCompany->fsId          = $instance->companyid;
-                    $infoCompany->ksId          = $instance->ks;
-                    $infoCompany->name          = trim($instance->name);
-                    $infoCompany->industry      = trim($instance->industrycode);
-                    $infoCompany->level         = $instance->level;
-                    $infoCompany->parent        = $instance->parent;
-                    $infoCompany->public        = $instance->public;
-                    $infoCompany->ansvar        = $instance->ansvar;
-                    $infoCompany->tjeneste      = $instance->tjeneste;
-                    $infoCompany->adresseOne    = $instance->adresse1;
-                    $infoCompany->adresseTwo    = $instance->adresse2;
-                    $infoCompany->adresseThree  = $instance->adresse3;
-                    $infoCompany->postnr        = $instance->postnr;
-                    $infoCompany->poststed      = $instance->poststed;
-                    $infoCompany->epost         = $instance->epost;
-                    $infoCompany->action        = ADD;
-
-                    // Add Company
-                    $toSynchronize[$instance->companyid] = $infoCompany;
-                }//for_rdo
+                $toSynchronize = json_encode($rdo);
             }//if_rdo
 
-            return $toSynchronize;
+            return array($toSynchronize,$rdo);
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -461,12 +440,12 @@ class FSKS_COMPANY {
 
             // SQL Instruction
             $sql = " SELECT	  fs.id,
-                              fs.companyid,
-                              fk.kscompany,
+                              fs.companyid                    as 'fsId',
+                              fk.kscompany                    as 'ksId',
                               fs.name,
                               fs.level,
                               fs.parent,
-                              ks_pa.industrycode,
+                              ks_pa.industrycode              as 'industry',
                               IF(fs.privat,0,1) 	          as 'public',
                               IF(fs.ansvar,fs.ansvar,0)       as 'ansvar',
                               IF(fs.tjeneste,fs.tjeneste,0)   as 'tjeneste',
@@ -496,36 +475,10 @@ class FSKS_COMPANY {
             // Execute
             $rdo = $DB->get_records_sql($sql,$params,$start,$end);
             if ($rdo) {
-                foreach ($rdo as $instance) {
-                    // Info Company
-                    $infoCompany = new stdClass();
-                    $infoCompany->fsId          = $instance->companyid;
-                    $infoCompany->ksId          = $instance->kscompany;
-                    $infoCompany->name          = $instance->name;
-                    $infoCompany->industry      = $instance->industrycode;
-                    $infoCompany->level         = $instance->level;
-                    $infoCompany->parent        = $instance->parent;
-                    $infoCompany->public        = $instance->public;
-                    $infoCompany->ansvar        = $instance->ansvar;
-                    $infoCompany->tjeneste      = $instance->tjeneste;
-                    $infoCompany->adresseOne    = $instance->adresse1;
-                    $infoCompany->adresseTwo    = $instance->adresse2;
-                    $infoCompany->adresseThree  = $instance->adresse3;
-                    $infoCompany->postnr        = $instance->postnr;
-                    $infoCompany->poststed      = $instance->poststed;
-                    $infoCompany->epost         = $instance->epost;
-                    if ($status) {
-                        $infoCompany->action    = UPDATE;
-                    }else {
-                        $infoCompany->action    = $instance->action;    
-                    }//if_status
-                    
-                    // Add Company
-                    $toSynchronize[$instance->companyid] = $infoCompany;
-                }//for_rdo
+                $toSynchronize = json_encode($rdo);
             }//if_rdo
 
-            return $toSynchronize;
+            return array($toSynchronize,$rdo);
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -678,18 +631,18 @@ class FSKS_COMPANY {
             $params['add'] = ADD;
 
             // SQL Instruction
-            $sql = " SELECT   fs_imp.id,
-                              fs_imp.org_navn,
-                              fs.companyid,
-                              fs.synchronized
-                     FROM 	  {fs_imp_company}	fs_imp
-                        JOIN  {fs_company}		fs		ON fs.companyid = fs_imp.ORG_ENHET_ID
-                     WHERE 	  fs_imp.imported 	 = 0
-                          AND fs.synchronized    = 0
-                          AND fs_imp.org_nivaa 	!= 4
-                          AND fs_imp.action        = :add
-                          AND fs_imp.id NOT IN ($notIn) 
-                     ORDER BY fs_imp.org_navn 
+            $sql = " SELECT       fs_imp.id,
+                                  fs_imp.org_navn,
+                                  fs.companyid,
+                                  fs.synchronized
+                     FROM 	      {fs_imp_company}	fs_imp
+                        LEFT JOIN {fs_company}		fs		ON fs.companyid = fs_imp.ORG_ENHET_ID
+                     WHERE 	      fs_imp.imported 	 = 0
+                          AND     fs.synchronized    = 0
+                          AND     fs_imp.org_nivaa 	!= 4
+                          AND     fs_imp.action      = :add
+                          AND     fs_imp.id NOT IN ($notIn) 
+                     ORDER BY   fs_imp.org_navn 
                      LIMIT 0,5 ";
 
             // Execute
