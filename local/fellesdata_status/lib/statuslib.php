@@ -701,7 +701,6 @@ class STATUS {
 
             // SQL Instruction
             $sql = " SELECT	DISTINCT 
-                              fs.id,
                               fs.companyid                    as 'fsid',
                               fk.kscompany                    as 'ksid',
                               fs.name,
