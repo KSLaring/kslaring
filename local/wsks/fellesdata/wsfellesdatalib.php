@@ -613,6 +613,35 @@ class WS_FELLESDATA {
                     // Delete from mdl_report_gen_company_relation
                     $DB->delete_records('report_gen_company_relation',array('companyid' => $objOrg->kscompany));
 
+                    // Delete managers
+                    $DB->delete_records('report_gen_company_manager',array('levelthree' => $objOrg->kscompany));
+                    // Delete reporters
+                    $DB->delete_records('report_gen_company_reporter',array('levelthree' => $objOrg->kscompany));
+                    // Delete super users
+                    $DB->delete_records('report_gen_super_user',array('levelthree' => $objOrg->kscompany));
+
+                    // Delete user competence data
+                    $DB->delete_records('user_info_competence_data',array('companyid' => $objOrg->kscompany));
+                    
+                    // Job roles
+                    $rdoJR = $DB->get_records('report_gen_jobrole_relation',array('levelthree' => $objOrg->kscompany));
+                    if ($rdoJR) {
+                        foreach ($rdoJR as $instance) {
+                            // Delete job role connected
+                            $jr = $instance->jobroleid;
+                            $DB->delete_records('report_gen_jobrole_relation',$instance);
+                            // If there is not any record more, then add as generic
+                            $rdoAux = $DB->get_record('report_gen_jobrole_relation',array('jobroleid' => $jr));
+                            if (!$rdoAux) {
+                                $generic = new stdClass();
+                                $generic->jobroleid = $jr;
+
+                                // Execute
+                                $DB->insert_record('report_gen_jobrole_relation',$generic);
+                            }//if_aux
+                        }//for_rdo
+                    }//if_rdo_jobrole
+
                     if ($unmapped) {
                         $info = new stdClass();
                         $info->unmapped     = true;
