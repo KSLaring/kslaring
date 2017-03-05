@@ -160,8 +160,8 @@ class WS_FELLESDATA {
             // Process Content
             if (file_exists($path)) {
                 // Get content
-                $content= file_get_contents($path);
-                $content = json_decode($content);
+                $data = file_get_contents($path);
+                $content = json_decode($data);
 
                 // Synchronization between FS and KS
                 foreach ($content as $company) {
@@ -176,7 +176,7 @@ class WS_FELLESDATA {
                         $infoImported->imported = 1;
                         $infoImported->key      = $company->fsid;
 
-                        $imported[$company->fsId] = $infoImported;
+                        $imported[$company->fsid] = $infoImported;
                     }//if_companyId
                 }//company
             }//if_path
@@ -185,7 +185,7 @@ class WS_FELLESDATA {
             $result['companies'] = $imported;
 
             // Log
-            $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Synchronize FSKS Companies . ' . "\n";
+            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Synchronize FSKS Companies . ' . "\n";
             error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
         }catch (Exception $ex) {
             /* Log  */
