@@ -194,7 +194,7 @@ class STATUS_CRON {
 
             // Synchronization FS Companies
             self::sync_status_fs_organizations($plugin);
-            
+
             // Synchronization FS Job roles
 
             // Synchronization FS Managers/Reporters to delete
@@ -830,11 +830,11 @@ class STATUS_CRON {
 
             // Companies don't exists any more
             $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' STATUS  Companies to delete . ' . "\n";
-            self::synchronization_status_companies_no_exist($plugin);
+            //self::synchronization_status_companies_no_exist($plugin);
 
             // Existing companies
             $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' STATUS Existing companies . ' . "\n";
-            self::synchronization_status_existing_companies($plugin);
+            //self::synchronization_status_existing_companies($plugin);
 
             // Log
             $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH FS Organizations Synchronization (STATUS) . ' . "\n";
