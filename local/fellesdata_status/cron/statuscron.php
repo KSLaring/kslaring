@@ -826,7 +826,7 @@ class STATUS_CRON {
 
             // First new companies --> Send notifications
             $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' STATUS New companies. Notifications . ' . "\n";
-            //STATUS::synchronization_status_new_companies($plugin);
+            STATUS::synchronization_status_new_companies($plugin);
 
             // Companies don't exists any more
             $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' STATUS  Companies to delete . ' . "\n";
