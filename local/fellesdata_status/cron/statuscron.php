@@ -873,9 +873,9 @@ class STATUS_CRON {
         
         try {
             // Get total
-            $total = STATUS::get_status_total_companies_to_delete();
-            if ($total) {
-                for ($i=0;$i<=$total;$i=$i+$limit) {
+            //$total = STATUS::get_status_total_companies_to_delete();
+            //if ($total) {
+                //for ($i=0;$i<=$total;$i=$i+$limit) {
                     // Get companies to delete
                     list($todelete,$rdocompanies) = STATUS::get_status_companies_to_delete($start,$limit);
 
@@ -894,8 +894,8 @@ class STATUS_CRON {
                             }//if_no_error
                         }//if_response
                     }//if_toSynchronize
-                }//for
-            }//if_total
+                //}//for
+            //}//if_total
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch

@@ -614,7 +614,7 @@ class STATUS {
                      WHERE 	fs_imp.id IS NULL ";
 
             // Execute
-            $rdo = $DB->get_records_sql($sql,null,$start,$limit);
+            $rdo = $DB->get_records_sql($sql,null,0,5);
             if ($rdo) {
                 $companies = json_encode($rdo);
             }//if_rdo
