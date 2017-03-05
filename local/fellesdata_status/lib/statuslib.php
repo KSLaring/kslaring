@@ -727,7 +727,7 @@ class STATUS {
                         AND	  fs_imp.imported = :imported ";
 
             // Execute
-            $rdo = $DB->get_records_sql($sql,$params);
+            $rdo = $DB->get_records_sql($sql,$params,$start,$limit);
             if ($rdo) {
                 $companies = json_encode($rdo);
             }//if_Rdo
