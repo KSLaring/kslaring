@@ -2336,6 +2336,7 @@ class WS_FELLESDATA {
             // Apply action
             switch ($companyInfo->action) {
                 case ADD_ACTION:
+                case STATUS_ACTION:
                     if (!$rdo) {
                         // Execute
                         $companyId = $DB->insert_record('report_gen_companydata',$instanceCompany);
@@ -2388,45 +2389,43 @@ class WS_FELLESDATA {
 
                     break;
                 case DELETE_ACTION:
-                    if ($rdo) {
-                        $companyId = $rdo->id;
-                        // Delete company
-                        $DB->delete_records('report_gen_companydata',array('id' => $companyInfo->ksid));
+                    $companyId = $companyInfo->ksid;
+                    // Delete company
+                    $DB->delete_records('report_gen_companydata',array('id' => $companyInfo->ksid));
 
-                        // Delete relations
-                        $DB->delete_records('report_gen_company_relation',array('companyid' => $companyInfo->ksid));
+                    // Delete relations
+                    $DB->delete_records('report_gen_company_relation',array('companyid' => $companyInfo->ksid));
 
-                        // Delete user competence data
-                        $DB->delete_records('user_info_competence_data',array('companyid' => $companyInfo->ksid));
+                    // Delete user competence data
+                    $DB->delete_records('user_info_competence_data',array('companyid' => $companyInfo->ksid));
 
-                        // Delete report_managers
-                        $DB->delete_records('report_gen_company_manager',array('levelthree' => $companyInfo->ksid));
+                    // Delete report_managers
+                    $DB->delete_records('report_gen_company_manager',array('levelthree' => $companyInfo->ksid));
 
-                        // Delete report_reporters
-                        $DB->delete_records('report_gen_company_reporter',array('levelthree' => $companyInfo->ksid));
+                    // Delete report_reporters
+                    $DB->delete_records('report_gen_company_reporter',array('levelthree' => $companyInfo->ksid));
 
-                        // Delete report_super_user
-                        $DB->delete_records('report_gen_super_user',array('levelthree' => $companyInfo->ksid));
+                    // Delete report_super_user
+                    $DB->delete_records('report_gen_super_user',array('levelthree' => $companyInfo->ksid));
 
-                        // Job roles
-                        $rdoJR = $DB->get_records('report_gen_jobrole_relation',array('levelthree' => $companyInfo->ksid));
-                        if ($rdoJR) {
-                            foreach ($rdoJR as $instance) {
-                                // Delete job role connected
-                                $jr = $instance->jobroleid;
-                                $DB->delete_records('report_gen_jobrole_relation',$instance);
-                                // If there is not any record more, then add as generic
-                                $rdoAux = $DB->get_record('report_gen_jobrole_relation',array('jobroleid' => $jr));
-                                if (!$rdoAux) {
-                                    $generic = new stdClass();
-                                    $generic->jobroleid = $jr;
+                    // Job roles
+                    $rdoJR = $DB->get_records('report_gen_jobrole_relation',array('levelthree' => $companyInfo->ksid));
+                    if ($rdoJR) {
+                        foreach ($rdoJR as $instance) {
+                            // Delete job role connected
+                            $jr = $instance->jobroleid;
+                            $DB->delete_records('report_gen_jobrole_relation',$instance);
+                            // If there is not any record more, then add as generic
+                            $rdoAux = $DB->get_record('report_gen_jobrole_relation',array('jobroleid' => $jr));
+                            if (!$rdoAux) {
+                                $generic = new stdClass();
+                                $generic->jobroleid = $jr;
 
-                                    // Execute
-                                    $DB->insert_record('report_gen_jobrole_relation',$generic);
-                                }//if_aux
-                            }//for_rdo
-                        }//if_rdo_jobrole
-                    }//if_exists
+                                // Execute
+                                $DB->insert_record('report_gen_jobrole_relation',$generic);
+                            }//if_aux
+                        }//for_rdo
+                    }//if_rdo_jobrole
 
                     break;
             }//company_Action
