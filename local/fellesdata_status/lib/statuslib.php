@@ -880,7 +880,7 @@ class STATUS {
         $levels         = null;
         try {
             // Get levels
-            $levels = "(" . $plugin->map_two . "," . $plugin->map_three . ")";
+            $levels = $plugin->map_two . "," . $plugin->map_three;
 
             // SQL Instruction
             $sql = " SELECT			fs_imp.id,
@@ -891,7 +891,6 @@ class STATUS {
                         AND         fs_imp.org_nivaa IN ($levels) 
                      LIMIT 0,5 ";
 
-            echo $sql . "</br>";
             // Execute
             $rdo = $DB->get_records_sql($sql);
             foreach ($rdo as $instance) {
