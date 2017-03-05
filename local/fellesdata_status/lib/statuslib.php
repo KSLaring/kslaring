@@ -588,7 +588,7 @@ class STATUS {
 
         try {
             // SQL Instruction
-            $sql = " SELECT	      fs.id,
+            $sql = " SELECT	 DISTINCT
                                   fs.companyid                    as 'fsid',
                                   fk.kscompany                    as 'ksid',
                                   fs.name,
