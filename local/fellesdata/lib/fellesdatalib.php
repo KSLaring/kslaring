@@ -850,7 +850,6 @@ class FSKS_COMPANY {
             // Company Info to check if already exists or no
             $params = array();
             $params['companyid'] = $companyKSFS->fsid;
-            echo "FSID: " . $companyKSFS->fsid . "</br>";
             $rdoCompany = $DB->get_record('fs_company',$params,'id');
 
             //  Apply Synchronization
