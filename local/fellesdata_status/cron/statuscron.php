@@ -51,10 +51,10 @@ class STATUS_CRON {
             //self::managers_reporters($plugin,$industry);
 
             // Import last status from fellesdata
-            //self::import_status($plugin);
+            self::import_status($plugin);
 
             // Syncronization
-            self::synchronization($plugin);
+            //self::synchronization($plugin);
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -246,7 +246,7 @@ class STATUS_CRON {
             $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START Import Fellesdata STATUS. ' . "\n";
 
             // Import FS Users
-            //self::import_status_users($plugin);
+            self::import_status_users($plugin);
 
             // Import FS Companies
             //self::import_status_orgstructure($plugin);
