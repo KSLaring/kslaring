@@ -82,7 +82,7 @@ class FSKS_JOBROLES {
             // Search Criteria
             $params = array();
             $params['imported'] = 0;
-            $params['add']      = ADD;
+            $params['add']      = DELETE;
 
             // SQL Instruction
             $sql = " SELECT         fs.id,
@@ -92,7 +92,7 @@ class FSKS_JOBROLES {
                         JOIN		{fs_jobroles}		fsjr	ON  fsjr.jrcode 	= fs.stillingskode
                         LEFT JOIN	{ksfs_jobroles}		ksfs	ON 	ksfs.fsjobrole  = fsjr.jrcode
                      WHERE  	    ksfs.id IS NULL
-                          AND       fs.action   = :add
+                          AND       fs.action   != :add
                      ORDER BY       fs.stillingskode, fs.stillingstekst ";
 
             // Execute

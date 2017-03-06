@@ -51,7 +51,7 @@ class STATUS_CRON {
             //self::managers_reporters($plugin,$industry);
 
             // Import last status from fellesdata
-            self::import_status($plugin);
+            //self::import_status($plugin);
 
             // Syncronization
             self::synchronization($plugin);
@@ -196,7 +196,8 @@ class STATUS_CRON {
             //self::sync_status_fs_organizations($plugin);
 
             // Synchronization FS Job roles
-
+            self::sync_status_fs_jobroles($plugin);
+            
             // Synchronization FS Managers/Reporters to delete
             // Managers
             //self::sync_status_delete_managers_reporters($plugin,MANAGERS);
@@ -251,7 +252,7 @@ class STATUS_CRON {
             //self::import_status_orgstructure($plugin);
 
             // Import FS Job roles
-            self::import_status_jobroles($plugin);
+            //self::import_status_jobroles($plugin);
 
             // Import FS User Competence
             //self::import_status_managers_reporters($plugin);
@@ -951,6 +952,57 @@ class STATUS_CRON {
             throw $ex;
         }//try_catch
     }//synchronization_status_existing_companies
+
+    /**
+     * Description
+     * Synchronize status jobroles
+     * @param           Object  $plugin
+     * 
+     * @throws                  Exception
+     * 
+     * @creationDate    06/03/2017
+     * @author          eFaktor     (fbv)
+     */
+    private static function sync_status_fs_jobroles($plugin) {
+        /* Variables */
+        global $CFG;
+        $tomail         = null;
+        $dblog          = null;
+        $notifyto       = null;
+        
+        try {
+            // Log
+            $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START Sync Jobroles (STATUS) . ' . "\n";
+
+            // Notifications
+            if ($plugin->mail_notification) {
+                $notifyto   = explode(',',$plugin->mail_notification);
+            }//if_mail_notifications
+
+            // Send notifications
+            if ($notifyto) {
+                // Jobroles to map
+                $toMail = FSKS_JOBROLES::jobroles_fs_tosynchronize_mailing();
+                if ($toMail) {
+                    STATUS::send_notification(SYNC_JR,$tomail,$notifyto);
+                }//If_toMail
+                
+                // Mark as imported the existing ones
+                STATUS::sync_status_existing_jobroles();
+            }//if_notigyTo
+            
+            // Log
+            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Sync Jobroles (STATUS) . ' . "\n";
+            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+        }catch (Exception $ex) {
+            // Log
+            $dblog  = $ex->getTraceAsString() . "\n" . "\n";
+            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' ERROR FINISH Sync Jobroles (STATUS . ' . "\n";
+            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+            
+            throw $ex;
+        }//try_catch
+    }//sync_status_fs_jobroles
     
     /**
      * Description

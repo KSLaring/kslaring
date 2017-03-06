@@ -19,6 +19,9 @@ define('WS_CLEAN_MANAGERS_REPORTERS','ws_clean_managers_reporters');
 define('MANAGERS','manager');
 define('REPORTERS','reporter');
 
+define('SYNC_STATUS_COMP','companies');
+define('SYNC_STATUS_JR','jobroles');
+
 class STATUS {
     /**********/
     /* PUBLIC */
@@ -518,7 +521,7 @@ class STATUS {
                     $notifyTo   = explode(',',$plugin->mail_notification);
 
                     // Send notifications
-                    STATUS::send_notification($newcompanies,$notifyTo);
+                    self::send_notification(SYNC_STATUS_COMP,$newcompanies,$notifyTo);
                 }//if_mail_notifications
                 
             }//if_newcompanies
@@ -527,6 +530,67 @@ class STATUS {
         }//try_catch
     }//synchronization_status_new_comapnies
 
+    /**
+     * Description
+     * Send notifications
+     *
+     * @param           array $toMail
+     * @param           array $notifyTo
+     *
+     * @throws                Exception
+     *
+     * @creationDate    05/03/2017
+     * @author          eFaktor     (fbv)
+     */
+    public static function send_notification($type,$toMail,$notifyTo) {
+        /* Variables */
+        global $USER,$SITE;
+        $urlMapping = null;
+        $subject    = null;
+        $body       = null;
+        $info       = null;
+        $to         = null;
+
+        try {
+            // Subject
+            $subject = (string)new lang_string('subject','local_fellesdata',$SITE->shortname,$USER->lang);
+
+            // Body
+            switch ($type) {
+                case SYNC_STATUS_COMP:
+                    // url mapping
+                    $urlMapping = new moodle_url('/local/fellesdata/mapping/mapping_org.php',array('m' => 'co'));
+
+                    // Body to sent
+                    $info = new stdClass();
+                    $info->companies = implode(',',$toMail);
+                    $info->mapping  = $urlMapping;
+                    $body = (string)new lang_string('body_company_to_sync','local_fellesdata',$info,$USER->lang);
+
+                    break;
+                case SYNC_STATUS_JR:
+                    // Url mapping
+                    $urlMapping = new moodle_url('/local/fellesdata/mapping/jobroles.php');
+
+                    // Body to sent
+                    $info = new stdClass();
+                    $info->jobroles = implode(',',$toMail);
+                    $info->mapping  = $urlMapping;
+                    $body = (string)new lang_string('body_jr_to_sync','local_fellesdata',$info,$USER->lang);
+
+                    break;
+            }//type
+
+            // send
+            foreach ($notifyTo as $to) {
+                $USER->email    = $to;
+                email_to_user($USER, $SITE->shortname, $subject, $body,$body);
+            }//for_Each
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//send_notification
+    
     /**
      * Description
      * Get total companies that do not exist any more and they have to be deleted
@@ -738,6 +802,60 @@ class STATUS {
         }//try_Catch
     }//get_status_existing_companies
 
+    /**
+     * Description
+     * mark as imported all jobroles that already exist
+     * 
+     * @throws          Exception
+     * 
+     * @creationDate    06/03/2017
+     * @author          eFaktor     (fbv)
+     */
+    public static function sync_status_existing_jobroles() {
+        /* Variables */
+        global $DB;
+        $rdo    = null;
+        $sql    = null;
+        $params = null;
+        $time   = null;
+
+        try {
+            // Local time
+            $time = time();
+
+            // Search criteria
+            $params = array();
+            $params['action']   = DELETE;
+            $params['imported'] = 0;
+
+            // SQL Insturction
+            $sql = " SELECT  DISTINCT 
+                                fs.id,
+                                fs.imported
+                     FROM		{fs_imp_jobroles}   fs
+                        JOIN	{fs_jobroles}		fsjr	ON  fsjr.jrcode 	= fs.stillingskode
+                        JOIN	{ksfs_jobroles}		ksfs	ON 	ksfs.fsjobrole  = fsjr.jrcode
+                     WHERE      fs.action   != :action
+                        AND		fs.imported  = :imported ";
+
+            // Execute
+            $rdo = $DB->get_records_sql($sql,$params);
+            if ($rdo) {
+                // Update as imported
+                foreach ($rdo as $instance) {
+                    $instance->imported     = 1;
+                    $instance->timemodified = $time;
+                    
+                    // Execute
+                    $DB->update_record('fs_imp_jobroles',$instance);
+                }//if_Rdo
+            }//if_rdo
+
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//sync_status_existing_jobroles
+
     /***********/
     /* PRIVATE */
     /***********/
@@ -901,48 +1019,4 @@ class STATUS {
             throw $ex;
         }//try_catch
     }//get_new_fs_organizations
-
-    /**
-     * Description
-     * Send notifications
-     *
-     * @param           array $toMail
-     * @param           array $notifyTo
-     *
-     * @throws                Exception
-     *
-     * @creationDate    05/03/2017
-     * @author          eFaktor     (fbv)
-     */
-    private static function send_notification($toMail,$notifyTo) {
-        /* Variables */
-        global $USER,$SITE,$CFG;
-        $urlMapping = null;
-        $subject    = null;
-        $body       = null;
-        $info       = null;
-        $to         = null;
-
-        try {
-            // url mapping
-            $urlMapping = new moodle_url('/local/fellesdata/mapping/mapping_org.php',array('m' => 'co'));
-
-            // Subject
-            $subject = (string)new lang_string('subject','local_fellesdata',$SITE->shortname,$USER->lang);
-
-            // Body to sent
-            $info = new stdClass();
-            $info->companies = implode(',',$toMail);
-            $info->mapping  = $urlMapping;
-            $body = (string)new lang_string('body_company_to_sync','local_fellesdata',$info,$USER->lang);
-
-            // send
-            foreach ($notifyTo as $to) {
-                $USER->email    = $to;
-                email_to_user($USER, $SITE->shortname, $subject, $body,$body);
-            }//for_Each
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//send_notification
 }//status
