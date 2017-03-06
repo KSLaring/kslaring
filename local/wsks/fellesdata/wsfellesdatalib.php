@@ -1762,17 +1762,17 @@ class WS_FELLESDATA {
         $trans      = null;
         $userId     = null;
 
-        /* Begin transaction */
+        // Begin transaction
         $trans = $DB->start_delegated_transaction();
 
         try {
-            /* Local Time */
+            // Local time
             $time = time();
 
-            /* Check if already exists the account */
+            // Check if the user already exist
             $rdoUser = $DB->get_record('user',array('username' => $userAccount->personalnumber));
 
-            /* Extract user data */
+            // Extract user data
             if (!$rdoUser) {
                 $infoUser = new stdClass();
                 $infoUser->username     = $userAccount->personalnumber;
@@ -1793,11 +1793,13 @@ class WS_FELLESDATA {
                 $infoUser->lang = 'no';
             }//if_not_info_user
 
-            /* Apply Action */
+            // Appply action
             switch ($userAccount->action) {
                 case ADD_ACTION:
+                case UPDATE_ACTION:
+                case STATUS_ACTION:
                     if (!$rdoUser) {
-                        /* Execute  */
+                        // Execute
                         $userId = $DB->insert_record('user',$infoUser);
                     }else {
                         $rdoUser->firstname    = $userAccount->firstname;
@@ -1806,46 +1808,25 @@ class WS_FELLESDATA {
                         $rdoUser->timemodified = $time;
                         $rdoUser->deleted      = 0;
 
-                        /* Execute */
+                        // Execute
                         $DB->update_record('user',$rdoUser);
                     }//if_notExist
 
-                    /* Synchronized */
-                    $sync = true;
-
-                    break;
-                case UPDATE_ACTION:
-                    /* Update Data */
-                    if ($rdoUser) {
-                        $rdoUser->firstname    = $userAccount->firstname;
-                        $rdoUser->lastname     = $userAccount->lastname;
-                        $rdoUser->email        = self::process_right_email($rdoUser->email,$userAccount->email);
-                        $rdoUser->timemodified = $time;
-                        $rdoUser->deleted      = 0;
-
-                        /* Execute */
-                        $DB->update_record('user',$rdoUser);
-                    }else {
-                        /* Execute  */
-                        $userId = $DB->insert_record('user',$infoUser);
-                    }//if_infoUSer
-
-                    /* Synchronized */
+                    // Synchronized
                     $sync = true;
 
                     break;
                 case DELETE_ACTION:
-                    /* Delete User  */
+                    // Delete user
                     if ($rdoUser) {
-                        /* Delete his/her connection with the municipality */
+                        // Delete his/her connection with the municipality
                         self::remove_connection_municipality($rdoUser->id,$userAccount->industry);
                     }else {
-                        /* Execute  */
-                        //$infoUser->deleted  = 1;
+                        // Execute
                         $userId             = $DB->insert_record('user',$infoUser);
                     }//if_infoUsers
 
-                    /* Synchronized */
+                    // Synchronized
                     $sync = true;
 
                     break;
@@ -1860,43 +1841,41 @@ class WS_FELLESDATA {
             if ($userAccount->ressursnr) {
                 $rdo = $DB->get_record('user_resource_number',array('userid' => $userId));
                 if ($rdo) {
-                    /* Update   */
+                    // Update
                     $rdo->ressursnr     = $userAccount->ressursnr;
                     $rdo->industrycode  = $userAccount->industry;
 
-                    /* Execute */
+                    // Execute
                     $DB->update_record('user_resource_number',$rdo);
                 }else {
-                    /* Insert   */
+                    // Insert
                     $instance = new stdClass();
                     $instance->userid       = $userId;
                     $instance->ressursnr    = $userAccount->ressursnr;
                     $instance->industrycode = $userAccount->industry;
 
-                    /* Execute  */
+                    // Execute
                     $DB->insert_record('user_resource_number',$instance);
                 }//if_rdo
             }//if_resource_number
 
-            /**
-             * Add the gender
-             */
+            // Add gender
             if ($userAccount->action != DELETE_ACTION) {
                 if (is_numeric($userAccount->personalnumber) && ($userAccount->personalnumber) == 11) {
                     Gender::Add_UserGender($userId,$userAccount->personalnumber);
                 }
             }
 
-            /* Commit */
+            // Commit
             $trans->allow_commit();
 
             return $sync;
         }catch (Exception $ex) {
-            /* Log  */
+            // Log
             $dbLog = 'Error --> ' . $ex->getTraceAsString() . "\n";
             error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
 
-            /* Rollback */
+            // Rollback
             $trans->rollback($ex);
 
             throw $ex;
