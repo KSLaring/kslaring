@@ -282,72 +282,75 @@ class WS_FELLESDATA {
         /* Variables    */
         global $CFG;
         $dir            = null;
-        $pathFile       = null;
-        $userId         = null;
+        $path           = null;
+        $file           = null;
+        $content        = null;
+        $userid         = null;
         $imported       = array();
-        $infoImported   = null;
-        $infoAccount    = null;
-        $dbLog          = null;
+        $infoimported   = null;
+        $infoaccount    = null;
+        $dblog          = null;
 
-        /* Log  */
-        $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START Synchronization Users Accoutns . ' . "\n";
-        error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
-        
         try {
-            /* Save Data Temporary */
+            // Log
+            $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START Synchronization Users Accoutns . ' . "\n";
+            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+
+            // Check location to save the file temporary
             $dir = $CFG->dataroot . '/fellesdata';
             if (!file_exists($dir)) {
                 mkdir($dir);
             }
-            /* Clean all response   */
-            $pathFile = $dir . '/wsUsersAccounts.txt';
 
-            /* Create a new response file */
-            /* Clean Old Data   */
-            unlink($pathFile);
-            $responseFile = fopen($pathFile,'w');
-            fwrite($responseFile,$usersAccounts);
-            fclose($responseFile);
-            
-            /* Read Content */
-            if (file_exists($pathFile)) {
-                /* Get Content */
-                $data = file($pathFile);
+            // File
+            $path = $dir . '/wsUsersAccounts.txt';
 
-                /* Synchronization between FS and KS. Users accounts */
-                foreach($data as $key=>$line) {
-                    if ($line) {
-                        $infoAccount = json_decode($line);
-                        
-                        /* Process Account */
-                        $userId = self::process_user_account($infoAccount);
+            // Clean old one
+            unlink($path);
 
-                        /* Marked as imported */
-                        if($userId) {
-                            $infoImported = new stdClass();
-                            $infoImported->personalnumber   = $infoAccount->personalnumber;
-                            $infoImported->imported         = 1;
-                            $infoImported->key              = $infoAccount->id;
+            // Save new data
+            $file = fopen($path,'w');
+            fwrite($file,$usersAccounts);
+            fclose($file);
 
-                            $imported[$infoAccount->id]     = $infoImported;
-                        }//if_userid
-                        
-                        $result['usersAccounts'] = $imported;
-                    }//if_line
-                }//for_line_File
-                
-                /* Log  */
-                $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Synchronization Users Accoutns . ' . "\n"."\n";
-                error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
-            }//if_exists
+            // Process content
+            if (file_exists($path)) {
+                // Get content
+                $data    = file_get_contents($path);
+                $content = json_decode($data);
+
+                // Synchronization between FS and KS
+                foreach ($content as $infoaccount) {
+                    // Process user account
+                    $userid = self::process_user_account($infoaccount);
+
+                    // Mark as imported
+                    if($userid) {
+                        $infoimported = new stdClass();
+                        $infoimported->personalnumber   = $infoaccount->personalnumber;
+                        $infoimported->imported         = 1;
+                        $infoimported->key              = $infoaccount->id;
+
+                        $imported[$infoaccount->id]     = $infoimported;
+                    }//if_userid
+                }//for_each
+            }//if_path
+
+            // Result
+            $result['usersAccounts'] = $imported;
+
+            // Log
+            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Synchronization Users Accoutns . ' . "\n"."\n";
+            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
         }catch (Exception $ex) {
             $result['error']            = 409;
             $result['message']          = $ex->getMessage();
             $result['usersAccounts']    = $imported;
 
-            $dbLog = "ERROR: " . $ex->getMessage() . "\n" . "\n";
-            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). 'FINISH Synchronization Users Accoutns . ' . "\n";
-            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+            // Log
+            $dblog = "ERROR: " . $ex->getMessage() . "\n" . "\n";
+            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). 'FINISH Synchronization Users Accoutns . ' . "\n";
+            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
             
             throw $ex;
         }//try_catch
