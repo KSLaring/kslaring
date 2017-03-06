@@ -51,7 +51,7 @@ class STATUS_CRON {
             //self::managers_reporters($plugin,$industry);
 
             // Import last status from fellesdata
-            //self::import_status($plugin);
+            self::import_status($plugin);
 
             // Syncronization
             self::synchronization($plugin);
@@ -193,7 +193,7 @@ class STATUS_CRON {
             // Synchronization FS Users
 
             // Synchronization FS Companies
-            self::sync_status_fs_organizations($plugin);
+            //self::sync_status_fs_organizations($plugin);
 
             // Synchronization FS Job roles
 
@@ -251,7 +251,7 @@ class STATUS_CRON {
             //self::import_status_orgstructure($plugin);
 
             // Import FS Job roles
-            //self::import_status_jobroles($plugin);
+            self::import_status_jobroles($plugin);
 
             // Import FS User Competence
             //self::import_status_managers_reporters($plugin);
