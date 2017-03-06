@@ -591,6 +591,7 @@ class FS_MAPPING {
             /* Search criteria */
             $params = array();
             $params['job_role'] = $ks_jobrole;
+            $params['action']   = DELETE;
 
             /* SQL Instruction  */
             $sql = " SELECT 	    fs.stillingskode,
@@ -599,6 +600,7 @@ class FS_MAPPING {
                         LEFT JOIN	{ksfs_jobroles}		ksfs	ON 	ksfs.fsjobrole = fs.stillingskode
                                                                 AND	ksfs.ksjobrole = :job_role
                      WHERE          fs.imported = 0	
+                          AND       fs.action != action
                           AND       ksfs.id IS NULL ";
 
             /* Search   */
