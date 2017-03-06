@@ -1078,6 +1078,58 @@ class FSKS_USERS {
 
     /**
      * Description
+     * Get users accounts to be synchronized
+     *
+     * @param       $industry
+     * @param       $start
+     * @param       $limit
+     *
+     * @return      array
+     * @throws      Exception
+     *
+     * @creationDate    06/03/2017
+     * @author          eFaktor     (fbv)
+     */
+    public static function get_users_accounts($industry,$start,$limit) {
+        /* Variables */
+        global $DB;
+        $sql        = null;
+        $rdo        = null;
+        $params     = null;
+        $usersacc   = null;
+
+        try {
+            // Search criteria
+            $params = array();
+            $params['imported'] = 0;
+
+            // SQL Instruction
+            $sql = " SELECT	fs.id,
+                            trim(fs.fodselsnr) 											as 'personalnumber',
+                            IF (fs.brukernavn,fs.brukernavn,0) 							as 'adfs',
+                            IF (fs.ressursnr,fs.ressursnr,0) 							as 'ressursnr',
+                            $industry 												    as 'industry',
+                            CONCAT(fs.fornavn,' ',IF(fs.mellomnavn,fs.mellomnavn,'')) 	as 'firstname',
+                            trim(fs.etternavn) 											as 'lastname',
+                            trim(fs.epost) 												as 'email',
+                            fs.action
+                     FROM	{fs_imp_users}	fs
+                     WHERE 	fs.imported = :imported ";
+            
+            // Execute
+            $rdo = $DB->get_records_sql($sql,$params,$start,$limit);
+            if ($rdo) {
+                $usersacc = json_encode($rdo);
+            }//if_rdo
+            
+            return array($usersacc,$rdo);
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//get_users_accounts
+
+    /**
+     * Description
      * Synchronize users accounts
      *
      * @param           $usersFS
@@ -1717,6 +1769,8 @@ class FSKS_USERS {
             // Apply synchronization
             switch ($userFS->action) {
                 case ADD:
+                case UPDATE:
+                case STATUS:
                     // Execute
                     if (!$rdoUser) {
                         $userId = $DB->insert_record('user',$infoUser);
@@ -1732,28 +1786,6 @@ class FSKS_USERS {
                         // Execute
                         $DB->update_record('user',$rdoUser);
                     }//if_no_exists
-
-                    // Synchronized
-                    $sync = true;
-
-                    break;
-                case UPDATE:
-                    // Check if exists
-                    if ($rdoUser) {
-                        // Update
-                        $userId = $rdoUser->id;
-                        $rdoUser->firstname    = $userFS->firstname;
-                        $rdoUser->lastname     = $userFS->lastname;
-                        $rdoUser->email        = $userFS->email;
-                        $rdoUser->deleted       = 0;
-                        $rdoUser->timemodified = $time;
-
-                        // Execute
-                        $DB->update_record('user',$rdoUser);
-                    }else {
-                        // Execute
-                        $userId = $DB->insert_record('user',$infoUser);
-                    }//if_else
 
                     // Synchronized
                     $sync = true;
