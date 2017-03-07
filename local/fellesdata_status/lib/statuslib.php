@@ -856,6 +856,110 @@ class STATUS {
         }//try_catch
     }//sync_status_existing_jobroles
 
+    /**
+     * Description
+     * Get total users accounts that don't exist any more
+     *
+     * @return          null
+     * @throws          Exception
+     *
+     * @creationDate    06/03/2017
+     * @author          eFaktor     (fbv)
+     */
+    public static function get_status_total_users_accounts_deleted() {
+        /* Variables */
+        global $DB;
+        $params = null;
+        $rdo    = null;
+        $sql    = null;
+
+        try {
+            // Search criteria
+            $params = array();
+            $params['auth']     = 'saml';
+            $params['deleted']  = 0;
+
+            // SQL Instruction
+            $sql = " SELECT	      count(u.id) as 'total'
+                     FROM		  {user}		  u
+                        LEFT JOIN {fs_imp_users}  fs ON fs.fodselsnr = u.idnumber
+                     WHERE 	      fs.id IS NULL
+                          AND     u.auth 		= :auth
+                          AND     u.deleted 	= :deleted
+                          AND     u.idnumber IS NOT NULL
+                          AND     u.idnumber != ''";
+
+            // Execute
+            $rdo = $DB->get_record_sql($sql,$params);
+            if ($rdo) {
+                return $rdo->total;
+            }else {
+                return null;
+            }//if_rdo
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//get_status_total_users_accounts_deleted
+
+    /**
+     * Description
+     * Get all users accounts that don't exist any more
+     *
+     * @param           $industry
+     * @param           $start
+     * @param           $limit
+     *
+     * @return          array
+     * @throws          Exception
+     *
+     * @creationDate    06/03/2017
+     * @author          eFaktor     (fbv)
+     */
+    public static function get_status_users_accounts_deleted($industry,$start,$limit) {
+        /* Variables */
+        global $DB;
+        $params     = null;
+        $rdo        = null;
+        $userssacc  = null;
+        $sql        = null;
+
+        try {
+            // Search criteria
+            $params = array();
+            $params['auth']     = 'saml';
+            $params['deleted']  = 0;
+
+            // SQL Instruction
+            $sql = " SELECT	      u.id,
+                                  u.idnumber 		as 'personalnumber',
+                                  u.username 		as 'adfs',
+                                  u.firstname,
+                                  u.lastname,
+                                  '' 				as 'ressursnr',
+                                  $industry 		as 'industry',
+                                  u.email,
+                                  '2' 			    as 	'action'
+                      FROM		  {user}			u
+                        LEFT JOIN {fs_imp_users}	fs ON fs.fodselsnr = u.idnumber
+                      WHERE 	  fs.id IS NULL
+                          AND     u.auth 		= :auth
+                          AND     u.deleted 	= :deleted
+                          AND     u.idnumber IS NOT NULL
+                          AND     u.idnumber != '' ";
+
+            // Execute
+            $rdo = $DB->get_records_sql($sql,$params,$start,$limit);
+            if ($rdo) {
+                $userssacc = json_encode($rdo);
+            }//if_rdo
+
+            return array($userssacc,$rdo);
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//get_status_users_accounts_deleted
+
+
     /***********/
     /* PRIVATE */
     /***********/

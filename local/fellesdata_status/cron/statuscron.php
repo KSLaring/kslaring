@@ -51,10 +51,10 @@ class STATUS_CRON {
             //self::managers_reporters($plugin,$industry);
 
             // Import last status from fellesdata
-            self::import_status($plugin);
+            //self::import_status($plugin);
 
             // Syncronization
-            //self::synchronization($plugin);
+            self::synchronization($plugin,$industry);
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -181,7 +181,7 @@ class STATUS_CRON {
         }//try_catch
     }//managers_reporters
     
-    private static function synchronization($plugin) {
+    private static function synchronization($plugin,$industry) {
         /* Variables */
         global $CFG;
         $dblog = null;
@@ -191,12 +191,13 @@ class STATUS_CRON {
             $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START Synchronization Fellesdata STATUS. ' . "\n";
 
             // Synchronization FS Users
-
+            self::sync_status_users_accounts($plugin,$industry);
+            
             // Synchronization FS Companies
             //self::sync_status_fs_organizations($plugin);
 
             // Synchronization FS Job roles
-            self::sync_status_fs_jobroles($plugin);
+            //self::sync_status_fs_jobroles($plugin);
             
             // Synchronization FS Managers/Reporters to delete
             // Managers
@@ -246,7 +247,7 @@ class STATUS_CRON {
             $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START Import Fellesdata STATUS. ' . "\n";
 
             // Import FS Users
-            self::import_status_users($plugin);
+            //self::import_status_users($plugin);
 
             // Import FS Companies
             //self::import_status_orgstructure($plugin);
@@ -805,6 +806,107 @@ class STATUS_CRON {
             throw $ex;
         }//try_catch
     }//sync_status_managers_reporters
+
+    /**
+     * Description
+     * Synchronize last status of all users accounts
+     * 
+     * @param           Object  $plugin
+     * @param           String  $industry
+     * 
+     * @throws                  Exception
+     * 
+     * @creationDate    06/03/2017
+     * @author          eFaktor     (fbv)
+     */
+    private static function sync_status_users_accounts($plugin,$industry) {
+        /* Variables */
+        global $CFG;
+        $dblog = null;
+
+        try {
+            // Log
+            $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START Users Accounts (STATUS) . ' . "\n";
+
+            // First users to delete
+            self::sync_status_users_accounts_deleted($plugin,$industry);
+            
+            // Log
+            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Users Accounts (STATUS) . ' . "\n";
+            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+        }catch (Exception $ex) {
+            // Log
+            $dblog  = $ex->getMessage() . "\n" . "\n";
+            $dblog .= $dblog(time(),'%d.%m.%Y', 99, false). ' Finish ERROR Users Accounts (STATUS). ' . "\n";
+            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+
+            throw $ex;
+        }//try_catch
+    }//sync_status_users_accounts
+
+
+    /**
+     * Description
+     * Synchronize the satus of all users accounts that have to be deleted
+     * 
+     * @param           Object  $plugin
+     * @param           String  $industry
+     *
+     * @throws                  Exception
+     *
+     * @creationDate    07/03/2017
+     * @author          eFaktor     (fbv)
+     */
+    private static function sync_status_users_accounts_deleted($plugin,$industry) {
+        /* Variables */
+        global $CFG;
+        $dblog      = null;
+        $rdousers   = null;
+        $lstusers   = null;
+        $response   = null;
+        $total      = null;
+        $start      = 0;
+        $limit      = 500;
+
+        try {
+            // Log
+            $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START Users Accounts DELETED (STATUS) . ' . "\n";
+
+            // get total users accounts
+            $total = STATUS::get_status_total_users_accounts_deleted();
+            if ($total) {
+                for ($i=0;$i<=$total;$i=$i+$limit) {
+                    // Get users accounts
+                    list($lstusers,$rdousers) = STATUS::get_status_users_accounts_deleted($industry,$start,$limit);
+
+                    // Call web service
+                    $response = self::process_service($plugin,KS_SYNC_USER_ACCOUNT,array('usersAccounts' => $lstusers));
+
+                    if ($response) {
+                        if ($response['error'] == '200') {
+                            // Synchronize users accounts FS
+                            FSKS_USERS::synchronize_users_fs($rdousers,$response['usersAccounts']);
+                        }else {
+                            // Log
+                            $dblog .= "Error WS: " . $response['message'] . "\n" ."\n";
+                        }//if_no_error
+                    }//if_response
+                }//for
+            }//if_total
+            
+            // Log
+            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Users Accounts DELETED (STATUS) . ' . "\n";
+            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+        }catch (Exception $ex) {
+            // Log
+            $dblog  = $ex->getMessage() . "\n" . "\n";
+            $dblog .= $dblog(time(),'%d.%m.%Y', 99, false). ' Finish ERROR Users Accounts DELETED (STATUS). ' . "\n";
+            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+
+            throw $ex;
+        }//try_catch
+    }//sync_status_users_accounts_deleted
+
 
     /**
      * Description
