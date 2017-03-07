@@ -836,7 +836,7 @@ class STATUS_CRON {
 
             // Existing users accounts
             self::sync_status_existing_users_accounts($plugin,$industry);
-            
+
             // Log
             $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Users Accounts (STATUS) . ' . "\n";
             error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
@@ -931,6 +931,7 @@ class STATUS_CRON {
             // get total users accounts
             $total = STATUS::get_total_status_new_users_accounts();
             if ($total) {
+                echo "TOTAL: " . $total . "</br>";
                 for ($i=0;$i<=$total;$i=$i+$limit) {
                     // Get users accounts
                     list($lstusers,$rdousers) = STATUS::get_status_new_users_accounts($industry,$start,$limit);
