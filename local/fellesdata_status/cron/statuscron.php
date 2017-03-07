@@ -830,6 +830,9 @@ class STATUS_CRON {
 
             // First users to delete
             //self::sync_status_users_accounts_deleted($plugin,$industry);
+
+            // New users accounts
+            self::sync_status_new_users_accounts($plugin,$industry);
             
             // Log
             $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Users Accounts (STATUS) . ' . "\n";

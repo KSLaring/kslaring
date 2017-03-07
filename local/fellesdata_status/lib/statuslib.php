@@ -1029,7 +1029,7 @@ class STATUS {
                 $lstusers = json_encode($rdo);
             }
             
-            array($lstusers,$rdo);
+            return array($lstusers,$rdo);
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
