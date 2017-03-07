@@ -30,7 +30,7 @@ class STATUS_CRON {
             //self::import_status($plugin);
 
             // Syncronization
-            //self::synchronization($plugin);
+            self::synchronization($plugin);
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -850,6 +850,18 @@ class STATUS_CRON {
         }//try_catch
     }//sync_status_users_accounts
 
+    /**
+     * Description
+     * Synchronize status existing users accounts
+     * 
+     * @param       Object $plugin
+     * @param       String $industry
+     *
+     * @throws             Exception
+     *
+     * @creationDate    07/03/2017
+     * @author          eFaktor     (fbv)
+     */
     private static function sync_status_existing_users_accounts($plugin,$industry) {
         /* Variables */
         global $CFG;
@@ -867,7 +879,6 @@ class STATUS_CRON {
 
             // get total users accounts
             $total = STATUS::get_total_status_existing_users_accounts();
-            $total = 250;
             if ($total) {
                 for ($i=0;$i<=$total;$i=$i+$limit) {
                     // Get users accounts
