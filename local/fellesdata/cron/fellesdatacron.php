@@ -1002,7 +1002,7 @@ class FELLESDATA_CRON {
         $dblog          = null;
         $params         = null;
         $start          = 0;
-        $limit          = 150;
+        $limit          = 250;
 
         try {
             // Industry code by default

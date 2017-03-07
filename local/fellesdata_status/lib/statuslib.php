@@ -959,6 +959,81 @@ class STATUS {
         }//try_catch
     }//get_status_users_accounts_deleted
 
+    public static function get_total_status_new_users_accounts() {
+        /* Variables */
+        global $DB;
+        $params = null;
+        $rdo    = null;
+        $sql    = null;
+        $total  = null;
+
+        try {
+            // Search criteria
+            $params = array();
+            $params['imported'] = 0;
+            $params['action']   = STATUS;
+
+            // SQL Instruction
+            $sql = " SELECT			count(fs.id) as 'total'
+                     FROM			{fs_imp_users}	fs
+                        LEFT JOIN	{user}			u ON u.idnumber = fs.fodselsnr
+                     WHERE 			fs.imported = :imported
+                            AND		fs.action 	= :action
+                            AND 	u.id IS NULL ";
+
+            // Execute
+            $rdo = $DB->get_record_sql($sql,$params);
+            if ($rdo) {
+                return $rdo->total;
+            }else {
+                return null;
+            }//if_rdo
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//get_status_total_new_users_accounts
+
+    public static function get_status_new_users_accounts($industry,$start,$limit) {
+        /* Variables */
+        global $DB;
+        $params   = null;
+        $rdo      = null;
+        $sql      = null;
+        $lstusers = null;
+
+        try {
+            // Search criteria
+            $params = array();
+            $params['imported'] = 0;
+            $params['action']   = STATUS;
+
+            // SQL Instruction
+            $sql = " SELECT	fs.id,
+                            trim(fs.fodselsnr) 											as 'personalnumber',
+                            IF (fs.brukernavn,fs.brukernavn,0) 							as 'adfs',
+                            IF (fs.ressursnr,fs.ressursnr,0) 							as 'ressursnr',
+                            $industry													as 'industry',
+                            CONCAT(fs.fornavn,' ',IF(fs.mellomnavn,fs.mellomnavn,'')) 	as 'firstname',
+                            trim(fs.etternavn) 											as 'lastname',
+                            trim(fs.epost) 												as 'email',
+                            fs.action
+                     FROM			{fs_imp_users}	fs
+                        LEFT JOIN	{user}			u ON u.idnumber = fs.fodselsnr
+                     WHERE 			fs.imported = :imported
+                            AND		fs.action 	= :action
+                            AND 	u.id IS NULL ";
+
+            // Execute
+            $rdo = $DB->get_records_sql($sql,$params,$start,$limit);
+            if ($rdo) {
+                $lstusers = json_encode($rdo);
+            }
+            
+            array($lstusers,$rdo);
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//get_status_new_users_accounts
 
     /***********/
     /* PRIVATE */
