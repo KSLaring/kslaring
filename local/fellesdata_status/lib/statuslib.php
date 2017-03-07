@@ -1141,11 +1141,9 @@ class STATUS {
                         AND		fs.action 	= :action ";
             
             // Execute
-            echo $sql . "</br></br>";
             $rdo = $DB->get_records_sql($sql,$params,$start,$limit);
             if ($rdo) {
                 $lstusers = json_encode($rdo);
-                echo $lstusers . "< /br></br>";
             }//if_rdo
             
             return array($lstusers,$rdo);
