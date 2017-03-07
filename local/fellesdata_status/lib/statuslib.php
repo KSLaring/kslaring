@@ -1138,15 +1138,14 @@ class STATUS {
                      FROM		{fs_imp_users}	fs
                         JOIN	{user}			u ON u.idnumber = fs.fodselsnr
                      WHERE 		fs.imported = :imported
-                        AND		fs.action 	= :action
-                        AND 	u.id IS NULL ";
+                        AND		fs.action 	= :action ";
             
             // Execute
-            echo $sql . "</br>";
+            echo $sql . "</br></br>";
             $rdo = $DB->get_records_sql($sql,$params,$start,$limit);
             if ($rdo) {
                 $lstusers = json_encode($rdo);
-                echo $lstusers . "< /br>";
+                echo $lstusers . "< /br></br>";
             }//if_rdo
             
             return array($lstusers,$rdo);
