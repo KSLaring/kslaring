@@ -863,7 +863,7 @@ class STATUS_CRON {
 
         try {
             // Log
-            $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START Users Accounts NEW (STATUS) . ' . "\n";
+            $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START Existing Users Accounts (STATUS) . ' . "\n";
 
             // get total users accounts
             $total = STATUS::get_total_status_existing_users_accounts();
@@ -874,7 +874,7 @@ class STATUS_CRON {
                     list($lstusers,$rdousers) = STATUS::get_status_existing_users_accounts($industry,$start,$limit);
 
                     // Call web service
-                    $response = self::process_service($plugin,KS_SYNC_USER_ACCOUNT,array('usersAccounts' => $lstusers));
+                    //$response = self::process_service($plugin,KS_SYNC_USER_ACCOUNT,array('usersAccounts' => $lstusers));
 
                     if ($response) {
                         if ($response['error'] == '200') {
@@ -889,12 +889,12 @@ class STATUS_CRON {
             }//if_total
 
             // Log
-            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Users Accounts NEW (STATUS) . ' . "\n";
+            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Existing Users Accounts (STATUS) . ' . "\n";
             error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
         }catch (Exception $ex) {
             // Log
             $dblog  = $ex->getMessage() . "\n" . "\n";
-            $dblog .= $dblog(time(),'%d.%m.%Y', 99, false). ' Finish ERROR Users Accounts NEW (STATUS). ' . "\n";
+            $dblog .= $dblog(time(),'%d.%m.%Y', 99, false). ' Finish ERROR Existing Users Accounts (STATUS). ' . "\n";
             error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
 
             throw $ex;
@@ -931,7 +931,6 @@ class STATUS_CRON {
             // get total users accounts
             $total = STATUS::get_total_status_new_users_accounts();
             if ($total) {
-                echo "TOTAL: " . $total . "</br>";
                 for ($i=0;$i<=$total;$i=$i+$limit) {
                     // Get users accounts
                     list($lstusers,$rdousers) = STATUS::get_status_new_users_accounts($industry,$start,$limit);

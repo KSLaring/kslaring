@@ -1145,6 +1145,7 @@ class STATUS {
             $rdo = $DB->get_records_sql($sql,$params,$start,$limit);
             if ($rdo) {
                 $lstusers = json_encode($rdo);
+                echo $lstusers . "</br>";
             }//if_rdo
             
             return array($lstusers,$rdo);
