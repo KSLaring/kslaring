@@ -869,9 +869,7 @@ class STATUS_CRON {
             $total = STATUS::get_total_status_existing_users_accounts();
             $total = 250;
             if ($total) {
-                echo "1" . "</br>";
                 for ($i=0;$i<=$total;$i=$i+$limit) {
-                    echo "2" . "</br>";
                     // Get users accounts
                     list($lstusers,$rdousers) = STATUS::get_status_existing_users_accounts($industry,$start,$limit);
 

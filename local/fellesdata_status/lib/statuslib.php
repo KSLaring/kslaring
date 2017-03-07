@@ -1142,6 +1142,7 @@ class STATUS {
                         AND 	u.id IS NULL ";
             
             // Execute
+            echo $sql . "</br>";
             $rdo = $DB->get_records_sql($sql,$params,$start,$limit);
             if ($rdo) {
                 $lstusers = json_encode($rdo);
