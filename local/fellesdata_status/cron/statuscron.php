@@ -844,6 +844,10 @@ class STATUS_CRON {
         }//try_catch
     }//sync_status_users_accounts
 
+    private static function sync_status_new_users_accounts($plugin,$industry) {
+        /* Variables */
+        
+    }//sync_status_new_users_accounts
 
     /**
      * Description
@@ -866,7 +870,7 @@ class STATUS_CRON {
         $response   = null;
         $total      = null;
         $start      = 0;
-        $limit      = 250;
+        $limit      = 150;
 
         try {
             // Log
