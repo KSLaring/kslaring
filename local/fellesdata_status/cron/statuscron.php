@@ -871,7 +871,7 @@ class STATUS_CRON {
         $response   = null;
         $total      = null;
         $start      = 0;
-        $limit      = 250;
+        $limit      = 150;
 
         try {
             // Log
