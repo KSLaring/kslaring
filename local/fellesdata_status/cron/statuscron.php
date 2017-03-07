@@ -835,6 +835,8 @@ class STATUS_CRON {
             self::sync_status_new_users_accounts($plugin,$industry);
 
             // Existing users accounts
+            self::sync_status_existing_users_accounts($plugin,$industry);
+            
             // Log
             $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Users Accounts (STATUS) . ' . "\n";
             error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
