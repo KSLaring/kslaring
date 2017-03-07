@@ -959,6 +959,16 @@ class STATUS {
         }//try_catch
     }//get_status_users_accounts_deleted
 
+    /**
+     * Description
+     * Get total all new users accounts
+     * 
+     * @return          null
+     * @throws          Exception
+     * 
+     * @creationDate    07/03/2017
+     * @author          eFaktor     (fbv)
+     */
     public static function get_total_status_new_users_accounts() {
         /* Variables */
         global $DB;
@@ -993,6 +1003,20 @@ class STATUS {
         }//try_catch
     }//get_status_total_new_users_accounts
 
+    /**
+     * Description
+     * Get all new users accounts
+     * 
+     * @param       String  $industry
+     * @param               $start
+     * @param               $limit
+     *
+     * @return              array
+     * @throws              Exception
+     *
+     * @creationDate    07/03/2017
+     * @author          eFaktor     (fbv)
+     */
     public static function get_status_new_users_accounts($industry,$start,$limit) {
         /* Variables */
         global $DB;
@@ -1034,6 +1058,100 @@ class STATUS {
             throw $ex;
         }//try_catch
     }//get_status_new_users_accounts
+
+    /**
+     * Description
+     * Get total of existing users accounts last (status)
+     * @throws          Exception
+     *
+     * @creationDate    07/03/2017
+     * @author          eFaktor (fbv)
+     */
+    public static function get_total_status_existing_users_accounts() {
+        /* Variables */
+        global $DB;
+        $rdo    = null;
+        $sql    = null;
+        $params = null;
+
+        try {
+            // Search criteria
+            $params = array();
+            $params['imported'] = 0;
+            $params['action']   = STATUS;
+
+            // SQL Instruction
+            $sql = " SELECT		count(DISTINCT fs.id) as 'total'
+                     FROM		{fs_imp_users}	fs
+                        JOIN	{user}			u ON u.idnumber = fs.fodselsnr
+                     WHERE 		fs.imported = :imported
+                        AND		fs.action 	= :action ";
+
+            // Execute
+            $rdo = $DB->get_record_sql($sql,$params);
+            if ($rdo) {
+                return $rdo->total;
+            }else {
+                return null;
+            }//if_rdo
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//get_total_status_existing_users_accounts
+
+    /**
+     * Description
+     * Get all existing users accounts
+     * 
+     * @param           String  $industry
+     * @param                   $start
+     * @param                   $limit
+     * 
+     * @return                  array
+     * @throws                  Exception
+     */
+    public static function get_status_existing_users_accounts($industry,$start,$limit) {
+        /* Variables */
+        global $DB;
+        $rdo        = null;
+        $sql        = null;
+        $params     = null;
+        $lstusers   = null;
+
+        try {
+            // Search criteria
+            $params = array();
+            $params['imported'] = 0;
+            $params['action']   = STATUS;
+
+            // SQL Instruction
+            $sql = " SELECT	DISTINCT 
+                                fs.id,
+                                trim(fs.fodselsnr) 											as 'personalnumber',
+                                IF (fs.brukernavn,fs.brukernavn,0) 							as 'adfs',
+                                IF (fs.ressursnr,fs.ressursnr,0) 							as 'ressursnr',
+                                $industry 													as 'industry',
+                                CONCAT(fs.fornavn,' ',IF(fs.mellomnavn,fs.mellomnavn,'')) 	as 'firstname',
+                                trim(fs.etternavn) 											as 'lastname',
+                                trim(fs.epost) 												as 'email',
+                                fs.action
+                     FROM		{fs_imp_users}	fs
+                        JOIN	{user}			u ON u.idnumber = fs.fodselsnr
+                     WHERE 		fs.imported = :imported
+                        AND		fs.action 	= :action
+                        AND 	u.id IS NULL ";
+            
+            // Execute
+            $rdo = $DB->get_records_sql($sql,$params,$start,$limit);
+            if ($rdo) {
+                $lstusers = json_encode($rdo);
+            }//if_rdo
+            
+            return array($lstusers,$rdo);
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//get_status_existing_users_accounts
 
     /***********/
     /* PRIVATE */

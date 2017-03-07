@@ -833,7 +833,8 @@ class STATUS_CRON {
 
             // New users accounts
             self::sync_status_new_users_accounts($plugin,$industry);
-            
+
+            // Existing users accounts
             // Log
             $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Users Accounts (STATUS) . ' . "\n";
             error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
@@ -847,6 +848,69 @@ class STATUS_CRON {
         }//try_catch
     }//sync_status_users_accounts
 
+    private static function sync_status_existing_users_accounts($plugin,$industry) {
+        /* Variables */
+        global $CFG;
+        $dblog      = null;
+        $rdousers   = null;
+        $lstusers   = null;
+        $response   = null;
+        $total      = null;
+        $start      = 0;
+        $limit      = 250;
+
+        try {
+            // Log
+            $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START Users Accounts NEW (STATUS) . ' . "\n";
+
+            // get total users accounts
+            $total = STATUS::get_total_status_existing_users_accounts();
+            $total = 250;
+            if ($total) {
+                for ($i=0;$i<=$total;$i=$i+$limit) {
+                    // Get users accounts
+                    list($lstusers,$rdousers) = STATUS::get_status_existing_users_accounts($industry,$start,$limit);
+
+                    // Call web service
+                    $response = self::process_service($plugin,KS_SYNC_USER_ACCOUNT,array('usersAccounts' => $lstusers));
+
+                    if ($response) {
+                        if ($response['error'] == '200') {
+                            // Synchronize users accounts FS
+                            FSKS_USERS::synchronize_users_fs($rdousers,$response['usersAccounts']);
+                        }else {
+                            // Log
+                            $dblog .= "Error WS: " . $response['message'] . "\n" ."\n";
+                        }//if_no_error
+                    }//if_response
+                }//for
+            }//if_total
+
+            // Log
+            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Users Accounts NEW (STATUS) . ' . "\n";
+            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+        }catch (Exception $ex) {
+            // Log
+            $dblog  = $ex->getMessage() . "\n" . "\n";
+            $dblog .= $dblog(time(),'%d.%m.%Y', 99, false). ' Finish ERROR Users Accounts NEW (STATUS). ' . "\n";
+            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+
+            throw $ex;
+        }//try_catch
+    }//sync_status_existing_users_accounts
+
+    /**
+     * Description
+     * Synchronize all new users accounts
+     *
+     * @param           Object $plugin
+     * @param           String $industry
+     *
+     * @throws                 Exception
+     *
+     * @creationDate    07/03/2017
+     * @author          eFaktor     (fbv)
+     */
     private static function sync_status_new_users_accounts($plugin,$industry) {
         /* Variables */
         global $CFG;
