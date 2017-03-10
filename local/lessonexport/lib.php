@@ -516,7 +516,7 @@ class local_lessonexport {
         $html .= html_writer::div($imgel, 'fronttitle', array('style' => 'text-align: center; padding: 1em 0;'));
         $html .= html_writer::div(' ', 'fronttitletop', array('style' => 'display: block; width: 100%; height: 0.4em;
                                                                                background-color: #fff; margin-top: 1em;'));
-        $html .= html_writer::tag('h1', $title, array('style' => 'display: block; width: 100%; background-color: rgb(18, 160, 83);
+        $html .= html_writer::tag('h1', $title, array('style' => 'display: block; width: 100%; background-color: #fff;
                                                                   min-height: 2em; text-align: center; padding-top: 0.8em;
                                                                   size: 1em; margin: 0; color: #fff;' ));
         $html .= html_writer::div(' ', 'fronttitlebottom', array('style' => 'display: block; width: 100%; height: 0.4em;
