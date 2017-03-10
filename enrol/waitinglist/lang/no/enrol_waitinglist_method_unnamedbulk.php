@@ -22,7 +22,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['unnamedbulk_displayname'] = 'Bulkpåmelding til arrangement';
+$string['unnamedbulk_displayname'] = 'Bulkpåmelding';
 $string['unnamedbulk_menutitle'] = 'Reserver plasser';
 $string['waitlistmessagetitle_unnamedbulk'] = 'Kursplasser er lagt til i ventelisten for: {$a}';
 $string['waitlistmessagetitle_unnamedbulk_changed'] = 'Plasser lagt til i ventelisten for: {$a}. Endret plasser';
