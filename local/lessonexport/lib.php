@@ -520,7 +520,7 @@ class local_lessonexport {
                                                                   min-height: 2em; text-align: center; padding-top: 0.8em;
                                                                   size: 1em; margin: 0; color: #fff;' ));
         $html .= html_writer::div(' ', 'fronttitlebottom', array('style' => 'display: block; width: 100%; height: 0.4em;
-                                                                               background-color: rgb(18, 160, 83); margin-bottom: 1em;'));
+                                                                               background-color: #fff; margin-bottom: 1em;'));
         $html .= html_writer::div($description, 'frontdescription', array('style' => 'margin: 0.5em 1em;'));
         $html .= html_writer::div($info, 'frontinfo', array('style' => 'margin: 2em 1em'));
 
