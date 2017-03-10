@@ -546,14 +546,14 @@ class local_lessonexport {
         $exp->image($CFG->dirroot.'/local/lessonexport/pix/logo.png', 52, 27, 103, 36);
 
         // Title bar.
-        $exp->Rect(0, 87.5, 220, 2.5, 'F', array(), array(18, 160, 83));
-        $exp->Rect(0, 90, 220, 30, 'F', array(), array(18, 160, 83));
-        $exp->Rect(0, 120, 220, 2.5, 'F', array(), array(18, 160, 83));
+        $exp->Rect(0, 87.5, 220, 2.5, 'F', array(), array(255,255,255));
+        $exp->Rect(0, 90, 220, 30, 'F', array(), array(255,255,255));
+        $exp->Rect(0, 120, 220, 2.5, 'F', array(), array(255,255,255));
 
         // Title text.
         $title = $this->lesson->name;
         $exp->SetFontSize(20);
-        $exp->SetTextColorArray(array(255,255,255));
+        $exp->SetTextColorArray(array(0,0,0));
         $exp->Text(10, 100, $title, false, false, true, 0, 0, 'C', false, '', 1, false, 'T', 'C');
         $exp->SetTextColorArray(array(0,0,0)); // Set back to default colour.
         $exp->SetFontSize(11); // Set back to default.
