@@ -104,6 +104,14 @@
     padding: 0px 10px 0px 0px;
 }
 
+.block_participants .lst_participants  th.muni,
+.block_participants .lst_participants  td.muni {
+    width: 20%;
+    text-align: left;
+    text-justify:inter-word;
+    padding: 0px 10px 0px 0px;
+}
+
 .block_participants .lst_participants  th.sector,
 .block_participants .lst_participants  td.sector {
     width: 32%;

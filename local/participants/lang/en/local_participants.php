@@ -39,4 +39,5 @@ $string['str_instructors']      = 'Instructors';
 
 $string['header_wk'] = 'Workplace';
 $string['header_se'] = 'Sector';
-$string['header_lo']    = 'Location';
+$string['header_lo'] = 'Location';
+$string['header_mu'] = 'Municipality';

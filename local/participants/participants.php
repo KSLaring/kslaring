@@ -14,7 +14,7 @@ require_once($CFG->libdir.'/adminlib.php');
 require_once('lib/participantslib.php');
 require_once($CFG->dirroot.'/lib/excellib.class.php');
 
-/* PARAMS */
+// Params
 $courseId   = required_param('id',PARAM_INT);
 $page       = optional_param('page', 0, PARAM_INT);
 $per_page   = optional_param('perpage', 50, PARAM_INT);        // how many per page
@@ -36,7 +36,7 @@ $location           = null;
 $instructors        = null;
 
 
-/* Check permissions */
+// Check permissions
 if (!has_capability('local/participants:manage',$context)) {
     require_login();
 }else {
@@ -45,58 +45,61 @@ if (!has_capability('local/participants:manage',$context)) {
 
 $SESSION->url_download  = $url_download;
 
-/* Get the Sort Order       */
+// Sort order
 if (isset($_COOKIE['dir'])) {
     $sort = $_COOKIE['dir'];
 }else {
     $sort = 'ASC';
 }//if_dir
 
-/* Get the Field by Sort    */
+// Field by sortd
 if (isset($_COOKIE['field'])) {
     $fieldSort = $_COOKIE['field'];
 }else {
     $fieldSort = 'firstname';
 }//if_dir
 
-/* Set page */
+// Set page
 $PAGE->set_url($url);
 $PAGE->set_context($context);
 $PAGE->set_pagelayout('admin');
 $PAGE->requires->js('/local/participants/js/sort.js');
 
-/* Location     */
-$location    = ParticipantsList::GetLocation($courseId);
-/* Instructors  */
-$instructors = ParticipantsList::GetInstructors($courseId);
+// Location
+$location    = ParticipantsList::get_location($courseId);
+// Instructors
+$instructors = ParticipantsList::get_instructors($courseId);
 
-/* First get members that don't have to appear in participant list */
-$notIn = ParticipantsList::GetNotMembersParticipantList($context->id);
+// Member that don't have to be in the participant list
+$notIn = ParticipantsList::get_not_members_participant_list($context->id);
 if ($notIn) {
     $notIn = implode(',',$notIn);
 }else {
     $notIn = 0;
 }//if_notIn
 
-$participantList    = ParticipantsList::GetParticipantList($courseId,$notIn,$sort,$fieldSort,$page*$per_page,$per_page);
-$totalParticipants  = ParticipantsList::GetTotalParticipants($courseId,$notIn);
+// Participant list
+$participantList    = ParticipantsList::get_participant_list($courseId,$notIn,$sort,$fieldSort,$page*$per_page,$per_page);
+$totalParticipants  = ParticipantsList::get_total_participants($courseId,$notIn);
 
+// Download in excel
 if ($format) {
-    $participantList    = ParticipantsList::GetParticipantList($courseId,$notIn,$sort,$fieldSort);
-    ParticipantsList::Download_ParticipantsList($participantList,$course,$location,$instructors);
+    $participantList    = ParticipantsList::get_participant_list($courseId,$notIn,$sort,$fieldSort);
+    ParticipantsList::download_participants_list($participantList,$course,$location,$instructors);
 }
 /* Header   */
 echo $OUTPUT->header();
 
-/* Display Participants     */
+// Display participant list
 echo $OUTPUT->heading(get_string('pluginname','local_participants'));
-$out = ParticipantsList::DisplayParticipantList($participantList,$course,$location,$instructors,$sort,$fieldSort);
+$out = ParticipantsList::display_participant_list($participantList,$course,$location,$instructors,$sort,$fieldSort);
 echo $out;
 
 echo "</br>";
 echo $OUTPUT->paging_bar($totalParticipants, $page, $per_page, $url);
 
-echo ParticipantsList::GetBackButton($course->id);
+// Back button
+echo ParticipantsList::get_back_button($course->id);
 
 
 /* Footer   */
