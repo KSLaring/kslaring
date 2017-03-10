@@ -296,7 +296,7 @@ if ($frm and isset($frm->username)) {                             // Login WITH 
         } else {
         // test the session actually works by redirecting to self
         $SESSION->wantsurl = $urltogo;
-            redirect($CFG->wwwroot);
+            redirect($urltogo);
         }//if_guest_user
 
     } else {

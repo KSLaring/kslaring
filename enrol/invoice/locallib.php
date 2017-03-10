@@ -38,7 +38,7 @@ class enrol_invoice_enrol_form extends moodleform {
         $heading = $plugin->get_instance_name($instance);
         $mform->addElement('header', 'invoice_header', $heading);
 
-        Invoices::AddElements_ToForm($mform);
+        Invoices::add_elements_to_form($mform);
 
         if ($instance->password) {
             // Change the id of invoice enrolment key input as there can be multiple invoice enrolment methods.
@@ -103,7 +103,7 @@ class enrol_invoice_enrol_form extends moodleform {
         }
 
         /* Validate Invoice Data    */
-        Invoices::Validate_InvoiceData($data,$errors);
+        Invoices::validate_invoice_data($data,$errors);
 
         return $errors;
     }//validation
