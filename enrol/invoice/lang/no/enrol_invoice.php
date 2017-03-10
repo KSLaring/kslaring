@@ -29,6 +29,8 @@ $string['rpt_work']             = 'Arbeidssted';
 $string['rpt_mail']             = 'Epost';
 $string['rpt_invoice']          = 'Type';
 $string['rpt_details']          = 'Faktura';
+$string['rpt_muni']             = 'Kommune';
+$string['rpt_sector']           = 'Sektor';
 
 $string['require_password']                 = 'Påmeldingsnøkkel er påkrevd';
 $string['require_password_desc']            = 'Påmeldingsnøkkel er påkrevd i nye kurs og hindre fjerning av påmeldingsnøkkel fra eksisterende kurs.';
@@ -133,3 +135,6 @@ $string['invoice_approval'] = 'Fakturagodkjenner';
 $string['search_approval']  = 'Søk etter fakturagodkjenner';
 
 $string['rpt_resource']  = 'Ressursnummer';
+
+$string['price_int'] = 'Intern pris';
+$string['price_ext'] = 'Ekstern pris';

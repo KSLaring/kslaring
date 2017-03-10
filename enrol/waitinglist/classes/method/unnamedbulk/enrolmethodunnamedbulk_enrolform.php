@@ -142,7 +142,7 @@ class enrolmethodunnamedbulk_enrolform extends \moodleform {
                     global $PAGE;
                     $PAGE->requires->js('/enrol/invoice/js/invoice.js');
 
-                    \Invoices::AddElements_ToForm($mform);
+                    \Invoices::add_elements_to_form($mform);
                     $mform->addElement('hidden', 'invoicedata');
                     $mform->setType('invoicedata', PARAM_INT);
                     $mform->setDefault('invoicedata', 1);
@@ -399,7 +399,7 @@ class enrolmethodunnamedbulk_enrolform extends \moodleform {
          * Validate invoice data
          */
         if (isset($data['invoicedata']) && $data['invoicedata']) {
-            \Invoices::Validate_InvoiceData($data,$errors);
+            \Invoices::validate_invoice_data($data,$errors);
         }//if_invoicedata
 
 

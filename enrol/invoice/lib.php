@@ -216,7 +216,7 @@ class enrol_invoice_plugin extends enrol_plugin {
             }
         }
 
-        Invoices::Add_InvoiceInto($data,$USER->id,$instance->courseid);
+        Invoices::add_invoice_info($data,$USER->id,$instance->courseid);
 
         // Send welcome message.
         if ($instance->customint4) {

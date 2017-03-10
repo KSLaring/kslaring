@@ -518,7 +518,7 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
              */
             if (enrol_get_plugin('invoice')) {
                 if ($waitinglist->{ENROL_WAITINGLIST_FIELD_INVOICE}) {
-                    \Invoices::Add_InvoiceInto($data,$USER->id,$waitinglist->courseid,$waitinglist->id);
+                    \Invoices::add_invoice_info($data,$USER->id,$waitinglist->courseid,$waitinglist->id);
                 }//if_invoice_info
             }
         }catch (\Exception $ex) {
