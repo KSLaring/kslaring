@@ -39,4 +39,5 @@ $string['str_instructors']      = 'Instruktører';
 
 $string['header_wk'] = 'Arbeidssted';
 $string['header_se']    = 'Sektor';
-$string['header_lo']    = 'Sted';
+$string['header_lo'] = 'Sted';
+$string['header_mu'] = 'Kommune';
