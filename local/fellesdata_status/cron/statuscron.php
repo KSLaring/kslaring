@@ -20,6 +20,8 @@ class STATUS_CRON {
 
     public static function cron($plugin) {
         try {
+            // Get industry code
+            $industry = STATUS::get_industry_code($plugin->ks_muni);
 
             // Get competence from KS
             //self::competence_data($plugin);
@@ -30,7 +32,7 @@ class STATUS_CRON {
             //self::import_status($plugin);
 
             // Syncronization
-            self::synchronization($plugin);
+            self::synchronization($plugin,$industry);
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -871,16 +873,17 @@ class STATUS_CRON {
         $response   = null;
         $total      = null;
         $start      = 0;
-        $limit      = 150;
+        $limit      = 250;
 
         try {
             // Log
             $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START Existing Users Accounts (STATUS) . ' . "\n";
 
+            $dblog .= 'Come on!!!' . "\n";
             // get total users accounts
             $total = STATUS::get_total_status_existing_users_accounts();
             if ($total) {
-                for ($i=0;$i<=$total;$i=$i+$limit) {
+                //for ($i=0;$i<=$total;$i=$i+$limit) {
                     // Get users accounts
                     list($lstusers,$rdousers) = STATUS::get_status_existing_users_accounts($industry,$start,$limit);
 
@@ -896,7 +899,7 @@ class STATUS_CRON {
                             $dblog .= "Error WS: " . $response['message'] . "\n" ."\n";
                         }//if_no_error
                     }//if_response
-                }//for
+                //}//for
             }//if_total
 
             // Log
