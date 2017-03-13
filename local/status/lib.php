@@ -12,7 +12,10 @@
  */
 
 function status_cron() {
+    /* Variables */
     global $CFG;
+    $plugin = null;
+    $dblog  = null;
 
     try {
         require_once('cron/statuscron.php');
@@ -21,6 +24,9 @@ function status_cron() {
         
         $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' HOLA LOCAL STATUS . ' . "\n";
 
+        // Plugin info
+        $plugin = get_config('local_fellesdata');
+        \STATUS_CRON::cron($plugin);
         $dblog .= ' BYE BYE LOCAL STATUS . ' . "\n";
         error_log($dblog, 3, $CFG->dataroot . "/STATUS_PAQUI.log");
     }catch (Exception $ex) {
