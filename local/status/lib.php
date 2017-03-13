@@ -28,7 +28,7 @@ function status_cron() {
         $plugin = get_config('local_fellesdata');
         
         // Call cron
-        //\STATUS_CRON::cron($plugin);
+        \STATUS_CRON::cron($plugin);
         
         $dblog .= ' BYE BYE LOCAL STATUS . ' . "\n";
         error_log($dblog, 3, $CFG->dataroot . "/STATUS_PAQUI.log");

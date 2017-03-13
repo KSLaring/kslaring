@@ -36,8 +36,6 @@ class STATUS_CRON {
 
             // Log
             $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START FELLESDATA STATUS CRON . ' . "\n";
-            $dblog .= 'Muni     --> ' . $plugin->ks_muni . "\n";
-            $dblog .= 'Industry --> ' . $industry . "\n";
             
             // Syncronization
             self::synchronization($plugin,$industry);
