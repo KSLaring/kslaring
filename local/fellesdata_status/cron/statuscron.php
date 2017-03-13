@@ -43,6 +43,10 @@ class STATUS_CRON {
             $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH FELLESDATA STATUS CRON . ' . "\n";
             error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
         }catch (Exception $ex) {
+            $dbLog = $ex->getMessage() . "\n" ."\n";
+            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH ERROR - FELLESDATA STATUS CRON . ' . "\n";
+            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+
             throw $ex;
         }//try_catch
     }

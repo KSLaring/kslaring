@@ -21,9 +21,18 @@ function fellesdata_status_cron() {
 
         // Plugin info
         $plugin = get_config('local_fellesdata');
-        
-        \STATUS_CRON::cron($plugin);
+
+        // Log
+        $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START CRON . ' . "\n";
+        $dblog .= $plugin->ks_muni . "\n";
+        error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+
+        //\STATUS_CRON::cron($plugin);
     }catch (Exception $ex) {
+        $dbLog = $ex->getMessage() . "\n" ."\n";
+        $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH ERROR - STATUS CRON . ' . "\n";
+        error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+
         throw $ex;
     }
 }//fellesdata_cron
