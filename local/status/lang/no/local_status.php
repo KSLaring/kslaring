@@ -11,6 +11,6 @@
  *
  */
 
-$string['pluginname']           = 'Fellesdata Status Integration';
+$string['pluginname']           = 'Status Fellesdata Integration';
 
-$string['crontask']             = 'Fellesdata Status Synchronization Cron Task';
+$string['crontask']             = 'Status Fellesdata Synchronization Cron Task';
