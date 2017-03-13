@@ -30,13 +30,13 @@ class STATUS_CRON {
             //self::competence_data($plugin);
 
             // Get managers reporters from KS
-            
-            // Import last status from fellesdata
-            //self::import_status($plugin);
 
             // Log
             $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START FELLESDATA STATUS CRON . ' . "\n";
-            
+
+            // Import last status from fellesdata
+            self::import_status($plugin);
+
             // Syncronization
             self::synchronization($plugin,$industry);
             
@@ -248,6 +248,7 @@ class STATUS_CRON {
      *
      * @param        object $plugin
      *
+     * @return              bool
      * @throws              Exception
      *
      * @creationDate    27/02/2017
@@ -262,7 +263,7 @@ class STATUS_CRON {
             $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START Import Fellesdata STATUS. ' . "\n";
 
             // Import FS Users
-            //self::import_status_users($plugin);
+            self::import_status_users($plugin);
 
             // Import FS Companies
             //self::import_status_orgstructure($plugin);
@@ -279,6 +280,8 @@ class STATUS_CRON {
             // Log
             $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Import Fellesdata STATUS. ' . "\n";
             error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+
+            return true;
         }catch (Exception $ex) {
             // Log
             $dblog  = "Error: " . $ex->getMessage() . "\n" . "\n";
@@ -844,10 +847,10 @@ class STATUS_CRON {
             $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START Users Accounts (STATUS) . ' . "\n";
 
             // First users to delete
-            //self::sync_status_users_accounts_deleted($plugin,$industry);
+            self::sync_status_users_accounts_deleted($plugin,$industry);
 
             // New users accounts
-            //self::sync_status_new_users_accounts($plugin,$industry);
+            self::sync_status_new_users_accounts($plugin,$industry);
 
             // Existing users accounts
             self::sync_status_existing_users_accounts($plugin,$industry);
@@ -886,7 +889,7 @@ class STATUS_CRON {
         $response   = null;
         $total      = null;
         $start      = 0;
-        $limit      = 250;
+        $limit      = 1000;
 
         try {
             // Log
@@ -948,7 +951,7 @@ class STATUS_CRON {
         $response   = null;
         $total      = null;
         $start      = 0;
-        $limit      = 250;
+        $limit      = 1000;
 
         try {
             // Log
@@ -1010,7 +1013,7 @@ class STATUS_CRON {
         $response   = null;
         $total      = null;
         $start      = 0;
-        $limit      = 150;
+        $limit      = 1000;
 
         try {
             // Log
