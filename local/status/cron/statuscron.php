@@ -2,7 +2,7 @@
 /**
  * Fellesdata Status Integration - Cron
  *
- * @package         local/fellesdata_status
+ * @package         local/status
  * @subpackage      cron
  * @copyright       2014        eFaktor {@link http://www.efaktor.no}
  *
@@ -24,7 +24,7 @@ class STATUS_CRON {
         
         try {
             // Get industry code
-            //$industry = STATUS::get_industry_code($plugin->ks_muni);
+            $industry = STATUS::get_industry_code($plugin->ks_muni);
 
             // Get competence from KS
             //self::competence_data($plugin);
@@ -36,7 +36,9 @@ class STATUS_CRON {
 
             // Log
             $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START FELLESDATA STATUS CRON . ' . "\n";
-            $dblog .= 'Industry --> ' . $plugin->ks_muni . "\n";
+            $dblog .= 'Muni     --> ' . $plugin->ks_muni . "\n";
+            $dblog .= 'Industry --> ' . $industry . "\n";
+            
             // Syncronization
             //self::synchronization($plugin,$industry);
             

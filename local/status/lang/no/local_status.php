@@ -1,6 +1,6 @@
 <?php
 /**
- * Fellesdata Status Integration - Language Settings (English)
+ * Fellesdata Status Integration - Language Settings (Norwegian)
  *
  * @package         local/status
  * @subpackage      lang

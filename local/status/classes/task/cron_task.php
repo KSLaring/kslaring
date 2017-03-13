@@ -1,10 +1,17 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: paqui
- * Date: 13/03/17
- * Time: 10:57
+ * Fellesdata Status Integration - Cron Task
+ *
+ * @package         local/satus
+ * @subpackage      classes/tasks
+ * @copyright       2014        eFaktor {@link http://www.efaktor.no}
+ *
+ * @creationDate    23/02/2017
+ * @author          eFaktor     (fbv)
+ *
  */
+
+
 namespace local_status\task;
 
 class cron_task extends \core\task\scheduled_task {

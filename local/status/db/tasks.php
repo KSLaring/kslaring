@@ -1,9 +1,14 @@
 <?php
 /**
- * Created by PhpStorm.
- * User: paqui
- * Date: 13/03/17
- * Time: 10:59
+ * Fellesdata Status Integration - Shecduled Task for the cron synchronization
+ *
+ * @package         local/status
+ * @subpackage      db
+ * @copyright       2014        eFaktor {@link http://www.efaktor.no}
+ *
+ * @creationDate    23/02/2017
+ * @author          eFaktor     (fbv)
+ *
  */
 
 defined('MOODLE_INTERNAL') || die();
