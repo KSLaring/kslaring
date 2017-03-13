@@ -886,7 +886,7 @@ class STATUS_CRON {
         $response   = null;
         $total      = null;
         $start      = 0;
-        $limit      = 50;
+        $limit      = 250;
 
         try {
             // Log
@@ -895,7 +895,7 @@ class STATUS_CRON {
             // get total users accounts
             $total = STATUS::get_total_status_existing_users_accounts();
             if ($total) {
-                //for ($i=0;$i<=$total;$i=$i+$limit) {
+                for ($i=0;$i<=$total;$i=$i+$limit) {
                     // Get users accounts
                     list($lstusers,$rdousers) = STATUS::get_status_existing_users_accounts($industry,$start,$limit);
 
@@ -911,7 +911,7 @@ class STATUS_CRON {
                             $dblog .= "Error WS: " . $response['message'] . "\n" ."\n";
                         }//if_no_error
                     }//if_response
-                //}//for
+                }//for
             }//if_total
 
             // Log
