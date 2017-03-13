@@ -1084,11 +1084,11 @@ class STATUS {
             $sql = " SELECT		count(DISTINCT fs.id) as 'total'
                      FROM		{fs_imp_users}	fs
                         JOIN	{user}			u ON u.idnumber = fs.fodselsnr
-                     WHERE 		fs.imported = 0
-                        AND		fs.action 	= 3 ";
+                     WHERE 		fs.imported = :imported
+                        AND		fs.action 	= :action ";
 
             // Execute
-            $dblog = 'SQL --> ' . "\n\n" . $sql . "\n\n";
+            $dblog = 'Action: ' . $params['action'] . "\n";
             error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
             $rdo = $DB->get_record_sql($sql,$params);
             if ($rdo) {
