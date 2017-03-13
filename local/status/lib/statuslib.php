@@ -1069,7 +1069,7 @@ class STATUS {
      */
     public static function get_total_status_existing_users_accounts() {
         /* Variables */
-        global $DB;
+        global $DB,$CFG;
         $rdo    = null;
         $sql    = null;
         $params = null;
@@ -1090,6 +1090,8 @@ class STATUS {
             // Execute
             $rdo = $DB->get_record_sql($sql,$params);
             if ($rdo) {
+                $dblog = 'Total --> ' . $rdo->total . "\n";
+                error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
                 return $rdo->total;
             }else {
                 return null;

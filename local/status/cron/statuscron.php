@@ -849,7 +849,7 @@ class STATUS_CRON {
             //self::sync_status_users_accounts_deleted($plugin,$industry);
 
             // New users accounts
-            self::sync_status_new_users_accounts($plugin,$industry);
+            //self::sync_status_new_users_accounts($plugin,$industry);
 
             // Existing users accounts
             self::sync_status_existing_users_accounts($plugin,$industry);
