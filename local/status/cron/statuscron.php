@@ -40,7 +40,7 @@ class STATUS_CRON {
             $dblog .= 'Industry --> ' . $industry . "\n";
             
             // Syncronization
-            //self::synchronization($plugin,$industry);
+            self::synchronization($plugin,$industry);
             
             $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH FELLESDATA STATUS CRON . ' . "\n";
             error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
@@ -897,7 +897,7 @@ class STATUS_CRON {
             // get total users accounts
             $total = STATUS::get_total_status_existing_users_accounts();
             if ($total) {
-                for ($i=0;$i<=$total;$i=$i+$limit) {
+                //for ($i=0;$i<=$total;$i=$i+$limit) {
                     // Get users accounts
                     list($lstusers,$rdousers) = STATUS::get_status_existing_users_accounts($industry,$start,$limit);
 
@@ -913,7 +913,7 @@ class STATUS_CRON {
                             $dblog .= "Error WS: " . $response['message'] . "\n" ."\n";
                         }//if_no_error
                     }//if_response
-                }//for
+                //}//for
             }//if_total
 
             // Log
