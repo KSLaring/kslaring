@@ -10,7 +10,7 @@
  * @author          eFaktor     (fbv)
  *
  */
-function fellesdata_status_cron() {
+function status_cron() {
     global $CFG;
     $plugin         = null;
 

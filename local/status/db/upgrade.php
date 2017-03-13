@@ -13,7 +13,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-function xmldb_local_fellesdata_status_upgrade($oldversion) {
+function xmldb_local_status_upgrade($oldversion) {
     /* Variables */
     global $DB;
     $tblmanagers    = null;

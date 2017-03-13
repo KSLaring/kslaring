@@ -13,7 +13,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-function xmldb_local_fellesdata_status_install() {
+function xmldb_local_status_install() {
     /* Variables */
     global $DB;
     $tblcompetence  = null;

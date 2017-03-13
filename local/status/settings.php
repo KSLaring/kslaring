@@ -14,7 +14,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 if ($hassiteconfig) {
-    $settings = new admin_settingpage('local_fellesdata_status', get_string('pluginname','local_fellesdata_status'));
+    $settings = new admin_settingpage('local_status', get_string('pluginname','local_status'));
     $ADMIN->add('localplugins', $settings);
     
 

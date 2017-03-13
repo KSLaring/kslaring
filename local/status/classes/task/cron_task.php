@@ -11,7 +11,7 @@
  *
  */
 
-namespace local_fellesdata_status\task;
+namespace local_status\task;
 
 class cron_task extends \core\task\scheduled_task {
 
@@ -21,7 +21,7 @@ class cron_task extends \core\task\scheduled_task {
      * @return string
      */
     public function get_name() {
-        return get_string('crontask', 'local_fellesdata_status');
+        return get_string('crontask', 'local_status');
     }
 
     /**
@@ -29,8 +29,8 @@ class cron_task extends \core\task\scheduled_task {
      */
     public function execute() {
         global $CFG;
-        require_once($CFG->dirroot . '/local/fellesdata_status/lib.php');
-        fellesdata_status_cron();
+        require_once($CFG->dirroot . '/local/status/lib.php');
+        status_cron();
     }
 
 }

@@ -14,7 +14,7 @@ require_login();
 $PAGE->set_context(context_system::instance());
 $PAGE->set_heading($SITE->fullname);
 $PAGE->set_pagelayout('admin');
-$PAGE->set_url('/local/fellesdata_status/test.php');
+$PAGE->set_url('/local/status/test.php');
 
 
 /* Print Header */
