@@ -19,6 +19,9 @@ class STATUS_CRON {
     /***********/
 
     public static function cron($plugin) {
+        /* Varibales */
+        global $CFG;
+        
         try {
             // Get industry code
             $industry = STATUS::get_industry_code($plugin->ks_muni);
@@ -31,8 +34,14 @@ class STATUS_CRON {
             // Import last status from fellesdata
             //self::import_status($plugin);
 
+            // Log
+            $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START FELLESDATA STATUS CRON . ' . "\n";
+            
             // Syncronization
-            self::synchronization($plugin,$industry);
+            //self::synchronization($plugin,$industry);
+            
+            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH FELLESDATA STATUS CRON . ' . "\n";
+            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -878,7 +887,7 @@ class STATUS_CRON {
         try {
             // Log
             $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START Existing Users Accounts (STATUS) . ' . "\n";
-            
+
             // get total users accounts
             $total = STATUS::get_total_status_existing_users_accounts();
             if ($total) {
