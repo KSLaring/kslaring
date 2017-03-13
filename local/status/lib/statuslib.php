@@ -1088,6 +1088,8 @@ class STATUS {
                         AND		fs.action 	= :action ";
 
             // Execute
+            $dblog = 'SQL --> ' . "\n\n" . $sql . "\n\n";
+            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
             $rdo = $DB->get_record_sql($sql,$params);
             if ($rdo) {
                 $dblog = 'Total --> ' . $rdo->total . "\n";
