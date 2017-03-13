@@ -20,7 +20,7 @@ function status_cron() {
     try {
         require_once('cron/statuscron.php');
         require_once('lib/statuslib.php');
-        require_once('../fellesdata/lib/fellesdatalib.php');
+        require_once($CFG->dirroot . '/local/fellesdata/lib/fellesdatalib.php');
         
         $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' HOLA LOCAL STATUS . ' . "\n";
 
@@ -28,7 +28,7 @@ function status_cron() {
         $plugin = get_config('local_fellesdata');
         
         // Call cron
-        \STATUS_CRON::cron($plugin);
+        //\STATUS_CRON::cron($plugin);
         
         $dblog .= ' BYE BYE LOCAL STATUS . ' . "\n";
         error_log($dblog, 3, $CFG->dataroot . "/STATUS_PAQUI.log");

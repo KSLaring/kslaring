@@ -902,7 +902,7 @@ class STATUS_CRON {
                     list($lstusers,$rdousers) = STATUS::get_status_existing_users_accounts($industry,$start,$limit);
 
                     // Call web service
-                $dblog .= "\n\n" . $lstusers . "\n\n";
+                    $dblog .= "\n\n" . $lstusers . "\n\n";
                     $response = self::process_service($plugin,KS_SYNC_USER_ACCOUNT,array('usersAccounts' => $lstusers));
 
                     if ($response) {
