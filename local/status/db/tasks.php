@@ -10,7 +10,7 @@ defined('MOODLE_INTERNAL') || die();
 
 $tasks = array(
     array(
-        'classname' => 'local_test\task\cron_task',
+        'classname' => 'local_status\task\cron_task',
         'blocking' => 0,
         'minute' => '*',
         'hour' => '*',

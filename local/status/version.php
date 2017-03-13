@@ -7,7 +7,7 @@
  */
 
 $plugin->version    =  '2017022002';         /* The plugin current version (DATE: YYYYMMDDXX) */
-$plugin->component  =  'local_test';
+$plugin->component  =  'local_status';
 
 /* Dependencies */
 $plugin->dependencies = array('local_fellesdata'  => 2017022002);

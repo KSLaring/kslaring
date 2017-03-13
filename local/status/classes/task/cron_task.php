@@ -5,7 +5,7 @@
  * Date: 13/03/17
  * Time: 10:57
  */
-namespace local_test\task;
+namespace local_status\task;
 
 class cron_task extends \core\task\scheduled_task {
 
@@ -23,8 +23,8 @@ class cron_task extends \core\task\scheduled_task {
      */
     public function execute() {
         global $CFG;
-        require_once($CFG->dirroot . '/local/test/lib.php');
-        test_cron();
+        require_once($CFG->dirroot . '/local/status/lib.php');
+        status_cron();
     }
 
 }
