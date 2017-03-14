@@ -22,7 +22,7 @@ require_once( 'courserptlib.php');
 require_once( '../managerlib.php');
 require_once('course_report_level_form.php');
 
-/* Params */
+// Params
 $report_level           = optional_param('rpt',0,PARAM_INT);
 $company_id             = optional_param('co',0,PARAM_INT);
 $parentTwo              = optional_param('lt',0,PARAM_INT);
@@ -34,11 +34,11 @@ $course_report          = null;
 $IsReporter             = null;
 $myHierarchy            = null;
 
-/* Context */
-$site_context = CONTEXT_SYSTEM::instance();
+// Context
+$site_context = context_system::instance();
 $site = get_site();
 
-/* Report Variables */
+// Report
 $out     = '';
 
 require_login();
@@ -56,7 +56,7 @@ $PAGE->navbar->add(get_string('report_manager','local_tracker_manager'),new mood
 $PAGE->navbar->add(get_string('course_report', 'report_manager'),$return_url);
 $PAGE->navbar->add(get_string('level_report','report_manager',$report_level),$url);
 
-/* ADD require_capibility */
+// Require capabilty
 $IsReporter = CompetenceManager::IsReporter($USER->id);
 switch ($report_level) {
     case 0:
@@ -99,13 +99,13 @@ if (empty($CFG->loginhttps)) {
     $secure_www_root = str_replace('http:','https:',$CFG->wwwroot);
 }//if_security
 
-/* Start the page */
+// Security
 $PAGE->verify_https_required();
 
-/* My Hierarchy */
+// My hierarchy
 $myHierarchy = CompetenceManager::get_MyHierarchyLevel($USER->id,$site_context,$IsReporter,$report_level);
 
-/* Show Form */
+// Show form
 if ($company_id) {
     $data_form = array();
     if (isset($SESSION->job_roles)) {
@@ -144,6 +144,7 @@ if ($form->is_cancelled()) {
     redirect($return_url);
 }else if($data = $form->get_data()) {
     /* Get Data */
+    //
     $data_form = (Array)$data;
 
     /* Get the data to the report   */

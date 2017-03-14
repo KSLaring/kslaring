@@ -20,7 +20,7 @@ require_once( '../managerlib.php');
 require_once( 'outcomerptlib.php');
 require_once('outcome_report_level_form.php');
 
-/* Params */
+// Params
 $report_level           = optional_param('rpt',0, PARAM_INT);
 $company_id             = optional_param('co',0,PARAM_INT);
 $parentTwo              = optional_param('lt',0,PARAM_INT);
@@ -30,12 +30,13 @@ $return_url             = new moodle_url('/report/manager/outcome_report/outcome
 $url                    = new moodle_url('/report/manager/outcome_report/outcome_report_level.php',array('rpt' => $report_level));
 $outcome_report         = null;
 
-/* Context */
-$site_context = CONTEXT_SYSTEM::instance();
+// Contenxt
+$site_context = context_system::instance();
 $site = get_site();
 
 require_login();
 
+// Start page
 $PAGE->requires->js(new moodle_url('/report/manager/js/tracker.js'));
 $PAGE->https_required();
 $PAGE->set_context($site_context);
@@ -49,7 +50,7 @@ $PAGE->navbar->add(get_string('report_manager','local_tracker_manager'),new mood
 $PAGE->navbar->add(get_string('outcome_report', 'report_manager'),$return_url);
 $PAGE->navbar->add(get_string('level_report','report_manager',$report_level),$url);
 
-/* ADD requiere_capibility */
+// Capability
 $IsReporter = CompetenceManager::IsReporter($USER->id);
 switch ($report_level) {
     case 0:
@@ -86,19 +87,19 @@ switch ($report_level) {
         break;
 }//switch
 
+// Securuty
 if (empty($CFG->loginhttps)) {
    $secure_www_root = $CFG->wwwroot;
 } else {
     $secure_www_root = str_replace('http:','https:',$CFG->wwwroot);
 }//if_security
 
-/* Start the page */
 $PAGE->verify_https_required();
 
-/* My Hierarchy */
+// My hierarchy
 $my_hierarchy = CompetenceManager::get_MyHierarchyLevel($USER->id,$site_context,$IsReporter,$report_level);
 
-/* Show Form */
+// Form
 if ($company_id) {
     $data_form = array();
     if (isset($SESSION->job_roles)) {
