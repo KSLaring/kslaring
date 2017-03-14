@@ -401,7 +401,7 @@ class Invoices {
     public static function get_info_course($course_id,$enrol_id) {
         /* Variables    */
         global $DB;
-        $course_info    = null;
+        $info    = null;
 
         try {
             // Search criteria
@@ -410,16 +410,20 @@ class Invoices {
             $params['enrol_id']     = $enrol_id;
 
             // SQL Instruction - Info course
-            $sql = " SELECT	  c.id,
-                              c.fullname        as 'name',
-                              c.startdate,
-                              e.name			as 'enrol',
-                              e.customtext3     as 'internal',
-                              e.customtext4 	as 'external'
-                     FROM	  {course}				c
-                        JOIN  {course_categories}	ca		ON 	ca.id 		= c.category
-                        JOIN  {enrol}				e		ON	e.courseid	= c.id
-                                                            AND	e.id		= :enrol_id
+            $sql = " SELECT	      c.id,
+                                  c.fullname        as 'name',
+                                  c.startdate,
+                                  e.name			as 'enrol',
+                                  e.customtext3     as 'internal',
+                                  e.customtext4 	as 'external',
+                                  cf.value 		    as 'location',
+                                  ''                as 'instructors'
+                     FROM	      {course}				  c
+                        JOIN      {course_categories}	  ca	ON 	ca.id 		= c.category
+                        JOIN      {enrol}				  e		ON	e.courseid	= c.id
+                                                                AND	e.id		= :enrol_id
+	                    LEFT JOIN {course_format_options} cf	ON  cf.courseid = c.id
+												                AND cf.name like '%course_location%'
                      WHERE	  c.id	= :course_id  ";
 
             // Execute
@@ -447,8 +451,8 @@ class Invoices {
     public static function display_invoices_course($invoices_lst,$course_info,$enrol_id) {
         /* Variables    */
         global $OUTPUT;
-        $out_report = '';
-        $return_url         = new moodle_url('/course/view.php',array('id' => $course_info->id));
+        $out_report     = '';
+        $return_url     = new moodle_url('/course/view.php',array('id' => $course_info->id));
 
         try {
             $out_report .= html_writer::start_div('block_enrol_invoices');
@@ -471,7 +475,7 @@ class Invoices {
                     $out_report .= html_writer::end_div();//block_invoices
                 }else {
                     $out_report .= html_writer::start_div('block_invoices');
-                    $out_report .= $OUTPUT->notification(strtoupper(get_string('not_invoices','enrol_invoice')), 'notifysuccess');
+                        $out_report .= $OUTPUT->notification(strtoupper(get_string('not_invoices','enrol_invoice')), 'notifysuccess');
                     $out_report .= html_writer::end_div();//block_invoices
                 }//if_invoices_lst
 
@@ -492,53 +496,114 @@ class Invoices {
      * Add the information of the course to the screen report
      *
      * @param           $course_info
+     *
      * @return          string
+     * @throws          Exception
      *
      * @creationDate    29/09/2014
      * @author          eFaktor     (fbv)
      */
     public static function add_course_info_header($course_info) {
         /* Variables    */
-        $price       = null;
-        $header_info = " ";
+        $location       = null;
+        $strlocation    = null;
+        $strdate        = null;
+        $price          = null;
+        $urlinstructor  = null;
+        $strinstructor  = null;
+        $header_info    = " ";
 
-        // Course name
-        $header_info .= html_writer::start_div('block_invoices_course_one');
-            $header_info .= '<label class="label_info_course">' . get_string('course') . '</label>';
-        $header_info .= html_writer::end_div();
-        $header_info .= html_writer::start_div('block_invoices_course_two');
-            $header_info .= '<p class="info_course_value">' . $course_info->name . '</p>';
-        $header_info .= html_writer::end_div();//right
-        
-        // Internal price
-        $header_info .= html_writer::start_div('block_invoices_course_one');
-            $header_info .= '<label class="label_info_course">' . get_string('price_int','enrol_invoice') . '</label>';
-        $header_info .= html_writer::end_div();//left
-        $header_info .= html_writer::start_div('block_invoices_course_two');
-            if (is_string($course_info->internal)) {
-                $price = $course_info->internal;
-            }else if (is_double($course_info->internal)) {
-                $price = number_format($course_info->internal,2,',','.');
-            }else {
-                $price = $course_info->internal;
-            }
-            $header_info .= '<p class="info_course_value">' . $price . '</p>';
-        $header_info .= html_writer::end_div();//right
+        try {
+            // url Instructor
+            $urlinstructor = new moodle_url('/user/profile.php');
 
-        // External price
-        $header_info .= html_writer::start_div('block_invoices_course_one');
-            $header_info .= '<label class="label_info_course">' . get_string('price_ext','enrol_invoice') . '</label>';
-        $header_info .= html_writer::end_div();//left
-        $header_info .= html_writer::start_div('block_invoices_course_two');
-            if (is_string($course_info->external)) {
-                $price = $course_info->external;
-            }else if (is_double($course_info->external)) {
-                $price = number_format($course_info->external,2,',','.');
-            }else {
-                $price = $course_info->external;
-            }
-            $header_info .= '<p class="info_course_value">' . $price . '</p>';
-        $header_info .= html_writer::end_div();//right
+            // Course name
+            $header_info .= html_writer::start_div('block_invoices_course_one');
+                $header_info .= '<label class="label_info_course">' . get_string('course') . '</label>';
+            $header_info .= html_writer::end_div();
+            $header_info .= html_writer::start_div('block_invoices_course_two');
+                $header_info .= '<p class="info_course_value">' . $course_info->name  . '</p>';
+            $header_info .= html_writer::end_div();//right
+
+            // Course Date
+            $header_info .= html_writer::start_div('block_invoices_course_one');
+                $header_info .= '<label class="label_info_course">' . get_string('date') . '</label>';
+            $header_info .= html_writer::end_div();
+            $header_info .= html_writer::start_div('block_invoices_course_two');
+                if ($course_info->startdate) {
+                    $strdate = userdate($course_info->startdate,'%d.%m.%Y', 99, false);
+                }
+                $header_info .= '<p class="info_course_value">' . $strdate  . '</p>';
+            $header_info .= html_writer::end_div();//right
+
+            // Location
+            $header_info .= html_writer::start_div('block_invoices_course_one');
+                $header_info .= '<label class="label_info_course">' . get_string('rpt_location','enrol_invoice') . '</label>';
+            $header_info .= html_writer::end_div();
+            $header_info .= html_writer::start_div('block_invoices_course_two');
+                if ($course_info->location) {
+                    $location = self::get_location($course_info->location);
+                    $strlocation = $location->street . "</br>";
+                    if ($location->postcode) {
+                        $strlocation .= $location->postcode . " ";
+                    }
+                    if ($location->city) {
+                        $strlocation .= $location->city;
+                    }
+                }else {
+                    $strlocation = ' - ';
+                }
+                $header_info .= '<p class="info_course_value">' . $strlocation . '</p>';
+            $header_info .= html_writer::end_div();//right
+
+            // Instructors
+            $header_info .= html_writer::start_div('block_invoices_course_one');
+                $header_info .= '<label class="label_info_course">' . get_string('home_teachers','local_course_page') . '</label>';
+            $header_info .= html_writer::end_div();
+            $header_info .= html_writer::start_div('block_invoices_course_two');
+                if ($course_info->instructors) {
+                    foreach ($course_info->instructors as $id => $teacher) {
+                        $urlinstructor->param('id',$id);
+                        $strinstructor .= '<a href="' . $urlinstructor . '">' . $teacher . '</a></br>';
+                    }//foreach_teacher
+                }else {
+                    $strinstructor = ' ';
+                }
+                $header_info .= '<p class="info_course_value">' . $strinstructor . '</p>';
+            $header_info .= html_writer::end_div();//right
+
+            // Internal price
+            $header_info .= html_writer::start_div('block_invoices_course_one');
+                $header_info .= '<label class="label_info_course">' . get_string('price_int','enrol_invoice') . '</label>';
+            $header_info .= html_writer::end_div();//left
+            $header_info .= html_writer::start_div('block_invoices_course_two');
+                if (is_string($course_info->internal)) {
+                    $price = $course_info->internal;
+                }else if (is_double($course_info->internal)) {
+                    $price = number_format($course_info->internal,2,',','.');
+                }else {
+                    $price = $course_info->internal;
+                }
+                $header_info .= '<p class="info_course_value">' . $price . '</p>';
+            $header_info .= html_writer::end_div();//right
+
+            // External price
+            $header_info .= html_writer::start_div('block_invoices_course_one');
+                $header_info .= '<label class="label_info_course">' . get_string('price_ext','enrol_invoice') . '</label>';
+            $header_info .= html_writer::end_div();//left
+            $header_info .= html_writer::start_div('block_invoices_course_two');
+                if (is_string($course_info->external)) {
+                    $price = $course_info->external;
+                }else if (is_double($course_info->external)) {
+                    $price = number_format($course_info->external,2,',','.');
+                }else {
+                    $price = $course_info->external;
+                }
+                $header_info .= '<p class="info_course_value">' . $price . '</p>';
+            $header_info .= html_writer::end_div();//right
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
 
         return $header_info;
     }//add_course_info_header
@@ -594,7 +659,8 @@ class Invoices {
         $str_detail     = get_string('rpt_details','enrol_invoice');
         $str_seats      = get_string('rpt_seats','enrol_invoice');
         $str_resource   = get_string('rpt_resource','enrol_invoice');
-        
+        $str_completed  = get_string('rpt_completed','enrol_invoice');
+
         $header .=  html_writer::start_tag('thead');
         $header .=  html_writer::start_tag('tr',array('class' => 'header_invoice'));
             // Username
@@ -620,6 +686,10 @@ class Invoices {
             // Resource number
             $header .= html_writer::start_tag('th',array('class' => 'type'));
                 $header .= $str_resource;
+            $header .= html_writer::end_tag('th');
+            // Completed
+            $header .= html_writer::start_tag('th',array('class' => 'seats'));
+                $header .= $str_completed;
             $header .= html_writer::end_tag('th');
         $header .= html_writer::end_tag('tr');
         $header .= html_writer::end_tag('thead');
@@ -695,6 +765,14 @@ class Invoices {
                 $body .= html_writer::start_tag('td',array('class' => 'type'));
                     $body .= $invoice->resource_number;
                 $body .= html_writer::end_tag('td');
+                // Completed
+                $body .= html_writer::start_tag('td',array('class' => 'seats'));
+                    if ($invoice->completed) {
+                        $body .= get_string('yes');
+                    }else {
+                        $body .= get_string('no');
+                    }
+                $body .= html_writer::end_tag('td');
             $body .= html_writer::end_tag('tr');
         }//for_invoices_lst
 
@@ -741,6 +819,55 @@ class Invoices {
     /* PRIVATE */
     /***********/
 
+    /**
+     * Description
+     * Get location detail
+     * @param       integer $locationid
+     *
+     * @return              mixed|null
+     * @throws              Exception
+     *
+     * @creationDate    14/03/2017
+     * @author          eFaktor     (fbv)
+     */
+    private static function get_location($locationid) {
+        /* Variables */
+        global $DB;
+        $rdo        = null;
+        $sql        = null;
+        $params     = null;
+        try {
+            // Search criteria
+            $params = array();
+            $params['location'] = $locationid;
+
+            // SQL instruction location detail
+            $sql = " SELECT	  cl.id,
+                              levelzero.name 	as 'county',
+                              levelone.name 	as 'muni',
+                              cl.name,
+                              cl.floor,
+                              cl.room,
+                              cl.seats,
+                              cl.street,
+                              cl.postcode,
+                              cl.city
+                     FROM	  {course_locations}		    cl
+                        JOIN  {report_gen_companydata}		levelzero	ON  levelzero.id    = cl.levelzero
+                        JOIN  {report_gen_companydata}		levelone	ON  levelone.id 	= cl.levelone
+                     WHERE		cl.id = :location ";
+
+            // Execute
+            $rdo = $DB->get_record_sql($sql,$params);
+            if ($rdo) {
+                return $rdo;
+            }else {
+                return null;
+            }//if_rod
+        }catch (Exception $ex) {
+            throw $ex;
+        }
+    }//get_location
     /**
      * @param           $enrolId
      *
@@ -824,7 +951,8 @@ class Invoices {
                                     ei.companyid,
                                     co.name			as 'workplace',
                                     se.name	 		as 'sector',
-                                    mu.name 		as 'municipality'
+                                    mu.name 		as 'municipality',
+                                    cc.timecompleted
                      FROM		    {user}						  u
                         JOIN	    {user_enrolments}		  	  ue	ON 	ue.userid 			= 	u.id
                                                                         AND	ue.enrolid			=	:enrol_id
@@ -842,6 +970,9 @@ class Invoices {
                         LEFT JOIN	{report_gen_company_relation} mu_r	ON 	mu_r.companyid 		= se.id
                         LEFT JOIN	{report_gen_companydata}	  mu	ON 	mu.id 				= mu_r.parentid
                                                                         AND mu.hierarchylevel 	= :muni
+                        -- Completions
+                        LEFT JOIN	{course_completions}		  cc	ON cc.course			= ei.courseid 
+                                                                        AND cc.userid			= ei.userid
                      WHERE		    u.deleted = 0
                      ORDER BY 	    u.firstname, u.lastname ";
 
@@ -866,6 +997,7 @@ class Invoices {
                     $info->arbeidssted      = $invoice->workplace;
                     $info->sector           = $invoice->sector;
                     $info->municipality     = $invoice->municipality;
+                    $info->completed        = $invoice->timecompleted;
 
                     if ($invoice->waitinglistid) {
                         $info->seats        = self::get_confirmed_seats($invoice->id,$courseId,$invoice->waitinglistid);
@@ -921,7 +1053,8 @@ class Invoices {
                                   se.name	 		as 'sector',
                                   mu.name 		    as 'municipality',
                                   co.tjeneste,
-                                  co.ansvar
+                                  co.ansvar,
+                                  cc.timecompleted
                      FROM		  {user}						u
                         JOIN	  {enrol_waitinglist_queue}		ewq		ON  ewq.userid 			= u.id
                                                                         AND ewq.courseid 		= :course
@@ -939,6 +1072,9 @@ class Invoices {
                         LEFT JOIN {report_gen_company_relation}	mu_r	ON 	mu_r.companyid 		= se.id
                         LEFT JOIN {report_gen_companydata}		mu		ON 	mu.id 				= mu_r.parentid
                                                                         AND mu.hierarchylevel 	= :muni
+                        -- Completions
+                        LEFT JOIN {course_completions}			cc		ON cc.course			= ewq.courseid 
+                                                                        AND cc.userid			= ue.userid
                      WHERE		  u.deleted = 0
                      ORDER BY 	  u.firstname, u.lastname ";
 
@@ -963,6 +1099,7 @@ class Invoices {
                     $info->arbeidssted      = $invoice->workplace;
                     $info->sector           = $invoice->sector;
                     $info->municipality     = $invoice->municipality;
+                    $info->completed        = $invoice->timecompleted;
 
                     // Seats -> Manual invoice --> 1
                     $info->seats        = 1;
@@ -1041,15 +1178,25 @@ class Invoices {
         $col            = 0;
         $price          = null;
         $str_course     = null;
+        $str_date       = null;
+        $str_location   = null;
         $str_internal   = null;
         $str_external   = null;
+        $str_instructor = null;
+        $cdate          = null;
+        $clocation      = null;
+        $cinstructor    = null;
+        $location       = null;
 
         try {
             // Headers
             $str_course         = get_string('course');
+            $str_date           = get_string('date');
+            $str_location       = get_string('rpt_location','enrol_invoice');
             $strinternal        = get_string('price_int','enrol_invoice');
             $strexternal        = get_string('price_ext','enrol_invoice');
-
+            $str_instructor     = get_string('home_teachers','local_course_page');
+            
             // Sheet
             $my_xls = $export->add_worksheet(get_string('rpt_course_info','enrol_invoice'));
 
@@ -1061,6 +1208,62 @@ class Invoices {
             $my_xls->write($row, $col,$course_info->name ,array('size'=>12, 'name'=>'Arial','text_wrap'=>true,'v_align'=>'left','align' => 'right'));
             $my_xls->merge_cells($row,$col,$row,$col+5);
             $my_xls->set_row($row,20);
+
+            // Course date
+            $row ++;
+            $col = 0;
+            $my_xls->write($row, $col, $str_date,array('size'=>12, 'name'=>'Arial','bold'=>'1','bg_color'=>'#efefef','text_wrap'=>true,'v_align'=>'left'));
+            $my_xls->merge_cells($row,$col,$row,$col+5);
+            $my_xls->set_row($row,20);
+            $col = $col + 6;
+            if ($course_info->startdate) {
+                $cdate = userdate($course_info->startdate,'%d.%m.%Y', 99, false);
+            }
+            $my_xls->write($row, $col,$cdate,array('size'=>12, 'name'=>'Arial','text_wrap'=>true,'v_align'=>'left','align' => 'right'));
+            $my_xls->merge_cells($row,$col,$row,$col+5);
+            $my_xls->set_row($row,20);
+
+            // Location
+            $row ++;
+            $col = 0;
+            $my_xls->write($row, $col, $str_location,array('size'=>12, 'name'=>'Arial','bold'=>'1','bg_color'=>'#efefef','text_wrap'=>true,'v_align'=>'top'));
+            $my_xls->merge_cells($row,$col,$row+1,$col+5);
+            $my_xls->set_row($row,20);
+            $col = $col + 6;
+            if ($course_info->location) {
+                $location = self::get_location($course_info->location);
+                $clocation = $location->street . "\n";
+                if ($location->postcode) {
+                    $clocation .= $location->postcode . " ";
+                }
+                if ($location->city) {
+                    $clocation .= $location->city;
+                }
+            }else {
+                $clocation = '  ';
+            }
+            $my_xls->write($row, $col,$clocation,array('size'=>12, 'name'=>'Arial','text_wrap'=>true,'v_align'=>'top','align' => 'right'));
+            $my_xls->merge_cells($row,$col,$row+1,$col+5);
+            $my_xls->set_row($row,20);
+
+            // Instructors
+            $row = $row + 2;
+            $col = 0;
+            $my_xls->write($row, $col, $str_instructor,array('size'=>12, 'name'=>'Arial','bold'=>'1','bg_color'=>'#efefef','text_wrap'=>true,'v_align'=>'top'));
+            $my_xls->merge_cells($row,$col,$row,$col+5);
+            $my_xls->set_row($row,20);
+            $col = $col + 6;
+            if ($course_info->instructors) {
+                foreach ($course_info->instructors as $id => $teacher) {
+                    $cinstructor .= $teacher . "\n";
+                }
+            }else {
+                $cinstructor = '  ';
+            }
+            $my_xls->write($row, $col,$cinstructor,array('size'=>12, 'name'=>'Arial','text_wrap'=>true,'v_align'=>'top','align' => 'right'));
+            $my_xls->merge_cells($row,$col,$row,$col+5);
+            $my_xls->set_row($row,20);
+
 
             // Internal price
             $row ++;
@@ -1175,6 +1378,7 @@ class Invoices {
         $str_act        = get_string('invoice_act','enrol_invoice');
         $str_seats      = get_string('rpt_seats','enrol_invoice');
         $str_resource   = get_string('rpt_resource','enrol_invoice');
+        $str_completed  = get_string('rpt_completed','enrol_invoice');
 
         try {
             // user
@@ -1243,6 +1447,11 @@ class Invoices {
             // Resource number
             $col = $col + 1;
             $my_xls->write($row, $col, $str_resource,array('size'=>12, 'name'=>'Arial','bold'=>'1','bg_color'=>'#efefef','text_wrap'=>true,'v_align'=>'left'));
+            $my_xls->set_row($row,50);
+
+            // Completed
+            $col = $col + 1;
+            $my_xls->write($row, $col, $str_completed,array('size'=>12, 'name'=>'Arial','bold'=>'1','bg_color'=>'#efefef','text_wrap'=>true,'v_align'=>'left'));
             $my_xls->set_row($row,50);
         }catch (Exception $ex) {
             throw $ex;
@@ -1337,6 +1546,11 @@ class Invoices {
                 // Resource number
                 $col = $col + 1;
                 $my_xls->write_string($row, $col, $invoice->resource_number,array('size'=>12, 'name'=>'Arial','text_wrap'=>true,'v_align'=>'center','align' => 'right'));
+                $my_xls->set_row($row,50);
+
+                // Completed
+                $col = $col + 1;
+                $my_xls->write_string($row, $col, ($invoice->completed ? get_string('yes') : get_string('no')),array('size'=>12, 'name'=>'Arial','text_wrap'=>true,'v_align'=>'center','align' => 'right'));
                 $my_xls->set_row($row,50);
 
                 $row ++;
