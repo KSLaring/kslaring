@@ -600,45 +600,63 @@ class CompetenceManager {
     public static function GetMyCompanies_By_Level($my_companies,$my_level) {
         /* Variables    */
         $levelThree = array();
+        $three      = null;
         $levelTwo   = array();
+        $two        = null;
         $levelOne   = array();
+        $one        = null;
         $levelZero  = array();
+        $zero       = null;
 
         try {
-            foreach ($my_companies as $company) {
-                $levelZero  = explode(',',$company->levelZero);
-                $levelOne   = explode(',',$company->levelOne);
-                $levelTwo   = explode(',',$company->levelTwo);
-                $levelThree[$company->levelThree]   = $company->levelThree;
-            }
 
-            switch ($my_level) {
-                case 0:
-                    $levelZero  = array();
-                    $levelOne   = array();
-                    $levelTwo   = array();
-                    $levelThree = array();
+            if ($my_companies) {
+                foreach ($my_companies as $company) {
+                    // Level zero
+                    if ($company->levelZero) {
+                        if ($zero) {
+                            $zero .= ',' . $company->levelZero;
+                        }else {
+                            $zero = $company->levelZero;
+                        }
+                    }//level_zero
 
-                   break;
-                case 1:
-                    $levelOne   = array();
-                    $levelTwo   = array();
-                    $levelThree = array();
+                    // Level one
+                    if ($company->levelOne) {
+                        if ($one) {
+                            $one .= ',' . $company->levelOne;
+                        }else {
+                            $one = $company->levelOne;
+                        }
+                    }//level_one
 
-                    break;
-                case 2:
-                    $levelTwo   = array();
-                    $levelThree = array();
+                    // Level two
+                    if ($company->levelTwo) {
+                        if ($two) {
+                            $two .= ',' . $company->levelTwo;
+                        }else {
+                            $two = $company->levelTwo;
+                        }
+                    }//level_two
 
-                    break;
-               case 3:
-                    $levelThree = array();
+                    // Level three
+                    if ($company->levelThree) {
+                        $levelThree[$company->levelThree]   = $company->levelThree;
+                    }//level_three
+                }//ofr_my_companies
 
-                    break;
-               case 4:
-                    break;
-               default:
-                    break;
+                if ($zero) {
+                    $levelZero = explode(',',$zero);
+                }
+
+                if ($one) {
+                    $levelOne = explode(',',$one);
+                }
+
+                if ($two) {
+                    $levelTwo = explode(',',$two);
+                }
+                
             }
 
             return array($levelZero,$levelOne,$levelTwo,$levelThree);
@@ -673,12 +691,11 @@ class CompetenceManager {
         $companies  = null;
 
         try {
-
-            /* Search Criteria  */
+            // Search criteria
             $params = array();
             $params['zero'] = $levelZero;
 
-            /* SQL Instruction  */
+            // SQL Isntruction - Get only companies with employees
             $sql = " SELECT		GROUP_CONCAT(DISTINCT uicd.companyid  	ORDER BY uicd.companyid SEPARATOR ',') 		as 'levelthree',
                                 GROUP_CONCAT(DISTINCT cr_two.parentid  	ORDER BY cr_two.parentid SEPARATOR ',') 	as 'leveltwo',
                                 GROUP_CONCAT(DISTINCT cr_one.parentid  	ORDER BY cr_one.parentid SEPARATOR ',') 	as 'levelone',
@@ -700,12 +717,12 @@ class CompetenceManager {
                                                                             AND co_zero.hierarchylevel 	= 0
                                                                             AND co_zero.id = :zero ";
 
-            /* Filter companies */
+            // Filter level three
             if ($levelThree) {
                 $sql .= " WHERE uicd.companyid IN ($levelThree) ";
             }//if_levelThree
 
-            /* EXecute  */
+            // Execute 
             $rdo = $DB->get_record_sql($sql,$params);
             if ($rdo) {
                 $companies = new stdClass();
