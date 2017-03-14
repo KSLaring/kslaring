@@ -32,6 +32,7 @@ $string['rpt_invoice']          = 'Type';
 $string['rpt_details']          = 'Invoice';
 $string['rpt_muni']             = 'Municipality';
 $string['rpt_sector']           = 'Sector';
+$string['rpt_location']         = 'Location';
 
 $string['require_password']                 = 'Require enrolment key';
 $string['require_password_desc']            = 'Require enrolment key in new courses and prevent removing of enrolment key from existing courses.';
@@ -143,3 +144,5 @@ $string['rpt_resource']     = 'Resource';
 
 $string['price_int'] = 'Internal price';
 $string['price_ext'] = 'External price';
+
+$string['rpt_completed'] = 'Completed';

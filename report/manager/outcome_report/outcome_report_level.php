@@ -128,6 +128,9 @@ if ($company_id) {
     /* Get the data to the report   */
     $outcome_report = outcome_report::Get_OutcomeReportLevel($data_form,$my_hierarchy,$IsReporter);
     $out = outcome_report::Print_OutcomeReport_Screen($outcome_report,$data_form[REPORT_MANAGER_COMPLETED_LIST]);
+}else {
+    // Clean temporary
+    outcome_report::CleanTemporary();
 }
 
 $form = new manager_outcome_report_level_form(null,array($report_level,$my_hierarchy,$IsReporter ));

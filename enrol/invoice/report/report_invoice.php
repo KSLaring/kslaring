@@ -14,12 +14,16 @@
 require_once( '../../../config.php');
 require_once('../invoicelib.php');
 require_once($CFG->dirroot.'/lib/excellib.class.php');
+require_once($CFG->dirroot . '/local/course_page/locallib.php');
 
 // Params
 $course_id          = required_param('courseid',PARAM_INT);
 $enrol_id           = required_param('id',PARAM_INT);
 $format             = optional_param('format',null,PARAM_TEXT);
 
+$coordinator        = null;
+$instructors        = null;
+$notin              = null;
 $course             = get_course($course_id);
 $context_course     = context_course::instance($course_id);
 $return_url         = new moodle_url('/course/view.php',array('id' => $course_id));
@@ -50,6 +54,15 @@ $PAGE->verify_https_required();
 $invoices_lst   = Invoices::get_invoices_users($course_id,$enrol_id);
 // Course information
 $course_info    = Invoices::get_info_course($course_id,$enrol_id);
+
+// Get nstructors
+$coordinator              = course_page::get_courses_manager($course_id);
+if ($coordinator) {
+    $notin = $coordinator->id;
+}else {
+    $notin = 0;
+}
+$course_info->instructors = course_page::get_courses_teachers($course_id,$notin);
 
 // Download xls
 if ($format) {

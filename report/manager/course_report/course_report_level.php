@@ -134,6 +134,9 @@ if ($company_id) {
     /* Get the data to the report   */
     $course_report = course_report::Get_CourseReportLevel($data_form,$myHierarchy,$IsReporter);
     $out = course_report::Print_CourseReport_Screen($course_report,$data_form[REPORT_MANAGER_COMPLETED_LIST]);
+}else {
+    // Clean temporary
+    course_report::CleanTemporary();
 }
 
 $form = new manager_course_report_level_form(null,array($report_level,$myHierarchy,$IsReporter));

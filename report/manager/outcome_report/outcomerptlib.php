@@ -209,10 +209,6 @@ class outcome_report {
                 $outcome_report->levelZero          = $data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'0'];
                 $outcome_report->zero_name          = CompetenceManager::GetCompany_Name($data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'0']);
 
-
-
-
-
                 // Get companies connected with by level
                 if (($IsReporter) && !is_siteadmin($USER->id)) {
                     $inOne   = $my_hierarchy->competence[$data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'0']]->levelOne;
@@ -337,7 +333,7 @@ class outcome_report {
                                 $levelTwo->name                             = CompetenceManager::GetCompany_Name($data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'2']);
                                 $levelTwo->levelThree                       = null;
                                 $outcome_report->levelTwo[$levelTwo->id]    = $levelTwo;
-                                
+
                                 // Get info connected with level three
                                 if ($companiesEmployees->levelThree) {
                                     $levelThree   = CompetenceManager::GetCompaniesInfo($companiesEmployees->levelThree);
@@ -1332,7 +1328,8 @@ class outcome_report {
                      WHERE	outcomeid 	= :outcome
                         AND	courseid	= :course
                         AND	companyid	= :company
-                        AND report		= :report ";
+                        AND report		= :report
+                        AND manager     = :manager ";
 
             // Completed
             $params['ini'] = $timeIni;
