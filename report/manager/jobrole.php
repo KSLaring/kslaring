@@ -34,7 +34,7 @@ $jobRoles       = array();
 $infoJR         = null;
 $jrOutcomes     = array();
 
-$context        = CONTEXT_SYSTEM::instance();
+$context        = context_system::instance();
 $url            = new moodle_url('/report/manager/jobrole.php');
 
 $PAGE->set_context($context);

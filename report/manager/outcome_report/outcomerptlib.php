@@ -209,18 +209,8 @@ class outcome_report {
                 $outcome_report->levelZero          = $data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'0'];
                 $outcome_report->zero_name          = CompetenceManager::GetCompany_Name($data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'0']);
 
-                // Level one
-                $levelOne = new stdClass();
-                $levelOne->id                               = $data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'1'];
-                $levelOne->name                             = CompetenceManager::GetCompany_Name($data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'1']);
-                $levelOne->levelTwo                         = null;
-                $outcome_report->levelOne[$levelOne->id]    = $levelOne;
-                // Level two
-                $levelTwo = new stdClass();
-                $levelTwo->id                               = $data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'2'];
-                $levelTwo->name                             = CompetenceManager::GetCompany_Name($data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'2']);
-                $levelTwo->levelThree                       = null;
-                $outcome_report->levelTwo[$levelTwo->id]    = $levelTwo;
+
+
 
 
                 // Get companies connected with by level
@@ -265,6 +255,13 @@ class outcome_report {
 
                                 break;
                             case 1:
+                                // Level one
+                                $levelOne = new stdClass();
+                                $levelOne->id                               = $data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'1'];
+                                $levelOne->name                             = CompetenceManager::GetCompany_Name($data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'1']);
+                                $levelOne->levelTwo                         = null;
+                                $outcome_report->levelOne[$levelOne->id]    = $levelOne;
+
                                 // Get info connected with level one
                                 if ($companiesEmployees->levelTwo) {
                                     $levelTwo   = CompetenceManager::GetCompaniesInfo($companiesEmployees->levelTwo);
@@ -289,6 +286,20 @@ class outcome_report {
 
                                 break;
                             case 2:
+                                // Level one
+                                $levelOne = new stdClass();
+                                $levelOne->id                               = $data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'1'];
+                                $levelOne->name                             = CompetenceManager::GetCompany_Name($data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'1']);
+                                $levelOne->levelTwo                         = null;
+                                $outcome_report->levelOne[$levelOne->id]    = $levelOne;
+
+                                // Level two
+                                $levelTwo = new stdClass();
+                                $levelTwo->id                               = $data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'2'];
+                                $levelTwo->name                             = CompetenceManager::GetCompany_Name($data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'2']);
+                                $levelTwo->levelThree                       = null;
+                                $outcome_report->levelTwo[$levelTwo->id]    = $levelTwo;
+
                                 // Get info connected with level two
                                 if ($companiesEmployees->levelThree) {
                                     $levelThree   = CompetenceManager::GetCompaniesInfo($companiesEmployees->levelThree);
@@ -313,6 +324,20 @@ class outcome_report {
 
                                 break;
                             case 3:
+                                // Level one
+                                $levelOne = new stdClass();
+                                $levelOne->id                               = $data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'1'];
+                                $levelOne->name                             = CompetenceManager::GetCompany_Name($data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'1']);
+                                $levelOne->levelTwo                         = null;
+                                $outcome_report->levelOne[$levelOne->id]    = $levelOne;
+
+                                // Level two
+                                $levelTwo = new stdClass();
+                                $levelTwo->id                               = $data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'2'];
+                                $levelTwo->name                             = CompetenceManager::GetCompany_Name($data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'2']);
+                                $levelTwo->levelThree                       = null;
+                                $outcome_report->levelTwo[$levelTwo->id]    = $levelTwo;
+                                
                                 // Get info connected with level three
                                 if ($companiesEmployees->levelThree) {
                                     $levelThree   = CompetenceManager::GetCompaniesInfo($companiesEmployees->levelThree);
