@@ -366,9 +366,8 @@ class FELLESDATA_CRON {
 
             // Jobroles no generics
             $hierarchy  = KS::get_hierarchy_jr($pluginInfo->ks_muni);
-            $notIn      = KS::existing_jobroles(false,implode(',',$hierarchy));
-
             if ($hierarchy) {
+                $notIn      = KS::existing_jobroles(false,implode(',',$hierarchy));
                 foreach ($hierarchy as $top) {
                     // Params web service
                     $infoLevel = new stdClass();
