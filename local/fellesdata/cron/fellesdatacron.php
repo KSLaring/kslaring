@@ -1002,7 +1002,7 @@ class FELLESDATA_CRON {
         $dblog          = null;
         $params         = null;
         $start          = 0;
-        $limit          = 150;
+        $limit          = 1000;
 
         try {
             // Industry code by default
@@ -1151,7 +1151,7 @@ class FELLESDATA_CRON {
         $dbLog          = null;
         $total          = null;
         $start          = 0;
-        $limit          = 500;
+        $limit          = 1000;
 
         try {
             // Log
@@ -1213,7 +1213,7 @@ class FELLESDATA_CRON {
         $dbLog          = null;
         $total          = null;
         $start          = 0;
-        $limit          = 50;
+        $limit          = 1000;
 
         try {
             // Log
@@ -1385,7 +1385,7 @@ class FELLESDATA_CRON {
         $response       = null;
         $dbLog          = null;
         $start          = 0;
-        $limit          = 500;
+        $limit          = 1000;
 
         try {
             // check if the synchronization can be run
@@ -1447,7 +1447,7 @@ class FELLESDATA_CRON {
         $response   = null;
         $dbLog      = null;
         $start      = 0;
-        $limit      = 100;
+        $limit      = 1000;
         
         try {
             // Log
@@ -1509,7 +1509,7 @@ class FELLESDATA_CRON {
         $dbLog          = null;
         $total          = null;
         $start          = 0;
-        $limit          = 500;
+        $limit          = 1000;
 
         try {
             // Log
@@ -1573,7 +1573,7 @@ class FELLESDATA_CRON {
         $dbLog    = null;
         $total    = null;
         $start    = 0;
-        $limit    = 100;
+        $limit    = 1000;
 
         try {
             // Log

@@ -23,16 +23,17 @@ class STATUS_CRON {
         global $CFG;
         
         try {
+            // Log
+            $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START FELLESDATA STATUS CRON . ' . "\n";
+            
             // Get industry code
             $industry = STATUS::get_industry_code($plugin->ks_muni);
 
             // Get competence from KS
-            //self::competence_data($plugin);
+            self::competence_data($plugin,$industry);
 
             // Get managers reporters from KS
-
-            // Log
-            $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START FELLESDATA STATUS CRON . ' . "\n";
+            //self::managers_reporters($plugin,$industry);
 
             // Import last status from fellesdata
             self::import_status($plugin);
@@ -195,7 +196,19 @@ class STATUS_CRON {
             throw $ex;
         }//try_catch
     }//managers_reporters
-    
+
+    /**
+     * Description
+     * Carry out all synchronization
+     * 
+     * @param           Object  $plugin
+     * @param                   $industry
+     * 
+     * @throws                  Exception
+     * 
+     * @creationDate    06/03/2017
+     * @author          eFaktor     (fbv)
+     */
     private static function synchronization($plugin,$industry) {
         /* Variables */
         global $CFG;
@@ -209,7 +222,7 @@ class STATUS_CRON {
             self::sync_status_users_accounts($plugin,$industry);
             
             // Synchronization FS Companies
-            //self::sync_status_fs_organizations($plugin);
+            self::sync_status_fs_organizations($plugin);
 
             // Synchronization FS Job roles
             //self::sync_status_fs_jobroles($plugin);
@@ -266,7 +279,7 @@ class STATUS_CRON {
             self::import_status_users($plugin);
 
             // Import FS Companies
-            //self::import_status_orgstructure($plugin);
+            self::import_status_orgstructure($plugin);
 
             // Import FS Job roles
             //self::import_status_jobroles($plugin);
@@ -585,7 +598,7 @@ class STATUS_CRON {
         $response       = null;
         $dblog          = null;
         $start          = 0;
-        $limit          = 500;
+        $limit          = 1000;
 
         try {
             // Log
@@ -651,7 +664,7 @@ class STATUS_CRON {
         $params     = null;
         $response   = null;
         $start      = 0;
-        $limit      = 500;
+        $limit      = 1000;
 
         try {
             // Log
@@ -718,7 +731,7 @@ class STATUS_CRON {
         $params      = null;
         $response    = null;
         $start       = 0;
-        $limit       = 500;
+        $limit       = 1000;
         
         try {
             // Log
@@ -784,7 +797,7 @@ class STATUS_CRON {
         $dbLog          = null;
         $total          = null;
         $start          = 0;
-        $limit          = 500;
+        $limit          = 1000;
 
         try {
             // Log
@@ -793,7 +806,7 @@ class STATUS_CRON {
             // Managers and reporters to synchronize
             $total = FSKS_USERS::get_total_managers_reporters_to_synchronize();
             if ($total) {
-                for ($i=0;$i<=$total;$i=$i+500) {
+                for ($i=0;$i<=$total;$i=$i+$limit) {
                     // To synchronize
                     list($toSynchronize,$rdomanagers) = FSKS_USERS::get_managers_reporters_to_synchronize($start,$limit,true);
 
@@ -1119,7 +1132,7 @@ class STATUS_CRON {
         $response       = null;
         $total          = null;
         $start          = 0;
-        $limit          = 500;
+        $limit          = 1000;
         
         try {
             // Get total
@@ -1141,6 +1154,7 @@ class STATUS_CRON {
                                 /* Log  */
                                 $dblog  .= "ERROR WS: " . $response['message'] . "\n\n";
                                 $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' Finish ERROR Status compenies to delete . ' . "\n";
+                                error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
                             }//if_no_error
                         }//if_response
                     }//if_toSynchronize
@@ -1170,7 +1184,7 @@ class STATUS_CRON {
         $response       = null;
         $total          = null;
         $start          = 0;
-        $limit          = 500;
+        $limit          = 1000;
 
         try {
             // Get total
@@ -1192,6 +1206,7 @@ class STATUS_CRON {
                                 /* Log  */
                                 $dblog  .= "ERROR WS: " . $response['message'] . "\n\n";
                                 $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' Finish ERROR Status existing companies . ' . "\n";
+                                error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
                             }//if_no_error
                         }//if_response
                     }//if_toSynchronize
