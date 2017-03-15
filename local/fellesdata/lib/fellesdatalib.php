@@ -85,15 +85,16 @@ class FSKS_JOBROLES {
             $params['add']      = DELETE;
 
             // SQL Instruction
-            $sql = " SELECT         fs.id,
-                                    fs.stillingskode,
-                                    fs.stillingstekst
-                     FROM			{fs_imp_jobroles}   fs
-                        JOIN		{fs_jobroles}		fsjr	ON  fsjr.jrcode 	= fs.stillingskode
-                        LEFT JOIN	{ksfs_jobroles}		ksfs	ON 	ksfs.fsjobrole  = fsjr.jrcode
-                     WHERE  	    ksfs.id IS NULL
-                          AND       fs.action   != :add
-                     ORDER BY       fs.stillingskode, fs.stillingstekst ";
+            $sql = " SELECT   DISTINCT
+                                  fs.id,
+                                  fs.stillingskode,
+                                  fs.stillingstekst
+                     FROM		  {fs_imp_jobroles}   fs
+                        JOIN	  {fs_jobroles}		fsjr	ON  fsjr.jrcode 	= fs.stillingskode
+                        LEFT JOIN {ksfs_jobroles}		ksfs	ON 	ksfs.fsjobrole  = fsjr.jrcode
+                     WHERE  	  ksfs.id IS NULL
+                          AND     fs.action   != :add
+                     ORDER BY     fs.stillingskode, fs.stillingstekst ";
 
             // Execute
             $rdo = $DB->get_records_sql($sql,$params,0,5);
@@ -325,7 +326,7 @@ class FSKS_COMPANY {
             $params['new']          = 1;
 
             // SQL Instruction
-            $sql = " SELECT	    DISTINCT 
+            $sql = " SELECT	  DISTINCT 
                                   fs.companyid                   as 'fsid',
                                   IF(ks_fs.id,ks_fs.kscompany,0) as 'ksid',
                                   fs.name,
@@ -386,7 +387,7 @@ class FSKS_COMPANY {
             $params['sync'] = 0;
 
             // SQL Instruction
-            $sql = " SELECT	      count(*)   as 'total'
+            $sql = " SELECT	      count(DISTINCT fs.id)   as 'total'
                      FROM		  {fs_company}	  fs
                         JOIN      {ks_company}	  ks 	ON ks.companyid     = fs.parent
                         LEFT JOIN {ksfs_company}  ks_fs	ON ks_fs.fscompany 	= fs.companyid
@@ -437,7 +438,7 @@ class FSKS_COMPANY {
             $params['synchronized'] = 0;
 
             // SQL Instruction
-            $sql = " SELECT	  DISTINCT 
+            $sql = " SELECT DISTINCT 
                               fs.companyid                    as 'fsid',
                               fk.kscompany                    as 'ksid',
                               fs.name,
@@ -509,7 +510,8 @@ class FSKS_COMPANY {
             $params['synchronized'] = 0;
 
             // SQL Instruction
-            $sql = " SELECT	  DISTINCT count(*)	as 'total'
+            $sql = " SELECT DISTINCT 
+                              count(DISTINCT fs.id)	as 'total'
                      FROM	  {fs_company}		fs
                         JOIN  {fs_imp_company}	fs_imp 	ON 	fs_imp.org_enhet_id = fs.companyid
                                                         AND fs_imp.imported     = :imported
@@ -629,7 +631,8 @@ class FSKS_COMPANY {
             $params['add'] = ADD;
 
             // SQL Instruction
-            $sql = " SELECT       fs_imp.id,
+            $sql = " SELECT   DISTINCT
+                                  fs_imp.id,
                                   fs_imp.org_navn,
                                   fs.companyid,
                                   fs.synchronized
@@ -763,7 +766,8 @@ class FSKS_COMPANY {
             $params['add']      = ADD;
 
             // SQL Instruction
-            $sql = " SELECT fs.id,
+            $sql = " SELECT DISTINCT
+                            fs.id,
                             fs.org_enhet_id   as 'companyid',
                             fs.org_navn       as 'name',
                             fs.org_enhet_over as 'fs_parent',
@@ -1103,7 +1107,8 @@ class FSKS_USERS {
             $params['imported'] = 0;
 
             // SQL Instruction
-            $sql = " SELECT	fs.id,
+            $sql = " SELECT	DISTINCT
+                            fs.id,
                             trim(fs.fodselsnr) 											as 'personalnumber',
                             IF (fs.brukernavn,fs.brukernavn,0) 							as 'adfs',
                             IF (fs.ressursnr,fs.ressursnr,0) 							as 'ressursnr',
@@ -1188,7 +1193,7 @@ class FSKS_USERS {
             $params['imported'] = 0;
 
             // SQL Instruction
-            $sql = " SELECT	  count(*) as 'total'
+            $sql = " SELECT	  count(DISTINCT fs.id) as 'total'
                      FROM	  {fs_imp_managers_reporters}   fs
                         JOIN  {user}                        u   ON  u.idnumber = fs.fodselsnr
                                                                 AND u.deleted  = 0
@@ -1247,7 +1252,8 @@ class FSKS_USERS {
             $params['imported'] = 0;
 
             // SQL Instruction
-            $sql = " SELECT	  fs.id 				as 'key',
+            $sql = " SELECT DISTINCT 
+                              fs.id 				as 'key',
                               trim(fs.fodselsnr) 	as 'personalnumber',
                               fsk.fscompany 		as 'fsid',
                               fsk.kscompany 		as 'ksid',
@@ -1298,7 +1304,7 @@ class FSKS_USERS {
 
         try {
             // SQL Instruction
-            $sql = " SELECT		count(*) as 'total'
+            $sql = " SELECT		count(DISTINCT fsu.id) as 'total'
                      FROM		{fs_users_company}	fsu
                         JOIN	{ksfs_org_unmap}	un	ON  un.fscompany = fsu.companyid ";
 
@@ -1337,7 +1343,8 @@ class FSKS_USERS {
 
         try {
             // SQL Instruction
-            $sql = " SELECT	    fsu.id,
+            $sql = " SELECT DISTINCT
+                                fsu.id,
                                 fsu.personalnumber,
                                 fsu.companyid 	as 'fscompany',
                                 un.kscompany 	as 'kscompany',
@@ -1558,8 +1565,7 @@ class FSKS_USERS {
             $params['action']   = DELETE;
 
             // SQL Instruction
-            $sql = " SELECT	DISTINCT 
-                                count(fs.id) as 'total'
+            $sql = " SELECT	    count(DISTINCT fs.id) as 'total'
                      FROM	    {fs_imp_users_jr}	  fs
                         JOIN    {user}                u         ON      u.idnumber = fs.fodselsnr
                                                                 AND     u.deleted  = 0
@@ -1610,7 +1616,7 @@ class FSKS_USERS {
 
         try {
             // Sql Instruction
-            $sql = " SELECT 	count(*) as 'total'
+            $sql = " SELECT 	count(DISTINCT fsu.id) as 'total'
                      FROM		{fs_users_competence} fsu
                         JOIN	{ksfs_org_unmap}	  un	ON 	un.kscompany = fsu.companyid ";
 
@@ -2035,7 +2041,7 @@ class FSKS_USERS {
             $params['imported'] = 0;
             $params['action']   = DELETE;
 
-            $sql = " SELECT	  fs.id				  as 'key',
+            $sql = " SELECT   fs.id				  as 'key',
                               trim(fs.fodselsnr)  as 'personalnumber',
                               ksfs.fscompany	  as 'fsid',	
                               ks.companyid		  as 'company',
@@ -2109,7 +2115,8 @@ class FSKS_USERS {
 
         try {
             // SQL Instruction
-            $sql = " SELECT   fsu.id,
+            $sql = " SELECT DISTINCT 
+                              fsu.id,
                               fsu.personalnumber,
                               fsu.companyid
                      FROM	  {fs_users_competence}	fsu
@@ -2642,7 +2649,8 @@ class FS {
             $time = time();
             
             // SQL Instruction
-            $sql = " SELECT fs.id,
+            $sql = " SELECT DISTINCT
+                            fs.id,
                             fs.EPOST
                      FROM	{fs_imp_users}	fs
                      WHERE 	fs.EPOST IS NULL
@@ -3006,7 +3014,7 @@ class KS {
 
         try {
             // SQL Instruction
-            $sql = " SELECT   jr.id
+            $sql = " SELECT   DISTINCT jr.id
                      FROM 	  {ks_jobroles}			  jr
                         JOIN  {ks_jobroles_relation}  jr_re	ON jr_re.jobroleid = jr.jobroleid ";
 
