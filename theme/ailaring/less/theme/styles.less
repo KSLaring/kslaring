@@ -83,6 +83,7 @@
 .navbar {
     .outer-wrapper {
         background-color: @kommitBlue;
+        display: none;
         float: right;
         height: 34px;
         margin: 3px 10px 0 0;
@@ -93,6 +94,10 @@
 
         &:hover {
             background-color: @kommitBlueLight;
+        }
+
+        @media (max-width: (@largeWidth - 1)) {
+            display: block;
         }
     }
     .bar-wrapper {

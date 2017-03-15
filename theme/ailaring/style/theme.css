@@ -134,6 +134,7 @@ a.btn.active {
 }
 .navbar .outer-wrapper {
   background-color: #0e7b9e;
+  display: none;
   float: right;
   height: 34px;
   margin: 3px 10px 0 0;
@@ -146,6 +147,11 @@ a.btn.active {
 }
 .navbar .outer-wrapper:hover {
   background-color: #00aef0;
+}
+@media (max-width: 979px) {
+  .navbar .outer-wrapper {
+    display: block;
+  }
 }
 .navbar .bar-wrapper {
   display: block;
