@@ -386,8 +386,7 @@ class FSKS_COMPANY {
             $params['sync'] = 0;
 
             // SQL Instruction
-            $sql = " SELECT	DISTINCT 	
-                                  count(*)   as 'total'
+            $sql = " SELECT	      count(*)   as 'total'
                      FROM		  {fs_company}	  fs
                         JOIN      {ks_company}	  ks 	ON ks.companyid     = fs.parent
                         LEFT JOIN {ksfs_company}  ks_fs	ON ks_fs.fscompany 	= fs.companyid
@@ -396,7 +395,10 @@ class FSKS_COMPANY {
 
             // Execute
             $rdo = $DB->get_record_sql($sql,$params);
+
+            echo "SQL: </br>" . $sql . "</br></br>";
             if ($rdo) {
+                echo $rdo->total . "</br>";
                 return $rdo->total;
             }else {
                 return null;
