@@ -222,7 +222,7 @@ class STATUS_CRON {
             self::sync_status_users_accounts($plugin,$industry);
             
             // Synchronization FS Companies
-            self::sync_status_fs_organizations($plugin);
+            //self::sync_status_fs_organizations($plugin);
 
             // Synchronization FS Job roles
             self::sync_status_fs_jobroles($plugin);
@@ -279,7 +279,7 @@ class STATUS_CRON {
             self::import_status_users($plugin);
 
             // Import FS Companies
-            self::import_status_orgstructure($plugin);
+            //self::import_status_orgstructure($plugin);
 
             // Import FS Job roles
             self::import_status_jobroles($plugin);
