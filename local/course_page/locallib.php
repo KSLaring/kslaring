@@ -1422,7 +1422,7 @@ class course_page  {
 
                     case 'course_sector':
                         $location = self::get_course_location($COURSE->id);
-                        $lstSectors     = course_page::get_course_locations_list($location);
+                        $lstSectors     = course_page::get_sectors_locations_list($location);
                         $form->addElement('select','course_sector',get_string('home_sector',$str_format),$lstSectors,'multiple');
                         $form->setDefault('course_sector',$value);
 
@@ -1615,7 +1615,6 @@ class course_page  {
                 }//if_exists
 
                 break;
-
             default:
                 break;
         }//switch_field
