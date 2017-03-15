@@ -33,7 +33,7 @@ class STATUS_CRON {
             self::competence_data($plugin,$industry);
 
             // Get managers reporters from KS
-            //self::managers_reporters($plugin,$industry);
+            self::managers_reporters($plugin,$industry);
 
             // Import last status from fellesdata
             self::import_status($plugin);
@@ -67,10 +67,10 @@ class STATUS_CRON {
             //self::managers_reporters($plugin,$industry);
 
             // Import last status from fellesdata
-            //self::import_status($plugin);
+            self::import_status($plugin);
 
             // Syncronization
-            self::synchronization($plugin,$industry);
+            //self::synchronization($plugin,$industry);
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -225,7 +225,7 @@ class STATUS_CRON {
             self::sync_status_fs_organizations($plugin);
 
             // Synchronization FS Job roles
-            //self::sync_status_fs_jobroles($plugin);
+            self::sync_status_fs_jobroles($plugin);
             
             // Synchronization FS Managers/Reporters to delete
             // Managers
@@ -282,7 +282,7 @@ class STATUS_CRON {
             self::import_status_orgstructure($plugin);
 
             // Import FS Job roles
-            //self::import_status_jobroles($plugin);
+            self::import_status_jobroles($plugin);
 
             // Import FS User Competence
             //self::import_status_managers_reporters($plugin);
