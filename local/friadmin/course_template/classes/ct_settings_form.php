@@ -252,7 +252,7 @@ class ct_settings_form extends moodleform {
 
             case 'course_sector':
                 $location = course_page::get_course_location($courseId);
-                $lstSectors     = course_page::get_course_locations_list($location);
+                $lstSectors     = course_page::get_sectors_locations_list($location);
                 $form->addElement('select','course_sector',get_string('home_sector',$str_format),$lstSectors,'multiple');
                 $form->setDefault('course_sector',$value);
 
