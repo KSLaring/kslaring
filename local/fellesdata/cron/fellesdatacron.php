@@ -1160,6 +1160,7 @@ class FELLESDATA_CRON {
             $total = FSKS_COMPANY::get_total_new_companiesfs_to_synchronize();
 
             // Synchronize
+            echo "TOTAL : " . $total . "</br>";
             if ($total) {
                 for ($i=0;$i<=$total;$i=$i+$limit) {
                     // Get companies to synchronize
