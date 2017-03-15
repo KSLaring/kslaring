@@ -93,10 +93,12 @@ if ($show && $noslides) {
                             <?php } ?>
                         </div>
                         <!-- Carousel nav -->
-                        <a class="carousel-control left" href="#kslCarousel"
-                           data-slide="prev">&lsaquo;</a>
-                        <a class="carousel-control right" href="#kslCarousel"
-                           data-slide="next">&rsaquo;</a>
+                        <?php if ($noslides > 1) { ?>
+                            <a class="carousel-control left" href="#kslCarousel"
+                               data-slide="prev">&lsaquo;</a>
+                            <a class="carousel-control right" href="#kslCarousel"
+                               data-slide="next">&rsaquo;</a>
+                        <?php } ?>
                     </div>
                 </div>
             </div>
