@@ -7,6 +7,18 @@
   scrollbar-track-color: #FFFFFF;
   scrollbar-arrow-color: #FFFFFF;
 }
+.clearfix {
+  *zoom: 1;
+}
+.clearfix:before,
+.clearfix:after {
+  display: table;
+  content: "";
+  line-height: 0;
+}
+.clearfix:after {
+  clear: both;
+}
 body {
   font-family: Calibri, Candara, Segoe, "Segoe UI", Optima, Arial, sans-serif;
   font-size: 16px;
@@ -25,14 +37,14 @@ textarea {
   font-family: 'clan_otbook', Calibri, Candara, Segoe, "Segoe UI", Optima, Arial, sans-serif;
 }
 a {
-  color: #0060a5;
+  color: #0e7b9e;
 }
 a:visited,
 a:hover,
 a:focus,
 a:active,
 a.active {
-  color: #003359;
+  color: #084458;
   text-decoration: none;
 }
 a.btn {
@@ -50,7 +62,8 @@ a.btn.active {
   font-size: .5em;
 }
 .top-border {
-  border-bottom-color: #00aef0;
+  border-top-color: #333;
+  border-bottom-color: #fff;
 }
 .header-background {
   background: #fff url([[pix:theme|element-blue]]) 100% 50% no-repeat;
@@ -69,7 +82,7 @@ a.btn.active {
   display: block;
 }
 .logo-area h1 {
-  color: #0060a5;
+  color: #0e7b9e;
   line-height: .7;
   margin: 0;
   padding: 0;
@@ -100,6 +113,69 @@ a.btn.active {
 .navbar-inner {
   background-color: #4c4f55 !important;
   border-color: #4c4f55;
+}
+.navbar-text .logininfo a {
+  color: #fff;
+}
+.navbar-menues {
+  *zoom: 1;
+}
+.navbar-menues:before,
+.navbar-menues:after {
+  display: table;
+  content: "";
+  line-height: 0;
+}
+.navbar-menues:after {
+  clear: both;
+}
+.navbar-menues .usermenu .login a {
+  color: #fff;
+}
+.navbar .outer-wrapper {
+  background-color: #0e7b9e;
+  float: right;
+  height: 34px;
+  margin: 3px 10px 0 0;
+  padding: 0;
+  position: relative;
+  width: 40px;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+}
+.navbar .outer-wrapper:hover {
+  background-color: #00aef0;
+}
+.navbar .bar-wrapper {
+  display: block;
+  height: 20px;
+  margin: 11px 0 0 10px;
+  padding: 0;
+  width: 22px;
+}
+.navbar .icon-bar {
+  background-color: #fff;
+  display: block;
+  height: 2px;
+  margin-bottom: 3px;
+  width: 20px;
+}
+.navbar .btn-navbar {
+  background: transparent !important;
+  top: 0;
+  left: 0;
+  margin: 0;
+  height: 40px;
+  padding: 0;
+  position: absolute;
+  width: 40px;
+}
+.navbar .btn-navbar:hover {
+  background: transparent !important;
+}
+.carousel-inner {
+  background-color: #4c4f55;
 }
 #page-footer {
   background: #4c4f55;
@@ -146,4 +222,7 @@ a.btn.active {
   float: right;
   display: table-cell;
   text-align: center;
+}
+p.active_tree_node a {
+  color: #0e7b9e;
 }
