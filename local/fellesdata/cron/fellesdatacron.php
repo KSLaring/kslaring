@@ -1102,7 +1102,7 @@ class FELLESDATA_CRON {
                     self::companies_new_fs_synchronization($pluginInfo);
 
                     // Synchronize no new companies
-                    //self::companies_no_new_fs_synchronization($pluginInfo);
+                    self::companies_no_new_fs_synchronization($pluginInfo);
 
                     // Send notifications
                     // Notification manual synchronization
@@ -1160,7 +1160,6 @@ class FELLESDATA_CRON {
             $total = FSKS_COMPANY::get_total_new_companiesfs_to_synchronize();
 
             // Synchronize
-            echo "TOTAL : " . $total . "</br>";
             if ($total) {
                 for ($i=0;$i<=$total;$i=$i+$limit) {
                     // Get companies to synchronize

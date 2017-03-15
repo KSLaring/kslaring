@@ -395,10 +395,7 @@ class FSKS_COMPANY {
 
             // Execute
             $rdo = $DB->get_record_sql($sql,$params);
-
-            echo "SQL: </br>" . $sql . "</br></br>";
             if ($rdo) {
-                echo $rdo->total . "</br>";
                 return $rdo->total;
             }else {
                 return null;
