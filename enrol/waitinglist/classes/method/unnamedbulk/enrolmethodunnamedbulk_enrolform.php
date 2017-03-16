@@ -377,6 +377,16 @@ class enrolmethodunnamedbulk_enrolform extends \moodleform {
         $waitinglist = $this->waitinglist;
 
 
+        if (!isset($data['seats'])) {
+            $errors['seats'] = get_string('no_seats','enrol_waitinglist');
+
+            return $errors;
+        }else if (!$data['seats']) {
+            $errors['seats'] = get_string('no_seats','enrol_waitinglist');
+
+            return $errors;
+        }
+
         if ($waitinglist->{ENROL_WAITINGLIST_FIELD_MAXENROLMENTS}) {
             $availabletouser = ($queuestatus->waitlistsize - $queuestatus->queueposition) +
                 ($queuestatus->vacancies + $queuestatus->assignedseats);
