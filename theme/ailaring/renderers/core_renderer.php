@@ -25,35 +25,4 @@ defined('MOODLE_INTERNAL') || die;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class theme_ailaring_core_renderer extends theme_kommit_core_renderer {
-    /**
-     * This code renders the navbar button to control the display of the custom menu
-     * on smaller screens.
-     *
-     * Do not display the button if the menu is empty.
-     *
-     * @return string HTML fragment
-     */
-    protected function navbar_button() {
-        global $CFG;
-
-        if (empty($CFG->custommenuitems) && $this->lang_menu() == '') {
-            return '';
-        }
-
-        $iconbar = html_writer::tag('span', '', array('class' => 'icon-bar'));
-        $barwrapper = html_writer::tag('div', $iconbar . "\n" . $iconbar . "\n" . $iconbar, array(
-            'class' => 'bar-wrapper'
-        ));
-        $button = html_writer::tag('a', '', array(
-            'class' => 'btn btn-navbar',
-            'data-toggle' => 'collapse',
-            'data-target' => '.nav-collapse'
-        ));
-        $outerwrapper = html_writer::tag('div', $barwrapper . $button, array(
-            'class' => 'outer-wrapper'
-        ));
-
-        //return $button;
-        return $outerwrapper;
-    }
 }
