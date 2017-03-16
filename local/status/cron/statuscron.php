@@ -222,25 +222,25 @@ class STATUS_CRON {
             self::sync_status_users_accounts($plugin,$industry);
             
             // Synchronization FS Companies
-            //self::sync_status_fs_organizations($plugin);
+            self::sync_status_fs_organizations($plugin);
 
             // Synchronization FS Job roles
             self::sync_status_fs_jobroles($plugin);
             
             // Synchronization FS Managers/Reporters to delete
             // Managers
-            //self::sync_status_delete_managers_reporters($plugin,MANAGERS);
+            self::sync_status_delete_managers_reporters($plugin,MANAGERS);
             // Reporters
-            //self::sync_status_delete_managers_reporters($plugin,REPORTERS);
+            self::sync_status_delete_managers_reporters($plugin,REPORTERS);
 
             // Synchronization FS Managers/Reporters
-            //self::sync_status_managers_reporters($plugin);
+            self::sync_status_managers_reporters($plugin);
 
             // Synchronization FS User Competence to Delete
-            //self::sync_status_delete_competence($plugin);
+            self::sync_status_delete_competence($plugin);
 
             // Synchronization FS User Competence
-            //self::sync_status_competence($plugin);
+            self::sync_status_competence($plugin);
 
             // Log
             $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Synchronization Fellesdata STATUS. ' . "\n";
@@ -279,16 +279,16 @@ class STATUS_CRON {
             self::import_status_users($plugin);
 
             // Import FS Companies
-            //self::import_status_orgstructure($plugin);
+            self::import_status_orgstructure($plugin);
 
             // Import FS Job roles
             self::import_status_jobroles($plugin);
 
             // Import FS User Competence
-            //self::import_status_managers_reporters($plugin);
+            self::import_status_managers_reporters($plugin);
 
             // Import FS User Competence JR
-            //self::import_status_user_competence($plugin);
+            self::import_status_user_competence($plugin);
 
             // Log
             $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Import Fellesdata STATUS. ' . "\n";
