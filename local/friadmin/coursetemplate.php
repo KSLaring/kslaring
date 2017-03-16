@@ -30,7 +30,7 @@ require_login();
 
 $friadmin = new local_friadmin\friadmin();
 
-// Basic page init - set context and pagelayout
+// Basic page init - set context and pagelayout.
 $friadmin->init_page();
 
 $type = optional_param('type', -1, PARAM_INT);
@@ -56,10 +56,10 @@ if (!$friadmin->__get('superuser')) {
 }//if_superuser
 
 // In Moodle 2.7 renderers and renderables can't be loaded via namespaces
-// Get the renderer for this plugin
+// Get the renderer for this plugin.
 $output = $PAGE->get_renderer('local_friadmin');
 
-// Prepare the renderables for the page and the page areas
+// Prepare the renderables for the page and the page areas.
 $page = new local_friadmin_coursetemplate_page($type);
 $select = new local_friadmin_coursetemplate_select($type);
 $linklist = new local_friadmin_coursetemplate_linklist();

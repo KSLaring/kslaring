@@ -384,8 +384,8 @@ class local_friadmin_helper {
                              FROM   {course} c 
                              WHERE  (c.format like '%classroom%' 
                                      OR  
-                                     #c.format like '%elearning%'
-                                     #OR  
+                                     c.format like '%elearning%'
+                                     OR  
                                      c.format like '%netcourse%')
                                      AND 
                                      (c.category = $templateCatId
@@ -908,7 +908,7 @@ class local_friadmin_helper {
         $sqlWhere   = null;
         $sqlNew     = null;
         $params     = null;
-        
+
         try {
             // Search criteria
             $params = array();
@@ -983,7 +983,7 @@ class local_friadmin_helper {
             throw $ex;
         }//try_catch
     }//update_restored_instance
-    
+
     /**
      * Get the newest file in the file area.
      *

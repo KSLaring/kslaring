@@ -69,12 +69,12 @@ class local_friadmin_coursetemplate_select extends local_friadmin_widget impleme
      */
     public function __construct($type) {
         /* Variables    */
-        global $CFG,$USER;
+        global $CFG, $USER;
         $customdata     = null;
         $urlSettings    = null;
 
         try {
-            // Create the data object and set the first values
+            // Create the data object and set the first values.
             parent::__construct();
 
             /* custom data used */
