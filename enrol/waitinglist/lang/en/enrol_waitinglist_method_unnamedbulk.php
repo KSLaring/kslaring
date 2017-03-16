@@ -63,3 +63,5 @@ $string['unnamedbulk_enrolformqueuestatus'] = 'You are currently reserving {$a->
 Your seats are currently at position {$a->queueposition} on the waiting list.';
 $string['unnamedbulk_enrolformqueuestatus_label']   = 'Current Reservation';
 $string['unnamedbulk_enrolformqueuestatus_all']     = 'You have been assigned all your seats';
+
+$string['no_seats'] = 'You must reserve at least one seat';

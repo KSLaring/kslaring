@@ -59,3 +59,5 @@ $string['unnamedbulk_enrolformintro'] = 'Bruk dette skjemaet til å reservere pl
 $string['unnamedbulk_enrolformqueuestatus'] = 'Du er tildelt {$a->assignedseats} og du har {$a->waitingseats} plasser på ventelisten.';
 $string['unnamedbulk_enrolformqueuestatus_label'] = 'Din reservasjon';
 $string['unnamedbulk_enrolformqueuestatus_all'] = 'Du har blitt tildelt alle dine forespurte plasser';
+
+$string['no_seats'] = 'You must reserve at least one seat';
