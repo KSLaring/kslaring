@@ -1,0 +1,10 @@
+.col_rol {
+    max-width: 100px!important;
+    text-align: left;
+    text-justify:inter-word;
+    cursor: default;
+    word-wrap: break-word;
+}
+
+
+
