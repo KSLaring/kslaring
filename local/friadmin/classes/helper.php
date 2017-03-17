@@ -384,8 +384,8 @@ class local_friadmin_helper {
                              FROM   {course} c 
                              WHERE  (c.format like '%classroom%' 
                                      OR  
-                                     #c.format like '%elearning%'
-                                     #OR  
+                                     c.format like '%elearning%'
+                                     OR  
                                      c.format like '%netcourse%')
                                      AND 
                                      (c.category = $templateCatId
