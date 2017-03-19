@@ -55,6 +55,84 @@ define('CLEAN_COMPETENCE',1);
 /***********************/
 /* CLASS FSKS_JOBROLES */
 /***********************/
+class FS_CRON {
+    public static function can_run() {
+        /* variables */
+        $fellesdata = null;
+        $fsdate     = null;
+        $status     = null;
+        $stdate     = null;
+        
+        try {
+            // Next time for fellesdata
+            $fellesdata = self::get_my_nexttime('fellesdata');
+            
+            // Next time for status
+            $status = self::get_my_nexttime('status');
+
+            if ($fellesdata->disabled) {
+                return false;
+            }else if ($status->disabled) {
+                return true;
+            }else {
+                $fsdate = getdate($fellesdata->nextruntime);
+                $stdate = getdate($fellesdata->nextruntime);
+
+                if ($fsdate && $stdate) {
+                    if (($fsdate['year'] == $stdate['year'])
+                        &&
+                        ($fsdate['mon'] == $stdate['mon'])
+                        &&
+                        ($fsdate['mday'] == $stdate['mday'])) {
+
+                        return false;
+                    }else {
+                        echo true;
+                    }
+                }
+                return true;
+            }
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_Catch
+    }//can_run
+
+    /**
+     * Description
+     * Get the next time that the task has to be executed
+     * 
+     * @param       String $pluginmame
+     * 
+     * @return              mixed|null
+     * @throws              Exception
+     * 
+     * @creationDate    19/03/2017
+     * @author          eFaktor     (fbv)
+     */
+    private static function get_my_nexttime($pluginmame) {
+        /* Variables */
+        global $DB;
+        $rdo    = null;
+        $sql    = null;
+        $params = null;
+
+        try {
+            // SQL instruction - get mu nextime
+            $sql = " SELECT nextruntime,
+                            disabled
+                     FROM 	{task_scheduled}
+                     WHERE   component like '%$pluginmame%' ";
+            
+            // Execute
+            $rdo = $DB->get_record_sql($sql);
+            
+            return $rdo;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//get_my_nexttime
+}
+
 class FSKS_JOBROLES {
     /**********/
     /* PUBLIC */

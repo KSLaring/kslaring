@@ -53,16 +53,19 @@ function fellesdata_cron() {
         
         // Activate
         if ($plugin->cron_active) {
-            // First execution
-            if ($plugin->lastexecution) {
-                $fstExecution = false;
-            }else {
-                $fstExecution = true;
+            // Check if can be trigerred
+            if (FS_CRON::can_run()) {
+                // First execution
+                if ($plugin->lastexecution) {
+                    $fstExecution = false;
+                }else {
+                    $fstExecution = true;
+                }
+
+                \FELLESDATA_CRON::cron($plugin,$fstExecution);
+
+                set_config('lastexecution', $now, 'local_fellesdata');                
             }
-            
-            \FELLESDATA_CRON::cron($plugin,$fstExecution);
-            
-            set_config('lastexecution', $now, 'local_fellesdata');
         }
     }catch (Exception $ex) {
         throw $ex;
