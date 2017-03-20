@@ -24,10 +24,12 @@ $return_url         = new moodle_url('/course/view.php',array('id' => $courseId)
 $url                = new moodle_url('/enrol/waitinglist/approval/request.php',array('courseid' => $courseId));
 $approvalRequests   = null;
 
-require_login();
-
 /* Capability   */
-require_capability('enrol/waitinglist:manage',$context_course);
+if (!has_capability('enrol/waitinglist:manage',$context_course)) {
+    require_login();
+}else {
+    require_login($course);
+}//if_capabilities
 
 //HTTPS is required in this page when $CFG->loginhttps enabled
 $PAGE->https_required();
