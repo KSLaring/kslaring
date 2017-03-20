@@ -142,4 +142,5 @@ $string['rpt_resource']  = 'Ressursnummer';
 
 $string['price_int'] = 'Intern pris';
 $string['price_ext'] = 'Ekstern pris';
+
 $string['rpt_completed'] = 'Fullført';

@@ -62,6 +62,13 @@ if($ret !== true){
 	$warningmessage=$ret;
 	$flagged= true;
 }
+/* Clean Cookies    */
+setcookie('level_0',0);
+setcookie('level_1',0);
+setcookie('level_2',0);
+setcookie('level_3',0);
+setcookie('ansvar_selected',0);
+
 list($ok,$formhtml) = $themethod->enrol_page_hook($waitinglist,$flagged);
 if($ok){
 	echo $OUTPUT->header();

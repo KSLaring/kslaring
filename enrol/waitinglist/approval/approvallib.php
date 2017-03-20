@@ -1997,6 +1997,7 @@ Class Approval {
                         LEFT JOIN {report_gen_companydata}  co	ON	co.id	= 	ea.companyid
                      WHERE	      ea.courseid 		= :course
                         AND       ea.waitinglistid 	= :waiting
+                        AND       ea.unenrol        = 0
                      ORDER BY     u.firstname,u.lastname ";
 
             // Execute

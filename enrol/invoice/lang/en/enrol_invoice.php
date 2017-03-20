@@ -144,4 +144,5 @@ $string['rpt_resource']     = 'Resource';
 
 $string['price_int'] = 'Internal price';
 $string['price_ext'] = 'External price';
+
 $string['rpt_completed'] = 'Completed';

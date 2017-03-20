@@ -57,6 +57,7 @@ define('APPROVAL_NONE',0);
 define('APPROVAL_REQUIRED',1);
 define('APPROVAL_MESSAGE',2);
 define('COMPANY_NO_DEMANDED',3);
+define('REDIRECT','redirect');
 
 class enrol_waitinglist_plugin extends enrol_plugin {
 
