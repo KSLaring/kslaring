@@ -76,7 +76,7 @@ class FS_CRON {
                 return true;
             }else {
                 $fsdate = getdate($fellesdata->nextruntime);
-                $stdate = getdate($fellesdata->nextruntime);
+                $stdate = getdate($status->nextruntime);
 
                 if ($fsdate && $stdate) {
                     if (($fsdate['year'] == $stdate['year'])

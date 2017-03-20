@@ -47,23 +47,7 @@ try {
             FELLESDATA_CRON::cron_manual(true,$option);
         }
     }else {
-        $fellesdata = '1487582880';
-        $status = '1489396620';
-
-        $status_date = getdate($status);
-        echo 'Status Day:  ' . $status_date['mday'] . "</br>";
-        echo 'Status Mon:  ' . $status_date['mon']  . "</br>";
-        echo 'Status Year: ' . $status_date['year'] . "</br>";
-
-        echo "</br>-----</br>";
-
-        $fellesdata_date = getdate($fellesdata);
-        echo 'FS Day:  ' . $fellesdata_date['mday'] . "</br>";
-        echo 'FS Mon:  ' . $fellesdata_date['mon']  . "</br>";
-        echo 'FS Year: ' . $fellesdata_date['year'] . "</br>";
-        //echo $pluginInfo->fs_days;
-
-
+        echo " --> " . FS_CRON::can_run();
     }
 }catch (Exception $ex) {
     throw $ex;
