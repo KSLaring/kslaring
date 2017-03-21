@@ -88,4 +88,4 @@ $string['request_just_approved'] = 'Forespørselen for arbeidsstedet <strong>{$a
 
 $string['alert_approve'] = 'Vennligst vær oppmerksom på at du legger til korrekt arbeidssted på deg selv. Lederen for valgt arbeidssted blir automatisk varslet og kan avslå at du legger til arbeidsstedet hvis dette er feil.';
 
-$string['comp_delete'] = 'This user has already been removed from this workplace.';
+$string['comp_delete'] = 'Denne brukeren er allerede fjernet fra dette arbeidsstedet.';

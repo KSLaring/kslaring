@@ -75,7 +75,7 @@ class queuemanager  {
                 $wlm = new static();
                 $wlm->courseid=$courseid;
                 $wlm->waitinglist = $DB->get_record('enrol', array('courseid' => $courseid,'enrol'=>'waitinglist'));
-                $records =  $DB->get_records(self::QTABLE, array('courseid' => $courseid, 'waitinglistid'=>$wlm->waitinglist->id, 'offqueue'=>0),'queueno ASC');
+                $records 		  = $DB->get_records(self::QTABLE, array('courseid' => $courseid, 'waitinglistid'=>$wlm->waitinglist->id, 'offqueue'=>0),'queueno ASC');
                 if($records){
                     $wlm->qentries = $records;
                 }
