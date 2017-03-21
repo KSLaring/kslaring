@@ -85,9 +85,8 @@ EOT;
         }
     }
 
-    $useadminlogin = $page->theme->settings->useadminlogin;
-    //if (strpos($page->pagetype, 'login') !== false) {
-    if (strpos($page->pagetype, 'login') !== false && !empty($useadminlogin)) {
+    $useadminlogin = !empty($page->theme->settings->useadminlogin);
+    if (strpos($page->pagetype, 'login') !== false && $useadminlogin) {
         $page->requires->string_for_js('adminlogin', 'theme_kommit');
         $page->requires->js_call_amd('theme_kommit/hideloginform', 'init');
     }
