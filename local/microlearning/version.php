@@ -12,10 +12,10 @@
  */
 defined('MOODLE_INTERNAL') || die;
 
-$plugin->version    = 2017032000;                   /* The current plugin version (Date: YYYYMMDDXX)  */
+$plugin->version    = 2017032100;                   /* The current plugin version (Date: YYYYMMDDXX)  */
 //$plugin->requires = 2012061700;                   /* Requires this Moodle version                   */
 $plugin->component  = 'local_microlearning';        /* Full name of the plugin (used for diagnostics) */
 //$plugin->cron       =  14400;                     // Cron interval 1 day. //60; //(300 secs - 5 min)
 
 /* Dependencies */
-$plugin->dependencies = array('local_express_login' => 2016030700);
+$plugin->dependencies = array('local_express_login' => 2017032100);

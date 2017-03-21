@@ -146,9 +146,13 @@ if ($form->is_cancelled()) {
     $_POST = array();
     redirect($return_url);
 }else if($data = $form->get_data()) {
-    /* Get Data */
-    //
+    // Get data
     $data_form = (Array)$data;
+
+    $out  = "Zero: " . $data_form[MANAGER_COURSE_STRUCTURE_LEVEL . '0'] . "</br>";
+    $out .= "One: " . $data_form[MANAGER_COURSE_STRUCTURE_LEVEL . '1'] . "</br>";
+    $out .= "Two: " . $data_form[MANAGER_COURSE_STRUCTURE_LEVEL . '2'] . "</br>";
+    $out .= "Three: " . $data_form[MANAGER_COURSE_STRUCTURE_LEVEL . '3'] . "</br>";
 
     /* Get the data to the report   */
     $course_report = course_report::Get_CourseReportLevel($data_form,$myHierarchy,$IsReporter);
@@ -172,7 +176,7 @@ if ($form->is_cancelled()) {
         /* Screen / Excel   */
         switch ($data_form[COURSE_REPORT_FORMAT_LIST]) {
             case COURSE_REPORT_FORMAT_SCREEN:
-                $out = course_report::Print_CourseReport_Screen($course_report,$data_form[REPORT_MANAGER_COMPLETED_LIST]);
+                $out .= course_report::Print_CourseReport_Screen($course_report,$data_form[REPORT_MANAGER_COMPLETED_LIST]);
 
                 break;
             case COURSE_REPORT_FORMAT_SCREEN_EXCEL:

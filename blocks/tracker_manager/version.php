@@ -12,9 +12,9 @@
  */
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2016030700;                    // The current plugin version (Date: YYYYMMDDXX)
+$plugin->version   = 2017032100;                    // The current plugin version (Date: YYYYMMDDXX)
 //$plugin->requires  = 2012112900;                  // Requires this Moodle version
 $plugin->component = 'block_tracker_manager';    // Full name of the plugin (used for diagnostics)
 
 /* Dependencies */
-$plugin->dependencies = array('report_manager'  => 2016060602);
+$plugin->dependencies = array('report_manager'  => 2017032100);
