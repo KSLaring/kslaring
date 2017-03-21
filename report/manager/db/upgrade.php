@@ -129,7 +129,6 @@ class CompetenceManager_Update {
                                     GROUP_CONCAT(DISTINCT level_two.companyid ORDER BY level_two.companyid SEPARATOR ',') 		as 'level_two',
                                     GROUP_CONCAT(DISTINCT level_three.companyid ORDER BY level_three.companyid SEPARATOR ',') 	as 'level_three'
                      FROM			{report_gen_companydata}			co
-                        JOIN		{counties}						    con 		ON con.idcounty 		= co.industrycode
                         LEFT JOIN 	{report_gen_company_relation} 	    level_one 	ON level_one.parentid 	= co.id
                         LEFT JOIN	{report_gen_company_relation}		level_two	ON level_two.parentid	= level_one.companyid
                         LEFT JOIN	{report_gen_company_relation}		level_three	ON level_three.parentid = level_two.companyid
@@ -530,35 +529,35 @@ class CompetenceManager_Update {
 
             /* Ansvar Field     */
             $fldAnsvar      = null;
-            $fldAnsvar      = new xmldb_field('ansvar', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null, 'public');
+            $fldAnsvar      = new xmldb_field('ansvar', XMLDB_TYPE_CHAR, '255', null, null, null, null, 'public');
             if (!$dbMan->field_exists($tblCompanyData, $fldAnsvar)) {
                 $dbMan->add_field($tblCompanyData, $fldAnsvar);
             }//if_not_exists
 
             /* Tjeneste Field   */
             $fldTjeneste    = null;
-            $fldTjeneste    = new xmldb_field('tjeneste', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null, 'public');
+            $fldTjeneste    = new xmldb_field('tjeneste', XMLDB_TYPE_CHAR, '255', null, null, null, null, 'public');
             if (!$dbMan->field_exists($tblCompanyData, $fldTjeneste)) {
                 $dbMan->add_field($tblCompanyData, $fldTjeneste);
             }//if_not_exists
 
             /* Adresse 1        */
             $fldAdreseOne   = null;
-            $fldAdreseOne   = new xmldb_field('adresse1', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null, 'public');
+            $fldAdreseOne   = new xmldb_field('adresse1', XMLDB_TYPE_CHAR, '255', null, null, null, null, 'public');
             if (!$dbMan->field_exists($tblCompanyData, $fldAdreseOne)) {
                 $dbMan->add_field($tblCompanyData, $fldAdreseOne);
             }//if_not_exists
 
             /* Adresse 2        */
             $fldAdreseTwo   = null;
-            $fldAdreseTwo   = new xmldb_field('adresse2', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null, 'public');
+            $fldAdreseTwo   = new xmldb_field('adresse2', XMLDB_TYPE_CHAR, '255', null, null, null, null, 'public');
             if (!$dbMan->field_exists($tblCompanyData, $fldAdreseTwo)) {
                 $dbMan->add_field($tblCompanyData, $fldAdreseTwo);
             }//if_not_exists
 
             /* Adresse 3        */
             $fldAdreseThree = null;
-            $fldAdreseThree = new xmldb_field('adresse3', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null, 'public');
+            $fldAdreseThree = new xmldb_field('adresse3', XMLDB_TYPE_CHAR, '255', null, null, null, null, 'public');
             if (!$dbMan->field_exists($tblCompanyData, $fldAdreseThree)) {
                 $dbMan->add_field($tblCompanyData, $fldAdreseThree);
             }//if_not_exists
@@ -572,14 +571,14 @@ class CompetenceManager_Update {
 
             /* Post sted        */
             $fldPoststed    = null;
-            $fldPoststed    = new xmldb_field('poststed', XMLDB_TYPE_CHAR, '50', null, XMLDB_NOTNULL, null, null, 'public');
+            $fldPoststed    = new xmldb_field('poststed', XMLDB_TYPE_CHAR, '50', null, null, null, null, 'public');
             if (!$dbMan->field_exists($tblCompanyData, $fldPoststed)) {
                 $dbMan->add_field($tblCompanyData, $fldPoststed);
             }//if_not_exists
 
             /* ePost            */
             $fldEPost       = null;
-            $fldEPost       = new xmldb_field('epost', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null, 'public');
+            $fldEPost       = new xmldb_field('epost', XMLDB_TYPE_CHAR, '255', null, null, null, null, 'public');
             if (!$dbMan->field_exists($tblCompanyData, $fldEPost)) {
                 $dbMan->add_field($tblCompanyData, $fldEPost);
             }//if_not_exists
