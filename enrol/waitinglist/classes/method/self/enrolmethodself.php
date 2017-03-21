@@ -716,6 +716,7 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
             $enrolstatus = $this->can_enrol($waitinglist,true);
         }
 
+
         // Don't show enrolment instance form, if user can't enrol using it.
         if (true === $enrolstatus) {
             /**
