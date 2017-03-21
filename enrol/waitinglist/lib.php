@@ -871,6 +871,7 @@ class enrol_waitinglist_plugin extends enrol_plugin {
 			$queueman= \enrol_waitinglist\queuemanager::get_by_course($instance->courseid);
 			$entryman= \enrol_waitinglist\entrymanager::get_by_course($instance->courseid);
 			$availableseats = $this->get_vacancy_count($instance);
+
 			$trace->output('waitinglist enrolment availabilities: ' . $availableseats);	
 			if($availableseats > 0 AND $queueman->get_listtotal() > 0){	
 				$allocatedseats=0;
@@ -1264,6 +1265,16 @@ class enrol_waitinglist_plugin extends enrol_plugin {
             $params['courseid']         = $courseid;
             $params['waitingid']        = $waitingLst->id;
             $DB->delete_records('enrol_waitinglist_unenrol',$params);
+            
+            // Unroll from mdl_user_enrolments
+            $params = array();
+            $params['userid']    = $userid;
+            $params['enrolid']   = $waitingLst->id;
+            $rdo = $DB->get_record('user_enrolments',$params);
+            if ($rdo) {
+                // deleted
+                $DB->delete_records('user_enrolments',$params);
+            }
             
             return true;
         }catch (Exception $ex) {
