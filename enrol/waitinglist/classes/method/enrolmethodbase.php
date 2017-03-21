@@ -207,7 +207,9 @@ abstract class enrolmethodbase  {
      * @return int queueid or false if not added to queue (ie enroled directly)
      */
     public function add_to_waitinglist(\stdClass $waitinglist, $queue_entry) {
-        global $DB, $USER, $CFG; // CFG necessary!!!
+        global $USER, $CFG; // CFG necessary!!!
+		$queueid 	= null;
+		$giveseats 	= null;
 		
 		//If the waitinglist is not correct, exit
 		$wl = enrol_get_plugin('waitinglist');
