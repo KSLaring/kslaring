@@ -36,6 +36,8 @@ $infoCompany    = null;
 $context        = context_system::instance();
 $url            = new moodle_url('/report/manager/course_report/organization.php');
 
+global $PAGE,$USER;
+
 $PAGE->set_context($context);
 $PAGE->set_url($url);
 
@@ -104,7 +106,7 @@ $data['clean'] = $toClean;
 /* My Hierarchy */
 $IsReporter = CompetenceManager::IsReporter($USER->id);
 $myHierarchy = CompetenceManager::get_MyHierarchyLevel($USER->id,$context,$IsReporter,$reportLevel);
-if ($IsReporter) {
+if (($IsReporter) && (!is_siteadmin($USER->id))) {
     $myLevelZero  = array_keys($myHierarchy->competence);
     $myLevelOne   = $myHierarchy->competence[$levelZero]->levelOne;
     $myLevelTwo   = $myHierarchy->competence[$levelZero]->levelTwo;

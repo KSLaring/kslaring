@@ -547,15 +547,21 @@ class manager_course_report_level_form extends moodleform {
                 }//if_isPublic
 
                 /* Job roles connected with the level */
-                if (!in_array('0',$levelThree)) {
-                    $levelThree = implode(',',$levelThree);
-                    CompetenceManager::GetJobRoles_Hierarchy($options,$level,$levelZero,$levelOne,$levelTwo,$levelThree);
+                if (!is_array($levelThree)) {
+                    if (!in_array('0',$levelThree)) {
+                        $levelThree = implode(',',$levelThree);
+                        CompetenceManager::GetJobRoles_Hierarchy($options,$level,$levelZero,$levelOne,$levelTwo,$levelThree);
+                    }else {
+                        CompetenceManager::GetJobRoles_Hierarchy($options,$level-3,$levelZero);
+                        CompetenceManager::GetJobRoles_Hierarchy($options,$level-2,$levelZero,$levelOne);
+                        CompetenceManager::GetJobRoles_Hierarchy($options,$level-1,$levelZero,$levelOne,$levelTwo);
+                    }//if_level_Three
                 }else {
                     CompetenceManager::GetJobRoles_Hierarchy($options,$level-3,$levelZero);
                     CompetenceManager::GetJobRoles_Hierarchy($options,$level-2,$levelZero,$levelOne);
                     CompetenceManager::GetJobRoles_Hierarchy($options,$level-1,$levelZero,$levelOne,$levelTwo);
-                }//if_level_Three
-
+                }
+                
                 break;
         }//switch_level
 
