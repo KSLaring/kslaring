@@ -108,6 +108,32 @@ $myHierarchy = CompetenceManager::get_MyHierarchyLevel($USER->id,$site_context,$
 // Show form
 if ($company_id) {
     $data_form = array();
+    if (isset($SESSION->job_roles)) {
+        $data_form[REPORT_MANAGER_JOB_ROLE_LIST]        = $SESSION->job_roles;
+    }else {
+        $data_form[REPORT_MANAGER_JOB_ROLE_LIST]        = null;
+    }
+
+    $data_form['rpt']                               = $report_level;
+    $data_form[COURSE_REPORT_FORMAT_LIST]           = COURSE_REPORT_FORMAT_SCREEN;
+    $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'0'] = $USER->levelZero;
+    $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'1'] = $parentOne;
+    $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'2'] = $parentTwo;
+    $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'3'] = array($company_id => $company_id);
+    $data_form[REPORT_MANAGER_COURSE_LIST]          = $USER->courseReport;
+    $data_form[REPORT_MANAGER_COMPLETED_LIST]       = $completed_option;
+
+    /* Keep selection data --> when it returns to the main page */
+    $SESSION->selection = array();
+    $SESSION->selection[MANAGER_COURSE_STRUCTURE_LEVEL . '0']   = $USER->levelZero;
+    $SESSION->selection[MANAGER_COURSE_STRUCTURE_LEVEL . '1']   = $parentOne;
+    $SESSION->selection[MANAGER_COURSE_STRUCTURE_LEVEL . '2']   = $parentTwo;
+    $SESSION->selection[MANAGER_COURSE_STRUCTURE_LEVEL . '3']   = array($company_id => $company_id);
+    $SESSION->selection[REPORT_MANAGER_COURSE_LIST]             = $USER->courseReport;
+
+    /* Get the data to the report   */
+    $course_report = course_report::Get_CourseReportLevel($data_form,$myHierarchy,$IsReporter);
+    $out = course_report::Print_CourseReport_Screen($course_report,$data_form[REPORT_MANAGER_COMPLETED_LIST]);
 }else {
     // Clean temporary
     course_report::CleanTemporary();
@@ -132,6 +158,7 @@ if ($form->is_cancelled()) {
     foreach ($three as $id) {
         $three[$id] = $id;
     }
+    $data_form[MANAGER_COURSE_STRUCTURE_LEVEL . '3'] = $three;
     
     // Report data
     $course_report = course_report::Get_CourseReportLevel($data_form,$myHierarchy,$IsReporter);
