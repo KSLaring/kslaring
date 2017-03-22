@@ -89,6 +89,15 @@ class manager_course_report_level_form extends moodleform {
         $form->setType('rpt',PARAM_INT);
 
         $this->add_action_buttons(true, get_string('create_report', 'report_manager'));
+
+        $form->addElement('text','h0','','style="display:none');
+        $form->setDefault('h0','0');
+        $form->addElement('text','h1','','style="display:none');
+        $form->setDefault('h1','0');
+        $form->addElement('text','h2','','style="display:none');
+        $form->setDefault('h2','0');
+        $form->addElement('text','h3','','style="display:none');
+        $form->setDefault('h3','0');
     }//definition
 
     /**
