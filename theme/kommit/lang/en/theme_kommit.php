@@ -52,6 +52,9 @@ $string['customcssdesc'] = 'Whatever CSS rules you add to this textarea will be 
 $string['footnote'] = 'Footnote';
 $string['footnotedesc'] = 'Whatever you add to this textarea will be displayed in the footer throughout your Moodle site.';
 
+$string['useadminlogin'] = 'Use the "Admin login".';
+$string['useadminlogindesc'] = 'When checked then hide the login fields and show a "Admin login" button on the login page.';
+
 $string['invert'] = 'Invert navbar';
 $string['invertdesc'] = 'Swaps text and background for the navbar at the top of the page between black and white.';
 
