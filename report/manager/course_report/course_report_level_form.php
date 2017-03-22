@@ -90,14 +90,18 @@ class manager_course_report_level_form extends moodleform {
 
         $this->add_action_buttons(true, get_string('create_report', 'report_manager'));
 
-        $form->addElement('text','h0','','style="display:none');
+        $form->addElement('text','h0','','style="display:none;"');
         $form->setDefault('h0','0');
-        $form->addElement('text','h1','','style="display:none');
+        $form->setType('h0',PARAM_TEXT);
+        $form->addElement('text','h1','','style="display:none;"');
         $form->setDefault('h1','0');
-        $form->addElement('text','h2','','style="display:none');
+        $form->setType('h1',PARAM_TEXT);
+        $form->addElement('text','h2','','style="display:none;"');
         $form->setDefault('h2','0');
-        $form->addElement('text','h3','','style="display:none');
+        $form->setType('h2',PARAM_TEXT);
+        $form->addElement('text','h3','','style="display:none;"');
         $form->setDefault('h3','0');
+        $form->setType('h3',PARAM_TEXT);
     }//definition
 
     /**
