@@ -99,9 +99,9 @@ class manager_outcome_report_level_form extends moodleform {
 
         // Hidde selected levels
         for ($i = 0; $i <= $report_level; $i++) {
-            $form->addElement('text','h' . MANAGER_OUTCOME_STRUCTURE_LEVEL . $i,'','style="display:none;"');
-            $form->setDefault('h' . MANAGER_OUTCOME_STRUCTURE_LEVEL . $i,'0');
-            $form->setType('h' . MANAGER_OUTCOME_STRUCTURE_LEVEL . $i,PARAM_TEXT);
+            $form->addElement('text','h' . $i,'','style="display:none;"');
+            $form->setDefault('h' . $i,'0');
+            $form->setType('h' . $i,PARAM_TEXT);
         }//for_levels
     }//definition
 

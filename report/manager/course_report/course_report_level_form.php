@@ -92,11 +92,9 @@ class manager_course_report_level_form extends moodleform {
 
         // Hidde selected levels
         for ($i = 0; $i <= $report_level; $i++) {
-            $name = 'h' . MANAGER_COURSE_STRUCTURE_LEVEL . $i;
-            echo $name . "</br>";
-            $form->addElement('text',$name,'','style="display:none;"');
-            $form->setDefault('h' . MANAGER_COURSE_STRUCTURE_LEVEL . $i,'0');
-            $form->setType('h' . MANAGER_COURSE_STRUCTURE_LEVEL . $i,PARAM_TEXT);
+            $form->addElement('text','h' . $i,'','style="display:none;"');
+            $form->setDefault('h' . $i,'0');
+            $form->setType('h' . $i,PARAM_TEXT);
         }//for_levels
     }//definition
 
