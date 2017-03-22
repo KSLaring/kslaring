@@ -92,20 +92,23 @@ class manager_course_report_level_form extends moodleform {
 
         // Hidde selected levels
         $form->addElement('text','h0','','style="display:none;"');
-        $form->setDefault('h0',$SESSION->selection[MANAGER_COURSE_STRUCTURE_LEVEL . '0']);
         $form->setType('h0',PARAM_TEXT);
         
         $form->addElement('text','h1','','style="display:none;"');
-        $form->setDefault('h1',$SESSION->selection[MANAGER_COURSE_STRUCTURE_LEVEL . '1']);
         $form->setType('h1',PARAM_TEXT);
 
         $form->addElement('text','h2','','style="display:none;"');
-        $form->setDefault('h2',$SESSION->selection[MANAGER_COURSE_STRUCTURE_LEVEL . '2']);
         $form->setType('h2',PARAM_TEXT);
 
         $form->addElement('text','h3','','style="display:none;"');
-        $form->setDefault('h3',$SESSION->selection[MANAGER_COURSE_STRUCTURE_LEVEL . '3']);
         $form->setType('h3',PARAM_TEXT);
+
+        if (isset($SESSION->selection)) {
+            $form->setDefault('h0',$SESSION->selection[MANAGER_COURSE_STRUCTURE_LEVEL . '0']);
+            $form->setDefault('h1',$SESSION->selection[MANAGER_COURSE_STRUCTURE_LEVEL . '1']);
+            $form->setDefault('h2',$SESSION->selection[MANAGER_COURSE_STRUCTURE_LEVEL . '2']);
+            $form->setDefault('h3',$SESSION->selection[MANAGER_COURSE_STRUCTURE_LEVEL . '3']);
+        }
     }//definition
 
     /**
