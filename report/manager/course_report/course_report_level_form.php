@@ -240,7 +240,7 @@ class manager_course_report_level_form extends moodleform {
             if (count($levelZero) == 1) {
                 $parentZero = implode(',',$levelZero);
             }else {
-                $parentZero = optional_param('h_' . MANAGER_COURSE_STRUCTURE_LEVEL . 0, 0, PARAM_INT);
+                $parentZero = optional_param(MANAGER_COURSE_STRUCTURE_LEVEL . 0, 0, PARAM_INT);
                 if ((!$parentZero) && isset($SESSION->selection)) {
                     $parentZero = $SESSION->selection[MANAGER_COURSE_STRUCTURE_LEVEL . 0];
                 }
@@ -259,7 +259,7 @@ class manager_course_report_level_form extends moodleform {
 
         /* Parent*/
         if ($level) {
-            $parent     = optional_param('h_' . MANAGER_COURSE_STRUCTURE_LEVEL . ($level-1), 0, PARAM_INT);
+            $parent     = optional_param(MANAGER_COURSE_STRUCTURE_LEVEL . ($level-1), 0, PARAM_INT);
             if ((!$parent) && isset($SESSION->selection)) {
                 $parent = $SESSION->selection[MANAGER_COURSE_STRUCTURE_LEVEL . ($level-1)];
             }
@@ -360,7 +360,7 @@ class manager_course_report_level_form extends moodleform {
             //if ($level == 3) {
                 //$default = optional_param_array(MANAGER_COURSE_STRUCTURE_LEVEL . $level, 0, PARAM_INT);
             //}else {
-                $default = optional_param('h_' . MANAGER_COURSE_STRUCTURE_LEVEL . $level, 0, PARAM_INT);
+                $default = optional_param(MANAGER_COURSE_STRUCTURE_LEVEL . $level, 0, PARAM_INT);
             //}
             if ($level == 3) {
                 $default = array_flip(explode('#',$default));
@@ -395,7 +395,7 @@ class manager_course_report_level_form extends moodleform {
         switch ($level) {
             case 0:
                 /* Level Zero   */
-                $levelZero = optional_param('h_' . MANAGER_COURSE_STRUCTURE_LEVEL . $level, 0, PARAM_INT);
+                $levelZero = optional_param(MANAGER_COURSE_STRUCTURE_LEVEL . $level, 0, PARAM_INT);
 
                 /* Check old selection */
                 if ((!$levelZero) && isset($SESSION->selection)) {
@@ -417,9 +417,9 @@ class manager_course_report_level_form extends moodleform {
                 break;
             case 1:
                 /* Level Zero   */
-                $levelZero = optional_param('h_' . MANAGER_COURSE_STRUCTURE_LEVEL . ($level-1), 0, PARAM_INT);
+                $levelZero = optional_param(MANAGER_COURSE_STRUCTURE_LEVEL . ($level-1), 0, PARAM_INT);
                 /* Level One */
-                $levelOne = optional_param('h_' . MANAGER_COURSE_STRUCTURE_LEVEL . $level, 0, PARAM_INT);
+                $levelOne = optional_param(MANAGER_COURSE_STRUCTURE_LEVEL . $level, 0, PARAM_INT);
 
                 /* Check old selection */
                 if (isset($SESSION->selection)) {
@@ -455,11 +455,11 @@ class manager_course_report_level_form extends moodleform {
                 break;
             case 2:
                 /* Level Zero   */
-                $levelZero = optional_param('h_' . MANAGER_COURSE_STRUCTURE_LEVEL . ($level-2), 0, PARAM_INT);
+                $levelZero = optional_param(MANAGER_COURSE_STRUCTURE_LEVEL . ($level-2), 0, PARAM_INT);
                 /* Level One    */
-                $levelOne = optional_param('h_' . MANAGER_COURSE_STRUCTURE_LEVEL . ($level-1), 0, PARAM_INT);
+                $levelOne = optional_param(MANAGER_COURSE_STRUCTURE_LEVEL . ($level-1), 0, PARAM_INT);
                 /* Level Two    */
-                $levelTwo = optional_param('h_' . MANAGER_COURSE_STRUCTURE_LEVEL . $level, 0, PARAM_INT);
+                $levelTwo = optional_param(MANAGER_COURSE_STRUCTURE_LEVEL . $level, 0, PARAM_INT);
 
                 /* Check old selection */
                 if (isset($SESSION->selection)) {
@@ -503,13 +503,13 @@ class manager_course_report_level_form extends moodleform {
                 break;
             case 3:
                 /* Level Zero   */
-                $levelZero  = optional_param('h_' . MANAGER_COURSE_STRUCTURE_LEVEL . ($level-3), 0, PARAM_INT);
+                $levelZero  = optional_param(MANAGER_COURSE_STRUCTURE_LEVEL . ($level-3), 0, PARAM_INT);
                 /* Level One    */
-                $levelOne   = optional_param('h_' . MANAGER_COURSE_STRUCTURE_LEVEL . ($level-2), 0, PARAM_INT);
+                $levelOne   = optional_param(MANAGER_COURSE_STRUCTURE_LEVEL . ($level-2), 0, PARAM_INT);
                 /* Level Two    */
-                $levelTwo   = optional_param('h_' . MANAGER_COURSE_STRUCTURE_LEVEL . ($level-1), 0, PARAM_INT);
+                $levelTwo   = optional_param(MANAGER_COURSE_STRUCTURE_LEVEL . ($level-1), 0, PARAM_INT);
                 /* Level Three  */
-                $levelThree = array_flip(explode('#',optional_param('h_' . MANAGER_COURSE_STRUCTURE_LEVEL . $level, 0, PARAM_INT)));
+                $levelThree = optional_param_array(MANAGER_COURSE_STRUCTURE_LEVEL . $level, 0, PARAM_INT);
 
                 /* Check old selection */
                 if (isset($SESSION->selection)) {
