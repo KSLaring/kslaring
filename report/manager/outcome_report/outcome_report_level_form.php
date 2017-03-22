@@ -98,11 +98,21 @@ class manager_outcome_report_level_form extends moodleform {
         $this->add_action_buttons(true, get_string('create_report', 'report_manager'));
 
         // Hidde selected levels
-        for ($i = 0; $i <= $report_level; $i++) {
-            $form->addElement('text','h' . $i,'','style="display:none;"');
-            $form->setDefault('h' . $i,'0');
-            $form->setType('h' . $i,PARAM_TEXT);
-        }//for_levels
+        $form->addElement('text','h0','','style="display:none;"');
+        $form->setDefault('h0','0');
+        $form->setType('h0',PARAM_TEXT);
+
+        $form->addElement('text','h1','','style="display:none;"');
+        $form->setDefault('h1','0');
+        $form->setType('h1',PARAM_TEXT);
+
+        $form->addElement('text','h2','','style="display:none;"');
+        $form->setDefault('h2','0');
+        $form->setType('h2',PARAM_TEXT);
+
+        $form->addElement('text','h3','','style="display:none;"');
+        $form->setDefault('h3','0');
+        $form->setType('h3',PARAM_TEXT);
     }//definition
 
     /**
