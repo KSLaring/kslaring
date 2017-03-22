@@ -120,16 +120,57 @@ if ($form->is_cancelled()) {
     $_POST = array();
     redirect($return_url);
 }else if($data = $form->get_data()) {
-    /* Get Data */
-    //
+    // Get data
     $data_form = (Array)$data;
 
-    $out .= "Sorry, we are working on it" . "</br>";
-    $out .= "</br></br>";
-    $out .= "Zero:   " . $data_form['h0'] . "</br>";
-    $out .= "One :   " . $data_form['h1'] . "</br>";
-    $out .= "Two:    " . $data_form['h2'] . "</br>";
-    $out .= "Three:  " . $data_form['h3'] . "</br>";
+    // Levels selected
+    $data_form[MANAGER_COURSE_STRUCTURE_LEVEL . '0'] = $data_form['h0'];
+    $data_form[MANAGER_COURSE_STRUCTURE_LEVEL . '1'] = $data_form['h1'];
+    $data_form[MANAGER_COURSE_STRUCTURE_LEVEL . '2'] = $data_form['h2'];
+    $data_form['h3'] = explode(',',$data_form['h3']);
+    $three = array();
+    foreach ($three as $id) {
+        $three[$id] = $id;
+    }
+    
+    // Report data
+    $course_report = course_report::Get_CourseReportLevel($data_form,$myHierarchy,$IsReporter);
+
+    if (isset($data_form[REPORT_MANAGER_JOB_ROLE_LIST]) && $data_form[REPORT_MANAGER_JOB_ROLE_LIST]) {
+        unset($SESSION->job_roles);
+        $SESSION->job_roles = $data_form[REPORT_MANAGER_JOB_ROLE_LIST];
+    }else {
+        unset($SESSION->job_roles);
+    }
+
+    // Keep selection data --> when it returns to the main page
+    $SESSION->selection = array();
+    $SESSION->selection[MANAGER_COURSE_STRUCTURE_LEVEL . '0']   = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL . '0'];
+    $SESSION->selection[MANAGER_COURSE_STRUCTURE_LEVEL . '1']   = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL . '1'];
+    $SESSION->selection[MANAGER_COURSE_STRUCTURE_LEVEL . '2']   = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL . '2'];
+    $SESSION->selection[MANAGER_COURSE_STRUCTURE_LEVEL . '3']   = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL . '3'];
+    $SESSION->selection[REPORT_MANAGER_COURSE_LIST]             = (isset($data_form[REPORT_MANAGER_COURSE_LIST]) ? $data_form[REPORT_MANAGER_COURSE_LIST] : 0);
+
+    if ($course_report) {
+        // Select report (Screen - Excel)
+        switch ($data_form[COURSE_REPORT_FORMAT_LIST]) {
+            case COURSE_REPORT_FORMAT_SCREEN:
+                $out = course_report::Print_CourseReport_Screen($course_report,$data_form[REPORT_MANAGER_COMPLETED_LIST]);
+
+                break;
+            case COURSE_REPORT_FORMAT_SCREEN_EXCEL:
+                course_report::Download_CourseReport($course_report);
+
+                break;
+            default:
+                break;
+        }//switch_report_format
+    }else {
+        // Non data
+        $return  = '<a href="'.$url .'">'. get_string('course_return_to_selection','report_manager') .'</a>';
+        $out     = '</h3>' . get_string('no_data', 'report_manager') . '</h3>';
+        $out    .=  '<br/>' . $return;
+    }//if_outcome_report
 
 }//if_form
 
