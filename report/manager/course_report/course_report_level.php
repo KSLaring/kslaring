@@ -108,32 +108,6 @@ $myHierarchy = CompetenceManager::get_MyHierarchyLevel($USER->id,$site_context,$
 // Show form
 if ($company_id) {
     $data_form = array();
-    if (isset($SESSION->job_roles)) {
-        $data_form[REPORT_MANAGER_JOB_ROLE_LIST]        = $SESSION->job_roles;
-    }else {
-        $data_form[REPORT_MANAGER_JOB_ROLE_LIST]        = null;
-    }
-
-    $data_form['rpt']                               = $report_level;
-    $data_form[COURSE_REPORT_FORMAT_LIST]           = COURSE_REPORT_FORMAT_SCREEN;
-    $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'0'] = $USER->levelZero;
-    $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'1'] = $parentOne;
-    $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'2'] = $parentTwo;
-    $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'3'] = array($company_id => $company_id);
-    $data_form[REPORT_MANAGER_COURSE_LIST]          = $USER->courseReport;
-    $data_form[REPORT_MANAGER_COMPLETED_LIST]       = $completed_option;
-
-    /* Keep selection data --> when it returns to the main page */
-    $SESSION->selection = array();
-    $SESSION->selection[MANAGER_COURSE_STRUCTURE_LEVEL . '0']   = $USER->levelZero;
-    $SESSION->selection[MANAGER_COURSE_STRUCTURE_LEVEL . '1']   = $parentOne;
-    $SESSION->selection[MANAGER_COURSE_STRUCTURE_LEVEL . '2']   = $parentTwo;
-    $SESSION->selection[MANAGER_COURSE_STRUCTURE_LEVEL . '3']   = array($company_id => $company_id);
-    $SESSION->selection[REPORT_MANAGER_COURSE_LIST]             = $USER->courseReport;
-
-    /* Get the data to the report   */
-    $course_report = course_report::Get_CourseReportLevel($data_form,$myHierarchy,$IsReporter);
-    $out = course_report::Print_CourseReport_Screen($course_report,$data_form[REPORT_MANAGER_COMPLETED_LIST]);
 }else {
     // Clean temporary
     course_report::CleanTemporary();
@@ -150,44 +124,13 @@ if ($form->is_cancelled()) {
     //
     $data_form = (Array)$data;
 
-    /* Get the data to the report   */
-    $course_report = course_report::Get_CourseReportLevel($data_form,$myHierarchy,$IsReporter);
+    $out .= "Sorry, we are working on it" . "</br>";
+    $out .= "</br></br>";
+    $out .= "Zero:   " . $data_form['h_0'] . "</br>";
+    $out .= "One :   " . $data_form['h_1'] . "</br>";
+    $out .= "Two:    " . $data_form['h_2'] . "</br>";
+    $out .= "Three:  " . $data_form['h_3'] . "</br>";
 
-    if (isset($data_form[REPORT_MANAGER_JOB_ROLE_LIST]) && $data_form[REPORT_MANAGER_JOB_ROLE_LIST]) {
-        unset($SESSION->job_roles);
-        $SESSION->job_roles = $data_form[REPORT_MANAGER_JOB_ROLE_LIST];
-    }else {
-        unset($SESSION->job_roles);
-    }
-
-    /* Keep selection data --> when it returns to the main page */
-    $SESSION->selection = array();
-    $SESSION->selection[MANAGER_COURSE_STRUCTURE_LEVEL . '0']   = (isset($data_form[MANAGER_COURSE_STRUCTURE_LEVEL . '0']) ? $data_form[MANAGER_COURSE_STRUCTURE_LEVEL . '0'] : 0);
-    $SESSION->selection[MANAGER_COURSE_STRUCTURE_LEVEL . '1']   = (isset($data_form[MANAGER_COURSE_STRUCTURE_LEVEL . '1']) ? $data_form[MANAGER_COURSE_STRUCTURE_LEVEL . '1'] : 0);
-    $SESSION->selection[MANAGER_COURSE_STRUCTURE_LEVEL . '2']   = (isset($data_form[MANAGER_COURSE_STRUCTURE_LEVEL . '2']) ? $data_form[MANAGER_COURSE_STRUCTURE_LEVEL . '2'] : 0);
-    $SESSION->selection[MANAGER_COURSE_STRUCTURE_LEVEL . '3']   = (isset($data_form[MANAGER_COURSE_STRUCTURE_LEVEL . '3']) ? $data_form[MANAGER_COURSE_STRUCTURE_LEVEL . '3'] : 0);
-    $SESSION->selection[REPORT_MANAGER_COURSE_LIST]             = (isset($data_form[REPORT_MANAGER_COURSE_LIST]) ? $data_form[REPORT_MANAGER_COURSE_LIST] : 0);
-
-    if ($course_report) {
-        /* Screen / Excel   */
-        switch ($data_form[COURSE_REPORT_FORMAT_LIST]) {
-            case COURSE_REPORT_FORMAT_SCREEN:
-                $out = course_report::Print_CourseReport_Screen($course_report,$data_form[REPORT_MANAGER_COMPLETED_LIST]);
-
-                break;
-            case COURSE_REPORT_FORMAT_SCREEN_EXCEL:
-                course_report::Download_CourseReport($course_report);
-
-                break;
-            default:
-                break;
-        }//switch_report_format
-    }else {
-        /* Non Data */
-        $return  = '<a href="'.$url .'">'. get_string('course_return_to_selection','report_manager') .'</a>';
-        $out     = '</h3>' . get_string('no_data', 'report_manager') . '</h3>';
-        $out    .=  '<br/>' . $return;
-    }//if_outcome_report
 }//if_form
 
 /* Print Header */
