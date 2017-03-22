@@ -30,13 +30,17 @@ var level_structure = {
     querydelay : 0.5,
 
     /* Level Zero Selector   */
-    levelZero   : Y.one('#id_' + name + '0') || null,
+    levelZero   : Y.one('#id_'  + name + '0') || null,
+    hZero       : Y.one('#id_h_' + name + '0') || null,
     /* Level One Selector   */
-    levelOne    : Y.one('#id_' + name + '1') || null,
+    levelOne    : Y.one('#id_'  + name + '1') || null,
+    hOne        : Y.one('#id_h_' + name + '1') || null,
     /* Level Two Selector   */
-    levelTwo    : Y.one('#id_' + name + '2') || null,
+    levelTwo    : Y.one('#id_'  + name + '2') || null,
+    hTwo        : Y.one('#id_h_' + name + '2') || null,
     /* Level Three Selector */
-    levelThree  : Y.one('#id_' + name + '3') || null,
+    levelThree  : Y.one('#id_'  + name + '3') || null,
+    hThree      : Y.one('#id_h_' + name + '3') || null,
 
     /* Job Roles - Sel  */
     jobRoleLst : Y.one('#id_' + jr_selector),
@@ -74,9 +78,13 @@ var level_structure = {
     },
 
     Activate_LevelOne : function(e) {
+
         if (this.report_level > 0) {
             var parent  = this.levelZero.get('value');
             var level   = 1;
+
+            this.hZero.set('value',parent);
+
             //  Trigger an ajax search after a delay.
             this.cancel_timeout();
             this.timeoutid  = Y.later(this.querydelay * 1000, e, function(obj){obj.send_query(false,parent,level)}, this);
@@ -89,6 +97,9 @@ var level_structure = {
         if (this.report_level > 1) {
             var parent      = this.levelOne.get('value');
             var level       = 2;
+
+            this.hOne.set('value',parent);
+
             //  Trigger an ajax search after a delay.
             this.cancel_timeout();
             this.timeoutid = Y.later(this.querydelay * 1000, e, function(obj){obj.send_query(false,parent,level)}, this);
@@ -101,6 +112,9 @@ var level_structure = {
         if (this.report_level > 2) {
             var parent  = this.levelTwo.get('value');
             var level   = 3;
+
+            this.hTwo.set('value',parent);
+
             //  Trigger an ajax search after a delay.
             this.cancel_timeout();
             this.timeoutid = Y.later(this.querydelay * 1000, e, function(obj){obj.send_query(false,parent,level)}, this);
@@ -266,6 +280,8 @@ var level_structure = {
             });
         }//if_levleThree
 
+
+        this.hThree.set('value',valueThree);
 
         var iotrans = Y.io(M.cfg.wwwroot + '/report/manager/jobrole.php',
             {

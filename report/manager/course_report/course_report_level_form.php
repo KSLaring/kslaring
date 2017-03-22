@@ -88,7 +88,28 @@ class manager_course_report_level_form extends moodleform {
         $form->setDefault('rpt',$report_level);
         $form->setType('rpt',PARAM_INT);
 
+
         $this->add_action_buttons(true, get_string('create_report', 'report_manager'));
+
+        // Levels
+        // Level 0
+        $form->addElement('text','h_' . MANAGER_COURSE_STRUCTURE_LEVEL . '0','','style="display:none"');
+        $form->setType('h_' . MANAGER_COURSE_STRUCTURE_LEVEL . '0',PARAM_INT);
+        $form->setDefault('h_' . MANAGER_COURSE_STRUCTURE_LEVEL . '0',0);
+        // Level 1
+        $form->addElement('text','h_' . MANAGER_COURSE_STRUCTURE_LEVEL . '1','','style="display:none"');
+        $form->setType('h_' . MANAGER_COURSE_STRUCTURE_LEVEL . '1',PARAM_INT);
+        $form->setDefault('h_' . MANAGER_COURSE_STRUCTURE_LEVEL . '1',0);
+        // Level 2
+        $form->addElement('text','h_' . MANAGER_COURSE_STRUCTURE_LEVEL . '2','','style="display:none"');
+        $form->setType('h_' . MANAGER_COURSE_STRUCTURE_LEVEL . '2',PARAM_INT);
+        $form->setDefault('h_' . MANAGER_COURSE_STRUCTURE_LEVEL . '2',0);
+        // Level 3
+        $form->addElement('text','h_' . MANAGER_COURSE_STRUCTURE_LEVEL . '3','','style="display:none"');
+        $form->setType('h_' . MANAGER_COURSE_STRUCTURE_LEVEL . '3',PARAM_INT);
+        $form->setDefault('h_' . MANAGER_COURSE_STRUCTURE_LEVEL . '3',0);
+
+
     }//definition
 
     /**
