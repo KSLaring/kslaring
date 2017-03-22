@@ -684,8 +684,8 @@ class ParticipantsList {
                 $content .= '<a href="'.$csv_url->out().'" class="label_download">'.get_string('csvdownload','local_participants').'</a>';
                 $content .= "</br>";
 
-                // Participants table
-                $content .= html_writer::start_tag('table',array('class' => 'generaltable'));
+                // Participants table //,array('class' => 'generaltable')
+                $content .= html_writer::start_tag('table');
                     // Header
                     $content .= self::add_header_participants_table($sort,$fieldSort);
             
@@ -815,32 +815,40 @@ class ParticipantsList {
         $workplaces = null;
 
         try {
+            // Headers
+            $strFirstname   = get_string('firstname');
+            $strLastname    = get_string('lastname');
+            $strMail        = get_string('email','local_participants');
+            $strMuni        = get_string('header_mu','local_participants');
+            $strSector      = get_string('header_se','local_participants');
+            $strWorkplace   = get_string('header_wk','local_participants');
+
             // Add participants to the table
             foreach ($participantsList as $participant) {
                 $content .= html_writer::start_tag('tr');
                     // Firstname
-                    $content .= html_writer::start_tag('td',array('class' => 'user'));
+                    $content .= html_writer::start_tag('td',array('class' => 'user','scope' => 'row','data-th' => $strFirstname));
                         $content .= $participant->firstname;
                     $content .= html_writer::end_tag('td');
                     // Lastname
-                    $content .= html_writer::start_tag('td',array('class' => 'user'));
+                    $content .= html_writer::start_tag('td',array('class' => 'user','data-th' => $strLastname));
                         $content .= $participant->lastname;
                     $content .= html_writer::end_tag('td');
                     // eMail
-                    $content .= html_writer::start_tag('td',array('class' => 'info'));
+                    $content .= html_writer::start_tag('td',array('class' => 'info','data-th' => $strMail));
                         $content .= $participant->email;
                     $content .= html_writer::end_tag('td');
                     // Municipality
-                    $content .= html_writer::start_tag('td',array('class' => 'muni'));
-                        $content .= $participant->municipality;
+                    $content .= html_writer::start_tag('td',array('class' => 'muni','data-th' => $strMuni));
+                        $content .= ($participant->municipality ? $participant->municipality: ' - ');
                     $content .= html_writer::end_tag('td');
                     // Sector
-                    $content .= html_writer::start_tag('td',array('class' => 'sector'));
-                        $content .= $participant->sector;
+                    $content .= html_writer::start_tag('td',array('class' => 'sector','data-th' => $strSector));
+                        $content .= 'sdfsdfs';($participant->sector ? $participant->sector: ' - ');
                     $content .= html_writer::end_tag('td');
                     // Workplace
-                    $content .= html_writer::start_tag('td',array('class' => 'sector'));
-                        $content .= $participant->workplace;
+                    $content .= html_writer::start_tag('td',array('class' => 'sector','data-th' => $strWorkplace));
+                        $content .= ($participant->workplace ? $participant->workplace : ' - ');
                     $content .= html_writer::end_tag('td');
                 $content .= html_writer::end_tag('tr');
             }//participant_list

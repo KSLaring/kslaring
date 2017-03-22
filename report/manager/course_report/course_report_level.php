@@ -23,6 +23,7 @@ require_once( '../managerlib.php');
 require_once('course_report_level_form.php');
 
 // Params
+global $PAGE,$CFG,$SESSION,$SITE,$USER;
 $report_level           = optional_param('rpt',0,PARAM_INT);
 $company_id             = optional_param('co',0,PARAM_INT);
 $parentTwo              = optional_param('lt',0,PARAM_INT);
@@ -106,12 +107,13 @@ $PAGE->verify_https_required();
 $myHierarchy = CompetenceManager::get_MyHierarchyLevel($USER->id,$site_context,$IsReporter,$report_level);
 
 // Show form
+$SESSION->onlyCompany = array();
 if ($company_id) {
     $data_form = array();
     if (isset($SESSION->job_roles)) {
-        $data_form[REPORT_MANAGER_JOB_ROLE_LIST]        = $SESSION->job_roles;
+        $data_form[REPORT_MANAGER_JOB_ROLE_LIST]    = $SESSION->job_roles;
     }else {
-        $data_form[REPORT_MANAGER_JOB_ROLE_LIST]        = null;
+        $data_form[REPORT_MANAGER_JOB_ROLE_LIST]    = null;
     }
 
     $data_form['rpt']                               = $report_level;
@@ -149,12 +151,18 @@ if ($form->is_cancelled()) {
     // Get data
     $data_form = (Array)$data;
 
-    $out  = "Zero: " . $data_form[MANAGER_COURSE_STRUCTURE_LEVEL . '0'] . "</br>";
-    $out .= "One: " . $data_form[MANAGER_COURSE_STRUCTURE_LEVEL . '1'] . "</br>";
-    $out .= "Two: " . $data_form[MANAGER_COURSE_STRUCTURE_LEVEL . '2'] . "</br>";
-    $out .= "Three: " . $data_form[MANAGER_COURSE_STRUCTURE_LEVEL . '3'] . "</br>";
-
-    /* Get the data to the report   */
+    // Levels selected
+    $data_form[MANAGER_COURSE_STRUCTURE_LEVEL . '0'] = $data_form['h0'];
+    $data_form[MANAGER_COURSE_STRUCTURE_LEVEL . '1'] = $data_form['h1'];
+    $data_form[MANAGER_COURSE_STRUCTURE_LEVEL . '2'] = $data_form['h2'];
+    $data_form['h3'] = explode(',',$data_form['h3']);
+    $three = array();
+    foreach ($three as $id) {
+        $three[$id] = $id;
+    }
+    $data_form[MANAGER_COURSE_STRUCTURE_LEVEL . '3'] = $three;
+    
+    // Report data
     $course_report = course_report::Get_CourseReportLevel($data_form,$myHierarchy,$IsReporter);
 
     if (isset($data_form[REPORT_MANAGER_JOB_ROLE_LIST]) && $data_form[REPORT_MANAGER_JOB_ROLE_LIST]) {
@@ -164,19 +172,19 @@ if ($form->is_cancelled()) {
         unset($SESSION->job_roles);
     }
 
-    /* Keep selection data --> when it returns to the main page */
+    // Keep selection data --> when it returns to the main page
     $SESSION->selection = array();
-    $SESSION->selection[MANAGER_COURSE_STRUCTURE_LEVEL . '0']   = (isset($data_form[MANAGER_COURSE_STRUCTURE_LEVEL . '0']) ? $data_form[MANAGER_COURSE_STRUCTURE_LEVEL . '0'] : 0);
-    $SESSION->selection[MANAGER_COURSE_STRUCTURE_LEVEL . '1']   = (isset($data_form[MANAGER_COURSE_STRUCTURE_LEVEL . '1']) ? $data_form[MANAGER_COURSE_STRUCTURE_LEVEL . '1'] : 0);
-    $SESSION->selection[MANAGER_COURSE_STRUCTURE_LEVEL . '2']   = (isset($data_form[MANAGER_COURSE_STRUCTURE_LEVEL . '2']) ? $data_form[MANAGER_COURSE_STRUCTURE_LEVEL . '2'] : 0);
-    $SESSION->selection[MANAGER_COURSE_STRUCTURE_LEVEL . '3']   = (isset($data_form[MANAGER_COURSE_STRUCTURE_LEVEL . '3']) ? $data_form[MANAGER_COURSE_STRUCTURE_LEVEL . '3'] : 0);
+    $SESSION->selection[MANAGER_COURSE_STRUCTURE_LEVEL . '0']   = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL . '0'];
+    $SESSION->selection[MANAGER_COURSE_STRUCTURE_LEVEL . '1']   = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL . '1'];
+    $SESSION->selection[MANAGER_COURSE_STRUCTURE_LEVEL . '2']   = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL . '2'];
+    $SESSION->selection[MANAGER_COURSE_STRUCTURE_LEVEL . '3']   = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL . '3'];
     $SESSION->selection[REPORT_MANAGER_COURSE_LIST]             = (isset($data_form[REPORT_MANAGER_COURSE_LIST]) ? $data_form[REPORT_MANAGER_COURSE_LIST] : 0);
 
     if ($course_report) {
-        /* Screen / Excel   */
+        // Select report (Screen - Excel)
         switch ($data_form[COURSE_REPORT_FORMAT_LIST]) {
             case COURSE_REPORT_FORMAT_SCREEN:
-                $out .= course_report::Print_CourseReport_Screen($course_report,$data_form[REPORT_MANAGER_COMPLETED_LIST]);
+                $out = course_report::Print_CourseReport_Screen($course_report,$data_form[REPORT_MANAGER_COMPLETED_LIST]);
 
                 break;
             case COURSE_REPORT_FORMAT_SCREEN_EXCEL:
@@ -187,11 +195,12 @@ if ($form->is_cancelled()) {
                 break;
         }//switch_report_format
     }else {
-        /* Non Data */
+        // Non data
         $return  = '<a href="'.$url .'">'. get_string('course_return_to_selection','report_manager') .'</a>';
         $out     = '</h3>' . get_string('no_data', 'report_manager') . '</h3>';
         $out    .=  '<br/>' . $return;
     }//if_outcome_report
+
 }//if_form
 
 /* Print Header */

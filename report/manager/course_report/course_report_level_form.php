@@ -89,6 +89,26 @@ class manager_course_report_level_form extends moodleform {
         $form->setType('rpt',PARAM_INT);
 
         $this->add_action_buttons(true, get_string('create_report', 'report_manager'));
+
+        // Hidde selected levels
+        $form->addElement('text','h0','','style="display:none;"');
+        $form->setType('h0',PARAM_TEXT);
+        
+        $form->addElement('text','h1','','style="display:none;"');
+        $form->setType('h1',PARAM_TEXT);
+
+        $form->addElement('text','h2','','style="display:none;"');
+        $form->setType('h2',PARAM_TEXT);
+
+        $form->addElement('text','h3','','style="display:none;"');
+        $form->setType('h3',PARAM_TEXT);
+
+        if (isset($SESSION->selection)) {
+            $form->setDefault('h0',$SESSION->selection[MANAGER_COURSE_STRUCTURE_LEVEL . '0']);
+            $form->setDefault('h1',$SESSION->selection[MANAGER_COURSE_STRUCTURE_LEVEL . '1']);
+            $form->setDefault('h2',$SESSION->selection[MANAGER_COURSE_STRUCTURE_LEVEL . '2']);
+            $form->setDefault('h3',$SESSION->selection[MANAGER_COURSE_STRUCTURE_LEVEL . '3']);
+        }
     }//definition
 
     /**
@@ -485,7 +505,7 @@ class manager_course_report_level_form extends moodleform {
                 /* Level Two    */
                 $levelTwo   = optional_param(MANAGER_COURSE_STRUCTURE_LEVEL . ($level-1), 0, PARAM_INT);
                 /* Level Three  */
-                $levelThree = (Array)optional_param_array(MANAGER_COURSE_STRUCTURE_LEVEL . $level, 0, PARAM_INT);
+                $levelThree = optional_param_array(MANAGER_COURSE_STRUCTURE_LEVEL . $level, 0,PARAM_INT);
 
                 /* Check old selection */
                 if (isset($SESSION->selection)) {
@@ -534,15 +554,21 @@ class manager_course_report_level_form extends moodleform {
                 }//if_isPublic
 
                 /* Job roles connected with the level */
-                if (!in_array('0',$levelThree)) {
-                    $levelThree = implode(',',$levelThree);
-                    CompetenceManager::GetJobRoles_Hierarchy($options,$level,$levelZero,$levelOne,$levelTwo,$levelThree);
+                if (is_array($levelThree)) {
+                    if (!in_array('0',$levelThree)) {
+                        $levelThree = implode(',',$levelThree);
+                        CompetenceManager::GetJobRoles_Hierarchy($options,$level,$levelZero,$levelOne,$levelTwo,$levelThree);
+                    }else {
+                        CompetenceManager::GetJobRoles_Hierarchy($options,$level-3,$levelZero);
+                        CompetenceManager::GetJobRoles_Hierarchy($options,$level-2,$levelZero,$levelOne);
+                        CompetenceManager::GetJobRoles_Hierarchy($options,$level-1,$levelZero,$levelOne,$levelTwo);
+                    }//if_level_Three
                 }else {
                     CompetenceManager::GetJobRoles_Hierarchy($options,$level-3,$levelZero);
                     CompetenceManager::GetJobRoles_Hierarchy($options,$level-2,$levelZero,$levelOne);
                     CompetenceManager::GetJobRoles_Hierarchy($options,$level-1,$levelZero,$levelOne,$levelTwo);
-                }//if_level_Three
-
+                }
+                
                 break;
         }//switch_level
 
