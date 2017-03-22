@@ -99,7 +99,6 @@ switch ($level) {
 
         /* Job Roles connected with level   */
         if ($levelThree) {
-            $levelThree = str_replace('#',',',$levelThree);
             CompetenceManager::GetJobRoles_Hierarchy($options,$level,$levelZero,$levelOne,$levelTwo,$levelThree);
         }else {
             CompetenceManager::GetJobRoles_Hierarchy($options,$level-3,$levelZero);
