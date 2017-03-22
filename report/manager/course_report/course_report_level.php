@@ -126,10 +126,10 @@ if ($form->is_cancelled()) {
 
     $out .= "Sorry, we are working on it" . "</br>";
     $out .= "</br></br>";
-    $out .= "Zero:   " . $data_form['h_0'] . "</br>";
-    $out .= "One :   " . $data_form['h_1'] . "</br>";
-    $out .= "Two:    " . $data_form['h_2'] . "</br>";
-    $out .= "Three:  " . $data_form['h_3'] . "</br>";
+    $out .= "Zero:   " . $data_form['h0'] . "</br>";
+    $out .= "One :   " . $data_form['h1'] . "</br>";
+    $out .= "Two:    " . $data_form['h2'] . "</br>";
+    $out .= "Three:  " . $data_form['h3'] . "</br>";
 
 }//if_form
 
