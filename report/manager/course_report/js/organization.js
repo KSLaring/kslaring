@@ -74,39 +74,39 @@ var level_structure = {
     },
 
     Activate_LevelOne : function(e) {
-        if (this.report_level > 0) {
+        //if (this.report_level > 0) {
             var parent  = this.levelZero.get('value');
             var level   = 1;
             //  Trigger an ajax search after a delay.
             this.cancel_timeout();
             this.timeoutid  = Y.later(this.querydelay * 1000, e, function(obj){obj.send_query(false,parent,level)}, this);
-        }else {
-            this.Load_JobRoles();
-        }
+        //}else {
+        //    this.Load_JobRoles();
+        //}
     },
 
     Activate_LevelTwo : function(e) {
-        if (this.report_level > 1) {
+        //if (this.report_level > 1) {
             var parent      = this.levelOne.get('value');
             var level       = 2;
             //  Trigger an ajax search after a delay.
             this.cancel_timeout();
             this.timeoutid = Y.later(this.querydelay * 1000, e, function(obj){obj.send_query(false,parent,level)}, this);
-        }else {
-            this.Load_JobRoles();
-        }
+        //}else {
+        //    this.Load_JobRoles();
+        //}
     },
 
     Activate_LevelThree : function(e) {
-        if (this.report_level > 2) {
+        //if (this.report_level > 2) {
             var parent  = this.levelTwo.get('value');
             var level   = 3;
             //  Trigger an ajax search after a delay.
             this.cancel_timeout();
             this.timeoutid = Y.later(this.querydelay * 1000, e, function(obj){obj.send_query(false,parent,level)}, this);
-        }else {
-            this.Load_JobRoles();
-        }
+        //}else {
+        //    this.Load_JobRoles();
+        //}
     },
 
 
