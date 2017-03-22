@@ -142,8 +142,6 @@ switch ($level) {
         break;
 }//switch_level
 
-
-
 /* Get Companies List   */
 if ($parent) {
     $options = CompetenceManager::GetCompanies_LevelList($level,$parent,$myCompanies);

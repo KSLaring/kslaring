@@ -21,6 +21,7 @@ require_once( 'outcomerptlib.php');
 require_once('outcome_report_level_form.php');
 
 // Params
+global $PAGE,$CFG,$SESSION,$SITE,$USER;
 $report_level           = optional_param('rpt',0, PARAM_INT);
 $company_id             = optional_param('co',0,PARAM_INT);
 $parentTwo              = optional_param('lt',0,PARAM_INT);
@@ -133,6 +134,7 @@ if ($company_id) {
     outcome_report::CleanTemporary();
 }
 
+$SESSION->onlyCompany = array();
 $form = new manager_outcome_report_level_form(null,array($report_level,$my_hierarchy,$IsReporter ));
 if ($form->is_cancelled()) {
     unset($SESSION->selection);
@@ -140,17 +142,28 @@ if ($form->is_cancelled()) {
     $_POST = array();
     redirect($return_url);
 }else if($data = $form->get_data()) {
-    /* Get Data */
+    // Get data
     $data_form = (Array)$data;
 
+    // Levels selected
+    $data_form[MANAGER_COURSE_STRUCTURE_LEVEL . '0'] = $data_form['h0'];
+    $data_form[MANAGER_COURSE_STRUCTURE_LEVEL . '1'] = $data_form['h1'];
+    $data_form[MANAGER_COURSE_STRUCTURE_LEVEL . '2'] = $data_form['h2'];
+    $data_form['h3'] = explode(',',$data_form['h3']);
+    $three = array();
+    foreach ($three as $id) {
+        $three[$id] = $id;
+    }
+    $data_form[MANAGER_COURSE_STRUCTURE_LEVEL . '3'] = $three;
+    
     $outcome_report = outcome_report::Get_OutcomeReportLevel($data_form,$my_hierarchy,$IsReporter);
 
     /* Keep selection data --> when it returns to the main page */
     $SESSION->selection = array();
-    $SESSION->selection[MANAGER_OUTCOME_STRUCTURE_LEVEL . '0']   = (isset($data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL . '0']) ? $data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL . '0'] : 0);
-    $SESSION->selection[MANAGER_OUTCOME_STRUCTURE_LEVEL . '1']   = (isset($data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL . '1']) ? $data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL . '1'] : 0);
-    $SESSION->selection[MANAGER_OUTCOME_STRUCTURE_LEVEL . '2']   = (isset($data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL . '2']) ? $data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL . '2'] : 0);
-    $SESSION->selection[MANAGER_OUTCOME_STRUCTURE_LEVEL . '3']   = (isset($data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL . '3']) ? $data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL . '3'] : 0);
+    $SESSION->selection[MANAGER_OUTCOME_STRUCTURE_LEVEL . '0']   = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL . '0'];
+    $SESSION->selection[MANAGER_OUTCOME_STRUCTURE_LEVEL . '1']   = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL . '1'];
+    $SESSION->selection[MANAGER_OUTCOME_STRUCTURE_LEVEL . '2']   = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL . '2'];
+    $SESSION->selection[MANAGER_OUTCOME_STRUCTURE_LEVEL . '3']   = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL . '3'];
     $SESSION->selection[REPORT_MANAGER_OUTCOME_LIST]             = (isset($data_form[REPORT_MANAGER_OUTCOME_LIST]) ? $data_form[REPORT_MANAGER_OUTCOME_LIST] : 0);
 
     if ($outcome_report) {

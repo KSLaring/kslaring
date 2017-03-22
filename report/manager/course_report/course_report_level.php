@@ -23,7 +23,7 @@ require_once( '../managerlib.php');
 require_once('course_report_level_form.php');
 
 // Params
-global $PAGE,$CFG,$SESSION;
+global $PAGE,$CFG,$SESSION,$SITE,$USER;
 $report_level           = optional_param('rpt',0,PARAM_INT);
 $company_id             = optional_param('co',0,PARAM_INT);
 $parentTwo              = optional_param('lt',0,PARAM_INT);
@@ -111,9 +111,9 @@ $SESSION->onlyCompany = array();
 if ($company_id) {
     $data_form = array();
     if (isset($SESSION->job_roles)) {
-        $data_form[REPORT_MANAGER_JOB_ROLE_LIST]        = $SESSION->job_roles;
+        $data_form[REPORT_MANAGER_JOB_ROLE_LIST]    = $SESSION->job_roles;
     }else {
-        $data_form[REPORT_MANAGER_JOB_ROLE_LIST]        = null;
+        $data_form[REPORT_MANAGER_JOB_ROLE_LIST]    = null;
     }
 
     $data_form['rpt']                               = $report_level;

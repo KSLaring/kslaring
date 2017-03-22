@@ -96,6 +96,13 @@ class manager_outcome_report_level_form extends moodleform {
         $form->setType('rpt',PARAM_INT);
 
         $this->add_action_buttons(true, get_string('create_report', 'report_manager'));
+
+        // Hidde selected levels
+        for ($i = 0; $i <= $report_level; $i++) {
+            $form->addElement('text','h' . MANAGER_OUTCOME_STRUCTURE_LEVEL . $i,'','style="display:none;"');
+            $form->setDefault('h' . MANAGER_OUTCOME_STRUCTURE_LEVEL . $i,'0');
+            $form->setType('h' . MANAGER_OUTCOME_STRUCTURE_LEVEL . $i,PARAM_TEXT);
+        }//for_levels
     }//definition
 
     /**
@@ -538,14 +545,20 @@ class manager_outcome_report_level_form extends moodleform {
                     CompetenceManager::GetJobRoles_Generics($options);
                 }//if_isPublic
 
-                if (!in_array('0',$levelThree)) {
-                    $levelThree = implode(',',$levelThree);
-                    CompetenceManager::GetJobRoles_Hierarchy($options,$level,$levelZero,$levelOne,$levelTwo,$levelThree);
+                if (is_array($levelThree)) {
+                    if (!in_array('0',$levelThree)) {
+                        $levelThree = implode(',',$levelThree);
+                        CompetenceManager::GetJobRoles_Hierarchy($options,$level,$levelZero,$levelOne,$levelTwo,$levelThree);
+                    }else {
+                        CompetenceManager::GetJobRoles_Hierarchy($options,$level-3,$levelZero);
+                        CompetenceManager::GetJobRoles_Hierarchy($options,$level-2,$levelZero,$levelOne);
+                        CompetenceManager::GetJobRoles_Hierarchy($options,$level-1,$levelZero,$levelOne,$levelTwo);
+                    }//if_level_Three
                 }else {
                     CompetenceManager::GetJobRoles_Hierarchy($options,$level-3,$levelZero);
                     CompetenceManager::GetJobRoles_Hierarchy($options,$level-2,$levelZero,$levelOne);
                     CompetenceManager::GetJobRoles_Hierarchy($options,$level-1,$levelZero,$levelOne,$levelTwo);
-                }//if_level_Three
+                }
 
                 break;
         }//switch_level
