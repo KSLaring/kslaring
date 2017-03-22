@@ -78,10 +78,10 @@ var level_structure = {
     },
 
     Activate_LevelOne : function(e) {
-        this.hZero   = this.levelZero.get('value');
-        this.hOne    = 0;
-        this.hTwo    = 0;
-        this.hThree  = 0;
+        this.hZero.set('value',this.levelZero.get('value'));
+        this.hOne.set('value',0);
+        this.hTwo.set('value',0);
+        this.hThree.set('value',0);
         if (this.report_level > 0) {
             var parent  = this.levelZero.get('value');
             var level   = 1;
@@ -94,9 +94,9 @@ var level_structure = {
     },
 
     Activate_LevelTwo : function(e) {
-        this.hOne    = this.levelOne.get('value');
-        this.hTwo    = 0;
-        this.hThree  = 0;
+        this.hOne.set('value',this.levelOne.get('value'));
+        this.hTwo.set('value',0);
+        this.hThree.set('value',0);
         if (this.report_level > 1) {
             var parent      = this.levelOne.get('value');
             var level       = 2;
@@ -109,8 +109,8 @@ var level_structure = {
     },
 
     Activate_LevelThree : function(e) {
-        this.hTwo    = this.levelTwo.get('value');
-        this.hThree  = 0;
+        this.hTwo.set('value',this.levelTwo.get('value'));
+        this.hThree.set('value',0);
         if (this.report_level > 2) {
             var parent  = this.levelTwo.get('value');
             var level   = 3;
@@ -278,7 +278,7 @@ var level_structure = {
             });
         }//if_levelThree
 
-        this.hThree = valueThree;
+        this.hThree.set('value',valueThree);
         
         var iotrans = Y.io(M.cfg.wwwroot + '/report/manager/jobrole.php',
             {
