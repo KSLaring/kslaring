@@ -147,7 +147,7 @@ class course_report {
                 $course_report->completed_before   = $data_form[REPORT_MANAGER_COMPLETED_LIST];
 
                 // Get companies connected with user by level
-                if (($IsReporter) && !is_siteadmin($USER->id)) {
+                if ($IsReporter) {
                     $inOne   = $my_hierarchy->competence[$data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'0']]->levelOne;
                     $inTwo   = $my_hierarchy->competence[$data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'0']]->levelTwo;
                     $inThree = $my_hierarchy->competence[$data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'0']]->levelThree;
