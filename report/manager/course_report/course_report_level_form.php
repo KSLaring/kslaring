@@ -90,25 +90,15 @@ class manager_course_report_level_form extends moodleform {
 
         $this->add_action_buttons(true, get_string('create_report', 'report_manager'));
 
-        // Hidde selected levels
-        $form->addElement('text','h0','','style="display:none;"');
-        $form->setType('h0',PARAM_TEXT);
-        
-        $form->addElement('text','h1','','style="display:none;"');
-        $form->setType('h1',PARAM_TEXT);
-
-        $form->addElement('text','h2','','style="display:none;"');
-        $form->setType('h2',PARAM_TEXT);
-
-        $form->addElement('text','h3','','style="display:none;"');
-        $form->setType('h3',PARAM_TEXT);
-
-        if (isset($SESSION->selection)) {
-            $form->setDefault('h0',$SESSION->selection[MANAGER_COURSE_STRUCTURE_LEVEL . '0']);
-            $form->setDefault('h1',$SESSION->selection[MANAGER_COURSE_STRUCTURE_LEVEL . '1']);
-            $form->setDefault('h2',$SESSION->selection[MANAGER_COURSE_STRUCTURE_LEVEL . '2']);
-            $form->setDefault('h3',$SESSION->selection[MANAGER_COURSE_STRUCTURE_LEVEL . '3']);
-        }
+        // Add selected levels
+        // Level Zero
+        self::add_hide_selection($form,0);
+        // Level one
+        self::add_hide_selection($form,1);
+        // Level two
+        self::add_hide_selection($form,2);
+        // Level three
+        self::add_hide_selection($form,3);
     }//definition
 
     /**
@@ -221,7 +211,7 @@ class manager_course_report_level_form extends moodleform {
         $parent         = null;
 
         /* Get My Companies by Level    */
-        if (($IsReporter) && (!is_siteadmin($USER->id))) {
+        if ($IsReporter) {
             $levelZero  = array_keys($myHierarchy->competence);
 
             /* Get the right companies based on the report level access */
@@ -367,6 +357,40 @@ class manager_course_report_level_form extends moodleform {
         $form->setDefault(MANAGER_COURSE_STRUCTURE_LEVEL . $level,$default);
     }//setLevelDefault
 
+    /**
+     * Description
+     * Add hide selectors
+     * 
+     * @param       $form
+     * @param       $level
+     * 
+     * @creationDate    23/03/2017
+     * @author          eFaktor     (fbv)
+     */
+    function add_hide_selection(&$form,$level) {
+        /* Variables */
+        global $SESSION;
+        $default = null;
+        
+        // Hidde selected levels
+        $form->addElement('text','h' . $level,'','style="display:none;"');
+        $form->setType('h' . $level,PARAM_TEXT);
+        
+        // Get default value
+        if (isset($SESSION->selection)) {
+            $default = $SESSION->selection[MANAGER_COURSE_STRUCTURE_LEVEL . $level];
+        }else if (isset($SESSION->onlyCompany)) {
+            if (isset($SESSION->onlyCompany[$level])) {
+                $default = $SESSION->onlyCompany[$level];    
+            }
+        }else {
+            $default = 0;
+        }
+
+        // Set default value
+        $form->setDefault('h' . $level,$default);
+    }//add_hide_selection
+
 
     /**
      * @param           $form
@@ -505,7 +529,7 @@ class manager_course_report_level_form extends moodleform {
                 /* Level Two    */
                 $levelTwo   = optional_param(MANAGER_COURSE_STRUCTURE_LEVEL . ($level-1), 0, PARAM_INT);
                 /* Level Three  */
-                $levelThree = optional_param_array(MANAGER_COURSE_STRUCTURE_LEVEL . $level, 0,PARAM_INT);
+                $levelThree = (Array)optional_param_array(MANAGER_COURSE_STRUCTURE_LEVEL . $level, 0,PARAM_INT);
 
                 /* Check old selection */
                 if (isset($SESSION->selection)) {

@@ -161,6 +161,7 @@ if ($form->is_cancelled()) {
         $three[$id] = $id;
     }
     $data_form[MANAGER_COURSE_STRUCTURE_LEVEL . '3'] = $three;
+    $data_form['h3']                                 = $three;
     
     // Report data
     $course_report = course_report::Get_CourseReportLevel($data_form,$myHierarchy,$IsReporter);

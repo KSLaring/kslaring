@@ -210,7 +210,7 @@ class outcome_report {
                 $outcome_report->zero_name          = CompetenceManager::GetCompany_Name($data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'0']);
 
                 // Get companies connected with by level
-                if (($IsReporter) && !is_siteadmin($USER->id)) {
+                if ($IsReporter) {
                     $inOne   = $my_hierarchy->competence[$data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'0']]->levelOne;
                     $inTwo   = $my_hierarchy->competence[$data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'0']]->levelTwo;
                     $inThree = $my_hierarchy->competence[$data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'0']]->levelThree;

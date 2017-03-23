@@ -105,7 +105,7 @@ $data['clean'] = $toClean;
 /* My Hierarchy */
 $IsReporter = CompetenceManager::IsReporter($USER->id);
 $myHierarchy = CompetenceManager::get_MyHierarchyLevel($USER->id,$context,$IsReporter,$reportLevel);
-if ($IsReporter && (!is_siteadmin($USER->id))) {
+if ($IsReporter) {
     $myLevelZero  = array_keys($myHierarchy->competence);
     $myLevelOne   = $myHierarchy->competence[$levelZero]->levelOne;
     $myLevelTwo   = $myHierarchy->competence[$levelZero]->levelTwo;
