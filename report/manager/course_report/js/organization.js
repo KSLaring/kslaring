@@ -75,6 +75,29 @@ var level_structure = {
         if (this.levelThree) {
             this.levelThree.on('change', this.Load_JobRoles, this);
         }
+
+        this.ini_default_values();
+    },
+
+    ini_default_values: function (e) {
+        var valueThree = 0;
+
+        this.hZero.set('value',this.levelZero.get('value'));
+        this.hOne.set('value',this.levelOne.get('value'));
+        this.hTwo.set('value',this.levelTwo.get('value'));
+        if (this.levelThree) {
+            this.levelThree.all('option').each(function(option){
+                if (option.get('selected') && (option.get('value') != 0)) {
+                    if (valueThree == 0) {
+                        valueThree = option.get('value');
+                    }else {
+                        valueThree = valueThree + ',' + option.get('value');
+                    }
+                }//seleted
+            });
+        }//if_levleThree
+
+        this.hThree.set('value',valueThree);
     },
 
     Activate_LevelOne : function(e) {

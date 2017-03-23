@@ -379,17 +379,21 @@ class manager_outcome_report_level_form extends moodleform {
 
         // Hidde selected levels
         $form->addElement('text','h' . $level,'','style="display:none;"');
-        $form->setType('h0',PARAM_TEXT);
+        $form->setType('h' . $level,PARAM_TEXT);
 
         // Get default value
         if (isset($SESSION->selection)) {
             $default = $SESSION->selection[MANAGER_OUTCOME_STRUCTURE_LEVEL . $level];
         }else if (isset($SESSION->onlyCompany)) {
-            $default = $SESSION->onlyCompany[$level];
+            if (isset($SESSION->onlyCompany[$level])) {
+                $default = $SESSION->onlyCompany[$level];
+            }
+        }else {
+            $default = 0;
         }
 
         // Set default value
-        $form->setDefault(MANAGER_OUTCOME_STRUCTURE_LEVEL . $level,$default);
+        $form->setDefault('h' . $level,$default);
     }//add_hide_selection
 
     /**

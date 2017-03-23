@@ -374,17 +374,21 @@ class manager_course_report_level_form extends moodleform {
         
         // Hidde selected levels
         $form->addElement('text','h' . $level,'','style="display:none;"');
-        $form->setType('h0',PARAM_TEXT);
+        $form->setType('h' . $level,PARAM_TEXT);
         
         // Get default value
         if (isset($SESSION->selection)) {
             $default = $SESSION->selection[MANAGER_COURSE_STRUCTURE_LEVEL . $level];
         }else if (isset($SESSION->onlyCompany)) {
-            $default = $SESSION->onlyCompany[$level];
+            if (isset($SESSION->onlyCompany[$level])) {
+                $default = $SESSION->onlyCompany[$level];    
+            }
+        }else {
+            $default = 0;
         }
 
         // Set default value
-        $form->setDefault(MANAGER_COURSE_STRUCTURE_LEVEL . $level,$default);
+        $form->setDefault('h' . $level,$default);
     }//add_hide_selection
 
 
@@ -525,7 +529,7 @@ class manager_course_report_level_form extends moodleform {
                 /* Level Two    */
                 $levelTwo   = optional_param(MANAGER_COURSE_STRUCTURE_LEVEL . ($level-1), 0, PARAM_INT);
                 /* Level Three  */
-                $levelThree = optional_param_array(MANAGER_COURSE_STRUCTURE_LEVEL . $level, 0,PARAM_INT);
+                $levelThree = (Array)optional_param_array(MANAGER_COURSE_STRUCTURE_LEVEL . $level, 0,PARAM_INT);
 
                 /* Check old selection */
                 if (isset($SESSION->selection)) {
