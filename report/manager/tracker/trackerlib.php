@@ -205,6 +205,7 @@ class TrackerManager {
     public static function unwait_from_course($courseId,$userId) {
         /* Variables */
         global $DB;
+        $dbMan  = null;
         $trans  = null;
         $sql    = null;
         $params = null;
@@ -216,14 +217,17 @@ class TrackerManager {
         $trans = $DB->start_delegated_transaction();
 
         try {
-            // Search Criteria
-            $params = array();
-            $params['course']   = $courseId;
-            $params['user']     = $userId;
-            $params['queue']    = '99999';
+            $dbMan = $DB->get_manager();
 
-            // SQL Instruction
-            $sql = " SELECT	      ewq.id
+            if ($dbMan->table_exists('enrol_waitinglist_queue')) {
+                // Search Criteria
+                $params = array();
+                $params['course']   = $courseId;
+                $params['user']     = $userId;
+                $params['queue']    = '99999';
+
+                // SQL Instruction
+                $sql = " SELECT	      ewq.id
                      FROM		  {enrol_waitinglist_queue}	ewq
                         LEFT JOIN {user_enrolments}			ue 	ON 	ue.enrolid 	= ewq.waitinglistid
                                                                 AND	ue.userid 	= ewq.userid
@@ -231,16 +235,17 @@ class TrackerManager {
                         AND	ewq.courseid 	 = :course
                         AND ewq.queueno 	!= :queue
                         AND ue.id IS NULL ";
-            
-            // Execute
-            $rdo = $DB->get_record_sql($sql,$params);
-            if ($rdo) {
-                // Deleted Instance
-                $DB->delete_records('enrol_waitinglist_queue',array('id' => $rdo->id));
-                $exit = true;
-            }else {
-                $exit = false;
-            }//if_rdo
+
+                // Execute
+                $rdo = $DB->get_record_sql($sql,$params);
+                if ($rdo) {
+                    // Deleted Instance
+                    $DB->delete_records('enrol_waitinglist_queue',array('id' => $rdo->id));
+                    $exit = true;
+                }else {
+                    $exit = false;
+                }//if_rdo
+            }//if_table_exist
 
             // Commit
             $trans->allow_commit();
@@ -1011,7 +1016,9 @@ class TrackerManager {
              * Get courses connected where user is not enrolled,
              * but the user is in the waiting list
              */
-            $inWaitList = self::get_tracker_waitinglist($user_id);
+            if ($dbMan->table_exists('enrol_waitinglist_queue')) {
+                $inWaitList = self::get_tracker_waitinglist($user_id);
+            }
 
             return array($completed,$not_completed,$inWaitList);
         }catch (Exception $ex) {
@@ -1111,8 +1118,21 @@ class TrackerManager {
         $context        = context_course::instance($courseId);
         $unEnrol        = true;
         $time           = null;
+        $ue             = null;
+        $sql            = null;
+        $rdo            = null;
 
         try {
+            // User enrolment instance
+            $sql = " SELECT	  ue.*
+                     FROM	  {enrol}				e
+                        JOIN  {user_enrolments}	    ue	ON ue.enrolid = e.id
+                                                        AND ue.userid = :user
+                     WHERE  e.courseid = :course
+                        AND e.status = 0 ";
+
+            $rdo = $DB->get_records_sql($sql,array('user' => $user->id,'course' => $courseId));
+
             // Local time
             $time = time();
 
@@ -1139,11 +1159,15 @@ class TrackerManager {
                         $unEnrol = $unEnrol && true;
                     }//if_unEnrolDate
                 }else {
-                    if ($plugin->allow_unenrol_user($instance,$user) && has_capability($capability, $context)) {
+                    if ($rdo) {
+                        foreach ($rdo as $ue) {
+                            if ($plugin->allow_unenrol_user($instance,$ue) && has_capability($capability, $context)) {
                         $unEnrol  = $unEnrol && true;
                     }else {
                         $unEnrol = false;
                     }
+                        }//for_rdo
+                    }//if_rdo
                 }//if_waitinglist_self
             }//for
 
