@@ -424,7 +424,7 @@ input#id_remove_all {
 }
 #fgroup_id_grp_XDays fieldset.felement.fgroup span,
 #fgroup_id_grp_DateToSend fieldset.felement.fgroup span,
-#fgroup_id_grp_AfterEnrol fieldset.felement.fgroup span, {
+#fgroup_id_grp_AfterEnrol fieldset.felement.fgroup span {
     margin-right: 10px;
 }
 

@@ -16,3 +16,4 @@ $plugin->version    = 2017032100;                   /* The current plugin versio
 //$plugin->requires = 2012061700;                   /* Requires this Moodle version                   */
 $plugin->component  = 'local_microlearning';        /* Full name of the plugin (used for diagnostics) */
 //$plugin->cron       =  14400;                     // Cron interval 1 day. //60; //(300 secs - 5 min)
+

@@ -715,30 +715,37 @@ class Invoices {
     public static function add_invoice_user_content($invoices_lst) {
         /* Variables    */
         $body = ' ';
+        $str_name       = get_string('rpt_name','enrol_invoice');
+        $str_place      = get_string('rpt_work','enrol_invoice');
+        $str_mail       = get_string('rpt_mail','enrol_invoice');
+        $str_detail     = get_string('rpt_details','enrol_invoice');
+        $str_seats      = get_string('rpt_seats','enrol_invoice');
+        $str_resource   = get_string('rpt_resource','enrol_invoice');
+        $str_completed  = get_string('rpt_completed','enrol_invoice');
 
         foreach($invoices_lst as $id=>$invoice) {
             $body .= html_writer::start_tag('tr');
                 // user name
-                $body .= html_writer::start_tag('td',array('class' => 'user'));
+                $body .= html_writer::start_tag('td',array('class' => 'user','data-th' => $str_name));
                     $url_user = new moodle_url('/user/profile.php',array('id' => $id));
                     $body .= '<a href="' . $url_user . '">' . $invoice->name . '</a>';
                 $body .= html_writer::end_tag('td');
                 // workplace
-                $body .= html_writer::start_tag('td',array('class' => 'info'));
+                $body .= html_writer::start_tag('td',array('class' => 'info','data-th' => $str_place));
                     if ($invoice->arbeidssted) {
                         $body .= $invoice->municipality . '/' . $invoice->sector . '/' . $invoice->arbeidssted;
                     }//if_arbeidssted
                 $body .= html_writer::end_tag('td');
                 // Mail
-                $body .= html_writer::start_tag('td',array('class' => 'email'));
+                $body .= html_writer::start_tag('td',array('class' => 'email','data-th' => $str_mail));
                     $body .= $invoice->email;
                 $body .= html_writer::end_tag('td');
                 // Seats
-                $body .= html_writer::start_tag('td',array('class' => 'seats'));
+                $body .= html_writer::start_tag('td',array('class' => 'seats','data-th' => $str_seats));
                     $body .= $invoice->seats;
                 $body .= html_writer::end_tag('td');
                 // Details
-                $body .= html_writer::start_tag('td',array('class' => 'type'));
+                $body .= html_writer::start_tag('td',array('class' => 'type','data-th' => $str_detail));
                     switch ($invoice->type) {
                         case 'ACCOUNT':
                             if ($invoice->respo && $invoice->service) {
@@ -762,11 +769,11 @@ class Invoices {
                     }//switch_type
                 $body .= html_writer::end_tag('td');
                 // Resource number
-                $body .= html_writer::start_tag('td',array('class' => 'type'));
+                $body .= html_writer::start_tag('td',array('class' => 'type','data-th' => $str_resource));
                     $body .= $invoice->resource_number;
                 $body .= html_writer::end_tag('td');
                 // Completed
-                $body .= html_writer::start_tag('td',array('class' => 'seats'));
+                $body .= html_writer::start_tag('td',array('class' => 'seats','data-th' => $str_completed));
                     if ($invoice->completed) {
                         $body .= get_string('yes');
                     }else {
