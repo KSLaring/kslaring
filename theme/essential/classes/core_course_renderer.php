@@ -25,6 +25,8 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+defined('MOODLE_INTERNAL') || die;
+
 class theme_essential_core_course_renderer extends core_course_renderer {
     protected $enablecategoryicon;
 
@@ -34,7 +36,7 @@ class theme_essential_core_course_renderer extends core_course_renderer {
         if (empty($theme)) {
             $theme = theme_config::load('essential');
         }
-        $this->enablecategoryicon = (!empty($theme->settings->enablecategoryicon)) ? $theme->settings->enablecategoryicon : false;
+        $this->enablecategoryicon = \theme_essential\toolbox::get_setting('enablecategoryicon');
     }
 
     /**

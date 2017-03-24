@@ -949,9 +949,8 @@ for ($i = 35; $i < 101; $i++) {
 }
 
 $from85to110percent = array();
-for ($i = 75; $i < 111; $i += 5) {
-    $from75to130percent[$i . '%'] = $i . '%';
-
+for ($i = 85; $i < 111; $i++) {
+    $from85to110percent[$i . '%'] = $i . '%';
 }
 
 

@@ -24,6 +24,8 @@
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+defined('MOODLE_INTERNAL') || die;
+
 /* Default globals */
 global $CFG, $PAGE, $USER, $SITE, $COURSE;
 
@@ -49,10 +51,13 @@ if (\theme_essential\toolbox::get_setting('enablealternativethemecolors1') ||
 $devicetype = core_useragent::get_device_type(); // In /lib/classes/useragent.php.
 if ($devicetype == "mobile") {
     $bodyclasses[] = 'mobiledevice';
+    $tablet = false;
 } else if ($devicetype == "tablet") {
     $bodyclasses[] = 'tabletdevice';
+    $tablet = true;
 } else {
     $bodyclasses[] = 'desktopdevice';
+    $tablet = false;
 }
 
 switch (\theme_essential\toolbox::get_setting('pagewidth')) {
@@ -80,7 +85,11 @@ if (($PAGE->pagelayout == 'course') && (get_config('core', 'modeditingmenu'))) {
     $bodyclasses[] = 'modeditingmenu';
 }
 
-$regionbsid = 'region-bs-main-and-pre';
+if (($PAGE->pagelayout == 'login') && (\theme_essential\toolbox::get_setting('loginbackground'))) {
+    $bodyclasses[] = 'loginbackground';
+}
+
+$regionbsid = 'main-and-pre';
 $left = true;
 if (right_to_left()) {
     $left = false;
@@ -126,46 +135,6 @@ if ($hasboringlayout) {
 // Floating submit buttons.
 if (\theme_essential\toolbox::get_setting('floatingsubmitbuttons')) {
     $bodyclasses[] = 'floatingsubmit';
-}
-
-// Report Page Title.
-function essential_report_page_has_title() {
-    global $PAGE;
-    $hastitle = true;
-
-    switch ($PAGE->pagetype) {
-        case 'grade-report-overview-index':
-            $hastitle = false;
-            break;
-        default:
-            break;
-    }
-
-    return $hastitle;
-}
-
-// Page Footer Region.
-function essential_has_footer_region() {
-    global $PAGE;
-    $hasregion = false;
-
-    switch ($PAGE->pagetype) {
-        case 'admin-plugins':
-        case 'course-management':
-        case 'mod-quiz-edit':
-            $hasregion = true;
-            break;
-        case 'mod-assign-view':
-            // Only apply to 'grading' page.
-            if (optional_param('action', '', PARAM_TEXT) == 'grading') {
-                $hasregion = true;
-            }
-            break;
-        default:
-            break;
-    }
-
-    return $hasregion;
 }
 
 // Footer.

@@ -92,7 +92,7 @@ click here to sponsor.
 </ul>
 </p>
 <h3>Customisation</h3>
-<p>If you like this theme and would like me to customise it, transpose functionality to another theme, build a new theme from scratch or create a child theme then I offer competitive rates.  Please contact me via \'www.gjbarnard.co.uk/contact/\' or \'gjbarnard at gmail dot com\' or \'about.me/gjbarnard\' to discuss your requirements.</p>
+<p>If you like this theme and would like me to customise it, transpose functionality to another theme, build a new theme from scratch or create a child theme then I offer competitive rates.  Please contact me via \'http://moodle.org/user/profile.php?id=442195\' to discuss your requirements.</p>
 </div></div>';
 
 // General.
@@ -129,6 +129,17 @@ $string['displaybeforelogin'] = 'Show before login only';
 $string['displayafterlogin'] = 'Show after login only';
 $string['dontdisplay'] = 'Never show';
 
+// Regions.
+$string['region-side-post'] = 'Right';
+$string['region-side-pre'] = 'Left';
+$string['region-header'] = 'Header';
+$string['region-home'] = 'Home';
+$string['region-page-top'] = 'Page top';
+$string['region-footer-left'] = 'Footer (Left)';
+$string['region-footer-middle'] = 'Footer (Middle)';
+$string['region-footer-right'] = 'Footer (Right)';
+$string['region-hidden-dock'] = 'Hidden from users';
+
 // Sponsor.
 $string['sponsor_title'] = 'Sponsor Essential';
 $string['sponsor_desc'] = 'Please sponsor via PayPal by contacting me via my \'';
@@ -152,12 +163,17 @@ $string['pagebackground'] = 'Page background image';
 $string['pagebackgrounddesc'] = 'Upload your own background image.  Select the style of the image below.';
 $string['pagebackgroundstyle'] = 'Page background style';
 $string['pagebackgroundstyledesc'] = 'Select the style for the uploaded image.';
+$string['stylecover'] = 'Cover';
 $string['stylefixed'] = 'Fixed';
-$string['styletiled'] = 'Tiled';
 $string['stylestretch'] = 'Stretch';
+$string['styletiled'] = 'Tiled';
 
-$string['customcss'] = 'Custom CSS';
-$string['customcssdesc'] = 'Whatever CSS rules you add to this text area will be reflected in every page, making for easier customisation of this theme.';
+$string['pagetopblocks'] = 'Enable additional page \'Page top\' blocks';
+$string['pagetopblocksdesc'] = 'If enabled this will display an additional block location beside the side blocks and above the content area on all pages except the \'Front page\' which has its own setting.  Note: The number of blocks per row depends on the setting \'pagetopblocksperrow\'.';
+$string['pagetopblocksperrow'] = 'Page top blocks per row';
+$string['pagetopblocksperrowdesc'] = 'State up to how many blocks per row between {$a->lower} and {$a->upper} for pages with \'Page top blocks\'.  Current pages are: Course, Course Category, Dashboard, My Public and Print.';
+$string['pagebottomblocksperrow'] = 'Page bottom blocks per row';
+$string['pagebottomblocksperrowdesc'] = 'State up to how many blocks per row between {$a->lower} and {$a->upper} for pages with \'Page bottom blocks\'.  Current pages are: Admin, Course management, Grading and Quiz edit.';
 
 $string['logo'] = 'Logo';
 $string['logodesc'] = 'Please upload your custom logo here if you want to add it to the header.<br>The image should be the same width and height as the \'Logo width\' and \'Logo height\' settings below.<br>If you upload a logo it will replace the standard icon and name that was displayed by default.';
@@ -171,6 +187,8 @@ $string['logoheightdesc'] = 'The height of the logo image.  This can be specifie
 $string['logodimerror'] = ' is invalid.  Please state \'px\' or \'em\' immediately after the unit value and nothing before the unit value.';
 
 $string['credit'] = 'The {$a->name} theme for Moodle is developed by ';
+$string['download'] = 'Go to the download page';
+$string['aboutme'] = 'About me';
 
 $string['profilebarcustomtitle'] = 'Profile bar custom block title';
 $string['profilebarcustomtitledesc'] = 'Title for custom profile bar block.';
@@ -178,8 +196,14 @@ $string['profilebarcustomtitledesc'] = 'Title for custom profile bar block.';
 $string['contactinfo'] = 'Contact information';
 $string['contactinfodesc'] = 'Enter your contact information';
 
+$string['userimageborderradius'] = 'User picture border radius';
+$string['userimageborderradiusdesc'] = 'Specify the border radius between {$a->lower} and {$a->upper} pixels of the user picture throughout the site execept the header which uses the setting \'usermenuuserimageborderradius\'.';
+
 $string['favicon'] = 'Custom favicon';
 $string['favicondesc'] = 'Upload your own favicon.  It should be an .ico file.';
+
+$string['customcss'] = 'Custom CSS';
+$string['customcssdesc'] = 'Whatever CSS rules you add to this text area will be reflected in every page, making for easier customisation of this theme.';
 
 // Courses menu.
 $string['mycoursesinfo'] = 'Courses menu';
@@ -188,6 +212,8 @@ $string['displaymycourses'] = 'Display courses';
 $string['displaymycoursesdesc'] = 'Display enrolled courses for users on the \'Navbar\'.';
 $string['displayhiddenmycourses'] = 'Display hidden courses';
 $string['displayhiddenmycoursesdesc'] = 'Display hidden courses for users in the \'Courses menu\' if they have permission to view hidden courses';
+$string['mycoursescatsubmenu'] = 'Category and course sub-menu';
+$string['mycoursescatsubmenudesc'] = 'Organise courses into a sub-menu based upon the top level category they are in.  When \'enablecategoryicon\' is \'false\' then the category icon used will be the theme default, when \'true\' then will be either the value of \'defaultcategoryicon\' or the category\'s itself if \'enablecustomcategoryicon\' is true.  The \'mycoursesmax\' setting will still apply but on a per-category level.';
 
 $string['mycoursesorder'] = 'Courses order';
 $string['mycoursesorderdesc'] = 'State how the courses should be ordered.  The course sort order can be is set by the core navigation setting \'navsortmycoursessort\'.';
@@ -222,6 +248,8 @@ $string['thiscourse'] = 'This course';
 $string['people'] = 'People';
 
 // User menu.
+$string['usermenuuserimageborderradius'] = 'User menu picture border radius';
+$string['usermenuuserimageborderradiusdesc'] = 'Specify the border radius between {$a->lower} and {$a->upper} pixels of the user picture on the user menu.';
 $string['helplinktype'] = 'Enable help link in menu';
 $string['helplinktypedesc'] = 'Choose whether you want to enable a help option in the user menu, you can choose to either provide an URL that will be opened in a new window or an email address.';
 $string['helplink'] = 'Help link';
@@ -246,17 +274,6 @@ $string['breadcrumbstylednocollapse'] = 'Fancy with no collapse';
 $string['breadcrumbsimple'] = 'Simple';
 $string['breadcrumbthin'] = 'Thin';
 $string['nobreadcrumb'] = 'Hide';
-
-// Regions.
-$string['region-side-post'] = 'Right';
-$string['region-side-pre'] = 'Left';
-$string['region-home-left'] = 'Home (Left)';
-$string['region-home-middle'] = 'Home (Middle)';
-$string['region-home-right'] = 'Home (Right)';
-$string['region-footer-left'] = 'Footer (Left)';
-$string['region-footer-middle'] = 'Footer (Middle)';
-$string['region-footer-right'] = 'Footer (Right)';
-$string['region-hidden-dock'] = 'Hidden from users';
 
 // Features.
 $string['featureheading'] = 'Features';
@@ -286,6 +303,13 @@ $string['returntosectionfeaturedesc'] = "Enable return to section feature within
 
 $string['returntosectiontextlimitfeature'] = 'Return to section name text limit';
 $string['returntosectiontextlimitfeaturedesc'] = 'Length limit for the \'name\' of the section on the button between {$a->lower} and {$a->upper} characters.';
+
+$string['loginbackground'] = 'Login background image';
+$string['loginbackgrounddesc'] = 'Upload your own login background image.  Select the style of the image below.';
+$string['loginbackgroundstyle'] = 'Login background style';
+$string['loginbackgroundstyledesc'] = 'Select the style for the uploaded image.';
+$string['loginbackgroundopacity'] = 'Login box background opacity when there is a background image';
+$string['loginbackgroundopacitydesc'] = 'Lofin background opacity for the login box when there is a background image.';
 
 // Colours.
 $string['colorheading'] = 'Colour';
@@ -318,6 +342,8 @@ $string['themenavcolor'] = 'Navigation text colour';
 $string['themenavcolordesc'] = 'Set the text colour for navigation.  Being the navigation bar and the breadcrumb fancy style.';
 $string['themestripetextcolour'] = 'Stripe text colour';
 $string['themestripetextcolourdesc'] = 'Set the text colour for stripes in tables.';
+$string['themestripeurlcolour'] = 'Stripe url colour';
+$string['themestripeurlcolourdesc'] = 'Set the url colour for stripes in tables.';
 $string['themestripebackgroundcolour'] = 'Stripe background colour';
 $string['themestripebackgroundcolourdesc'] = 'Set the background colour for stripes in tables.';
 
@@ -374,6 +400,8 @@ $string['alternativethemehovercolor'] = 'Alternative theme hover colour {$a}';
 $string['alternativethemehovercolordesc'] = 'What colour should your theme hovers be for the alternative theme colours {$a}.';
 $string['alternativethemestripetextcolour'] = 'Alternative stripe text colour {$a}';
 $string['alternativethemestripetextcolourdesc'] = 'Set the alternative {$a} text colour for stripes in tables.';
+$string['alternativethemestripeurlcolour'] = 'Alternative stripe url colour {$a}';
+$string['alternativethemestripeurlcolourdesc'] = 'Set the alternative {$a} url colour for stripes in tables.';
 $string['alternativethemestripebackgroundcolour'] = 'Alternative stripe background colour {$a}';
 $string['alternativethemestripebackgroundcolourdesc'] = 'Set the alternative {$a} background colour for stripes in tables.';
 
@@ -433,8 +461,14 @@ $string['frontpageblocksdesc'] = 'Here you can determine if the standard Moodle 
 $string['beforecontent'] = 'Before content';
 $string['aftercontent'] = 'After content';
 
-$string['frontpagemiddleblocks'] = 'Enable additional front page middle blocks';
-$string['frontpagemiddleblocksdesc'] = 'If enabled this will display three additional block locations just under the marketing spots.';
+$string['frontpagemiddleblocks'] = 'Enable additional front page \'Home\' (was \'Middle\') blocks';
+$string['frontpagemiddleblocksdesc'] = 'If enabled this will display an additional block location just under the marketing spots.';
+$string['frontpagehomeblocksperrow'] = 'Home (was \'Middle\') blocks per row';
+$string['frontpagehomeblocksperrowdesc'] = 'State up to how many blocks per row between {$a->lower} and {$a->upper} for the \'Home blocks\' block region.';
+$string['fppagetopblocks'] = 'Enable additional front page \'Page top\' blocks';
+$string['fppagetopblocksdesc'] = 'If enabled this will display an additional block location beside the side blocks and above the content area.  Note: The number of blocks per row depends on the setting \'fppagetopblocksperrow\'.';
+$string['fppagetopblocksperrow'] = 'Page top blocks per row';
+$string['fppagetopblocksperrowdesc'] = 'State up to how many blocks per row between {$a->lower} and {$a->upper} for the \'Page top\' block region on the front page.';
 
 // Slideshow.
 $string['slideshowheading'] = 'Slide show';
@@ -506,7 +540,7 @@ $string['slideurltargetparent'] = 'Parent frame';
 // Marketing Spots.
 $string['marketingheading'] = 'Marketing spots';
 $string['marketinginfodesc'] = 'Enter the settings for your marketing spot.';
-$string['marketingheadingsub'] = 'Three locations on the front page to add information and links';
+$string['marketingheadingsub'] = 'Three locations on the front page to add information and links.'; // Legacy only.
 
 $string['marketingheight'] = 'Height of marketing spot container (px)';
 $string['marketingheightdesc'] = 'Specify the height of the marketing spot container in pixels.  Adjust this to suit your content.  If any spot has an image or link, then that will be added to this for all spots.';
@@ -680,6 +714,11 @@ $string['oldnavbardesc'] = 'Enable this option to use the old navbar position, p
 $string['navbarabove'] = 'Navbar above the header';
 $string['navbarbelow'] = 'Navbar below the header';
 
+$string['dropdownmenuscroll'] = 'Scrollbars on the dropdown menus';
+$string['dropdownmenuscrolldesc'] = 'Have a scrollbar on the dropdown menu where the height of the menu is limited.';
+$string['dropdownmenumaxheight'] = 'Dropdown menu maximum height';
+$string['dropdownmenumaxheightdesc'] = 'Dropdown menu maximum height when scrollbars are enabled.  Between {$a->lower} and {$a->upper} pixels.';
+
 $string['usesiteicon'] = 'Use site icon';
 $string['usesiteicondesc'] = 'Use the site icon if there is no logo.';
 
@@ -701,6 +740,11 @@ $string['displayeditingmenu'] = 'Display editing button';
 $string['displayeditingmenudesc'] = 'Displays a button with the same functionality as the default page editing button on the header.';
 $string['hidedefaulteditingbutton'] = 'Hide default page editing button';
 $string['hidedefaulteditingbuttondesc'] = 'Hides the default page editing button from any page.  This setting only takes effect if the "Display editing button" setting is enabled.';
+
+$string['haveheaderblock'] = 'Header block region';
+$string['haveheaderblockdesc'] = 'Have a header block region just below the breadcrumb.';
+$string['headerblocksperrow'] = 'Header blocks per row';
+$string['headerblocksperrowdesc'] = 'State up to how many blocks per row between {$a->lower} and {$a->upper} for pages with the \'Header block region\'.';
 
 // Font settings.
 $string['fontsettings'] = 'Font';
@@ -816,6 +860,31 @@ $string['analyticsuseuseriddesc'] = 'Enable use of User ID in tracking.';
 $string['analyticspiwik'] = 'Piwik';
 $string['analyticsguniversal'] = 'Google Universal Analytics';
 
+// Properties.
+$string['properties'] = 'Properties';
+$string['propertiessub'] = 'The properties';
+$string['propertiesdesc'] = 'List of properties.';
+$string['propertiesproperty'] = 'Property';
+$string['propertiesvalue'] = 'Value';
+$string['propertiesexport'] = 'Export properties as a JSON string';
+$string['propertiesreturn'] = 'Return';
+$string['putpropertiesname'] = 'Put properties - Experimental!';
+$string['putpropertiesdesc'] = 'Paste the JSON string and \'Save changes\'.  Warning!  Does not valiate setting values and performs a \'Purge all caches\'.';
+
+$string['putpropertyreport'] = 'Report:';
+$string['putpropertyversion'] = 'version:';
+$string['putpropertyproperties'] = 'Properties';
+$string['putpropertyour'] = 'Our';
+$string['putpropertiesignorecti'] = 'Ignoring all course title image settings.';
+$string['putpropertiesreportfiles'] = 'Remember to upload the following files to their settings:';
+$string['putpropertiessettingsreport'] = 'Settings report:';
+$string['putpropertiesvalue'] = '->';
+$string['putpropertiesfrom'] = 'from';
+$string['putpropertieschanged'] = 'Changed:';
+$string['putpropertiesunchanged'] = 'Unchanged:';
+$string['putpropertiesadded'] = 'Added:';
+$string['putpropertiesignored'] = 'Ignored:';
+
 // Style guide.
 $string['styleguide'] = 'Style guide';
 $string['styleguidesub'] = 'Bootstrap V2.3.2 Style guide';
@@ -846,6 +915,8 @@ $string['alerttextdesc'] = 'What is the text you wish to display in your alert.'
 $string['alert_info'] = 'Information';
 $string['alert_warning'] = 'Warning';
 $string['alert_general'] = 'Announcement';
+
+$string['alert_edit'] = 'Edit alerts';
 
 $string['versionalerttitle'] = 'Version warning: ';
 $string['versionalerttext1'] = 'Theme not designed for Moodle version.';

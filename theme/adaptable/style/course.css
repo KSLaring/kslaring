@@ -1,39 +1,14 @@
-.courses .coursebox.even,
-.courses .coursebox {
-  background: #fafafa !important;
-  border-radius: 6px;
-}
+/* Topics / Weekly format *************************/
 
-.courses .coursebox.even {
-  background: #eee !important;
-}
-
-.coursebox > .info > .coursename a {
-  font-weight: normal;
-  font-size: 80%;
-}
-
-.coursebox > .info > h3.name,
-.course_category_tree .category > .info .name {
-    font-size: 120%;
-    font-weight: normal;
-    margin: 0;
-}
-
-.coursebox .content {
-  clear: none;
-}
-
-.coursebox {
-  padding: 0 0;
-  border: 0px;
-  border-radius: 0px;
+.course-content ul.topics li.section {
+    padding-bottom: 0;
 }
 
 #page .course-content ul li.section.main {
-  border: [[setting:coursesectionborderwidth]] [[setting:coursesectionborderstyle]] [[setting:coursesectionbordercolor]];
-  border-radius: [[setting:coursesectionborderradius]];
-  margin-bottom: 20px;
+    background-color: #f5f5f5;
+    border: [[setting:coursesectionborderwidth]] [[setting:coursesectionborderstyle]] [[setting:coursesectionbordercolor]];
+    margin-bottom: 10px;
+    border-radius: [[setting:coursesectionborderradius]];
 }
 
 .site-topic ul.section, .course-content ul.section {
@@ -65,11 +40,7 @@
     max-width: 60px;
     margin-left: 5px;
 }
-/*
-.panel .summary {
-  position: relative;
-}
-*/
+
 .course-content ul li.section .side {
   display: none;
 }
@@ -101,12 +72,12 @@
 
 .course-content ul li.section.main {
     margin: 0;
-/*  padding-top: 12px;*/
 }
 
+.sectionname a,
 h3.sectionname {
-    background: [[setting:coursesectionheaderbg]];
-    color: [[setting:sectionheadingcolor]];
+    background-color: [[setting:coursesectionheaderbg]];
+    color: [[setting:sectionheadingcolor]] !important;
     font-size: 20px;
     margin-bottom: 20px;
     padding: 3px 10px;
@@ -146,7 +117,10 @@ h3.sectionname {
     padding: 10px 0px 0px 20px;
 }
 
-#gridshadebox_content .content .summary, #gridshadebox_content .content ul.section {padding: 0 20px;}
+#gridshadebox_content .content .summary,
+#gridshadebox_content .content ul.section {
+    padding: 0 20px;
+}
 
 .course-content .current  .content .sectionname {
     background: [[setting:currentcolor]];
@@ -155,6 +129,42 @@ h3.sectionname {
 .course-content ul li.section.hidden .sectionname,
 .course-content ul li.section.hidden .content > div {
     margin-right: 40px;
+}
+
+
+
+/* Course Tiles */
+
+.courses .coursebox.even,
+.courses .coursebox {
+  background-color: #fafafa !important;
+  border-radius: 6px;
+}
+
+.courses .coursebox.even {
+  background-color: #eee !important;
+}
+
+.coursebox > .info > .coursename a {
+  font-weight: normal;
+  font-size: 80%;
+}
+
+.coursebox > .info > h3.name,
+.course_category_tree .category > .info .name {
+    font-size: 120%;
+    font-weight: normal;
+    margin: 0;
+}
+
+.coursebox .content {
+  clear: none;
+}
+
+.coursebox {
+  padding: 0 0;
+  border: 0px;
+  border-radius: 0px;
 }
 
 #page .covtiles.panel {
