@@ -346,6 +346,10 @@ class Fellesdata_Install {
             $tblFSImpComp->add_field('action',XMLDB_TYPE_CHAR,'25',null, XMLDB_NOTNULL, null,null);
             /* Imported         */
             $tblFSImpComp->add_field('imported',XMLDB_TYPE_INTEGER,'2',null, XMLDB_NOTNULL, null,null);
+            /* Time import  */
+            $tblFSImpComp->add_field('timeimport',XMLDB_TYPE_INTEGER,'10',null, null, null,null);
+            /* Time modified */
+            $tblFSImpComp->add_field('timemodified',XMLDB_TYPE_INTEGER,'10',null, null, null,null);
 
             /* Keys     */
             $tblFSImpComp->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
@@ -392,6 +396,11 @@ class Fellesdata_Install {
             $tblFSImpJR->add_field('action',XMLDB_TYPE_CHAR,'25',null, XMLDB_NOTNULL, null,null);
             /* imported                                     */
             $tblFSImpJR->add_field('imported',XMLDB_TYPE_INTEGER,'2',null, XMLDB_NOTNULL, null,null);
+            /* Time import  */
+            $tblFSImpJR->add_field('timeimport',XMLDB_TYPE_INTEGER,'10',null, null, null,null);
+            /* Time modified */
+            $tblFSImpJR->add_field('timemodified',XMLDB_TYPE_INTEGER,'10',null, null, null,null);
+
 
             /* Keys     */
             $tblFSImpJR->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
@@ -502,6 +511,10 @@ class Fellesdata_Install {
             $tblImpManagersReporters->add_field('action',XMLDB_TYPE_CHAR,'25',null, XMLDB_NOTNULL, null,null);
             /* imported                                     */
             $tblImpManagersReporters->add_field('imported',XMLDB_TYPE_INTEGER,'2',null, XMLDB_NOTNULL, null,null);
+            /* Time import  */
+            $tblImpManagersReporters->add_field('timeimport',XMLDB_TYPE_INTEGER,'10',null, null, null,null);
+            /* Time modified */
+            $tblImpManagersReporters->add_field('timemodified',XMLDB_TYPE_INTEGER,'10',null, null, null,null);
 
             /* Keys     */
             $tblImpManagersReporters->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
@@ -557,6 +570,10 @@ class Fellesdata_Install {
             $tblImpUsers->add_field('action',XMLDB_TYPE_CHAR,'50',null, XMLDB_NOTNULL, null,null);
             /* Imported                             */
             $tblImpUsers->add_field('imported',XMLDB_TYPE_INTEGER,'2',null, XMLDB_NOTNULL, null,null);
+            /* Time import  */
+            $tblImpUsers->add_field('timeimport',XMLDB_TYPE_INTEGER,'10',null, null, null,null);
+            /* Time modified */
+            $tblImpUsers->add_field('timemodified',XMLDB_TYPE_INTEGER,'10',null, null, null,null);
 
             /* Keys     */
             $tblImpUsers->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));

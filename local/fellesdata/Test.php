@@ -37,17 +37,17 @@ echo "Start ... " . "</br>";
 
     if ($option) {
         if ($option == 20) {
-            echo "Sending suspicious notifications..." . "</br>";
+           //echo "Sending suspicious notifications..." . "</br>";
             
             // Send Notifications
-            suspicious::send_suspicious_notifications($pluginInfo);
+            //suspicious::send_suspicious_notifications($pluginInfo);
             // Send Reminder
-            suspicious::send_suspicious_notifications($pluginInfo,true);
+            //suspicious::send_suspicious_notifications($pluginInfo,true);
         }else {
             FELLESDATA_CRON::cron_manual(true,$option);
         }
     }else {
-        echo $pluginInfo->fs_days;
+        echo " --> " . FS_CRON::can_run();
     }
 }catch (Exception $ex) {
     throw $ex;

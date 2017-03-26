@@ -323,22 +323,26 @@ class FS_MAPPING {
     }//GetNewCompaniesToDelete
 
     /**
+     * Description
+     * Clean the new companies
+     *
      * @param           $fsCompanies
      * @throws          Exception
      *
      * @creationDate    09/06/2016
      * @author          author      (fbv)
-     *
-     * Description
-     * Clean the new companies
      */
-    public static function CleanNewCompanies($fsCompanies) {
+    public static function clean_new_companies($fsCompanies) {
         /* Variables */
         global $DB;
         $in     = null;
+        $time   = null;
 
         try {
-            /* SQL Instruction */
+            // Local time
+            $time = time();
+
+            // SQL Instruction
             $in = implode(',',array_keys($fsCompanies));
             $sql = "DELETE FROM {fs_company}
                     WHERE id IN ($in) ";
@@ -346,18 +350,19 @@ class FS_MAPPING {
             /* Execute */
             $DB->execute($sql);
 
-            /* Update Imported 0 */
+            // Imported = 0
             $in = implode(',',$fsCompanies);
             $sql = " UPDATE {fs_imp_company}
-                      SET imported = 0
-                     WHERE org_enhet_id IN ($in) ";
+                      SET   imported      = :imp,
+                            timemodified  = :up
+                     WHERE  org_enhet_id IN ($in) ";
 
-            /* Execute */
-            $DB->execute($sql);
+            // Execute
+            $DB->execute($sql,array('imp' => 0,'up' => $time));
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//CleanNewCompanies
+    }//clean_new_companies
 
     /**
      * @param           $level
@@ -586,6 +591,7 @@ class FS_MAPPING {
             /* Search criteria */
             $params = array();
             $params['job_role'] = $ks_jobrole;
+            $params['action']   = DELETE;
 
             /* SQL Instruction  */
             $sql = " SELECT 	    fs.stillingskode,
@@ -594,6 +600,7 @@ class FS_MAPPING {
                         LEFT JOIN	{ksfs_jobroles}		ksfs	ON 	ksfs.fsjobrole = fs.stillingskode
                                                                 AND	ksfs.ksjobrole = :job_role
                      WHERE          fs.imported = 0	
+                          AND       fs.action != action
                           AND       ksfs.id IS NULL ";
 
             /* Search   */
@@ -1075,11 +1082,15 @@ class FS_MAPPING {
         $infoCompany    = null;
         $infoImp        = null;
         $trans          = null;
+        $time           = null;
 
         /* Start Transaction    */
         $trans = $DB->start_delegated_transaction();
 
         try {
+            // Local time
+            $time = time();
+            
             /* Check if already exist */
             $params = array();
             $params['companyid'] = $fsCompany->fscompany;
@@ -1119,6 +1130,7 @@ class FS_MAPPING {
             $infoImp->id            = $fsCompany->id;
             $infoImp->org_enhet_id  = $fsCompany->fscompany;
             $infoImp->imported      = 1;
+            $infoImp->timemodified  = $time;
             $DB->update_record('fs_imp_company',$infoImp);
 
             /* Commit   */
@@ -1224,6 +1236,7 @@ class FS_MAPPING {
             $infoImp->id            = $fsCompany->id;
             $infoImp->org_enhet_id  = $fsCompany->fscompany;
             $infoImp->imported      = 1;
+            $infoImp->timemodified  = $time;
             /* Executes */
             $DB->update_record('fs_imp_company',$infoImp);
 
@@ -1672,6 +1685,7 @@ class FS_MAPPING {
             $infoImp->id            = $fsJobRole->id;
             $infoImp->stillingskode = $fsJobRole->stillingskode;
             $infoImp->imported      = 1;
+            $infoImp->timemodified  = $time;
             /* Execute  */
             $DB->update_record('fs_imp_jobroles',$infoImp);
 
@@ -1732,6 +1746,7 @@ class FS_MAPPING {
             $infoImp->id            = $fsJobRole->id;
             $infoImp->stillingskode = $fsJobRole->stillingskode;
             $infoImp->imported      = 0;
+            $infoImp->timemodified  = $time;
             /* Execute  */
             $DB->update_record('fs_imp_jobroles',$infoImp);
 

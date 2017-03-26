@@ -171,3 +171,7 @@ $string['sel_level']        = 'Nivå';
 $string['no_mapped'] = 'Ikke mappet ennå';
 $string['to_delete'] = 'Skal slettes fra KS Læring';
 
+$string['status']       = 'Get last status';
+$string['day']          = 'Day to get last status';
+$string['stweekly']     = 'Weekly';
+$string['stmonthly']    = 'Monthly';

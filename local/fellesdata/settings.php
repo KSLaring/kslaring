@@ -61,6 +61,7 @@ if ($hassiteconfig) {
     /* Municipality */
     $settings->add(new admin_setting_configtext('local_fellesdata/ks_muni',get_string('ks_municipality','local_fellesdata'),'','',PARAM_TEXT,50));
 
+
     ///* Hierarchy Municipality   */
     //$settings->add(new admin_setting_configtext('local_fellesdata/ks_muni_level',get_string('ks_hierarchy','local_fellesdata'),'','',PARAM_TEXT,50));
 
@@ -106,4 +107,7 @@ if ($hassiteconfig) {
     $settings->add(new admin_setting_configselect('local_fellesdata/map_three',
                                                   get_string('map_three', 'local_fellesdata'),
                                                   get_string('map_three_desc', 'local_fellesdata'), 3,$options));
+    
+
+
 }//if_config

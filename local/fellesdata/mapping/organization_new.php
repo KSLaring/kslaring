@@ -66,7 +66,7 @@ if ($form->is_cancelled()) {
     /* No -> Delete     */
     $toDelete = FS_MAPPING::GetNewCompaniesToDelete(implode(',',array_keys($SESSION->FS_COMP)));
     if ($toDelete) {
-        FS_MAPPING::CleanNewCompanies($toDelete);
+        FS_MAPPING::clean_new_companies($toDelete);
     }
 
     unset($SESSION->FS_COMP);
