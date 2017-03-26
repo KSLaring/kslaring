@@ -19,16 +19,28 @@
  *
  * @package     theme_essential
  * @copyright   2016 Gareth J Barnard
- * @copyright   2014 Gareth J Barnard, David Bezemer
- * @copyright   2013 Julian Ridden
+ * @copyright   2015 Gareth J Barnard
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-?>
 
-<div class="row-fluid" id="middle-blocks">
-    <?php
-    echo $OUTPUT->blocks('home-left', 'span4 pull-left');
-    echo $OUTPUT->blocks('home-middle', 'span4 center');
-    echo $OUTPUT->blocks('home-right', 'span4 pull-right');
-    ?>
-</div>
+defined('MOODLE_INTERNAL') || die;
+
+echo '<div id="page-top-header" class="clearfix">';
+echo '<div id="page-navbar" class="clearfix row-fluid">';
+if ($left) {
+    echo '<div class="breadcrumb-nav span9">';
+    echo $OUTPUT->navbar();
+    echo '</div>';
+}
+echo '<nav class="breadcrumb-button span3">';
+echo $OUTPUT->page_heading_button();
+echo '</nav>';
+if (!$left) {
+    echo '<div class="breadcrumb-nav span9">';
+    echo $OUTPUT->navbar();
+    echo '</div>';
+}
+echo '</div>';
+echo $OUTPUT->page_top_header();
+echo '</div>';
+echo $OUTPUT->essential_blocks('header', 'row-fluid', 'aside', 'headerblocksperrow');

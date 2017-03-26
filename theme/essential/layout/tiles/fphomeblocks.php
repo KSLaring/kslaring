@@ -15,20 +15,13 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version details
+ * Essential is a clean and customizable theme.
  *
- * @package    theme_adaptable
- * @copyright 2015 Jeremy Hopkins (Coventry University)
- * @copyright 2015 Fernando Acedo (3-bits.com)
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- *
+ * @package     theme_essential
+ * @copyright   2016 Gareth J Barnard
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-if ($PAGE->pagetype == 'grade-report-grader-index') {
-    if ($CFG->version <= 2014111000) {
-        require_once(dirname(__FILE__) .'/columns2.php');
-    } else {
-        require_once(dirname(__FILE__) .'/grader.php');
-    }
-} else {
-    require_once(dirname(__FILE__) .'/columns2.php');
-}
+
+defined('MOODLE_INTERNAL') || die;
+
+echo $OUTPUT->essential_blocks('home', 'row-fluid', 'aside', 'frontpagehomeblocksperrow');

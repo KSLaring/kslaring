@@ -85,7 +85,10 @@ class H5PDefaultStorage implements \H5PFileStorage {
    */
   public function cloneContent($id, $newId) {
     $path = $this->path . '/content/';
-    self::copyFileTree($path . $id, $path . $newId);
+
+    if (file_exists($path . $id)) {
+      self::copyFileTree($path . $id, $path . $newId);
+    }
   }
 
   /**

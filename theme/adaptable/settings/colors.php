@@ -375,6 +375,32 @@
     $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
 
+
+    // Messages pop-up colors heading.
+    $name = 'theme_adaptable/settingsmessagescolors';
+    $heading = get_string('settingsmessagescolors', 'theme_adaptable');
+    $setting = new admin_setting_heading($name, $heading, '');
+    $temp->add($setting);
+
+    // Messages pop-up background color.
+    $name = 'theme_adaptable/messagepopupbackground';
+    $title = get_string('messagepopupbackground', 'theme_adaptable');
+    $description = get_string('messagepopupbackgrounddesc', 'theme_adaptable');
+    $previewconfig = null;
+    $setting = new admin_setting_configcolourpicker($name, $title, $description, '#fff000', $previewconfig);
+    $setting->set_updatedcallback('theme_reset_all_caches');
+    $temp->add($setting);
+
+    // Messages pop-up text color.
+    $name = 'theme_adaptable/messagepopupcolor';
+    $title = get_string('messagepopupcolor', 'theme_adaptable');
+    $description = get_string('messagepopupcolordesc', 'theme_adaptable');
+    $previewconfig = null;
+    $setting = new admin_setting_configcolourpicker($name, $title, $description, '#333333', $previewconfig);
+    $setting->set_updatedcallback('theme_reset_all_caches');
+    $temp->add($setting);
+
+
     // Footer colors heading.
     $name = 'theme_adaptable/settingsfootercolors';
     $heading = get_string('settingsfootercolors', 'theme_adaptable');

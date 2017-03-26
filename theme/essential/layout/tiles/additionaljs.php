@@ -20,9 +20,11 @@
  * @package     theme_essential
  * @copyright   2016 Gareth J Barnard
  * @copyright   2015 Gareth J Barnard in respect to modifications of the Bootstrap theme.
- * @author      G J Barnard - gjbarnard at gmail dot com and {@link http://moodle.org/user/profile.php?id=442195}
+ * @author      G J Barnard - {@link http://moodle.org/user/profile.php?id=442195}
  * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+defined('MOODLE_INTERNAL') || die;
 
 $PAGE->requires->js_call_amd('theme_essential/header', 'init');
 $PAGE->requires->js_call_amd('theme_essential/footer', 'init');
@@ -42,5 +44,13 @@ if (\theme_essential\toolbox::not_lte_ie9()) {
     }
     if (\theme_essential\toolbox::get_setting('fitvids')) {
         $PAGE->requires->js_call_amd('theme_essential/fitvids', 'init');
+    }
+}
+if ($PAGE->pagelayout == 'mydashboard') {
+    if (\theme_essential\toolbox::course_content_search()) {
+        $essentialsearch = new moodle_url('/theme/essential/inspector.ajax.php');
+        $essentialsearch->param('sesskey', sesskey());
+        $inspectorscourerdata = array('data' => array('theme' => $essentialsearch->out(false)));
+        $PAGE->requires->js_call_amd('theme_essential/inspector_scourer', 'init', $inspectorscourerdata);
     }
 }
