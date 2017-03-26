@@ -70,28 +70,33 @@ class FS_CRON {
             // Next time for status
             $status = self::get_my_nexttime('status');
 
-            if ($fellesdata->disabled) {
-                return false;
-            }else if ($status->disabled) {
-                return true;
-            }else {
-                $fsdate = getdate($fellesdata->nextruntime);
-                $stdate = getdate($status->nextruntime);
+            if ($status) {
+                if ($fellesdata->disabled) {
+                    return false;
+                }else if ($status->disabled) {
+                    return true;
+                }else {
+                    $fsdate = getdate($fellesdata->nextruntime);
+                    $stdate = getdate($status->nextruntime);
 
-                if ($fsdate && $stdate) {
-                    if (($fsdate['year'] == $stdate['year'])
-                        &&
-                        ($fsdate['mon'] == $stdate['mon'])
-                        &&
-                        ($fsdate['mday'] == $stdate['mday'])) {
+                    if ($fsdate && $stdate) {
+                        if (($fsdate['year'] == $stdate['year'])
+                            &&
+                            ($fsdate['mon'] == $stdate['mon'])
+                            &&
+                            ($fsdate['mday'] == $stdate['mday'])) {
 
-                        return false;
-                    }else {
-                        echo true;
+                            return false;
+                        }else {
+                            return true;
+                        }
                     }
-                }
+                    return true;
+                }//fellesdata_disable
+            }else {
                 return true;
-            }
+            }//if_status
+
         }catch (Exception $ex) {
             throw $ex;
         }//try_Catch
