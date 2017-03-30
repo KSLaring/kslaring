@@ -758,10 +758,14 @@ class ksl
      */
     public static function add_orginfo($userarray) {
         $info = '';
+        $mylevelthree   = get_string('headerlevelthree', 'local_ksl') . get_string('headerlevelthree1', 'local_ksl');
+        $myleveltwo     = get_string('headerleveltwo', 'local_ksl') . get_string('headerleveltwo1', 'local_ksl');
+        $mylevelone     = get_string('headerlevelone', 'local_ksl') . get_string('headerlevelone1', 'local_ksl');
+        $mylevelzero    = get_string('headerlevelzero', 'local_ksl') . get_string('headerlevelzero1', 'local_ksl');
 
         foreach ($userarray as $uservalue) {
             $info .= html_writer::start_div('levellsttxt');
-            $info .= 'Level Zero';
+            $info .= $mylevelzero;
             $info .= html_writer::end_div(); // ...levellsttxt.
 
             $info .= html_writer::start_div('levellst');
@@ -769,7 +773,7 @@ class ksl
             $info .= html_writer::end_div(); // ...levellst.
 
             $info .= html_writer::start_div('levellsttxt');
-            $info .= 'Level One';
+            $info .= $mylevelone;
             $info .= html_writer::end_div(); // ...levellsttxt.
 
             $info .= html_writer::start_div('levellst');
@@ -777,7 +781,7 @@ class ksl
             $info .= html_writer::end_div(); // ...levellst.
 
             $info .= html_writer::start_div('levellsttxt');
-            $info .= 'Level Two';
+            $info .= $myleveltwo;
             $info .= html_writer::end_div(); // ...levellsttxt.
 
             $info .= html_writer::start_div('levellst');
@@ -785,7 +789,7 @@ class ksl
             $info .= html_writer::end_div(); // ...levellst.
 
             $info .= html_writer::start_div('levellsttxt');
-            $info .= 'Level Three';
+            $info .= $mylevelthree;
             $info .= html_writer::end_div(); // ...levellsttxt.
 
             $info .= html_writer::start_div('levellst');
