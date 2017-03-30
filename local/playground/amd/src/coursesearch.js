@@ -1,22 +1,24 @@
-/*global define: false, M: true */
+/*global define: false, M: true, console: false */
+// define(['jquery', 'jqueryui', 'core/notification', 'core/log', 'core/ajax', 'core/templates', 'theme_bootstrapbase/bootstrap'],
+//     function ($, $ui, notification, log, ajax, templates) {
 define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates', 'theme_bootstrapbase/bootstrap'],
     function ($, notification, log, ajax, templates) {
         "use strict";
 
         log.debug('AMD module loaded.');
 
-        var selectedTags = [],
+        var selectedCourseTags = [],
             courses = [],
             $searcharea = null,
             $coursesearchform = null,
             $formsearch = null,
             $tagarea = null,
-            $selectedtags = null,
+            $selectedCourseTags = null,
             $resultarea = null,
             hideitemClass = 'hide-item',
-            activityContextObj = {group: null, name: null, addtext: null, remove: 0};
+            activityContextObj = {type: null, group: null, name: null, pretext: null, posttext: null, remove: 0};
 
-        var grepSelectedTags = function (data) {
+        var grepselectedCourseTags = function (data) {
             var groups = data.tags.groups,
                 found;
 
@@ -27,28 +29,29 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                     });
 
                     if (found.length) {
-                        selectedTags = $.merge(selectedTags, found);
+                        selectedCourseTags = $.merge(selectedCourseTags, found);
                     }
                 });
 
-                renderSelectedTags({selectedTags: selectedTags});
+                renderselectedCourseTags({selectedCourseTags: selectedCourseTags});
             }
         };
 
-        var renderSelectedTags = function (context) {
+        var renderselectedCourseTags = function (context) {
             templates
                 .render('local_playground/course_search_selected_tags', context)
                 .done(function (html) {
                     $tagarea.append(html);
-                    $selectedtags = $tagarea.find('.selected-tags');
+                    $selectedCourseTags = $tagarea.find('.selected-tags');
                 });
         };
 
         var renderTags = function (context) {
             templates
-                .render('local_playground/course_search_region_tags', context)
+                .render('local_playground/course_search_region_search', context)
                 .done(function (html) {
                     $formsearch.after(html);
+                    activateDatePicker();
                 });
         };
 
@@ -57,16 +60,78 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                 .render('local_playground/course_search_results', context)
                 .done(function (html) {
                     $resultarea.append(html);
+                    updateCourseDisplay();
                 });
+        };
+
+        var activateDatePicker = function () {
+            // Bootstrap 2.x datepicker https://github.com/uxsolutions/bootstrap-datepicker/tree/1.5.
+            require(['local_playground/Xloader'], function () {
+                $("#date-from").datepicker({
+                    format: "dd.mm.yyyy",
+                    calendarWeeks: true,
+                    todayHighlight: true,
+                    clearBtn: true,
+                    autoclose: true
+                }).on("changeDate", function (e) {
+                    dateChangeHandler(e);
+                });
+                $("#date-to").datepicker({
+                    format: "dd.mm.yyyy",
+                    calendarWeeks: true,
+                    todayHighlight: true,
+                    clearBtn: true,
+                    autoclose: true
+                }).on("changeDate", function (e) {
+                    dateChangeHandler(e);
+                });
+            });
+        };
+
+        var dateChangeHandler = function (e) {
+            var $ele = $(e.target),
+                $parent = $ele.parents('.date'),
+                dateEuro = e.format("yyyymmdd"),
+                dateUser = e.format("dd.mm.yyyy"),
+                $relatedTag = null,
+                activityContext = $.extend({}, activityContextObj, {
+                    type: $parent.data('type'),
+                    group: $parent.data('group'),
+                    name: $parent.data('name'),
+                    posttext: " " + dateUser
+                });
+            $ele.siblings('input[type="hidden"]').eq(0).val(dateEuro);
+
+            // Remove or add the related tag in the selected tag list depending on the checked status.
+            // Remove an eventually exisiting tag.
+            $relatedTag = $tagarea
+                .find('button')
+                .filter('[data-name="' + $parent.data('name') + '"]')
+                .parent('li')
+                .remove();
+            if (dateUser === "") {
+                activityContext.remove = 1;
+            } else {
+                templates
+                    .render('local_playground/course_search_selected_tags_item', activityContext)
+                    .done(function (html) {
+                        $selectedCourseTags.append(html);
+                    });
+            }
+
+            updateCourses();
+            updateCourseDisplay();
         };
 
         var checkboxClickHandler = function () {
             var $ele = $(this),
+                $parent = $ele.parent(),
                 checked = $ele.is(":checked"),
                 $relatedTag = null,
                 activityContext = $.extend({}, activityContextObj, {
-                    group: $ele.parent().data('group'),
-                    name: $ele.parent().data('name')
+                    type: $parent.data('type'),
+                    group: $parent.data('group'),
+                    name: $parent.data('name')
                 });
 
             // Remove or add the related tag in the selected tag list depending on the checked status.
@@ -81,11 +146,14 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                 templates
                     .render('local_playground/course_search_selected_tags_item', activityContext)
                     .done(function (html) {
-                        $selectedtags.append(html);
+                        $selectedCourseTags.append(html);
                     });
             }
 
-            updateCourses();
+            if ($parent.data('type') === 'course') {
+                updateCourses();
+            }
+            updateCourseDisplay();
         };
 
         var selectedTagClickHandler = function () {
@@ -93,6 +161,12 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
 
             if ($ele.data('group') === 'searchquery') {
                 $coursesearchform.find('.search-query').val('');
+            } else if ($ele.data('group') === 'date-from') {
+                $("#date-from").datepicker('update', '');
+                $("#date-from-eurodate").val('');
+            } else if ($ele.data('group') === 'date-to') {
+                $("#date-to").datepicker('update', '');
+                $("#date-to-eurodate").val('');
             } else {
                 $searcharea
                     .find('label')
@@ -102,7 +176,11 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
 
             $ele.remove();
 
-            updateCourses();
+            if ($ele.data('type') === 'course') {
+                updateCourses();
+            } else if ($ele.data('type') === 'display') {
+                updateCourseDisplay();
+            }
         };
 
         var handleTextSearch = function (e) {
@@ -114,7 +192,12 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
             e.preventDefault();
 
             text = $form.find('.search-query').val();
-            activityContext = $.extend({}, activityContextObj, {group: 'searchquery', name: text, addtext: 'Search text: '});
+            activityContext = $.extend({}, activityContextObj, {
+                type: 'course',
+                group: 'searchquery',
+                name: text,
+                pretext: 'Search text: '
+            });
 
             // Remove a possibly present search text tag.
             $tagarea.find('li').has('[data-group="searchquery"]').remove();
@@ -124,7 +207,7 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                 templates
                     .render('local_playground/course_search_selected_tags_item', activityContext)
                     .done(function (html) {
-                        $selectedtags.append(html);
+                        $selectedCourseTags.append(html);
                     });
             }
 
@@ -135,17 +218,109 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
             return $coursesearchform.find('#course-search').val().toLowerCase();
         };
 
-        var getSelectedTags = function () {
+        var getSelectedCourseTags = function () {
             var checkeditems,
                 searchItems = [];
 
             checkeditems = $coursesearchform.find('label').has(':checked');
             checkeditems.each(function () {
                 var $item = $(this);
-                searchItems.push($item.data('group') + '-' + $item.data('name'));
+                if ($item.data('type') === 'course') {
+                    searchItems.push($item.data('group') + '-' + $item.data('name'));
+                }
             });
 
             return searchItems;
+        };
+
+        var getSelectedFromToDates = function () {
+            var dates = {
+                    from: null,
+                    to: null,
+                    datesset: false
+                },
+                date;
+
+            // Check and set the from date.
+            date = $("#date-from-eurodate").val();
+            if (date !== "") {
+                dates.from = date;
+                dates.datesset = true
+            }
+
+            // Check and set the from date.
+            date = $("#date-to-eurodate").val();
+            if (date !== "") {
+                dates.to = date;
+                dates.datesset = true
+            }
+
+            return dates;
+        };
+
+        var getSelectedDisplayTags = function () {
+            var checkeditems,
+                displayItems = [];
+
+            checkeditems = $coursesearchform.find('label').has(':checked');
+            checkeditems.each(function () {
+                var $item = $(this);
+                if ($item.data('type') === 'display') {
+                    displayItems.push($item.data('group'));
+                }
+            });
+
+            return displayItems;
+        };
+
+        /**
+         * Sort the displayed courses.
+         *
+         * Get the active sort criteria and sort the courses.
+         */
+        var updateCourseDisplay = function () {
+            var $list = null,
+                $sortedlist = null,
+                selectedDisplayTags = getSelectedDisplayTags(),
+                asc = true,
+                what = 'name';
+
+            var sortFkt = function (a, b) {
+                if (asc) {
+                    return ($(b).data(what)) < ($(a).data(what)) ? 1 : -1;
+                } else {
+                    return ($(b).data(what)) > ($(a).data(what)) ? 1 : -1;
+                }
+            };
+
+            if (selectedDisplayTags.indexOf('tags') !== -1) {
+                $resultarea.find(".course-list").removeClass(' tags-hidden');
+            } else {
+                $resultarea.find(".course-list").addClass(' tags-hidden');
+            }
+
+            if (selectedDisplayTags.indexOf('sortdesc') !== -1) {
+                asc = false;
+            }
+
+            if (selectedDisplayTags.indexOf('date') !== -1) {
+                what = 'date';
+            }
+
+            $list = $resultarea.find("#tabcards").find('.course-cards').eq(0);
+            $list.html($list.children('.course-card-item').sort(sortFkt));
+            $list = $resultarea.find("#tablist").find('.course-list').find('tbody').eq(0);
+            $list.html($list.children('.course-list-item').sort(sortFkt));
+
+            // Set the »odd« class for alternating row colors only for the visible rows.
+            $sortedlist = $resultarea.find("#tablist").find('.course-list');
+            $sortedlist.find('tr:not(.hide-item)').each(function (i) {
+                if (i % 2) {
+                    $(this).removeClass('odd');
+                } else {
+                    $(this).addClass('odd');
+                }
+            });
         };
 
         /**
@@ -156,9 +331,10 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
          *
          */
         var updateCourses = function () {
-            var selectedTags = getSelectedTags(),
+            var selectedCourseTags = getSelectedCourseTags(),
                 searchText = getSelectedSearchText(),
-                textSearch = (searchText !== ''),
+                fromtoDates = getSelectedFromToDates(), // array with the [from, to] dates
+                hasTextSearch = (searchText !== ''),
                 courseIDsToShow = [],
                 expectedmatches,
                 matchcounter,
@@ -168,21 +344,41 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                 lj;
 
             // Loop through all courses and collect the course ids of the courses to be shown.
-            // Show the courses only when all search criteria match.
-            expectedmatches = textSearch ? selectedTags.length + 1 : selectedTags.length;
+            // Show the courses only when all search criteria match. Therefore set expectedmatches
+            // as the number of matches a course must have to be shown.
+            // 1. get the number of selected course tags
+            // 2. add 1 if text search is active
+            // 3. add 1 if from/to date/s are set
+            expectedmatches = hasTextSearch ? selectedCourseTags.length + 1 : selectedCourseTags.length;
+            expectedmatches += fromtoDates.datesset ? 1 : 0;
             for (i = 0, li = courses.length; i < li; i++) {
                 matchcounter = 0;
                 // Check if the text index contains the search string.
-                if (textSearch) {
+                if (hasTextSearch) {
                     if (courses[i].textcollection.indexOf(searchText) !== -1) {
                         matchcounter++;
                     }
                 }
 
                 // Loop through all selected checkboxes.
-                for (j = 0, lj = selectedTags.length; j < lj; j++) {
+                for (j = 0, lj = selectedCourseTags.length; j < lj; j++) {
                     // Check if the selected item is in the indexed tag collation.
-                    if (courses[i].tagcollection.indexOf(selectedTags[j]) !== -1) {
+                    if (courses[i].tagcollection.indexOf(selectedCourseTags[j]) !== -1) {
+                        matchcounter++;
+                    }
+                }
+
+                // Check if the course dates match the chosen dates.
+                if (fromtoDates.from !== null && fromtoDates.to !== null) {
+                    if (courses[i].sortdate >= fromtoDates.from && courses[i].sortdate <= fromtoDates.to) {
+                        matchcounter++;
+                    }
+                } else if (fromtoDates.from !== null) {
+                    if (courses[i].sortdate >= fromtoDates.from) {
+                        matchcounter++;
+                    }
+                } else if (fromtoDates.to !== null) {
+                    if (courses[i].sortdate <= fromtoDates.to) {
                         matchcounter++;
                     }
                 }
@@ -193,7 +389,7 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
             }
 
             // If tags are selected but no courses match then set the id list to -1.
-            if (!courseIDsToShow.length && selectedTags.length) {
+            if (!courseIDsToShow.length && selectedCourseTags.length) {
                 courseIDsToShow.push(-1);
             }
 
@@ -291,7 +487,7 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                 $.getJSON("./course_search.json", function (data) {
                     log.debug(data);
 
-                    grepSelectedTags(data);
+                    grepselectedCourseTags(data);
                     renderTags(data);
                 }).fail(notification.exception);
 

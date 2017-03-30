@@ -1,14 +1,15 @@
 <div class="tabbable">
     <ul class="nav nav-tabs">
-        <li class="active"><a href="#tabcards" data-toggle="tab">Cards</a></li>
-        <li><a href="#tablist" data-toggle="tab">List</a></li>
+        <li><a href="#tabcards" data-toggle="tab">Cards</a></li>
+        <li class="active"><a href="#tablist" data-toggle="tab">List</a></li>
     </ul>
     <div class="tab-content">
-        <div class="tab-pane active" id="tabcards">
+        <div class="tab-pane" id="tabcards">
             {{> local_playground/course_search_course_cards}}
         </div>
-        <div class="tab-pane" id="tablist">
-            {{> local_playground/course_search_course_list}}
+        <div class="tab-pane active" id="tablist">
+            {{!> local_playground/course_search_course_list}}
+            {{> local_playground/course_search_course_tabular}}
         </div>
     </div>
 </div>
