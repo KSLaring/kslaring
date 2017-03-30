@@ -1,0 +1,152 @@
+.orginfo .levellst {
+    width: 250px;
+    padding: 1px 5px 5px 5px;
+}
+
+.orginfo .levellsttxt {
+    background-color: lightsteelblue;
+    width: 250px;
+    margin: 1px 5px 5px 5px;
+    padding: 1px 5px 5px 5px;
+}
+
+.block_users table {
+    width: 90%;
+    display: block;
+}
+
+.block_users  tr.header_user {
+    background-color:  #f2f2f2;
+    color:  #000;
+    padding: 0;
+    margin-bottom: 0;
+    font:bold 12px Verdana,Verdana Pro,sans-serif;
+    border-bottom: 2px solid #d8d8d8;
+    vertical-align: middle;
+    height: 30px;
+}
+
+.block_users  td.user,
+.block_users  th.user {
+    width: 15%;
+    text-align: left;
+    text-justify:inter-word;
+    padding: 1px 10px 1px 1px;
+}
+
+.block_users  td.date,
+.block_users  th.date {
+    width: 10%;
+    text-align: left;
+    text-justify:inter-word;
+    padding: 1px 10px 1px 1px;
+}
+
+.block_users  td.info,
+.block_users  th.info {
+    width: 20%;
+    text-align: left;
+    text-justify:inter-word;
+    padding: 1px 10px 1px 1px;
+}
+
+@media
+only screen and (max-width: 760px),
+(min-device-width: 768px) and (max-device-width: 1024px)  {
+
+    /* Force table to not be like tables anymore */
+    .block_users  tbody, tr, th, td{
+        display: block;
+    }
+
+
+    .block_users table {
+        display:block;
+        background-color: white !important;
+        width:100%;
+    }
+
+    .block_users table thead tr {
+        display:none;
+    }
+
+
+    .block_users table tr {
+        width: 100%;
+        border: 1px solid darkgray;
+        margin-top: -1px;
+        background-color: white !important;}
+
+    .block_users table td {
+        width:100%;
+        border-top: 1px solid #f2f2f2;
+        margin-bottom: 15px;
+    }
+
+    .block_users table td.info,
+    .block_users table td.user {
+        /* Behave  like a "row" */
+        position: relative;
+        padding-left: 50%;
+        width: 40%;
+        white-space: normal;
+        text-align:left;
+        background-color: white !important;
+        display: inline-block;
+        text-justify:inter-word;
+        word-wrap: break-word;
+    }
+
+    .block_users table td.date {
+        /* Behave  like a "row" */
+        position: relative;
+        padding-left: 50%;
+        width: 45%;
+        white-space: normal;
+        text-align:left;
+        background-color: white !important;
+        display: inline-block;
+        text-justify:inter-word;
+    }
+
+    .block_users table td.info:before,
+    .block_users table td.user:before {
+        /* Now like a table header */
+        position: absolute;
+        /* Top/left values mimic padding */
+        left: 6px;
+        width: 45%;
+        padding-right: 5px;
+        text-align:left;
+        text-justify:inter-word;
+        word-wrap: break-word;
+        font-weight: bold;
+        background-color: white !important;
+    }
+
+    .block_users table td.date:before {
+        /* Now like a table header */
+        position: absolute;
+        /* Top/left values mimic padding */
+        left: 6px;
+        width: 45%;
+        padding-right: 5px;
+        text-align:left;
+        text-justify:inter-word;
+        font-weight: bold;
+        background-color: white !important;
+    }
+
+    .block_users table td.info:before,
+    .block_users table td.user:before {
+        content:attr(data-label);
+        background-color: white !important;
+        text-justify:inter-word;
+        word-wrap: break-word;
+    }
+
+    .block_users table td.date:before {
+        content:attr(data-label);
+        background-color: white !important;
+    }
+}

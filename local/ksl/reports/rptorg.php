@@ -1,0 +1,60 @@
+<?php
+// This file is part of ksl
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle. If not, see <http://www.gnu.org/licenses/>.
+
+require_once( '../../../config.php');
+require_once( '../forms/ksl_forms.php');
+require_once( '../lib/kslib.php');
+
+// Variables!
+$contextsystem  = context_system::instance();
+$userarray      = null;
+$errormsg       = null;
+$page           = optional_param('page', 0, PARAM_INT);
+$perpage        = optional_param('perpage', 15, PARAM_INT);
+$sort           = 'asc';
+$url            = new moodle_url('/local/ksl/reports/rptorg.php', array('sort' => $sort, 'page' => $page));
+
+$levelthree     = $SESSION->organization3;
+
+$url = new moodle_url('/local/ksl/reports/rptorg.php');
+
+// Startpage!
+$PAGE->set_url($url);
+$PAGE->set_pagelayout('admin');
+$PAGE->set_context($contextsystem);
+
+// Breadcrumb!
+$navbar = $PAGE->navbar->add(get_string('pluginname', 'local_ksl'), new moodle_url('/local/ksl/index.php'), null);
+$navbar->make_active();
+
+// Capabilities!
+require_capability('local/ksl:manage', $contextsystem);
+
+$userarray  = ksl::local_ksl_organizationsearch($levelthree);
+$usercount  = ksl::local_ksl_organizationsearch_count($levelthree);
+$out        = ksl::display_org($userarray);
+
+// Print Header!
+echo $OUTPUT->header();
+
+echo $OUTPUT->paging_bar($usercount, $page, $perpage, $url);
+
+echo $out;
+
+echo $OUTPUT->paging_bar($usercount, $page, $perpage, $url);
+
+// Print Footer!
+echo $OUTPUT->footer();
