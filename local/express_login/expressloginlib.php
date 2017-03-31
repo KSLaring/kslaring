@@ -31,22 +31,48 @@ class Express_Login {
      * Activate Auto Generated Express Login
      */
     public static function Activate_AutoExpressLogin($users) {
-        /* Variables    */
+        // Variables
         global $DB;
-        $infoProfile = null;
-        $params = null;
+        $infoprofile    = null;
+        $instance       = null;
+        $params         = null;
+        $myusers        = null;
+        $user           = null;
 
         try {
-            /* Get Id Profile Field */
-            $infoProfile = $DB->get_record('user_info_field',array('datatype' => 'express'));
-            if ($infoProfile) {
-                /* SQL Instruction  */
-                $sql = " UPDATE	{user_info_data}
-                                SET	data = 1
-                            WHERE userid IN ($users)
-                              AND fieldid = " . $infoProfile->id;
+            // Get profile id
+            $infoprofile = $DB->get_record('user_info_field',array('datatype' => 'express'));
+            if ($infoprofile) {
+                // Create/Update the entry
+                $myusers = explode(',',$users);
+                if ($myusers) {
+                    // Criteria
+                    $params = array();
+                    $params['fieldid'] = $infoprofile->id;
+                    foreach ($myusers as $user) {
+                        // First check if already exist
+                        $params['userid'] = $user;
+                        // Get record
+                        $rdo = $DB->get_record('user_info_data',$params);
 
-                $DB->execute($sql);
+                        if ($rdo) {
+                            // Update
+                            $rdo->data = 1;
+
+                            // Execute
+                            $DB->update_record('user_info_data',$rdo);
+                        }else {
+                            //Create
+                            $instance = new stdClass();
+                            $instance->data     = 1;
+                            $instance->fieldid  = $infoprofile->id;
+                            $instance->userid   = $user;
+
+                            // Execute
+                            $DB->insert_record('user_info_data',$instance);
+                        }//if_Else
+                    }//for_rdo
+                }//if_users
             }//if_infoProfile
 
             return true;
