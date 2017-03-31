@@ -273,3 +273,7 @@ $string['body_instructor']  = '<p>We would like to inform you that you have just
 $string['body_uninstructor'] = '<p>We would like to inform you that you have just been unassigned as a course coordinator for the course {$a->course}</p>
                                 </br>
                                 <p>This is an automatic generated email from {$a->site} and you cannot answer this email.</p>';
+
+$string['notemplate']        = 'None';
+$string['courseformats']     = 'Course template list';
+$string['courseformatsdesc'] = 'The course list. Please select the course formats that may be used as templates.';
