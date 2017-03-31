@@ -23,11 +23,15 @@ $contextsystem  = context_system::instance();
 $userarray      = null;
 $errormsg       = null;
 $page           = optional_param('page', 0, PARAM_INT);
-$perpage        = optional_param('perpage', 15, PARAM_INT);
+$perpage        = optional_param('perpage', 1, PARAM_INT);
 $sort           = 'asc';
 $url            = new moodle_url('/local/ksl/reports/rptorg.php', array('sort' => $sort, 'page' => $page));
+$out            = null;
 
 $levelthree     = $SESSION->organization3;
+$leveltwo       = $SESSION->organization2;
+$levelone       = $SESSION->organization1;
+$levelzero      = $SESSION->organization0;
 
 $url = new moodle_url('/local/ksl/reports/rptorg.php');
 
@@ -43,12 +47,23 @@ $navbar->make_active();
 // Capabilities!
 require_capability('local/ksl:manage', $contextsystem);
 
-$userarray  = ksl::local_ksl_organizationsearch($levelthree);
+$userarray  = ksl::local_ksl_organizationsearch($levelthree, $page, $perpage);
 $usercount  = ksl::local_ksl_organizationsearch_count($levelthree);
-$out        = ksl::display_org($userarray);
+
+if ($userarray) {
+    $levelstruc = ksl::local_ksl_organizationsearch_empty($levelzero, $levelone, $leveltwo, $levelthree);
+    $out        = ksl::add_orginfo_empty($levelstruc);
+    $out       .= ksl::display_org($userarray);
+} else {
+    $levelstruc = ksl::local_ksl_organizationsearch_empty($levelzero, $levelone, $leveltwo, $levelthree);
+    $out        = ksl::add_orginfo_empty($levelstruc);
+    $out       .= ksl::say_empty();
+}
 
 // Print Header!
 echo $OUTPUT->header();
+
+echo $OUTPUT->heading(get_string('organizationrpt', 'local_ksl'));
 
 echo $OUTPUT->paging_bar($usercount, $page, $perpage, $url);
 

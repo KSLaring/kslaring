@@ -1,10 +1,12 @@
 .orginfo .levellst {
     width: 250px;
     padding: 1px 5px 5px 5px;
+    margin: 1px 5px 5px 5px;
 }
 
 .orginfo .levellsttxt {
-    background-color: lightsteelblue;
+    color: #004b93;
+    background-color: #d9d9da;
     width: 250px;
     margin: 1px 5px 5px 5px;
     padding: 1px 5px 5px 5px;

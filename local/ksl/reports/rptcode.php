@@ -23,9 +23,9 @@ $contextsystem  = context_system::instance();
 $userarray      = null;
 $errormsg       = null;
 $page           = optional_param('page', 0, PARAM_INT);
-$perpage        = optional_param('perpage', 15, PARAM_INT);
+$perpage        = optional_param('perpage', 3, PARAM_INT);
 $sort           = 'asc';
-$url            = new moodle_url('/local/ksl/reports/rptcode.php', array('sort' => $sort, 'page' => $page));
+$url            = new moodle_url('/local/ksl/reports/rptcode.php', array('sort' => $sort, 'page' => $page, 'perpage' => $perpage));
 
 $industrycode     = $SESSION->industrycode;
 
@@ -43,12 +43,14 @@ $navbar->make_active();
 // Capabilities!
 require_capability('local/ksl:manage', $contextsystem);
 
-$userarray  = ksl::local_ksl_industrysearch($industrycode);
+$userarray  = ksl::local_ksl_industrysearch($industrycode, $page, $perpage);
 $usercount  = ksl::local_ksl_industrysearch_count($industrycode);
 $out        = ksl::display_users($userarray, $industrycode);
 
 // Print Header!
 echo $OUTPUT->header();
+
+echo $OUTPUT->heading(get_string('industrycoderpt', 'local_ksl'));
 
 echo $OUTPUT->paging_bar($usercount, $page, $perpage, $url);
 

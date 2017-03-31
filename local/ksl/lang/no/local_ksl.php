@@ -53,3 +53,8 @@ $string['selectone'] = 'Velg en...';
 $string['required'] = 'Dette er et nødvendig felt';
 $string['noresults'] = 'Ingen resultater';
 $string['levelrequired'] = 'Du må velge level tre';
+
+$string['indexheading'] = 'Ekstra rapport - Person-kurs-organisasjon';
+
+$string['male'] = 'Mann';
+$string['female'] = 'Dame';

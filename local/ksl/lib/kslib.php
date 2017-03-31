@@ -19,6 +19,37 @@ defined('MOODLE_INTERNAL') || die();
 
 class ksl
 {
+
+    /**
+     * @return mixed|null
+     * @throws Exception
+     *
+     * User to find out what field the gender is
+     *
+     * @creationeDate   31/03/2017
+     * @author          eFaktor     (nas)
+     *
+     */
+    private static function get_genderfield() {
+        global $DB;
+        $genderid = null;
+        $rdo = null;
+
+        $userquery = "SELECT id
+                      FROM {user_info_field}
+                      WHERE datatype = 'gender'";
+
+        try {
+            $rdo = $DB->get_record_sql($userquery);
+            if ($rdo) {
+                return $rdo->id;
+            };
+
+        } catch (Exception $ex) {
+            Throw $ex;
+        }  // end try_catch
+    }
+
     /**
      * @param   integer $id It's the industrycode from the form
      * @return  array
@@ -30,51 +61,51 @@ class ksl
      * @author          eFaktor     (nas)
      *
      */
-    public static function local_ksl_organizationsearch($id) {
+    public static function local_ksl_organizationsearch($id, $page, $perpage) {
         global $DB;
         $myusers = array();
         $rdo = null;
 
-                $userquery = "SELECT  co.id,
-                                      u.firstname, u.lastname,
-                                      uinfo.data as 'Gender',
-                                      u.email,
-                                      course.fullname as 'coursename',
-                                      role.shortname as 'role',
-                                      co.name as 'levelthree',
-                                      co_two.name as 'leveltwo',
-                                      co_three.name as 'levelone',
-                                      co_four.name as 'levelzero',
-                                      ccomp.timecompleted as 'completed'
-                              FROM  {user} u
-                              JOIN  {user_info_competence_data}       cd        ON cd.userid = u.id
-                         LEFT JOIN  {report_gen_companydata}          co        ON co.id = cd.companyid
-                         LEFT JOIN  {report_gen_company_relation}     re        ON re.companyid = cd.companyid
-                         LEFT JOIN  {user_info_data}                  uinfo     ON u.id = uinfo.userid
-                         LEFT JOIN  {user_enrolments}                 enrol     ON enrol.userid = u.id
-                         LEFT JOIN  {enrol}                           e         ON e.id = enrol.enrolid
-                                                                                AND e.status = 0
-                         LEFT JOIN  {role_assignments}                rolea     ON enrol.userid = rolea.userid
-                         LEFT JOIN  {role}                            role      ON rolea.roleid = role.id
-                              JOIN 	{course}                          course    ON course.id = e.courseid
-                              JOIN 	{report_gen_company_relation}	  cr_two 	ON  cr_two.companyid = co.id
-                              JOIN 	{report_gen_companydata}		  co_two 	ON  co_two.id = cr_two.parentid
-                                                                                AND co_two.hierarchylevel = 2
-                              JOIN	{report_gen_company_relation}	  cr_three  ON  cr_three.companyid = co_two.id
-                              JOIN	{report_gen_companydata}		  co_three  ON  co_three.id = cr_three.parentid
-                                                                                AND co_three.hierarchylevel = 1
-                              JOIN	{report_gen_company_relation}	  cr_four   ON  cr_four.companyid = co_three.id
-                              JOIN	{report_gen_companydata}		  co_four   ON  co_four.id = cr_four.parentid
-                                                                                AND co_four.hierarchylevel = 0
-                        LEFT JOIN   {course_completions}		      ccomp	    ON  ccomp.course = course.id
-															                    AND ccomp.userid = enrol.userid
-                             WHERE   uinfo.fieldid = 7 AND co.id = :myid";
+                $userquery = "SELECT 	CONCAT(u.id,'_',c.id) as 'id', 
+                                        u.firstname           as 'firstname',
+                                        u.lastname            as 'lastname',
+                                        u.email               as 'email',
+                                        uid.data              as 'gender',
+                                        c.fullname            as 'coursename',
+                                        r.shortname           as 'role',
+                                        ccomp.timecompleted   as 'completed'
+                                FROM	mdl_user u
+                                    -- Gender
+                                    LEFT JOIN mdl_user_info_data uid ON uid.userid = u.id
+                                                                     AND uid.fieldid = :gender
+                                    -- Get courses connected with the user
+                                    JOIN 	mdl_user_enrolments		ue	ON  ue.userid 	= u.id
+                                    JOIN	mdl_enrol				e	ON  e.id 		= ue.enrolid
+                                                                        AND e.status 	= 0
+                                    JOIN	mdl_course				c	ON  c.id 		= e.courseid
+                                    -- Whic role in the curse
+                                    JOIN    mdl_context				ct	ON  ct.instanceid = c.id
+                                    JOIN	mdl_role_assignments	ra	ON  ra.contextid  = ct.id
+                                                                        AND ra.userid 	  = ue.userid
+                                    JOIN 	mdl_role				r	ON  r.id		  = ra.roleid
+                                    -- Completion
+                                    LEFT JOIN    mdl_course_completions		  ccomp	    ON  ccomp.course = c.id
+                                                                                        AND ccomp.userid = ue.userid
+                                    -- Org
+                                    JOIN mdl_user_info_competence_data 	uic ON 	uic.userid = ra.userid
+                                    JOIN mdl_report_gen_companydata 	rgc ON	rgc.id = uic.companyid
+                                                                            AND rgc.id = :myid";
 
         try {
+            // Get the fieldid for gender.
+            $genderid = self::get_genderfield();
+
+            // Criteria.
             $params = array();
+            $params['gender'] = $genderid;
             $params['myid'] = $id;
 
-            $rdo = $DB->get_records_sql($userquery, $params);
+            $rdo = $DB->get_records_sql($userquery, $params, $page, $perpage);
             if ($rdo) {
                 foreach ($rdo as $instance) {
                     $infouser = new stdClass();
@@ -85,28 +116,58 @@ class ksl
                     $infouser->email = $instance->email;
                     $infouser->course = $instance->coursename;
                     $infouser->role = $instance->role;
-                    $infouser->levelthree = $instance->levelthree;
-                    $infouser->leveltwo = $instance->leveltwo;
-                    $infouser->levelone = $instance->levelone;
-                    $infouser->levelzero = $instance->levelzero;
 
                     if ($instance->gender = '1') {
-                        $infouser->gender = 'Male';
+                        $infouser->gender = get_string('male', 'local_ksl');
                     } else if ($instance->gender = '2') {
-                        $infouser->gender = 'Female';
+                        $infouser->gender = get_string('female','local_ksl');
                     } else {
                         $infouser->gender = '-';
                     }
 
-                    $epoch = $instance->completed;
-                    $dt = new DateTime("@$epoch");
-                    $infouser->completed = $dt->format('d.m.Y');
+                    if ($instance->completed) {
+                        $infouser->completed = userdate($instance->completed,'%d.%m.%Y', 99, false); //$dt->format('d.m.Y');
+                    } else {
+                        $infouser->completed = " - ";
+                    }
 
                     $myusers[$instance->id] = $infouser;
                 }
             }
 
             return $myusers;
+
+        } catch (Exception $ex) {
+            Throw $ex;
+        }  // end try_catch
+
+    }  // end get_users
+
+    public static function local_ksl_organizationsearch_empty($l0, $l1, $l2, $l3) {
+        global $DB;
+        $rdo = null;
+        $lst = array();
+
+        $userquery = "SELECT  co.id,
+                              co.name
+                      FROM    {report_gen_companydata} co
+                      WHERE   co.id IN (:levelzero, :levelone, :leveltwo, :levelthree);";
+
+        try {
+            $params = array();
+            $params['levelzero'] = $l0;
+            $params['levelone'] = $l1;
+            $params['leveltwo'] = $l2;
+            $params['levelthree'] = $l3;
+
+            $rdo = $DB->get_records_sql($userquery, $params);
+
+            if ($rdo) {
+                foreach($rdo as $instance) {
+                    $lst[$instance->id] = $instance->name;
+                }
+            }
+            return $lst;
 
         } catch (Exception $ex) {
             Throw $ex;
@@ -183,64 +244,77 @@ class ksl
      * @author          eFaktor     (nas)
      *
      */
-    public static function local_ksl_industrysearch($industrycode) {
+    public static function local_ksl_industrysearch($industrycode, $currentpage, $rowsperpage) {
 
         // Variables!
         global $DB;
         $myusers = array();
         $rdo = null;
 
-        $userquery = "SELECT 	uic.id									as 'ID',
-		                        u.firstname                             as 'firstname',
-		                        u.lastname                              as 'lastname',
-                                uinfo.data								as 'gender',
-                                u.email 								as 'email',
-                                course.fullname							as 'coursename',
-                                role.shortname							as 'role',
-		                        ccomp.timecompleted						as 'completed',
-                                co.name 								as 'levelthree',
-                                co_two.name 							as 'leveltwo',
-                                co_three.name							as 'levelone',
-                                co_four.name							as 'levelzero'
-                      FROM		mdl_user_info_competence_data uic
-	                            JOIN	mdl_user 						  u         ON  u.id = uic.userid
-																					AND u.deleted = 0
-                                -- Level Three
-                                JOIN	mdl_report_gen_companydata		  co        ON  co.id = uic.companyid
-											                                        AND co.industrycode = :industrycode
-                                -- Level Two
-                                JOIN	mdl_report_gen_company_relation	  cr_two    ON  cr_two.companyid = co.id
-                                JOIN	mdl_report_gen_companydata		  co_two    ON  co_two.id = cr_two.parentid
-												                                    AND co_two.hierarchylevel = 2
-                                -- Level One
-	                            JOIN	mdl_report_gen_company_relation	  cr_three  ON  cr_three.companyid = co_two.id
-                                JOIN	mdl_report_gen_companydata		  co_three  ON  co_three.id = cr_three.parentid
-													                                AND co_three.hierarchylevel = 1
-                                -- Level Zero
-	                            JOIN	mdl_report_gen_company_relation	  cr_four   ON  cr_four.companyid = co_three.id
-                                JOIN	mdl_report_gen_companydata		  co_four   ON  co_four.id = cr_four.parentid
-													                                AND co_four.hierarchylevel = 0
-  	                            -- Gender
-	                       LEFT JOIN	mdl_user_info_data		          uinfo	    ON  u.id = uinfo.userid
-	                            -- Role
-                                JOIN    mdl_user_enrolments				  enrol	    ON  enrol.userid = u.id
-                                JOIN    mdl_enrol						  e		    ON  e.id = enrol.enrolid
-																					AND e.status = 0
-								JOIN    mdl_role_assignments 			  rolea 	ON  enrol.userid = rolea.userid
-                                JOIN    mdl_role						  role	    ON  rolea.roleid = role.id
-                                -- Course
-                                JOIN    mdl_course						  course	ON  course.id = e.courseid
-                                -- Course Completion
-	                       LEFT JOIN    mdl_course_completions		      ccomp	    ON  ccomp.course = course.id
-																					AND ccomp.userid = enrol.userid
-                                -- To only get the genderdata
-                                WHERE   uinfo.fieldid = 7";
-                                // LIMIT $currentpage, $rowsperpage
+        $userquery = "SELECT  DISTINCT 
+                                CONCAT(u.id,'_',co.id,'_',c.id) as 'id', 
+                                u.id          as 'userid',
+                                u.firstname   as 'firstname',
+                                u.lastname    as 'lastname', 
+                                u.email       as 'email',
+                                c.fullname    as 'coursename',
+                                r.shortname   as 'role',
+                                uid.data      as 'gender',
+                                co.name       as 'levelthree',
+                                co_two.name   as 'leveltwo',
+                                co_one.name   as 'levelone',
+                                co_zero.name  as 'levelzero',
+                                ccomp.timecompleted as 'completed'
+                                
+                        FROM		{user} u
+                            -- Get courses connected with the user
+                            JOIN 	{user_enrolments}		ue	ON  ue.userid 	= u.id
+                            JOIN	{enrol}				    e	ON  e.id 		= ue.enrolid
+                                                                AND e.status 	= 0
+                            JOIN	{course}				c	ON  c.id 		= e.courseid
+                            -- Whic role in the curse
+                            JOIN    {context}				ct	ON  ct.instanceid = c.id
+                            JOIN	{role_assignments}	    ra	ON  ra.contextid  = ct.id
+                                                                AND ra.userid 	  = ue.userid
+                            JOIN 	{role}				    r	ON  r.id		  = ra.roleid
+                            -- Gender
+                            LEFT JOIN {user_info_data}   	uid ON  uid.userid 	  = ra.userid
+                                                                AND uid.fieldid   = :gender
+                            -- Competence profile
+                            JOIN 	{user_info_competence_data} 	uic ON  uic.userid = ra.userid
+                            JOIN	{report_gen_companydata}		co	ON  co.id = uic.companyid
+                                                                        AND co.industrycode = :industrycode
+                            -- Level Two
+                            JOIN	{report_gen_company_relation}	  cr_two    ON  cr_two.companyid = co.id
+                            JOIN	{report_gen_companydata}		  co_two    ON  co_two.id = cr_two.parentid
+                                                                                AND co_two.hierarchylevel = 2
+                            -- Level One
+                            JOIN	{report_gen_company_relation}	  cr_one  	ON  cr_one.companyid = co_two.id
+                            JOIN	{report_gen_companydata}		  co_one  	ON  co_one.id = cr_one.parentid
+                                                                                AND co_one.hierarchylevel = 1
+                            -- Level Zero
+                            JOIN	{report_gen_company_relation}	  cr_zero   ON  cr_zero.companyid = co_one.id
+                            JOIN	{report_gen_companydata}		  co_zero   ON  co_zero.id = cr_zero.parentid
+                                                                                AND co_zero.hierarchylevel = 0
+                            -- Completion
+                            LEFT JOIN    {course_completions}		  ccomp	    ON  ccomp.course = c.id
+                                                                                AND ccomp.userid = ue.userid
+                            
+                        WHERE 		u.deleted 	= 0
+                            AND 	u.username != 'guest'
+                        ORDER BY 	u.firstname, u.lastname";
+
         try {
+            // Get the correct fieldid for gender.
+            $genderid = self::get_genderfield();
+
+            // Criteria.
             $params = array();
+            $params['gender'] = $genderid;
             $params['industrycode'] = $industrycode;
 
-            $rdo = $DB->get_records_sql($userquery, $params);
+            // Execute the sql and create the object.
+            $rdo = $DB->get_records_sql($userquery, $params, $currentpage, $rowsperpage);
             if ($rdo) {
                 foreach ($rdo as $instance) {
                     $infouser = new stdClass();
@@ -257,16 +331,18 @@ class ksl
                     $infouser->levelzero = $instance->levelzero;
 
                     if ($instance->gender = '1') {
-                        $infouser->gender = 'Male';
+                        $infouser->gender = get_string('male', 'local_ksl');
                     } else if ($instance->gender = '2') {
-                        $infouser->gender = 'Female';
+                        $infouser->gender = get_string('female', 'local_ksl');
                     } else {
                         $infouser->gender = '-';
                     }
 
-                    $epoch = $instance->completed;
-                    $dt = new DateTime("@$epoch");
-                    $infouser->completed = $dt->format('d.m.Y');
+                    if ($instance->completed) {
+                        $infouser->completed = userdate($instance->completed,'%d.%m.%Y', 99, false);
+                    } else {
+                        $infouser->completed = " - ";
+                    }
 
                     $myusers[$instance->id] = $infouser;
                 }
@@ -298,41 +374,44 @@ class ksl
         $mycount = null;
         $rdo = null;
 
-        $userquery = "SELECT 	COUNT(uic.id) as 'count'
-                      FROM		mdl_user_info_competence_data uic
-	                            JOIN	mdl_user 						  u         ON  u.id = uic.userid
-																					AND u.deleted = 0
-                                -- Level Three
-                                JOIN	mdl_report_gen_companydata		  co        ON  co.id = uic.companyid
-											                                        AND co.industrycode = :industrycode
-                                -- Level Two
-                                JOIN	mdl_report_gen_company_relation	  cr_two    ON  cr_two.companyid = co.id
-                                JOIN	mdl_report_gen_companydata		  co_two    ON  co_two.id = cr_two.parentid
-												                                    AND co_two.hierarchylevel = 2
-                                -- Level One
-	                            JOIN	mdl_report_gen_company_relation	  cr_three  ON  cr_three.companyid = co_two.id
-                                JOIN	mdl_report_gen_companydata		  co_three  ON  co_three.id = cr_three.parentid
-													                                AND co_three.hierarchylevel = 1
-                                -- Level Zero
-	                            JOIN	mdl_report_gen_company_relation	  cr_four   ON  cr_four.companyid = co_three.id
-                                JOIN	mdl_report_gen_companydata		  co_four   ON  co_four.id = cr_four.parentid
-													                                AND co_four.hierarchylevel = 0
-  	                            -- Gender
-	                       LEFT JOIN	mdl_user_info_data		          uinfo	    ON  u.id = uinfo.userid
-	                            -- Role
-                                JOIN    mdl_user_enrolments				  enrol	    ON  enrol.userid = u.id
-                                JOIN    mdl_enrol						  e		    ON  e.id = enrol.enrolid
-																					AND e.status = 0
-								JOIN    mdl_role_assignments 			  rolea 	ON  enrol.userid = rolea.userid
-                                JOIN    mdl_role						  role	    ON  rolea.roleid = role.id
-                                -- Course
-                                JOIN    mdl_course						  course	ON  course.id = e.courseid
-                                -- Course Completionm
-	                       LEFT JOIN    mdl_course_completions		      ccomp	    ON  ccomp.course = course.id
-																					AND ccomp.userid = enrol.userid
-                                -- To only get the genderdata
-                                WHERE   uinfo.fieldid = 7";
-        // LIMIT $currentpage, $rowsperpage
+        $userquery = "SELECT  COUNT(CONCAT(u.id,'_',co.id,'_',c.id)) as 'count'     
+                        FROM		{user} u
+                            -- Get courses connected with the user
+                            JOIN 	{user_enrolments}		ue	ON  ue.userid 	= u.id
+                            JOIN	{enrol}				    e	ON  e.id 		= ue.enrolid
+                                                                AND e.status 	= 0
+                            JOIN	{course}				c	ON  c.id 		= e.courseid
+                            -- Whic role in the curse
+                            JOIN    {context}				ct	ON  ct.instanceid = c.id
+                            JOIN	{role_assignments}	    ra	ON  ra.contextid  = ct.id
+                                                                AND ra.userid 	  = ue.userid
+                            JOIN 	{role}				    r	ON  r.id		  = ra.roleid
+                            -- Gender
+                            LEFT JOIN {user_info_data}   	uid ON  uid.userid 	  = ra.userid
+                                                                AND uid.fieldid   = 7
+                            -- Competence profile
+                            JOIN 	{user_info_competence_data} 	uic ON  uic.userid = ra.userid
+                            JOIN	{report_gen_companydata}		co	ON  co.id = uic.companyid
+                                                                        AND co.industrycode = :industrycode
+                            -- Level Two
+                            JOIN	{report_gen_company_relation}	  cr_two    ON  cr_two.companyid = co.id
+                            JOIN	{report_gen_companydata}		  co_two    ON  co_two.id = cr_two.parentid
+                                                                                AND co_two.hierarchylevel = 2
+                            -- Level One
+                            JOIN	{report_gen_company_relation}	  cr_one  	ON  cr_one.companyid = co_two.id
+                            JOIN	{report_gen_companydata}		  co_one  	ON  co_one.id = cr_one.parentid
+                                                                                AND co_one.hierarchylevel = 1
+                            -- Level Zero
+                            JOIN	{report_gen_company_relation}	  cr_zero   ON  cr_zero.companyid = co_one.id
+                            JOIN	{report_gen_companydata}		  co_zero   ON  co_zero.id = cr_zero.parentid
+                                                                                AND co_zero.hierarchylevel = 0
+                            -- Completion
+                            LEFT JOIN    {course_completions}		  ccomp	    ON  ccomp.course = c.id
+                                                                                AND ccomp.userid = ue.userid
+                            
+                        WHERE 		u.deleted 	= 0
+                            AND 	u.username != 'guest'
+                        ORDER BY 	u.firstname, u.lastname";
         try {
             $params = array();
             $params['industrycode'] = $industrycode;
@@ -371,9 +450,6 @@ class ksl
             try {
                 // Display!
                 if ($userarray) {
-                    $out .= html_writer::start_div('Industrycoderpt');
-                    $out .= "<h2>" . get_string('industrycoderpt', 'local_ksl') . "</h2>";
-                    $out .= html_writer::end_div();
                     $out .= "</br>";
                     if ($industrycode) {
                         $out .= html_writer::start_div('industrytop');
@@ -693,7 +769,8 @@ class ksl
      * @author          eFaktor     (nas)
      *
      */
-    public static function display_org($userarray) {
+    public static function display_org($userarray)
+    {
         $out = '';
         $url = null;
         global $CFG;
@@ -702,13 +779,10 @@ class ksl
             try {
                 // Display!
                 if ($userarray) {
-                    $out .= html_writer::start_div('organizationrpt');
-                    $out .= "<h2>" . get_string('organizationrpt', 'local_ksl') . "</h2>";
-                    $out .= html_writer::end_div();
-                    $out .= "</br>";
+                    $out .= "</br>"; /*
                     $out .= html_writer::start_div('orginfo');
                     $out .= self::add_orginfo($userarray);
-                    $out .= html_writer::end_div();
+                    $out .= html_writer::end_div(); */
                     $out .= html_writer::start_div('block_users');
                     $out .= self::add_org_table($userarray);
                     $out .= html_writer::end_div();
@@ -724,27 +798,9 @@ class ksl
             } catch (Exception $ex) {
                 throw $ex;
             } // end try_catch
-        } else {
-
-            $out .= html_writer::start_div('organizationrpt');
-            $out .= "<h2>" . get_string('organizationrpt', 'local_ksl') . "</h2>";
-            $out .= html_writer::end_div();
-            $out .= "</br>";
-            $out .= html_writer::start_div('orginfo');
-            $out .= self::add_orginfo($userarray);
-            $out .= html_writer::end_div();
-            $out .= html_writer::start_div('block_users');
-            $out .= get_string('noresults', 'local_ksl');
-            $out .= html_writer::end_div();
-            $out .= html_writer::start_div('back_btn');
-            $url = new moodle_url('/local/ksl/index.php');
-            $back = get_String('back', 'local_ksl');
-            $out .= "<div><a href=$url> $back </a>";
-            $out .= html_writer::end_div();
-
+            return $out;
         }
-        return $out;
-    } //end display_users
+    }//end display_users
 
     /**
      * @param array     $userarray  All the users
@@ -756,20 +812,21 @@ class ksl
      * @author          eFaktor     (nas)
      *
      */
-    public static function add_orginfo($userarray) {
+    public static function add_orginfo_empty($userarray) {
+        GLOBAL $SESSION;
         $info = '';
         $mylevelthree   = get_string('headerlevelthree', 'local_ksl') . get_string('headerlevelthree1', 'local_ksl');
         $myleveltwo     = get_string('headerleveltwo', 'local_ksl') . get_string('headerleveltwo1', 'local_ksl');
         $mylevelone     = get_string('headerlevelone', 'local_ksl') . get_string('headerlevelone1', 'local_ksl');
         $mylevelzero    = get_string('headerlevelzero', 'local_ksl') . get_string('headerlevelzero1', 'local_ksl');
 
-        foreach ($userarray as $uservalue) {
+        $info .= html_writer::start_div('orginfo');
             $info .= html_writer::start_div('levellsttxt');
             $info .= $mylevelzero;
             $info .= html_writer::end_div(); // ...levellsttxt.
 
             $info .= html_writer::start_div('levellst');
-            $info .= $uservalue->levelzero;
+            $info .= $userarray[$SESSION->organization0];
             $info .= html_writer::end_div(); // ...levellst.
 
             $info .= html_writer::start_div('levellsttxt');
@@ -777,7 +834,7 @@ class ksl
             $info .= html_writer::end_div(); // ...levellsttxt.
 
             $info .= html_writer::start_div('levellst');
-            $info .= $uservalue->levelone;
+            $info .= $userarray[$SESSION->organization1];
             $info .= html_writer::end_div(); // ...levellst.
 
             $info .= html_writer::start_div('levellsttxt');
@@ -785,7 +842,7 @@ class ksl
             $info .= html_writer::end_div(); // ...levellsttxt.
 
             $info .= html_writer::start_div('levellst');
-            $info .= $uservalue->leveltwo;
+            $info .= $userarray[$SESSION->organization2];
             $info .= html_writer::end_div(); // ...levellst.
 
             $info .= html_writer::start_div('levellsttxt');
@@ -793,9 +850,33 @@ class ksl
             $info .= html_writer::end_div(); // ...levellsttxt.
 
             $info .= html_writer::start_div('levellst');
-            $info .= $uservalue->levelthree;
+            $info .= $userarray[$SESSION->organization3];
             $info .= html_writer::end_div(); // ...levellst.
-        }
+        $info .= html_writer::end_div(); // ...orginfo.
+
+        $info .= "<br>";
+
+        return $info;
+    }
+
+    /**
+     * @return string
+     *
+     * Function to say that no results were found.
+     *
+     * @creationeDate   31/03/2017
+     * @author          eFaktor     (nas)
+     */
+    public static function say_empty() {
+        $info = '';
+        $info .= html_writer::start_div('block_users');
+        $info .= get_string('noresults', 'local_ksl');
+        $info .= html_writer::end_div();
+        $info .= html_writer::start_div('back_btn');
+        $url = new moodle_url('/local/ksl/index.php');
+        $back = get_String('back', 'local_ksl');
+        $info .= "<div><a href=$url> $back </a>";
+        $info .= html_writer::end_div();
         return $info;
     }
 

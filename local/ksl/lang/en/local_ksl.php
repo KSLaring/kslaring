@@ -53,3 +53,8 @@ $string['selectone'] = 'Select one...';
 $string['required'] = 'This is a required field';
 $string['noresults'] = 'No results';
 $string['levelrequired'] = 'You need to select a level three';
+
+$string['indexheading'] = 'Extra report - Person-course-organization';
+
+$string['male'] = 'Male';
+$string['female'] = 'Female';
