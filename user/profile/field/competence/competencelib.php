@@ -1080,7 +1080,7 @@ class Competence {
             // Title
             $out .= html_writer::start_tag('div');
                 $out .= '<h3>' . get_string('pluginname','profilefield_competence'). '</h3>';
-                $out .= '<h5>'. get_string('profile_desc','profilefield_competence') . '</h5>';
+                $out .= '<h5>'. get_string('comptence_desc','profilefield_competence') . '</h5>';
             $out .= html_writer::end_tag('div');
             $out .= '</br>';
 
