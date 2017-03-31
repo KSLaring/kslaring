@@ -61,7 +61,7 @@ if ($hassiteconfig) {
     core_collator::asort($options);
 
     $settings->add(new admin_setting_configmultiselect('local_friadmin/template_list',
-        get_string('courseformats', 'block_frikomport'),
-        get_string('courseformatsdesc', 'block_frikomport'),
+        get_string('courseformats', 'local_friadmin'),
+        get_string('courseformatsdesc', 'local_friadmin'),
         array(), $options));
 }
