@@ -51,6 +51,9 @@ $string['customcssdesc'] = 'All CSS du legger til her vil benyttes på alle side
 $string['footnote'] = 'Bunntekst';
 $string['footnotedesc'] = 'Det du skriver inn her vil vises i bunnteksten på siden på alle sider i portalen.';
 
+$string['useadminlogin'] = 'Use the "Admin login".';
+$string['useadminlogindesc'] = 'When checked then hide the login fields and show a "Admin login" button on the login page.';
+
 $string['invert'] = 'Inverter fargene i navigasjonslinjen';
 $string['invertdesc'] = 'Bytter om fargene på tekst og bakgrunn i navigasjonslinja på toppen av siden.';
 

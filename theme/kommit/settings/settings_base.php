@@ -69,6 +69,15 @@ $setting = new admin_setting_confightmleditor($name, $title, $description, $defa
 $setting->set_updatedcallback('theme_reset_all_caches');
 $temp->add($setting);
 
+// Footnote setting.
+$name = $themename . '/useadminlogin';
+$title = get_string('useadminlogin', 'theme_kommit');
+$description = get_string('useadminlogindesc', 'theme_kommit');
+$default = 1;
+$setting = new admin_setting_configcheckbox($name, $title, $description, $default);
+$setting->set_updatedcallback('theme_reset_all_caches');
+$temp->add($setting);
+
 $ADMIN->add($themename, $temp);
 
 
