@@ -266,3 +266,7 @@ $string['body_instructor']  = '<p>Vi ønsker å informere deg om at du er satt o
 $string['body_uninstructor'] = '<p>Vi ønsker å informere deg om at du ikke lengre er satt opp som kursansvarlig for kurset {$a->course}</p>
                                 </br>
                                 <p>Dette er en automatisk generert epost fra {$a->site}. Du kan ikke svare på denne eposten.</p>';
+
+$string['notemplate']        = 'None';
+$string['courseformats']     = 'Course template list';
+$string['courseformatsdesc'] = 'The course list. Please select the course formats that may be used as templates.';
