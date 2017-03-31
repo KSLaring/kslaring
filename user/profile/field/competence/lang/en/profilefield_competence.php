@@ -21,7 +21,8 @@ $string['pluginname_help']      = 'Competence User Profile contains information 
 
 $string['competence_profile']   = 'Competence Profile';
 
-$string['profile_desc'] = 'Your information about your companies and job roles';
+$string['profile_desc']   = 'Your information about your companies and job roles';
+$string['comptence_desc'] = 'Your information about your companies and job roles';
 $string['lnk_update']   = 'Update';
 $string['lnk_edit']     = 'Edit';
 $string['lnk_delete']   = 'Delete';

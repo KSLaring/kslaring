@@ -22,6 +22,7 @@ $string['pluginname_help']      = 'Her finner du brukerens arbeidssteder og jobb
 $string['competence_profile']   = 'Arbeidsteder og jobbroller';
 
 $string['profile_desc'] = 'Dine arbeidssteder og jobbroller.<br >Vennligst legg til minst ett arbeidssted med tilhørende jobbrolle. Klikk på "Opprett ny" for å gjøre dette.';
+$string['comptence_desc'] = 'Your information about your companies and job roles';
 $string['lnk_update']   = 'Endre mine arbeidssteder og jobbroller';
 $string['lnk_edit']     = 'Rediger';
 $string['lnk_delete']   = 'Slett';
