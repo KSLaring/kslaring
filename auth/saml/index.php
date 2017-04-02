@@ -249,27 +249,23 @@ define('SAML_INTERNAL', 1);
                     if ($index) {
                         $modlnk = substr($_GET['directlink'],0,$index);
                         $modid  = substr($_GET['directlink'],$index+1);
-                        $index = stripos($modid,'=');
-                        $modid = substr($modid,$index+1);
                     }else if ($index = stripos($_GET['directlink'],'?')){
                         $modlnk = substr($_GET['directlink'],0,$index);
                         $modid  = substr($_GET['directlink'],$index+1);
-                        $index = stripos($modid,'=');
-                        $modid = substr($modid,$index+1);
                     }//if_else
                 }
 
-                $dbLog  = ' MODLNK: ' . $modlnk .   "\n";
-                $dbLog .= ' MOD ID: ' . $modid . "\n\n\n";
-
-                error_log($dbLog, 3, $CFG->dataroot . "/COURSE_LNK.log");
-
+                // Replace to get later the right url
+                $modlnk = str_replace('/','\*',$modlnk);
+                $modlnk = str_replace('=','\=',$modlnk);
+                $modid = str_replace('=','\=',$modid);
+                
                 /* Validate User */
                 if (KS_ADFS::is_valid_user($USER)) {
                     error_log($dbLog, 3, $CFG->dataroot . "/SSO_LNK.log");
 
                     $urlKS = KS_ADFS::login_user_adfs($USER->id,$modlnk,$modid);
-
+                    echo $urlKS . "</br>";
                     header('Location: ' . urldecode($urlKS));
                     require_logout();
                     die;
