@@ -27,7 +27,8 @@ $SESSION->user          = $_GET['id'];
  * Activity/Course link
  */
 if (isset($_GET['modlnk']) && isset($_GET['modid'])) {
-    $SESSION->modlnk = $_GET['modlnk'];
-    $SESSION->modid  = $_GET['modid'];
+    $SESSION->modlnk = str_replace('\*','/',str_replace('\=','=',$_GET['modlnk']));
+    $SESSION->modid  = str_replace('\=','=',$_GET['modid']);
 }
+
 redirect($url);
