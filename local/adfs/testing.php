@@ -11,10 +11,12 @@ require_once('../../config.php');
 require_once('adfslib.php');
 
 
-$urlKS = KS_ADFS::login_user_adfs(4);
+//$urlKS = KS_ADFS::login_user_adfs(4);
 
-header('Location: ' . urldecode($urlKS));
-require_logout();
+//header('Location: ' . urldecode($urlKS));
+//require_logout();
+
+$directlink='course/index.php?categoryid=1';
 
 /* User to Validate */
 
