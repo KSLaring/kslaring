@@ -12,18 +12,19 @@
 require_once('../../config.php');
 require_once($CFG->libdir.'/adminlib.php');
 require_once('lib/participantslib.php');
-require_once($CFG->dirroot.'/lib/excellib.class.php');
+require_once('pdf/export.php');
 
 // Params
 $courseId   = required_param('id',PARAM_INT);
 $page       = optional_param('page', 0, PARAM_INT);
 $per_page   = optional_param('perpage', 50, PARAM_INT);        // how many per page
-$format     = optional_param('format',null,PARAM_TEXT);
+$format     = optional_param('format',0,PARAM_INT);
 $sort       = optional_param('sort','ASC',PARAM_TEXT);
 $fieldSort  = null;
 
-$url                    = new moodle_url('/local/participants/participants.php',array('id' => $courseId,'page' => $page,'perpage' => $per_page));
-$url_download           = new moodle_url('/local/participants/participants.php',array('id' => $courseId,'page' => $page,'perpage' => $per_page,'format' => 'csv'));
+$url              = new moodle_url('/local/participants/participants.php',array('id' => $courseId,'page' => $page,'perpage' => $per_page));
+$urlxls           = new moodle_url('/local/participants/participants.php',array('id' => $courseId,'page' => $page,'perpage' => $per_page,'format' => EXPORT_EXCEL));
+$urlpdf           = new moodle_url('/local/participants/participants.php',array('id' => $courseId,'page' => $page,'perpage' => $per_page,'format' => EXPORT_PDF));
 
 $context            = context_course::instance($courseId);
 $course             = get_course($courseId);
@@ -43,7 +44,8 @@ if (!has_capability('local/participants:manage',$context)) {
     require_login($course);
 }//if_capabilities
 
-$SESSION->url_download  = $url_download;
+$SESSION->xls_download  = $urlxls;
+$SESSION->pdf_download  = $urlpdf;
 
 // Sort order
 if (isset($_COOKIE['dir'])) {
@@ -79,28 +81,54 @@ if ($notIn) {
 }//if_notIn
 
 // Participant list
-$participantList    = ParticipantsList::get_participant_list($courseId,$notIn,$sort,$fieldSort,$page*$per_page,$per_page);
-$totalParticipants  = ParticipantsList::get_total_participants($courseId,$notIn);
-
-// Download in excel
 if ($format) {
     $participantList    = ParticipantsList::get_participant_list($courseId,$notIn,$sort,$fieldSort);
-    ParticipantsList::download_participants_list($participantList,$course,$location,$instructors);
+}else {
+    $participantList    = ParticipantsList::get_participant_list($courseId,$notIn,$sort,$fieldSort,$page*$per_page,$per_page);
 }
-/* Header   */
-echo $OUTPUT->header();
 
-// Display participant list
-echo $OUTPUT->heading(get_string('pluginname','local_participants'));
-$out = ParticipantsList::display_participant_list($participantList,$course,$location,$instructors,$sort,$fieldSort);
-echo $out;
+$totalParticipants  = ParticipantsList::get_total_participants($courseId,$notIn);
 
-echo "</br>";
-echo $OUTPUT->paging_bar($totalParticipants, $page, $per_page, $url);
+$export             = new participant_export($course,$location,$instructors,$participantList);
 
-// Back button
-echo ParticipantsList::get_back_button($course->id);
+// Download in excel
+if ($format == EXPORT_EXCEL) {
+    ob_end_clean();
+    ParticipantsList::download_participants_list($participantList,$course,$location,$instructors);
+
+    die;
+}else if ($format == EXPORT_PDF) {
+    ob_end_clean();
+    $export->export();
+
+    die;
+}else {
+
+    // Header
+    echo $OUTPUT->header();
+
+    // Display participant list
+    echo $OUTPUT->heading(get_string('pluginname','local_participants'));
+
+    // Header course info (Participant list report)
+    echo ParticipantsList::display_participant_list_info_course($course,$location,$instructors);
+
+    // Extra links
+    echo ParticipantsList::add_extra_links($page, $per_page, $url,$totalParticipants);
+
+    // Participant list
+    echo ParticipantsList::display_participant_list($participantList,$sort,$fieldSort);
+
+    // Extra links
+    echo ParticipantsList::add_extra_links($page, $per_page, $url,$totalParticipants);
+
+    // Back button
+    echo ParticipantsList::get_back_button($course->id);
 
 
-/* Footer   */
-echo $OUTPUT->footer();
+    // Footer
+    echo $OUTPUT->footer();
+}
+
+
+
