@@ -10,6 +10,9 @@
  * @author          eFaktor     (fbv)
  */
 
+define('EXPORT_PDF','1');
+define('EXPORT_EXCEL','2');
+
 class ParticipantsList {
     /**********/
     /* PUBLIC */
@@ -110,6 +113,7 @@ class ParticipantsList {
                                   u.firstname,
                                   u.lastname,
                                   u.email,
+                                  cc.timecompleted,
                                   mu.name as 'municipality',
                                   se.name as 'sector',
                                   co.name as 'workplace'
@@ -118,6 +122,9 @@ class ParticipantsList {
                         JOIN	  {enrol}						  e		ON 	e.id 				= ue.enrolid
                                                                         AND	e.courseid 			= :course
                                                                         AND e.status 			= 0
+                        -- Time completion
+                        LEFT JOIN {course_completions}			  cc	ON	cc.course			= e.courseid
+                                                                        AND cc.userid			= ue.userid
                         LEFT JOIN {enrol_waitinglist_queue}		  ew	ON  ew.waitinglistid	= e.id
                                                                         AND	ew.userid			= ue.userid
                         -- WORKAPLCE
@@ -138,24 +145,6 @@ class ParticipantsList {
 
             // Execute
             $rdo = $DB->get_records_sql($sql,$params,$start,$limit);
-            /**
-            if ($rdo) {
-                foreach ($rdo as $instance) {
-                    // Participant
-                    $infoParticipant = new stdClass();
-                    $infoParticipant->id        = $instance->id;
-                    $infoParticipant->firstname = $instance->firstname;
-                    $infoParticipant->lastname  = $instance->lastname;
-                    $infoParticipant->email     = $instance->email;
-                    
-                    $infoParticipant->sector    = $instance->sector;
-                    $infoParticipant->workplace = $instance->workplace;
-                    
-                    // Add participant
-                    $participantsLst[$instance->id] = $infoParticipant;
-                }
-            }//if_rdo
-             * **/
 
             return $rdo;
         }catch (Exception $ex) {
@@ -217,9 +206,6 @@ class ParticipantsList {
      * Display participant list in the table
      *
      * @param           $participantList
-     * @param           $course
-     * @param           $location
-     * @param           $instructors
      * @param           $sort
      * @param           $fieldSort
      * 
@@ -229,16 +215,13 @@ class ParticipantsList {
      * @creationDate    06/07/2016
      * @author          eFaktor     (fbv)
      */
-    public static function display_participant_list($participantList,$course,$location,$instructors,$sort,$fieldSort) {
+    public static function display_participant_list($participantList,$sort,$fieldSort) {
         /* Variables */
         $out    = '';
 
         try {
             // Participant list block
             $out .= html_writer::start_div('block_participants');
-                // Course info
-                $out .= self::add_info_course($course,$location,$instructors);
-            
                 // Participant list
                 $out .= self::add_participants($participantList,$sort,$fieldSort);
             $out .= html_writer::end_div();//block_participants
@@ -249,6 +232,74 @@ class ParticipantsList {
         }//try_catch
     }//display_participant_list
 
+    /**
+     * Description
+     * Add header course info
+     *
+     * @param           $course
+     * @param           $location
+     * @param           $instructors
+     *
+     * @return          string
+     * @throws          Exception
+     *
+     * @creationDate    04/04/2017
+     * @author          eFaktor     (fbv)
+     */
+    public static function display_participant_list_info_course($course,$location,$instructors) {
+        /* Variables */
+        $out    = '';
+
+        try {
+            // Participant list block
+            $out .= html_writer::start_div('block_participants');
+                // Course info
+                $out .= self::add_info_course($course,$location,$instructors);
+            $out .= html_writer::end_div();//block_participants
+
+            return $out;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//display_participant_list_info_course
+
+    /**
+     * Description
+     * Add extra links.
+     *
+     * @param           $page
+     * @param           $perpage
+     * @param           $url
+     * @param           $total
+     *
+     * @return          null|string
+     * @throws          Exception
+     *
+     * @creationDate    04/04/2017
+     * @author          eFaktor     (fbv)
+     */
+    public static function add_extra_links($page,$perpage,$url,$total) {
+        // Variables
+        global $SESSION,$OUTPUT;
+        $extra = null;
+
+        try {
+            // Excel/PDF
+            $extra .= html_writer::start_div('extra_lst_participants');
+                // Excel
+                $extra .= '<a href="'. $SESSION->xls_download .'" class="label_download">'.get_string('csvdownload','local_participants').'</a>';
+                // PDF
+                $extra .= '<a href="'. $SESSION->pdf_download .'" class="label_download">'.get_string('pdfdownload','local_participants').'</a>';
+            $extra .= html_writer::end_div();//lst_participant
+
+            // Paging bar
+            $extra .= $OUTPUT->paging_bar($total, $page, $perpage, $url);
+
+            return $extra;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//add_extra_links
     /**
      * @param           $courseId
      *
@@ -471,14 +522,16 @@ class ParticipantsList {
      */
     public static function download_participants_list($participantsList,$course,$location,$instructors) {
         /* Variables */
+        global $CFG;
         $row    = 0;
-        $col    = 0;
         $time   = null;
         $name   = null;
         $export = null;
         $my_xls = null;
 
         try {
+            require_once($CFG->dirroot.'/lib/excellib.class.php');
+
             $time = userdate(time(),'%d.%m.%Y', 99, false);
             $name = clean_filename('Participants_List_' . $course->fullname . '_' . $time . ".xls");
             // Creating a workbook
@@ -671,30 +724,19 @@ class ParticipantsList {
      */
     private static function add_participants($participantsList,$sort,$fieldSort) {
         /* Variables */
-        global $SESSION;
         $content = '';
         $csv_url = null;
 
         try {
-            // Link to download the participant list
-            $csv_url  = $SESSION->url_download;
-
             // Add participant list
             $content .= html_writer::start_div('lst_participants');
-                $content .= '<a href="'.$csv_url->out().'" class="label_download">'.get_string('csvdownload','local_participants').'</a>';
-                $content .= "</br>";
-
-                // Participants table //,array('class' => 'generaltable')
+                // Participants table
                 $content .= html_writer::start_tag('table');
                     // Header
                     $content .= self::add_header_participants_table($sort,$fieldSort);
-            
                     // Content
                     $content .= self::add_content_participants_table($participantsList);
                 $content .= html_writer::end_tag('table');
-
-                $content .= "</br>";
-                $content .= '<a href="'.$csv_url->out().'" class="label_download">'.get_string('csvdownload','local_participants').'</a>';
             $content .= html_writer::end_div();//lst_participants
 
             return $content;
@@ -722,6 +764,7 @@ class ParticipantsList {
         $strFirstname   = null;
         $strLastname    = null;
         $strMail        = null;
+        $strcompletion  = null;
         $strMuni        = null;
         $strSector      = null;
         $strWorkspace   = null;
@@ -753,6 +796,7 @@ class ParticipantsList {
             $strFirstname   = get_string('firstname');
             $strLastname    = get_string('lastname');
             $strMail        = get_string('email','local_participants');
+            $strcompletion  = get_string('header_completed','local_participants');
             $strMuni        = get_string('header_mu','local_participants');
             $strSector      = get_string('header_se','local_participants');
             $strWorkplace   = get_string('header_wk','local_participants');
@@ -783,6 +827,10 @@ class ParticipantsList {
                     $header .= html_writer::start_tag('th',array('class' => 'sector'));
                         $header .= $strWorkplace;
                     $header .= html_writer::end_tag('th');
+                    // Completed
+                    $header .= html_writer::start_tag('th',array('class' => 'attend'));
+                        $header .= $strcompletion;
+                    $header .= html_writer::end_tag('th');
                 $header .= html_writer::end_tag('tr');
             $header .= html_writer::end_tag('thead');
 
@@ -807,18 +855,20 @@ class ParticipantsList {
     private static function add_content_participants_table($participantsList) {
         /* Variables */
         $content    = '';
-        $name       = null;
-        $checked    = null;
-        $last       = null;
-        $seWK       = null;
-        $sectors    = null;
-        $workplaces = null;
+        $strFirstname   = null;
+        $strLastname    = null;
+        $strMail        = null;
+        $strcompletion  = null;
+        $strMuni        = null;
+        $strSector      = null;
+        $strWorkspace   = null;
 
         try {
             // Headers
             $strFirstname   = get_string('firstname');
             $strLastname    = get_string('lastname');
             $strMail        = get_string('email','local_participants');
+            $strcompletion  = get_string('header_completed','local_participants');
             $strMuni        = get_string('header_mu','local_participants');
             $strSector      = get_string('header_se','local_participants');
             $strWorkplace   = get_string('header_wk','local_participants');
@@ -840,15 +890,19 @@ class ParticipantsList {
                     $content .= html_writer::end_tag('td');
                     // Municipality
                     $content .= html_writer::start_tag('td',array('class' => 'muni','data-th' => $strMuni));
-                        $content .= ($participant->municipality ? $participant->municipality: ' - ');
+                        $content .= ($participant->municipality ? $participant->municipality: '&nbsp;');
                     $content .= html_writer::end_tag('td');
                     // Sector
                     $content .= html_writer::start_tag('td',array('class' => 'sector','data-th' => $strSector));
-                        $content .= 'sdfsdfs';($participant->sector ? $participant->sector: ' - ');
+                        $content .= ($participant->sector ? $participant->sector: '&nbsp;');
                     $content .= html_writer::end_tag('td');
                     // Workplace
                     $content .= html_writer::start_tag('td',array('class' => 'sector','data-th' => $strWorkplace));
-                        $content .= ($participant->workplace ? $participant->workplace : ' - ');
+                        $content .= ($participant->workplace ? $participant->workplace : '&nbsp;');
+                    $content .= html_writer::end_tag('td');
+                    // Completions
+                    $content .= html_writer::start_tag('td',array('class' => 'attend','data-th' => $strcompletion));
+                        $content .= ($participant->timecompleted ? userdate($participant->timecompleted ,'%d.%m.%Y', 99, false): '&nbsp;');
                     $content .= html_writer::end_tag('td');
                 $content .= html_writer::end_tag('tr');
             }//participant_list
@@ -980,13 +1034,16 @@ class ParticipantsList {
         $strFirstname   = null;
         $strLastname    = null;
         $strMail        = null;
-        $strSeWK        = null;
+        $strcompletion  = null;
+        $strSector      = null;
         $strMuni        = null;
+        $strWorkplace   = null;
 
         try {
             $strFirstname   = get_string('firstname');
             $strLastname    = get_string('lastname');
             $strMail        = get_string('email','local_participants');
+            $strcompletion  = get_string('header_completed','local_participants');
             $strMuni        = get_string('header_mu','local_participants');
             $strSector      = get_string('header_se','local_participants');
             $strWorkplace   = get_string('header_wk','local_participants');
@@ -1025,6 +1082,12 @@ class ParticipantsList {
             $my_xls->write($row, $col, $strWorkplace,array('size'=>12, 'name'=>'Arial','bold'=>'1','bg_color'=>'#efefef','text_wrap'=>true,'v_align'=>'left'));
             $my_xls->merge_cells($row,$col,$row,$col+6);
             $my_xls->set_row($row,20);
+
+            // Completion
+            $col += 7;
+            $my_xls->write($row, $col, $strcompletion,array('size'=>12, 'name'=>'Arial','bold'=>'1','bg_color'=>'#efefef','text_wrap'=>true,'v_align'=>'left'));
+            $my_xls->merge_cells($row,$col,$row,$col+2);
+            $my_xls->set_row($row,20);
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -1050,6 +1113,7 @@ class ParticipantsList {
         $workplaces     = null;
         $setRow         = null;
         $strUser        = null;
+        $completion     = null;
 
         try {
             if ($participantList) {
@@ -1093,6 +1157,16 @@ class ParticipantsList {
                     $col += 7;
                     $my_xls->write($row, $col, $participant->workplace,array('size'=>12, 'name'=>'Arial','bold'=>'1','text_wrap'=>true,'v_align'=>'top'));
                     $my_xls->merge_cells($row,$col,$row,$col+6);
+                    $my_xls->set_row($row,$setRow);
+
+                    // Completion
+                    $completion = " ";
+                    if ($participant->timecompleted) {
+                        $completion = userdate($participant->timecompleted ,'%d.%m.%Y', 99, false);
+                    }
+                    $col += 7;
+                    $my_xls->write($row, $col, $completion,array('size'=>12, 'name'=>'Arial','bold'=>'1','text_wrap'=>true,'v_align'=>'top'));
+                    $my_xls->merge_cells($row,$col,$row,$col+2);
                     $my_xls->set_row($row,$setRow);
 
                     $row ++;
