@@ -602,11 +602,12 @@ class local_lessonexport {
  *
  * @param $unused
  */
-function local_lessonexport_extends_navigation($unused) {
-    local_lessonexport_extend_navigation($unused);
+function local_lessonexport_extends_navigation_old($unused) {
+    local_lessonexport_extend_navigation_old($unused);
 }
 
-function local_lessonexport_extend_navigation($unused) {
+
+function local_lessonexport_extend_navigation_old($unused) {
     global $PAGE, $DB, $USER;
     if (!$PAGE->cm || $PAGE->cm->modname != 'lesson') {
         return;
