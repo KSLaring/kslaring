@@ -616,53 +616,6 @@ class ksl
         $mylevelone     = get_string('headerlevelone', 'local_ksl') . '</br>' . get_string('headerlevelone1', 'local_ksl');
         $mylevelzero    = get_string('headerlevelzero', 'local_ksl') . '</br>' . get_string('headerlevelzero1', 'local_ksl');
 
-        foreach ($userarray as $uservalue) {
-            $body .= html_writer::start_tag('tr');
-            // Username!
-            $body .= html_writer::start_tag('td', array('class' => 'user', 'data-label' => $strname));
-            $body .= $uservalue->firstname;
-            $body .= " ";
-            $body .= $uservalue->lastname;
-            $body .= html_writer::end_tag('td');
-            // Email!
-            $body .= html_writer::start_tag('td', array('class' => 'user', 'data-label' => $stremail));
-            $body .= $uservalue->email;
-            $body .= html_writer::end_tag('td');
-            // Gender!
-            $body .= html_writer::start_tag('td', array('class' => 'user', 'data-label' => $strgender));
-            $body .= $uservalue->gender;
-            $body .= html_writer::end_tag('td');
-            // Course!
-            $body .= html_writer::start_tag('td', array('class' => 'user', 'data-label' => $strcourse));
-            $body .= $uservalue->course;
-            $body .= html_writer::end_tag('td');
-            // Role!
-            $body .= html_writer::start_tag('td', array('class' => 'user', 'data-label' => $strrole));
-            $body .= $uservalue->role;
-            $body .= html_writer::end_tag('td');
-            // Completed!
-            $body .= html_writer::start_tag('td', array('class' => 'user', 'data-label' => $strcompleted));
-            $body .= $uservalue->completed;
-            $body .= html_writer::end_tag('td');
-            // Level Three!
-            $body .= html_writer::start_tag('td', array('class' => 'user', 'data-label' => $mylevelthree));
-            $body .= $uservalue->levelthree;
-            $body .= html_writer::end_tag('td');
-            // Level Two!
-            $body .= html_writer::start_tag('td', array('class' => 'user', 'data-label' => $myleveltwo));
-            $body .= $uservalue->leveltwo;
-            $body .= html_writer::end_tag('td');
-            // Level One!
-            $body .= html_writer::start_tag('td', array('class' => 'user', 'data-label' => $mylevelone));
-            $body .= $uservalue->levelone;
-            $body .= html_writer::end_tag('td');
-            // Level Zero!
-            $body .= html_writer::start_tag('td', array('class' => 'user', 'data-label' => $mylevelzero));
-            $body .= $uservalue->levelzero;
-            $body .= html_writer::end_tag('td');
-
-            $body .= html_writer::end_tag('tr');
-        }
         return $body;
     } //end add_user_content
 
