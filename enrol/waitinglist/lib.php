@@ -2010,8 +2010,15 @@ class enrol_waitinglist_plugin extends enrol_plugin {
         $time       = null;
         $from       = null;
         $to         = null;
+        $today      = null;
+        $year       = null;
+        $mydate     = null;
 
         try {
+            // Checking
+            $today = getdate(time());
+            $year = $today['year'];
+
             // Search criteria
             $params = array();
             $params['course'] = $courseid;
@@ -2044,24 +2051,29 @@ class enrol_waitinglist_plugin extends enrol_plugin {
                         $event->end   = null;
 
                         // Extract date
-                        $event->date =  substr($time,0,$index);
-                        // Extract time
-                        $event->time = substr($time,$index+1);
+                        $mydate = strtotime(substr($time,0,$index));
+                        $mydate = getdate($mydate);
+                        if ($mydate['year'] >= $year) {
+                            $event->date =  substr($time,0,$index);
+                            // Extract time
+                            $event->time = substr($time,$index+1);
 
-                        // Extract From/to
-                        $index = strrpos($event->time,'-');
-                        if ($index) {
-                            $from   = substr($event->time,0,$index);
-                            $to     = substr($event->time,$index+1);
+                            // Extract From/to
+                            $index = strrpos($event->time,'-');
+                            if ($index) {
+                                $from   = substr($event->time,0,$index);
+                                $to     = substr($event->time,$index+1);
 
-                            // time start
-                            $event->start   = strtotime($event->date . ' ' . $from);
-                            // time end
-                            $event->end     = strtotime($event->date . ' ' . $to);
-                        }else {
-                            $event->start   = strtotime($event->date);
-                            $event->end     = strtotime($event->date);
-                        }//if_index
+                                // time start
+                                $event->start   = strtotime($event->date . ' ' . $from);
+                                // time end
+                                $event->end     = strtotime($event->date . ' ' . $to);
+                            }else {
+                                $event->start   = strtotime($event->date);
+                                $event->end     = strtotime($event->date);
+                            }//if_index
+                        }
+
                     }//if_index
 
                     // Add event
