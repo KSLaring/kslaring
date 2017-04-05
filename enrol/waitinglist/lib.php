@@ -2028,7 +2028,8 @@ class enrol_waitinglist_plugin extends enrol_plugin {
                             cf.value
                      FROM	{course_format_options}	cf
                      WHERE	cf.courseid = :course
-                        AND cf.name like '%time%' ";
+                        AND cf.name like '%time%'
+                        AND cf.value != '' ";
 
             // Execute
             $rdo = $DB->get_record_sql($sql,$params);
