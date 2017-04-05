@@ -27,13 +27,13 @@ class block_coinstructor extends block_base {
             $mycourses = coinstructor::display_courses($courses);
             $amount = coteacher::get_courses_count();
 
+            // Display the "show all" link if more than 20 results.
             if ($amount->count > 20) {
                 $url = new moodle_url('/grade/report/overview/index.php');
                 $this->content->text .= "<div><a href=$url>" . get_string('showall', 'block_coteacher') . " </a> </div>";
             }
 
             $this->content->text .= $mycourses;
-            // $this->content->text .= coinstructorlib::GetContentBlock($COURSE->id);
 
             return $this->content;
         }catch (Exception $ex) {
