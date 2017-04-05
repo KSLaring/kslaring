@@ -1,4 +1,18 @@
 <?php
+// This file is part of ksl
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle. If not, see <http://www.gnu.org/licenses/>.
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -15,8 +29,7 @@ class coteacher
      * @author          eFaktor     (nas)
      *
      */
-    public static function get_courses()
-    {
+    public static function get_courses() {
         // Variables!
         global $DB, $USER;
         $courses    = null;
@@ -25,18 +38,18 @@ class coteacher
         // The SQL Query!
         $userquery = "SELECT DISTINCT(CONCAT(c.id, ra.userid)) as 'id',
 						        c.id            as 'courseid',
-						        co.id 			as 'coursecontext', 
-						        c.fullname 		as 'coursename', 
-						        ca.name 		as 'categoryname', 
+						        co.id 			as 'coursecontext',
+						        c.fullname 		as 'coursename',
+						        ca.name 		as 'categoryname',
 						        r.shortname 	as 'role',
 						        ra.userid		as 'user'
-                      FROM 	    mdl_course 				c
-	                    JOIN 	mdl_context 			co 	ON co.instanceid = c.id
-	                    JOIN	mdl_role_assignments 	ra 	ON ra.contextid = co.id
-	                    JOIN	mdl_role				r  	ON r.id = ra.roleid
-	                    JOIN	mdl_enrol				e	ON e.courseid = c.id
-	                    JOIN	mdl_user_enrolments		ue	ON ue.userid = ra.userid
-	                    JOIN	mdl_course_categories	ca	ON ca.id = c.category
+                      FROM 	    {course} 			c
+	                    JOIN 	{context} 	    	co 	ON co.instanceid = c.id
+	                    JOIN	{role_assignments} 	ra 	ON ra.contextid = co.id
+	                    JOIN	{role}				r  	ON r.id = ra.roleid
+	                    JOIN	{enrol}				e	ON e.courseid = c.id
+	                    JOIN	{user_enrolments}	ue	ON ue.userid = ra.userid
+	                    JOIN	{course_categories}	ca	ON ca.id = c.category
                       WHERE archetype = 'teacher'
                       AND ra.userid = :userid
                       LIMIT 20";
@@ -79,21 +92,20 @@ class coteacher
      * @author          eFaktor     (nas)
      *
      */
-    public static function get_courses_count()
-    {
+    public static function get_courses_count() {
         // Variables!
         global $DB, $USER;
         $rdo        = null;
 
         // The SQL Query!
         $userquery = "SELECT COUNT(DISTINCT(CONCAT(c.id, ra.userid))) as 'count'
-                      FROM 	    mdl_course 				c
-	                    JOIN 	mdl_context 			co 	ON co.instanceid = c.id
-	                    JOIN	mdl_role_assignments 	ra 	ON ra.contextid = co.id
-	                    JOIN	mdl_role				r  	ON r.id = ra.roleid
-	                    JOIN	mdl_enrol				e	ON e.courseid = c.id
-	                    JOIN	mdl_user_enrolments		ue	ON ue.userid = ra.userid
-	                    JOIN	mdl_course_categories	ca	ON ca.id = c.category
+                      FROM 	    {course} 			c
+	                    JOIN 	{context} 			co 	ON co.instanceid = c.id
+	                    JOIN	{role_assignments} 	ra 	ON ra.contextid = co.id
+	                    JOIN	{role}				r  	ON r.id = ra.roleid
+	                    JOIN	{enrol}				e	ON e.courseid = c.id
+	                    JOIN	{user_enrolments}	ue	ON ue.userid = ra.userid
+	                    JOIN	{course_categories}	ca	ON ca.id = c.category
                       WHERE archetype = 'teacher'
                       AND ra.userid = :userid";
 
@@ -162,14 +174,14 @@ class coteacher
             $out .= self::add_headertable();
             $out .= self::add_content($courselst);
             $out .= html_writer::end_tag('table');
-        $out .= html_writer::end_div(); //overviewtable
+        $out .= html_writer::end_div(); // ...overviewtable.
 
-        // Add back url
+        // Add back url!
         $out .= html_writer::start_div('back_btn');
         $url = new moodle_url('/my/');
         $back = get_String('back', 'local_ksl');
         $out .= "<div><a href=$url> $back </a>";
-        $out .= html_writer::end_div();//back_btn
+        $out .= html_writer::end_div(); // ...back_btn.
 
         return $out;
     }
@@ -194,8 +206,8 @@ class coteacher
                 $header .= $strcourse;
                 $header .= html_writer::end_tag('th');
 
-            $header .= html_writer::end_tag('tr'); //header_overview
-        $header .= html_writer::end_tag('thead'); //thead
+            $header .= html_writer::end_tag('tr'); // ...header_overview.
+        $header .= html_writer::end_tag('thead'); // ...thead.
 
         return $header;
     }

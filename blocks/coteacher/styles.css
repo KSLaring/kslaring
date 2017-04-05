@@ -14,8 +14,6 @@
     animation: float 5s infinite;
 }
 
-
-
 .overviewtable table tr {
     border-top: 1px solid #C1C3D1;
     border-bottom: 1px solid #C1C3D1;
@@ -79,7 +77,6 @@ only screen and (max-width: 760px),
     .overviewtable table thead tr {
         display:none;
     }
-
 
     .overviewtable table tr {
         width: 90%;

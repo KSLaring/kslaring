@@ -1,12 +1,29 @@
 <?php
+// This file is part of ksl
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle. If not, see <http://www.gnu.org/licenses/>.
+
+defined('MOODLE_INTERNAL') || die();
 
 class block_coinstructor extends block_base {
     function init() {
+        // TODO -> declare visibility.
         $this->title = get_string('pluginname', 'block_coinstructor');
     }//init
 
     function get_content() {
-        // Variables!
+        // TODO -> declare visibility.
 
         try {
             // Title Block!
@@ -16,12 +33,12 @@ class block_coinstructor extends block_base {
                 return $this->content;
             }
 
-            // Add the content to the block
+            // Add the content to the block.
             $this->content = new stdClass;
             $this->content->text = '';
             $this->content->footer = '';
 
-            // Add course info to the block
+            // Add course info to the block.
             require_once('lib/coinstructorlib.php');
             $courses = coinstructor::get_courses();
             $mycourses = coinstructor::display_courses($courses);
@@ -38,7 +55,7 @@ class block_coinstructor extends block_base {
             }
 
             return $this->content;
-        }catch (Exception $ex) {
+        } catch (Exception $ex) {
             throw $ex;
         }//try_catch
     }//get_content
