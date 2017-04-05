@@ -627,7 +627,7 @@ function local_lessonexport_extend_navigation($unused) {
     /**
      * Description
      * Replace $settingsnav by $PAGE->settingsnav
-     * 
+     *
      * @updateDate  05/04/2017
      * @author      eFaktor     (fbv)
      */
