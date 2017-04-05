@@ -614,13 +614,26 @@ function local_lessonexport_extend_navigation($unused) {
     $groupid = groups_get_activity_group($PAGE->cm);
     $lesson = $DB->get_record('lesson', array('id' => $PAGE->cm->instance), '*', MUST_EXIST);
 
-    if (!$links = local_lessonexport::get_links($PAGE->cm, $USER->id, $groupid)) {
+    /**
+     * Description
+     * get_links only one parameter
+     *
+     * @updateDate  05/04/2017
+     * @author      eFaktor     (fbv)
+     */
+    if (!$links = local_lessonexport::get_links($PAGE->cm)) {
         return;
     }
-    $settingsnav = $PAGE->settingsnav;
-    $modulesettings = $settingsnav->get('modulesettings');
+    /**
+     * Description
+     * Replace $settingsnav by $PAGE->settingsnav
+     *
+     * @updateDate  05/04/2017
+     * @author      eFaktor     (fbv)
+     */
+    $modulesettings = $PAGE->settingsnav->get('modulesettings');
     if (!$modulesettings) {
-        $modulesettings = $settingsnav->prepend(get_string('pluginadministration', 'mod_lesson'), null,
+        $modulesettings = $PAGE->settingsnav->prepend(get_string('pluginadministration', 'mod_lesson'), null,
                                                 navigation_node::TYPE_SETTING, null, 'modulesettings');
     }
 
