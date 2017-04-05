@@ -23,22 +23,22 @@ class coteacher
         $rdo        = null;
 
         // The SQL Query!
-        $userquery = "SELECT DISTINCT(CONCAT(ue.id, c.id))	as 'id', 
-                                          c.id              as 'courseid',
-		                                  co.id 			as 'coursecontext', 
-                                          c.fullname 		as 'coursename', 
-                                          ca.name 		    as 'categoryname', 
-                                          r.shortname 	    as 'role',
-                                          ra.userid		    as 'user'
+        $userquery = "SELECT DISTINCT(CONCAT(c.id, ra.userid)) as 'id',
+						        c.id            as 'courseid',
+						        co.id 			as 'coursecontext', 
+						        c.fullname 		as 'coursename', 
+						        ca.name 		as 'categoryname', 
+						        r.shortname 	as 'role',
+						        ra.userid		as 'user'
                       FROM 	    mdl_course 				c
-                        JOIN 	mdl_context 			co 	ON co.instanceid = c.id
-                        JOIN	mdl_role_assignments 	ra 	ON ra.contextid = co.id
-                        JOIN	mdl_role				r  	ON r.id = ra.roleid
-                        JOIN	mdl_enrol				e	ON e.courseid = c.id
-                        JOIN	mdl_user_enrolments		ue	ON ue.userid = ra.userid
-                        JOIN	mdl_course_categories	ca	ON ca.id = c.category
-                      WHERE 	r.archetype = 'teacher'
-                      AND 	    ra.userid = :userid
+	                    JOIN 	mdl_context 			co 	ON co.instanceid = c.id
+	                    JOIN	mdl_role_assignments 	ra 	ON ra.contextid = co.id
+	                    JOIN	mdl_role				r  	ON r.id = ra.roleid
+	                    JOIN	mdl_enrol				e	ON e.courseid = c.id
+	                    JOIN	mdl_user_enrolments		ue	ON ue.userid = ra.userid
+	                    JOIN	mdl_course_categories	ca	ON ca.id = c.category
+                      WHERE archetype = 'teacher'
+                      AND ra.userid = :userid
                       LIMIT 20";
 
         try {
@@ -86,16 +86,16 @@ class coteacher
         $rdo        = null;
 
         // The SQL Query!
-        $userquery = "SELECT COUNT(DISTINCT(CONCAT(ue.id, c.id)))	as 'count'
+        $userquery = "SELECT COUNT(DISTINCT(CONCAT(c.id, ra.userid))) as 'count'
                       FROM 	    mdl_course 				c
-                        JOIN 	mdl_context 			co 	ON co.instanceid = c.id
-                        JOIN	mdl_role_assignments 	ra 	ON ra.contextid = co.id
-                        JOIN	mdl_role				r  	ON r.id = ra.roleid
-                        JOIN	mdl_enrol				e	ON e.courseid = c.id
-                        JOIN	mdl_user_enrolments		ue	ON ue.userid = ra.userid
-                        JOIN	mdl_course_categories	ca	ON ca.id = c.category
-                      WHERE 	r.archetype = 'teacher'
-                      AND 	    ra.userid = :userid";
+	                    JOIN 	mdl_context 			co 	ON co.instanceid = c.id
+	                    JOIN	mdl_role_assignments 	ra 	ON ra.contextid = co.id
+	                    JOIN	mdl_role				r  	ON r.id = ra.roleid
+	                    JOIN	mdl_enrol				e	ON e.courseid = c.id
+	                    JOIN	mdl_user_enrolments		ue	ON ue.userid = ra.userid
+	                    JOIN	mdl_course_categories	ca	ON ca.id = c.category
+                      WHERE archetype = 'teacher'
+                      AND ra.userid = :userid";
 
         try {
             // Parameters!
@@ -194,8 +194,8 @@ class coteacher
                 $header .= $strcourse;
                 $header .= html_writer::end_tag('th');
 
-            $header .= html_writer::end_div(); //header_overview
-        $header .= html_writer::end_div(); //thead
+            $header .= html_writer::end_tag('tr'); //header_overview
+        $header .= html_writer::end_tag('thead'); //thead
 
         return $header;
     }
@@ -208,10 +208,12 @@ class coteacher
 
         foreach ($courselst as $course) {
             $body .= html_writer::start_tag('tr');
+
                 // Category!
                 $body .= html_writer::start_tag('td', array('class' => 'category', 'data-label' => $strcategory));
                 $body .= $course->categoryname;
                 $body .= html_writer::end_tag('td');
+
                 // Course!
                 $body .= html_writer::start_tag('td', array('class' => 'course', 'data-label' => $strcourse));
                 $body .= $course->coursename;

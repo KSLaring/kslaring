@@ -25,15 +25,17 @@ class block_coinstructor extends block_base {
             require_once('lib/coinstructorlib.php');
             $courses = coinstructor::get_courses();
             $mycourses = coinstructor::display_courses($courses);
-            $amount = coteacher::get_courses_count();
-
-            // Display the "show all" link if more than 20 results.
-            if ($amount->count > 20) {
-                $url = new moodle_url('/grade/report/overview/index.php');
-                $this->content->text .= "<div><a href=$url>" . get_string('showall', 'block_coteacher') . " </a> </div>";
-            }
+            $amount = coinstructor::get_courses_count();
 
             $this->content->text .= $mycourses;
+
+            $amount->count = 24;
+            // Display the "show all" link if more than 20 results.
+            if ($amount->count > 20) {
+                $this->content->text .= "</br>";
+                $url = new moodle_url('/blocks/coinstructor/courses.php');
+                $this->content->text .= "<div><a href=$url>" . get_string('showall', 'block_coteacher') . " </a> </div>";
+            }
 
             return $this->content;
         }catch (Exception $ex) {

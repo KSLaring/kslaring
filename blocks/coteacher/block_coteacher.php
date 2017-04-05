@@ -27,14 +27,15 @@ class block_coteacher extends block_base {
             $mycourses = coteacher::display_courses($courses);
             $amount = coteacher::get_courses_count();
 
-            echo $amount->count;
+            $this->content->text .= $mycourses;
+
+            $amount->count = 24;
             // Display the "show all" link if more than 20 results.
-            // if ($amount->count > 20) {
+            if ($amount->count > 20) {
+                $this->content->text .= "</br>";
                 $url = new moodle_url('/blocks/coteacher/courses.php');
                 $this->content->text .= "<div><a href=$url>" . get_string('showall', 'block_coteacher') . " </a> </div>";
-            // }
-
-            $this->content->text .= $mycourses;
+            }
 
             return $this->content;
         }catch (Exception $ex) {
