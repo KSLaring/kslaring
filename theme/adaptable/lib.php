@@ -78,6 +78,8 @@ function theme_adaptable_process_css($css, $theme) {
         '[[setting:activebreadcrumb]]' => '#f5f5f5',
         '[[setting:breadcrumbseparator]]' => 'angle-right',
         '[[setting:loadingcolor]]' => '#f44336',
+        '[[setting:messagepopupbackground]]' => '#fff000',
+        '[[setting:messagepopupcolor]]' => '#333333',
         '[[setting:footerbkcolor]]' => '#424242',
         '[[setting:footertextcolor]]' => '#ffffff',
         '[[setting:footertextcolor2]]' => '#ffffff',
@@ -87,7 +89,6 @@ function theme_adaptable_process_css($css, $theme) {
         '[[setting:headertextcolor]]' => '#ffffff',
         '[[setting:headertextcolor2]]' => '#ffffff',
         '[[setting:msgbadgecolor]]' => '#E53935',
-        '[[setting:blockheadercolor]]' => '#009688',
         '[[setting:blockbackgroundcolor]]' => '#FFFFFF',
         '[[setting:blockheaderbackgroundcolor]]' => '#FFFFFF',
         '[[setting:blockbordercolor]]' => '#59585D',
@@ -207,6 +208,9 @@ function theme_adaptable_process_css($css, $theme) {
         '[[setting:socialwallbordercolor]]' => '#009688',
         '[[setting:socialwallactionlinkcolor]]' => '#009688',
         '[[setting:socialwallactionlinkhovercolor]]' => '#009688',
+        '[[setting:fontblockheaderweight]]' => '400',
+        '[[setting:fontblockheadersize]]' => '28px',
+        '[[setting:fontblockheadercolor]]' => '#009688',
     );
 
     // Get all the defined settings for the theme and replace defaults.
@@ -271,7 +275,7 @@ function theme_adaptable_set_tilesshowallcontacts($css, $display) {
 }
 
 /**
- * Set user prefernces for zoom (show / hide block) function
+ * Set user preferences for zoom (show / hide block) function
  * @param moodle_page $page
  * @return void
  */
@@ -312,18 +316,6 @@ function theme_adaptable_get_full() {
 function theme_adaptable_get_alertkey($alertindex) {
     user_preference_allow_ajax_update('theme_adaptable_alertkey' . $alertindex, PARAM_TEXT);
     return get_user_preferences('theme_adaptable_alertkey' . $alertindex, '');
-}
-
-/**
- * Get user preference for side block
- * Note: does not seem to be called / used within theme, may need to be removed
- */
-function theme_adaptable_get_block_side() {
-    static $theme;
-    if (empty($theme)) {
-        $theme = theme_config::load('adaptable');
-    }
-    return get_user_preferences('theme_adaptable_block_side', $theme->settings->blockside);
 }
 
 /**
@@ -484,7 +476,7 @@ function theme_adaptable_performance_output($param) {
 function theme_adaptable_page_init(moodle_page $page) {
     global $CFG;
     $page->requires->jquery();
-    // REMOVED: Deprecated function ->   error_log($CFG->version); ???
+    // REMOVED: Deprecated function: error_log($CFG->version).
     if ($CFG->version < 2015051100) {
         $page->requires->jquery_plugin('bootstrap', 'theme_adaptable');
         $page->requires->jquery_plugin('dropdown', 'theme_adaptable');

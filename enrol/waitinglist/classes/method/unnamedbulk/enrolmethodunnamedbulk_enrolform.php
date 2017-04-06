@@ -142,7 +142,7 @@ class enrolmethodunnamedbulk_enrolform extends \moodleform {
                     global $PAGE;
                     $PAGE->requires->js('/enrol/invoice/js/invoice.js');
 
-                    \Invoices::AddElements_ToForm($mform);
+                    \Invoices::add_elements_to_form($mform);
                     $mform->addElement('hidden', 'invoicedata');
                     $mform->setType('invoicedata', PARAM_INT);
                     $mform->setDefault('invoicedata', 1);
@@ -377,6 +377,16 @@ class enrolmethodunnamedbulk_enrolform extends \moodleform {
         $waitinglist = $this->waitinglist;
 
 
+        if (!isset($data['seats'])) {
+            $errors['seats'] = get_string('no_seats','enrol_waitinglist');
+
+            return $errors;
+        }else if (!$data['seats']) {
+            $errors['seats'] = get_string('no_seats','enrol_waitinglist');
+
+            return $errors;
+        }
+
         if ($waitinglist->{ENROL_WAITINGLIST_FIELD_MAXENROLMENTS}) {
             $availabletouser = ($queuestatus->waitlistsize - $queuestatus->queueposition) +
                 ($queuestatus->vacancies + $queuestatus->assignedseats);
@@ -399,7 +409,7 @@ class enrolmethodunnamedbulk_enrolform extends \moodleform {
          * Validate invoice data
          */
         if (isset($data['invoicedata']) && $data['invoicedata']) {
-            \Invoices::Validate_InvoiceData($data,$errors);
+            \Invoices::validate_invoice_data($data,$errors);
         }//if_invoicedata
 
 

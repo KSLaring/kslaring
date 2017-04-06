@@ -1,0 +1,25 @@
+<table class="course-list tags-hidden">
+    <thead>
+    <tr>
+        <th>
+            <table>
+                <thead>
+                <tr class="course-list-col-titles">
+                    <th class="c0">Name</th>
+                    <th class="c1">Date</th>
+                    <th class="c2">Avail. seats</th>
+                    <th class="c3">Deadline</th>
+                    <th class="c4">Municipality</th>
+                    <th class="c5">Location</th>
+                </tr>
+                </thead>
+            </table>
+        </th>
+    </tr>
+    </thead>
+    <tbody>
+    {{#courses}}
+        {{> local_playground/course_search_course_tabular_row}}
+    {{/courses}}
+    </tbody>
+</table>

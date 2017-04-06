@@ -333,6 +333,37 @@ EOT;
         }
     }
 
+    /**
+     * This code renders the navbar button to control the display of the custom menu
+     * on smaller screens.
+     *
+     * Do not display the button if the menu is empty.
+     *
+     * @return string HTML fragment
+     */
+    protected function navbar_button() {
+        global $CFG;
+
+        if (empty($CFG->custommenuitems) && $this->lang_menu() == '') {
+            return '';
+        }
+
+        $iconbar = html_writer::tag('span', '', array('class' => 'icon-bar'));
+        $barwrapper = html_writer::tag('div', $iconbar . "\n" . $iconbar . "\n" . $iconbar, array(
+            'class' => 'bar-wrapper'
+        ));
+        $button = html_writer::tag('a', '', array(
+            'class' => 'btn btn-navbar',
+            'data-toggle' => 'collapse',
+            'data-target' => '.nav-collapse'
+        ));
+        $outerwrapper = html_writer::tag('div', $barwrapper . $button, array(
+            'class' => 'outer-wrapper'
+        ));
+
+        return $outerwrapper;
+    }
+
 
     /**
      * Returns HTML to display a "Turn editing on/off" button in a form.

@@ -17,7 +17,6 @@ require_once('locallib.php');
 
 /* PARAMS   */
 $location       = required_param('lo',PARAM_INT);
-
 $json           = array();
 $data           = array();
 $infoSector     = null;

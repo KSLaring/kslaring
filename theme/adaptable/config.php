@@ -38,7 +38,7 @@ if ($PAGE->pagetype == 'site-index') {
 $THEME->name = 'adaptable';
 $THEME->doctype = 'html5';
 $THEME->parents = array('bootstrapbase');
-$THEME->sheets = array('adaptable', 'blocks', 'menu', 'course', 'slider', 'extras', 'zoom', 'button', 'socialwall',  'custom');
+$THEME->sheets = array('adaptable', 'blocks', 'menu', 'course', 'slider', 'extras', 'zoom', 'button', 'socialwall', 'videojs', 'custom');
 $THEME->supportscssoptimisation = false;
 $THEME->yuicssmodules = array();
 
@@ -58,7 +58,7 @@ $THEME->rendererfactory = 'theme_overridden_renderer_factory';
 $THEME->layouts = array(
     // Most backwards compatible layout without the blocks - this is the layout used by default.
     'base' => array(
-        'file' => 'columns1.php',
+        'file' => 'columns2.php',
         'regions' => array(),
     ),
     // Standard layout with blocks, this is recommended for most pages with general information.
@@ -156,13 +156,13 @@ $THEME->layouts = array(
     ),
     // The pagelayout used for reports.
     'report' => array(
-        'file' => 'report.php',
+        'file' => 'columns2.php',
         'regions' => array('side-post'),
         'defaultregion' => 'side-post',
     ),
     // The pagelayout used for safebrowser and securewindow.
     'secure' => array(
-        'file' => 'secure.php',
+        'file' => 'columns2.php',
         'regions' => array('side-post'),
         'defaultregion' => 'side-post'
     ),

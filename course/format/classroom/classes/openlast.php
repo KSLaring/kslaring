@@ -1,4 +1,4 @@
-<?php
+    <?php
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -117,8 +117,8 @@ class format_classroom_openlast {
                     $url = new moodle_url('#');
                 }
             } else if (!$this->modinfo->cms[$openedcmid]->uservisible) {
-                // if the module is not visible for the user
-                // get the first module in section 1
+                // If the module is not visible for the user
+                // then get the first module in section 1.
                 if (!isset($this->modinfo->sections[1]) ||
                     !isset($this->modinfo->sections[1][0])
                 ) {
@@ -148,7 +148,8 @@ class format_classroom_openlast {
      * @return bool
      */
     protected function is_ajax_call() {
-        return (strpos($this->fullme, 'course/rest.php') !== false);
+        return (strpos($this->fullme, 'course/rest.php') !== false ||
+            strpos($this->fullme, 'ajax/service') !== false);
     }
 
     /*
@@ -274,6 +275,13 @@ class format_classroom_openlast {
             // Check if the course module exists
             if ($DB->record_exists('course_modules', array('id' => $cmid))) {
                 $url = new moodle_url('/' . $module . '/view.php?id=' . $cmid);
+            }
+
+            // Exclude resource and folder modules to avoid the repeated automatic download trap
+            if (strpos($row->component, 'mod_resource') !== false ||
+                strpos($row->component, 'mod_folder') !== false
+            ) {
+                $url = null;
             }
         }
 

@@ -749,26 +749,26 @@ class CourseLocations {
             $params['location'] = $locationId;
 
             /* SQL Instruction  */
-            $sql = " SELECT		cl.id,
-                                levelzero.name 	as 'county',
-                                levelone.name 	as 'muni',
-                                cl.name,
-                                cl.description,
-                                cl.url          as 'url_desc',
-                                cl.floor,
-                                cl.room,
-                                cl.seats,
-                                cl.street,
-                                cl.postcode,
-                                cl.city,
-                                cl.urlmap       as 'url_map',
-                                cl.post         as 'post_address',
-                                cl.contact,
-                                cl.phone,
-                                cl.email        as 'mail',
-                                cl.comments,
-                                cl.activate,
-                                GROUP_CONCAT(DISTINCT clo.courseid ORDER BY clo.courseid) as 'courses'
+            $sql = " SELECT		    cl.id,
+                                    levelzero.name 	as 'county',
+                                    levelone.name 	as 'muni',
+                                    cl.name,
+                                    cl.description,
+                                    cl.url          as 'url_desc',
+                                    cl.floor,
+                                    cl.room,
+                                    cl.seats,
+                                    cl.street,
+                                    cl.postcode,
+                                    cl.city,
+                                    cl.urlmap       as 'url_map',
+                                    cl.post         as 'post_address',
+                                    cl.contact,
+                                    cl.phone,
+                                    cl.email        as 'mail',
+                                    cl.comments,
+                                    cl.activate,
+                                    GROUP_CONCAT(DISTINCT clo.courseid ORDER BY clo.courseid) as 'courses'
                      FROM		    {course_locations}		    cl
                         JOIN	    {report_gen_companydata}		levelzero	ON  levelzero.id    = cl.levelzero
                         JOIN	    {report_gen_companydata}		levelone	ON  levelone.id 	= cl.levelone

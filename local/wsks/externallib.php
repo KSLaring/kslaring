@@ -123,7 +123,7 @@ class local_wsks_external extends external_api {
             require_once('../../user/profile/field/gender/lib/genderlib.php');
             
             /* Create or Update User ADFS   */
-            $result['url'] = WS_ADFS::Process_UserADFS($userADFS,$result);
+            $result['url'] = WS_ADFS::process_user_adfs($userADFS,$result);
 
             return $result;
         }catch (Exception $ex) {
@@ -164,44 +164,12 @@ class local_wsks_external extends external_api {
      * Add invoice data
      */
     public static function wsFSCompany_parameters() {
-        /* Company Info */
-        $companyFSID            = new external_value(PARAM_TEXT,'Fellesdata Id');
-        $companyKSID            = new external_value(PARAM_INT,'Company KS ID. Update and Delete');
-        $companyName            = new external_value(PARAM_TEXT,'Company Name');
-        $companyIndustryCode    = new external_value(PARAM_TEXT,'Industry Code');
-        $companyLevel           = new external_value(PARAM_INT,'Company Level');
-        $companyParent          = new external_value(PARAM_INT,'Company Parent');
-        $action                 = new external_value(PARAM_INT,'Action. Add/Update/Delete');
-        /* Public /Private  */
-        $companyPublic          = new external_value(PARAM_INT,'Private or Public');
-        /* Invoice Data */
-        $companyAnsvar          = new external_value(PARAM_TEXT,'Company Ansvar');
-        $companyTjneste         = new external_value(PARAM_TEXT,'Company Tjeneste');
-        $companyAdrOne          = new external_value(PARAM_TEXT,'Adresse 1');
-        $companyAdrTwo          = new external_value(PARAM_TEXT,'Adresse 2');
-        $companyAdrThree        = new external_value(PARAM_TEXT,'Adresse 3');
-        $companyPostNr          = new external_value(PARAM_TEXT,'Post NR');
-        $companyPostSted        = new external_value(PARAM_TEXT,'Post Sted');
-        $companyEPost           = new external_value(PARAM_TEXT,'ePost');
+        $companies = new external_value(PARAM_TEXT,'Companie. String like
+                                                    {"fsid": xxx, "ksid" : xxx, "name" : xxxx, "industry" : yyyy, "level" : zzzz, "parent" : rrrr,
+                                                     "public" : zzzz, "ansvar": xxxx, "tjeneste" : yyyyy, "adresse1" : xxxx, "adresse2": xxxx, "adresse3" : xxx,
+                                                     "postnr" : xxx, "poststed": xxxx, "epost" : xxxx, "action": xxxx}');
 
-        $companiesFS = new external_single_structure(array( 'fsId'          => $companyFSID,
-                                                            'ksId'          => $companyKSID,
-                                                            'name'          => $companyName,
-                                                            'industry'      => $companyIndustryCode,
-                                                            'level'         => $companyLevel,
-                                                            'parent'        => $companyParent,
-                                                            'public'        => $companyPublic,
-                                                            'ansvar'        => $companyAnsvar,
-                                                            'tjeneste'      => $companyTjneste,
-                                                            'adresseOne'    => $companyAdrOne,
-                                                            'adresseTwo'    => $companyAdrTwo,
-                                                            'adresseThree'  => $companyAdrThree,
-                                                            'postnr'        => $companyPostNr,
-                                                            'poststed'      => $companyPostSted,
-                                                            'epost'         => $companyEPost,
-                                                            'action'        => $action));
-
-        return new external_function_parameters(array('companiesFS'=> new external_multiple_structure($companiesFS)));
+        return new external_function_parameters(array('companiesFS'=> $companies));
     }//wsFSCompany_parameters
 
     /**
@@ -261,7 +229,7 @@ class local_wsks_external extends external_api {
 
         try {
             /* Synchronize companies */
-            WS_FELLESDATA::Synchronize_FSKS_Companies($companiesFS,$result);
+            WS_FELLESDATA::synchronize_fsks_companies($companiesFS,$result);
 
             return $result;
         }catch (Exception $ex) {
@@ -360,7 +328,7 @@ class local_wsks_external extends external_api {
 
         try {
             /* Get Organization Structure */
-            WS_FELLESDATA::OrganizationStructureByTop($topCompany,$result);
+            WS_FELLESDATA::organization_structure_by_top($topCompany,$result);
 
             return $result;
         }catch (Exception $ex) {
@@ -471,7 +439,7 @@ class local_wsks_external extends external_api {
 
         try {
             /* Synchronize Job Roles */
-            WS_FELLESDATA::Synchronize_FSKS_JobRoles($jobRolesFS,$result);
+            WS_FELLESDATA::synchronize_fsks_jobroles($jobRolesFS,$result);
 
             return $result;
         }catch (Exception $ex) {
@@ -567,7 +535,7 @@ class local_wsks_external extends external_api {
 
         try {
             /* Get Job Roles connected with a level */
-            WS_FELLESDATA::JobRolesByLevel($hierarchy,$result);
+            WS_FELLESDATA::jobroles_by_level($hierarchy,$result);
 
             return $result;
         }catch (Exception $ex) {
@@ -654,7 +622,7 @@ class local_wsks_external extends external_api {
 
         try {
             /* Get Job Roles generics */
-            WS_FELLESDATA::GenericsJobRoles($notIn,$result);
+            WS_FELLESDATA::generics_jobroles($notIn,$result);
 
             return $result;
         }catch (Exception $ex) {
@@ -681,25 +649,12 @@ class local_wsks_external extends external_api {
      * Web service to synchronize managers reporters between FS and KS - Parameters
      */
     public static function wsManagerReporter_parameters() {
-        /* Manager Reporter Info */
-        $personalNumber = new external_value(PARAM_TEXT,'Personal Number');
-        $fsId           = new external_value(PARAM_TEXT,'FS Company Id');
-        $companyID      = new external_value(PARAM_INT,'Company Id KS');
-        $level          = new external_value(PARAM_INT,'Level');
-        $priority       = new external_value(PARAM_INT,'prioritet');
-        $key            = new external_value(PARAM_INT,'key');
-        $action         = new external_value(PARAM_INT,'Action. Add/Update/Delete');
+        // Managers/reporters List
+        $lstmanagers = new external_value(PARAM_TEXT,'Managers/Reporters list');
 
-        /* Manager Reporter */
-        $userManagerReporter = new external_single_structure(array('personalNumber'  => $personalNumber,
-                                                                   'fsId'            => $fsId,
-                                                                   'ksId'            => $companyID,
-                                                                   'level'           => $level,
-                                                                   'key'             => $key,
-                                                                   'prioritet'       => $priority,
-                                                                   'action'          => $action));
 
-        return new external_function_parameters(array('managerReporter'=> new external_multiple_structure($userManagerReporter)));
+
+        return new external_function_parameters(array('managerReporter'=> $lstmanagers));
     }//wsManagerReporter_parameters
 
     /**
@@ -757,7 +712,7 @@ class local_wsks_external extends external_api {
 
         try {
             /* Synchronize Managers Reporters */
-            WS_FELLESDATA::Synchronize_UserManagerReporter($userManagerReporter,$result);
+            WS_FELLESDATA::synchronize_user_manager_reporter($userManagerReporter,$result);
 
             return $result;
         }catch (Exception $ex) {
@@ -784,28 +739,9 @@ class local_wsks_external extends external_api {
      * Web service to synchronize user competence between FS and KS - Parameters
      */
     public static function wsUserCompetence_parameters() {
-        /* User Competence Info */
-        $personalNumber = new external_value(PARAM_TEXT,'Personal Number');
-        $key            = new external_value(PARAM_TEXT,'Key');
-        $jobRole        = new external_value(PARAM_TEXT,'Job Roles Id');
-        $fsjobRoles     = new external_value(PARAM_TEXT,'FS job roles');
-        $companyID      = new external_value(PARAM_INT,'Company Id');
-        $fsId           = new external_value(PARAM_TEXT,'FS Company Id');
-        $level          = new external_value(PARAM_INT,'Level');
-        $impKeys        = new external_value(PARAM_TEXT,'KEYS IMP FS JR');
-        $action         = new external_value(PARAM_INT,'Action. Add/Update/Delete');
+        $lstcompetence       = new external_value(PARAM_TEXT,'List of competence ');
 
-        $userCompetence = new external_single_structure(array('personalNumber'  => $personalNumber,
-                                                              'key'             => $key,
-                                                              'jobrole'         => $jobRole,
-                                                              'fsjobroles'      => $fsjobRoles,
-                                                              'company'         => $companyID,
-                                                              'fsId'            => $fsId,
-                                                              'level'           => $level,
-                                                              'impkeys'         => $impKeys,
-                                                              'action'          => $action));
-
-        return new external_function_parameters(array('usersCompetence'=> new external_multiple_structure($userCompetence)));
+        return new external_function_parameters(array('usersCompetence'=> $lstcompetence));
     }//wsUserCompetence_parameters
 
     /**
@@ -849,7 +785,6 @@ class local_wsks_external extends external_api {
      */
     public static function wsUserCompetence($usersCompetence) {
         /* Variables    */
-        global $CFG;
         $result     = array();
 
         /* Parameter Validation */
@@ -861,8 +796,9 @@ class local_wsks_external extends external_api {
         $result['usersCompetence']  = array();
 
         try {
+
             /* Synchronization */
-            WS_FELLESDATA::Synchronize_UserCompetence($usersCompetence,$result);
+            WS_FELLESDATA::synchronize_user_competence($usersCompetence,$result);
 
             return $result;
         }catch (Exception $ex) {
@@ -965,7 +901,7 @@ class local_wsks_external extends external_api {
             require_once('../../user/profile/field/gender/lib/genderlib.php');
             
             /* Synchronization */
-            WS_FELLESDATA::Synchronize_UsersAccounts($usersAccounts,$result);
+            WS_FELLESDATA::synchronize_users_accounts($usersAccounts,$result);
 
             return $result;
         }catch (Exception $ex) {
@@ -1059,7 +995,7 @@ class local_wsks_external extends external_api {
 
         try {
             /* Unmap User Competence */
-            WS_FELLESDATA::UnMap_UserCompetence($usersUnMapCompetence,$result);
+            WS_FELLESDATA::unmap_user_competence($usersUnMapCompetence,$result);
             
             return $result;
         }catch (Exception $ex) {
@@ -1149,7 +1085,7 @@ class local_wsks_external extends external_api {
 
         try {
             /* Unmap Companies */
-            WS_FELLESDATA::UnMap_Companies($toUnMap,$result);
+            WS_FELLESDATA::unmap_companies($toUnMap,$result);
             
             return $result;
         }catch (Exception $ex) {
@@ -1161,6 +1097,369 @@ class local_wsks_external extends external_api {
             return $result;
         }//try_catch
     }//wsUnMapCompany
+
+    /****************/
+    /* wsCompetence */
+    /****************/
+
+    /**
+     * Description
+     * Input parameters for the service
+     *
+     * @return          external_function_parameters
+     *
+     * @creationDate    27/02/2017
+     * @author          eFaktor     (fbv)
+     */
+    public static function wsCompetence_parameters() {
+        $code = new external_value(PARAM_TEXT,'Industry code');
+
+        return new external_function_parameters(array('competence'=> $code));
+    }//wsCompetence_parameters
+
+    /**
+     * Description
+     * Response of the service
+     *
+     * @return          external_single_structure
+     *
+     * @creationDate    27/02/2016
+     * @author          eFaktor     (fbv)
+     */
+    public static function wsCompetence_returns() {
+        $error      = new external_value(PARAM_INT,'Error. True/False');
+        $msgError   = new external_value(PARAM_TEXT,'Error Description');
+        $competence = new external_value(PARAM_TEXT,'Competence data');
+
+
+
+        $existReturn = new external_single_structure(array('error'      => $error,
+            'message'    => $msgError,
+            'competence' => $competence));
+
+
+        return $existReturn;
+    }//wsCompetence_returns
+
+    /**
+     * Description
+     * Get user competence
+     *
+     * @param           $competence
+     *
+     * @return          array
+     * @throws          invalid_parameter_exception
+     * @throws          moodle_exception
+     *
+     * @creationDate    27/02/2017
+     * @author          eFaktor     (fbv)
+     */
+    public static function wsCompetence($competence) {
+        /* Variables    */
+        global $CFG;
+        $result     = array();
+
+        /* Parameter Validation */
+        $params = self::validate_parameters(self::wsCompetence_parameters(), array('competence' => $competence));
+
+        /* Web Service response */
+        $result['error']        = 200;
+        $result['message']      = '';
+        $result['competence']   = '';
+
+        try {
+            WS_FELLESDATA::competence_data($competence,$result);
+
+            return $result;
+        }catch (Exception $ex) {
+            if ($result['error'] == '200') {
+                $result['error']    = 500;
+                $result['message']  = $result['message']. ' ' . $ex->getMessage() . ' ' . $ex->getTraceAsString();
+            }//if_error
+
+            return $result;
+        }//try_catch
+    }//wsCompetence
+
+
+    /************************/
+    /* ws_delete_competence */
+    /************************/
+
+    /**
+     * Description
+     * Input parameters service
+     *
+     * @return          external_function_parameters
+     *
+     * @creationDate    28/02/2017
+     * @author          eFaktor     (fbv)
+     */
+    public static function ws_delete_competence_parameters() {
+        $user       = new external_value(PARAM_INT,'Users id');
+        $companies  = new external_value(PARAM_TEXT,'Companies');
+        $keys       = new external_value(PARAM_TEXT,'keys');
+
+        // Info competence
+        $competence = new external_single_structure(array('user'        => $user,
+                                                          'companies'   => $companies,
+                                                          'keys'        => $keys));
+
+        return new external_function_parameters(array('competence'=> new external_multiple_structure($competence)));
+    }//ws_delete_competence_parameters
+
+    /**
+     * Description
+     * Response of the service
+     *
+     * @return          external_single_structure
+     *
+     * @creationDate    28/02/2017
+     * @author          eFaktor     (fbv)
+     */
+    public static function ws_delete_competence_returns() {
+        $error      = new external_value(PARAM_INT,'Error. True/False');
+        $msgError   = new external_value(PARAM_TEXT,'Error Description');
+        $deleted    = new external_value(PARAM_TEXT,'Competence data deleted');
+
+        $existReturn = new external_single_structure(array('error'      => $error,
+                                                           'message'    => $msgError,
+                                                           'deleted'    => $deleted));
+
+
+        return $existReturn;
+    }//ws_delete_competence
+
+    /**
+     * Description
+     * Delete competence
+     *
+     * @param           array $competence
+     *
+     * @return          array
+     *
+     * @throws          invalid_parameter_exception
+     * @throws          moodle_exception
+     *
+     * @creationDate    28/02/2017
+     * @author          eFaktor      (fbv)
+     */
+    public static function ws_delete_competence($competence) {
+        /* Variables    */
+        global $CFG;
+        $result     = array();
+
+        /* Parameter Validation */
+        $params = self::validate_parameters(self::ws_delete_competence_parameters(), array('competence' => $competence));
+
+        /* Web Service response */
+        $result['error']     = 200;
+        $result['message']   = '';
+        $result['deleted']   = '';
+
+        try {
+            /* Get Job Roles generics */
+            WS_FELLESDATA::delete_competence_data($competence,$result);
+
+            return $result;
+        }catch (Exception $ex) {
+            if ($result['error'] == '200') {
+                $result['error']    = 500;
+                $result['message']  = $result['message']. ' ' . $ex->getMessage() . ' ' . $ex->getTraceAsString();
+            }//if_error
+
+            return $result;
+        }//try_catch
+    }//ws_delete_competence
+
+
+    /*************************/
+    /* ws_managers_reporters */
+    /*************************/
+
+    /**
+     * Description
+     * Parameters service
+     *
+     * @return      external_function_parameters
+     *
+     * @creationDate    02/03/2017
+     * @author          eFaktor     (fbv)
+     */
+    public static function ws_get_managers_reporters_parameters() {
+        $code = new external_value(PARAM_TEXT,'Industry code');
+
+        return new external_function_parameters(array('industry'=> $code));
+    }//ws_get_managers_reporters_parameters
+
+    /**
+     * Description
+     * Response of the service
+     *
+     * @return          external_single_structure
+     *
+     * @creationDate    01/03/2016
+     * @author          eFaktor     (fbv)
+     */
+    public static function ws_get_managers_reporters_returns() {
+        $error      = new external_value(PARAM_INT,'Error. True/False');
+        $msgError   = new external_value(PARAM_TEXT,'Error Description');
+        $managers   = new external_value(PARAM_TEXT,'Managers');
+        $reporters  = new external_value(PARAM_TEXT,'Reporters');
+
+
+
+        $existReturn = new external_single_structure(array('error'      => $error,
+                                                           'message'   => $msgError,
+                                                           'managers'  => $managers,
+                                                           'reporters' => $reporters));
+
+
+        return $existReturn;
+    }//ws_get_managers_reporters_returns
+
+    /**
+     * Description
+     * Get managers_reporters from KS
+     *
+     * @param           $industry
+     *
+     * @return          array
+     * @throws          invalid_parameter_exception
+     * @throws          moodle_exception
+     *
+     * @creationDate    01/03/2017
+     * @author          eFaktor     (fbv)
+     */
+    public static function ws_get_managers_reporters($industry) {
+        /* Variables    */
+        global $CFG;
+        $result     = array();
+
+        /* Parameter Validation */
+        $params = self::validate_parameters(self::ws_get_managers_reporters_parameters(), array('industry' => $industry));
+
+        /* Web Service response */
+        $result['error']        = 200;
+        $result['message']      = '';
+        $result['managers']     = '';
+        $result['reporters']    = '';
+
+        try {
+            // Get managers/reporters
+            WS_FELLESDATA::managers_reporters($industry,$result);
+            
+            return $result;
+        }catch (Exception $ex) {
+            if ($result['error'] == '200') {
+                $result['error']    = 500;
+                $result['message']  = $result['message']. ' ' . $ex->getMessage() . ' ' . $ex->getTraceAsString();
+            }//if_error
+
+            return $result;
+        }//try_catch
+    }//ws_get_managers_reporters
+
+    /*****************************/
+    /* ws_clean_managers_reporters */
+    /*****************************/
+
+    /**
+     * Description
+     * Parameters service to clean managers/reporters
+     *
+     * @return      external_function_parameters
+     *
+     * @creationDate    02/03/2017
+     * @author          eFaktor     (fbv)
+     */
+    public static function ws_clean_managers_reporters_parameters() {
+        $users      = new external_value(PARAM_TEXT,'{"user" : xxxx, "key": yyyy}');
+        $type       = new external_value(PARAM_TEXT,'Type. Managers or Reporters');
+        
+        // info
+        $data = new external_single_structure(array('type'      => $type,
+                                                    'data'    => $users));
+        
+        return new external_function_parameters(array('managersreporters' => $data));
+    }//ws_clean_managers_reporters_parameters
+
+    /**
+     * Description
+     * Response of service to clean managers/reporters
+     *
+     * @return          external_single_structure
+     *
+     * @creationDate    02/03/2017
+     * @author          eFaktor     (fbv)
+     */
+    public static function ws_clean_managers_reporters_returns() {
+        $error      = new external_value(PARAM_INT,'Error. True/False');
+        $msgError   = new external_value(PARAM_TEXT,'Error Description');
+        $deleted    = new external_value(PARAM_TEXT,'Data deleted');
+
+        $existReturn = new external_single_structure(array('error'      => $error,
+                                                           'message'    => $msgError,
+                                                           'deleted'    => $deleted));
+
+
+        return $existReturn;
+    }//ws_clean_managers_reporters
+
+    /**
+     * Description
+     * Service to clean managers/reporters
+     * 
+     * @param       array  $managersreporters
+     *
+     * @return      array
+     * @throws      invalid_parameter_exception
+     * @throws      moodle_exception
+     *
+     * @creationDate    02/03/2017
+     * @author          eFaktor     (fbv)
+     */
+    public static function ws_clean_managers_reporters($managersreporters) {
+        /* Variables    */
+        global $CFG;
+        $dblog = null;
+        
+        $result     = array();
+
+        // Validation parameters
+        $params = self::validate_parameters(self::ws_clean_managers_reporters_parameters(), array('managersreporters' =>$managersreporters));
+
+        // Response web service
+        $result['error']     = 200;
+        $result['message']   = '';
+        $result['deleted']   = '';
+
+        try {
+            // Log
+            $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START CLEAN MANAGERS REPORTERS . ' . "\n\n";
+            
+            // Clean managers/reporters
+            WS_FELLESDATA::clean_managers_reporters($managersreporters['data'],$managersreporters['type'],$result);
+
+            // Log
+            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH CLEAN MANAGERS REPORTERS . ' . "\n\n";
+            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+
+            return $result;
+        }catch (Exception $ex) {
+            // Log
+            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' ERROR FINISH CLEAN MANAGERS REPORTERS . ' . "\n\n";
+            $dblog .= " ERROR : " . $ex->getMessage() . "\n\n";
+            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+
+            if ($result['error'] == '200') {
+                $result['error']    = 500;
+                $result['message']  = $result['message']. ' ' . $ex->getMessage() . ' ' . $ex->getTraceAsString();
+            }//if_error
+
+            return $result;
+        }//try_catch
+    }//ws_clean_managers_reporters
 
     /*****************************/
     /*****************************/

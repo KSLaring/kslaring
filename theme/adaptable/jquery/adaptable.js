@@ -116,7 +116,7 @@ $(".container.slidewrap").on('transitionend', function() {
     })
 });
 
-
+// Zoom ************************************************
 var onZoom = function() {
   var zoomin = Y.one('body').hasClass('zoomin');
   if (zoomin) {

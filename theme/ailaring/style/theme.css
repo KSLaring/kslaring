@@ -7,6 +7,18 @@
   scrollbar-track-color: #FFFFFF;
   scrollbar-arrow-color: #FFFFFF;
 }
+.clearfix {
+  *zoom: 1;
+}
+.clearfix:before,
+.clearfix:after {
+  display: table;
+  content: "";
+  line-height: 0;
+}
+.clearfix:after {
+  clear: both;
+}
 body {
   font-family: Calibri, Candara, Segoe, "Segoe UI", Optima, Arial, sans-serif;
   font-size: 16px;
@@ -25,14 +37,14 @@ textarea {
   font-family: 'clan_otbook', Calibri, Candara, Segoe, "Segoe UI", Optima, Arial, sans-serif;
 }
 a {
-  color: #0060a5;
+  color: #0e7b9e;
 }
 a:visited,
 a:hover,
 a:focus,
 a:active,
 a.active {
-  color: #003359;
+  color: #084458;
   text-decoration: none;
 }
 a.btn {
@@ -50,7 +62,8 @@ a.btn.active {
   font-size: .5em;
 }
 .top-border {
-  border-bottom-color: #00aef0;
+  border-top-color: #333;
+  border-bottom-color: #fff;
 }
 .header-background {
   background: #fff url([[pix:theme|element-blue]]) 100% 50% no-repeat;
@@ -69,7 +82,7 @@ a.btn.active {
   display: block;
 }
 .logo-area h1 {
-  color: #0060a5;
+  color: #0e7b9e;
   line-height: .7;
   margin: 0;
   padding: 0;
@@ -100,6 +113,21 @@ a.btn.active {
 .navbar-inner {
   background-color: #4c4f55 !important;
   border-color: #4c4f55;
+}
+.navbar .outer-wrapper {
+  background-color: #0e7b9e;
+}
+.navbar .outer-wrapper:hover {
+  background-color: #00aef0;
+}
+.navbar-text .logininfo a {
+  color: #fff;
+}
+.navbar-menues .usermenu .login a {
+  color: #fff;
+}
+.carousel-inner {
+  background-color: #4c4f55;
 }
 #page-footer {
   background: #4c4f55;
@@ -146,4 +174,7 @@ a.btn.active {
   float: right;
   display: table-cell;
   text-align: center;
+}
+p.active_tree_node a {
+  color: #0e7b9e;
 }

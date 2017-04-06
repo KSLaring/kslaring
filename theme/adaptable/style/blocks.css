@@ -1,3 +1,31 @@
+/*
+* This file is part of Moodle - http://moodle.org/
+*
+* Moodle is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* Moodle is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+*
+*
+* Adaptable Blocks Style sheet
+*
+* Version details
+*
+* @package    theme_adaptable
+* @copyright  2015 Jeremy Hopkins (Coventry University)
+* @copyright  2015 Fernando Acedo (3-bits.com)
+* @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+*
+*/
+
 .block-region-front .block {
     border: none;
 }
@@ -19,6 +47,7 @@
     border-radius: important !0;
 }
 
+
 /* block titles */
 .block .header,
 #dockeditempanel .dockeditempanel_hd {
@@ -33,23 +62,23 @@
 }
 
 .block .header {
-    padding-right: 0px;
+    padding-right: 0;
 }
 
+/* block header */
 .block .header .title h2 {
-  font-weight: normal;
-  margin: 0 0;
-  padding: 0 0;
-  text-transform: none;
-  font-size: 16px;
-  color: [[setting:blockheadercolor]];
-  margin: 0px 0px;
-  font-weight:bold;
-  text-shadow: none;
+    margin: 0;
+    padding: 0;
+    text-transform: none;
+    font-size: [[setting:fontblockheadersize]];
+    color: [[setting:fontblockheadercolor]];
+    font-weight: [[setting:fontblockheaderweight]];
+    text-shadow: none;
+    line-height: 40px;
 }
 
 .block .header .block_action {
-  margin: 0 0;
+  margin: 0;
   margin-top: -5px;
 }
 
@@ -61,7 +90,7 @@
   border-style: [[setting:blockmainbordertopstyle]];
   padding: 10px 10px;
   font-weight: normal;
-  font-size: 90%;
+
   background: [[setting:blockbackgroundcolor]];
   -webkit-border-radius: [[setting:blockmaintopradius]] [[setting:blockmaintopradius]] [[setting:blockmainbottomradius]] [[setting:blockmainbottomradius]];
   -moz-border-radius: [[setting:blockmaintopradius]] [[setting:blockmaintopradius]] [[setting:blockmainbottomradius]] [[setting:blockmainbottomradius]];
@@ -82,7 +111,8 @@
 }
 
 
-.block .block-hider-show, .block .block-hider-hide {
+.block .block-hider-show,
+.block .block-hider-hide {
   width: 18px;
 }
 
@@ -94,9 +124,13 @@
     max-width: 100%;
 }
 
+.block_adminblock .content {
+    margin: 0 auto;
+}
+
 .block_login .c1.btn input {
   display: block;
-  margin: 10px auto;
+/* margin: 10px 100%; */
   text-align: center;
   width: 96%;
 }
@@ -191,16 +225,16 @@ a.dimmed, a.dimmed:link, a.dimmed:visited, a.dimmed_text, a.dimmed_text:link, a.
     top: 2px;
 }
 
-
 /* add or hide block icons */
 .showblockicons .block .header .title h2:before{
-font-family:FontAwesome;
-font-size:1.25em;
-margin-right:.3em;
-content:"\f0c9";
-font-weight: normal;
+    font-family:FontAwesome;
+    font-size:1.25em;
+    margin-right:.3em;
+    content:"\f0c9";
+    font-weight: normal;
 }
 
+/* Block Icons */
 .showblockicons .block_news_items .header .title h2:before {
   content: "\f0a1";
   font-family: FontAwesome;

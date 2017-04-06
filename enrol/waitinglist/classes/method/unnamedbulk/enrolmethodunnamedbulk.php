@@ -513,7 +513,7 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
              */
             if (enrol_get_plugin('invoice')) {
                 if ($waitinglist->{ENROL_WAITINGLIST_FIELD_INVOICE}) {
-                    \Invoices::Add_InvoiceInto($data,$USER->id,$waitinglist->courseid,$waitinglist->id);
+                    \Invoices::add_invoice_info($data,$USER->id,$waitinglist->courseid,$waitinglist->id);
                 }//if_invoice_info
             }
 
@@ -705,12 +705,6 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
     public function enrol_page_hook(\stdClass $waitinglist, $flagged) {
         global $CFG, $OUTPUT, $USER,$DB;
 		$isInvoice = false;
-
-        /* Clean Cookies    */
-        setcookie('level_0',0);
-        setcookie('level_1',0);
-        setcookie('level_2',0);
-        setcookie('level_3',0);
         
 		$queueman= \enrol_waitinglist\queuemanager::get_by_course($waitinglist->courseid);
 		$entryman= \enrol_waitinglist\entrymanager::get_by_course($waitinglist->courseid);
@@ -814,8 +808,6 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
                 $form = new enrolmethodunnamedbulk_enrolform(NULL, array($waitinglist,$this,$qstatus,false,$remainder));
 
                 if ($form->is_cancelled()) {
-                    setcookie('ansvar_selected',0);
-                    
                     redirect($CFG->wwwroot . '/index.php');
                 }else if ($form->is_submitted()) {
                     $this->myManagers   = \Approval::managers_connected($USER->id,$infoRequest->companyid);
@@ -852,8 +844,6 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
                     $data = false;
 
                     if ($form->is_cancelled()) {
-                        setcookie('ansvar_selected',0);
-                        
                         redirect($CFG->wwwroot . '/index.php');
                     }else if ($form->is_submitted()) {
 
@@ -1002,6 +992,7 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
 			$message = $OUTPUT->box($enrolstatus);
 			$ret = array(false,$message);
         }
+        
         return $ret;
     }
 }

@@ -844,7 +844,7 @@ class Competence {
      * Description
      * Remove send notification to revert situation
      *
-     * @param           int $competenceRequest  Competence id
+     * @param               $competenceRequest  Competence id
      * @param           int $managerId          Manager id
      *
      * @return          bool
@@ -1080,7 +1080,7 @@ class Competence {
             // Title
             $out .= html_writer::start_tag('div');
                 $out .= '<h3>' . get_string('pluginname','profilefield_competence'). '</h3>';
-                $out .= '<h5>'. get_string('profile_desc','profilefield_competence') . '</h5>';
+                $out .= '<h5>'. get_string('comptence_desc','profilefield_competence') . '</h5>';
             $out .= html_writer::end_tag('div');
             $out .= '</br>';
 
@@ -1725,8 +1725,10 @@ class Competence {
             $competenceRequest = $DB->get_record('user_info_competence_data',array('token' => $token));
 
             // Get Company Name
-            $companies = self::get_company_name($competenceRequest->companyid);
-            $competenceRequest->company   = $companies[$competenceRequest->companyid];
+            if ($competenceRequest) {
+                $companies = self::get_company_name($competenceRequest->companyid);
+                $competenceRequest->company   = $companies[$competenceRequest->companyid];
+            }//if_competenceRequest
 
             return $competenceRequest;
         }catch (Exception $ex) {

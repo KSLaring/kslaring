@@ -1,0 +1,18 @@
+<li id="courselistitem-{{{id}}}" class="course-list-item row-fluid">
+    <div class="course-img span3">
+        {{#img}}<img src="{{{baseurl}}}{{{.}}}" alt="" class="img-responsive">{{/img}}
+    </div>
+    <div class="course-desc span9">
+        <h4 class="course-title">
+            <a href="{{{baseurl}}}{{{link}}}{{{id}}}">{{{name}}}</a>
+        </h4>
+        <p class="course-summary">{{{summary}}}</p>
+        <h5>Course tags</h5>
+        <ul class="course-tag-list unlist">
+            {{#tags}}
+                <li data-group="{{{group}}}" data-name="{{{name}}}">{{{name}}}</li>
+            {{/tags}}
+        </ul>
+        <a href="{{{baseurl}}}{{{link}}}{{{id}}}" class="btn btn-link">Read more ...</a>
+    </div>
+</li>

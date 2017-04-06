@@ -53,7 +53,7 @@ function hvp_supports($feature) {
         case FEATURE_MOD_INTRO:
             return true;
         case FEATURE_COMPLETION_TRACKS_VIEWS:
-            return false;
+            return true;
         case FEATURE_COMPLETION_HAS_RULES:
             return false;
         case FEATURE_GRADE_HAS_GRADE:
@@ -61,7 +61,7 @@ function hvp_supports($feature) {
         case FEATURE_GRADE_OUTCOMES:
             return false;
         case FEATURE_BACKUP_MOODLE2:
-            return false;
+            return true;
         case FEATURE_SHOW_DESCRIPTION:
             return true;
 
@@ -107,11 +107,7 @@ function hvp_update_instance($hvp) {
 
     // Save content
     hvp_save_content($hvp);
-
-    // Update grade item with 100% max score, reset user records.
-    $hvp->rawgrademax = '100';
-    hvp_grade_item_update($hvp, 'reset');
-
+    hvp_grade_item_update($hvp);
     return true;
 }
 
@@ -174,13 +170,12 @@ function hvp_save_content($hvp) {
  */
 function hvp_get_disabled_content_features($hvp) {
   $disablesettings = array(
-      \H5PCore::$disable[\H5PCore::DISABLE_FRAME] => isset($hvp->frame) ? $hvp->frame : 0,
-      \H5PCore::$disable[\H5PCore::DISABLE_DOWNLOAD] => isset($hvp->download) ? $hvp->download : 0,
-      \H5PCore::$disable[\H5PCore::DISABLE_COPYRIGHT] => isset($hvp->copyright) ? $hvp->copyright : 0
+      \H5PCore::DISPLAY_OPTION_FRAME => isset($hvp->frame) ? $hvp->frame : 0,
+      \H5PCore::DISPLAY_OPTION_DOWNLOAD => isset($hvp->export) ? $hvp->export : 0,
+      \H5PCore::DISPLAY_OPTION_COPYRIGHT => isset($hvp->copyright) ? $hvp->copyright : 0
   );
-
   $core = \mod_hvp\framework::instance();
-  return $core->getDisable($disablesettings, 0);
+  return $core->getStorableDisplayOptions($disablesettings, 0);
 }
 
 /**
@@ -279,8 +274,22 @@ function hvp_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload
                 return false; // Invalid context.
             }
 
+            // Get core:
+            $h5pinterface = \mod_hvp\framework::instance('interface');
+            $h5pcore = \mod_hvp\framework::instance('core');
+
+            // Get content id from filename:
+            if (!preg_match('/(\d*).h5p/', $args[0], $matches)) {
+              // did not find any content ID :(
+              return false;
+            }
+
+            $contentid = $matches[0];
+            $content = $h5pinterface->loadContent($contentid);
+            $displayOptions = $h5pcore->getDisplayOptionsForView($content['disable'], $contentid);
+
             // Check permissions
-            if (!has_capability('mod/hvp:getexport', $context)) {
+            if (!$displayOptions['export']) {
                 return false;
             }
 
@@ -331,9 +340,27 @@ function hvp_grade_item_update($hvp, $grades=null) {
     }
 
     $params = array('itemname' => $hvp->name, 'idnumber' => $hvp->cmidnumber);
-    if (isset($hvp->rawgrademax)) {
+
+    if (isset($hvp->maximumgrade)) {
         $params['gradetype'] = GRADE_TYPE_VALUE;
-        $params['grademax'] = $hvp->rawgrademax;
+        $params['grademax'] = $hvp->maximumgrade;
+    }
+
+    // Recalculate rawgrade relative to grademax
+    if (isset($hvp->rawgrade) && isset($hvp->rawgrademax)) {
+        // Get max grade Obs: do not try to use grade_get_grades because it
+        // requires context which we don't have inside an ajax
+        // $gradinginfo = grade_get_grades($hvp->course, 'mod', 'hvp', $hvp->id);
+        $gradeitem = grade_item::fetch(array(
+            'itemtype' => 'mod',
+            'itemmodule' => 'hvp',
+            'iteminstance' => $hvp->id,
+            'courseid' => $hvp->course
+        ));
+
+        if (isset($gradeitem) && isset($gradeitem->grademax)) {
+            $grades->rawgrade = ($hvp->rawgrade / $hvp->rawgrademax) * $gradeitem->grademax;
+        }
     }
 
     if ($grades === 'reset') {

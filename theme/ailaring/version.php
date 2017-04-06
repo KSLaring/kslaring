@@ -31,12 +31,12 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-$plugin->version = 2017020200;
-$plugin->release = '3.1.0 (Build: 2017020200)';
+$plugin->version = 2017032100;
+$plugin->release = '3.1.3 (Build: 2017032100)';
 $plugin->maturity = MATURITY_STABLE;
 $plugin->requires = 2015111602;
 $plugin->component = 'theme_ailaring';
 $plugin->dependencies = array(
     'theme_bootstrapbase' => 2015111600,
-    'theme_kommit' => 2017020200,
+    'theme_kommit' => 2017032100,
 );

@@ -251,18 +251,22 @@ $string['current_noed_teachers_matching']   = 'Gjeldende machende instruktører'
 
 $string['noed_teachers']                    = 'Instruktører';
 
-$string['msg_teacher']      = '{$a->site}: Teacher in course {$a->course}';
-$string['body_teacher']     = '<p>We would like to inform you that you have just been assigned as a teacher for the course {$a->course}</p>
+$string['msg_teacher']      = '{$a->site}: Instruktør i kurset {$a->course}';
+$string['body_teacher']     = '<p>Vi ønsker å informere deg om at du har blitt satt opp som instruktør i kurset {$a->course}</p>
                                </br>
-                               <p>This is an automatic generated email from {$a->site} and you cannot answer this email.</p>';
-$string['body_unteacher']   = '<p>We would lik to inform you that you you have just been unassigned as a teacher for the course {$a->course}</p>
+                               <p>Dette er en automatisk generert epost fra {$a->site}. Du kan ikke svare på denne eposten.</p>';
+$string['body_unteacher']   = '<p>Vi ønsker å informere deg om at du er ikke lengre satt opp som instruktør i kurset {$a->course}</p>
                                </br>
-                               <p>This is an automatic generated email from {$a->site} and you cannot answer this email.</p>';
+                               <p>Dette er en automatisk generert epost fra {$a->site}. Du kan ikke svare på denne eposten.</p>';
 
-$string['msg_instructor']   = '{$a->site}: Course instructor in course {$a->course}';
-$string['body_instructor']  = '<p>We would like to inform you that you have just been assigned as a course instructor for the course {$a->course}</p>
+$string['msg_instructor']   = '{$a->site}: Kursansvarlig for kurset {$a->course}';
+$string['body_instructor']  = '<p>Vi ønsker å informere deg om at du er satt opp som kursansvarlig for kurset {$a->course}</p>
                                </br>
-                               <p>This is an automatic generated email from {$a->site} and you cannot answer this email.</p>';
-$string['body_uninstructor'] = '<p>We would like to inform you that you have just been unassigned as a course instructor for the course {$a->course}</p>
+                               <p>Dette er en automatisk generert epost fra {$a->site}. Du kan ikke svare på denne eposten.</p>';
+$string['body_uninstructor'] = '<p>Vi ønsker å informere deg om at du ikke lengre er satt opp som kursansvarlig for kurset {$a->course}</p>
                                 </br>
-                                <p>This is an automatic generated email from {$a->site} and you cannot answer this email.</p>';
+                                <p>Dette er en automatisk generert epost fra {$a->site}. Du kan ikke svare på denne eposten.</p>';
+
+$string['notemplate']        = 'None';
+$string['courseformats']     = 'Course template list';
+$string['courseformatsdesc'] = 'The course list. Please select the course formats that may be used as templates.';

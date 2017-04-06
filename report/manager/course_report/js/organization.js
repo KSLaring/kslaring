@@ -31,12 +31,16 @@ var level_structure = {
 
     /* Level Zero Selector   */
     levelZero   : Y.one('#id_' + name + '0') || null,
+    hZero   : Y.one('#id_h0') || null,
     /* Level One Selector   */
     levelOne    : Y.one('#id_' + name + '1') || null,
+    hOne   : Y.one('#id_h1') || null,
     /* Level Two Selector   */
     levelTwo    : Y.one('#id_' + name + '2') || null,
+    hTwo   : Y.one('#id_h2') || null,
     /* Level Three Selector */
     levelThree  : Y.one('#id_' + name + '3') || null,
+    hThree   : Y.one('#id_h3') || null,
 
     /* Job Roles - Sel  */
     jobRoleLst : Y.one('#id_' + jr_selector),
@@ -71,9 +75,36 @@ var level_structure = {
         if (this.levelThree) {
             this.levelThree.on('change', this.Load_JobRoles, this);
         }
+
+        this.ini_default_values();
+    },
+
+    ini_default_values: function (e) {
+        var valueThree = 0;
+
+        this.hZero.set('value',this.levelZero.get('value'));
+        this.hOne.set('value',this.levelOne.get('value'));
+        this.hTwo.set('value',this.levelTwo.get('value'));
+        if (this.levelThree) {
+            this.levelThree.all('option').each(function(option){
+                if (option.get('selected') && (option.get('value') != 0)) {
+                    if (valueThree == 0) {
+                        valueThree = option.get('value');
+                    }else {
+                        valueThree = valueThree + ',' + option.get('value');
+                    }
+                }//seleted
+            });
+        }//if_levleThree
+
+        this.hThree.set('value',valueThree);
     },
 
     Activate_LevelOne : function(e) {
+        this.hZero.set('value',this.levelZero.get('value'));
+        this.hOne.set('value',0);
+        this.hTwo.set('value',0);
+        this.hThree.set('value',0);
         if (this.report_level > 0) {
             var parent  = this.levelZero.get('value');
             var level   = 1;
@@ -86,6 +117,9 @@ var level_structure = {
     },
 
     Activate_LevelTwo : function(e) {
+        this.hOne.set('value',this.levelOne.get('value'));
+        this.hTwo.set('value',0);
+        this.hThree.set('value',0);
         if (this.report_level > 1) {
             var parent      = this.levelOne.get('value');
             var level       = 2;
@@ -98,6 +132,8 @@ var level_structure = {
     },
 
     Activate_LevelThree : function(e) {
+        this.hTwo.set('value',this.levelTwo.get('value'));
+        this.hThree.set('value',0);
         if (this.report_level > 2) {
             var parent  = this.levelTwo.get('value');
             var level   = 3;
@@ -194,7 +230,6 @@ var level_structure = {
             var toClean = dataSelector.clean;
             for (var indexClean in toClean) {
                 var clean = toClean[indexClean];
-
                 if (Y.one("#id_" + clean)) {
                     Y.one("#id_" + clean).all('option').each(function(option){
                         if (option.get('value') != 0) {
@@ -260,13 +295,14 @@ var level_structure = {
                     if (valueThree == 0) {
                         valueThree = option.get('value');
                     }else {
-                        valueThree = valueThree + '#' + option.get('value');
+                        valueThree = valueThree + ',' + option.get('value');
                     }
                 }//seleted
             });
-        }//if_levleThree
+        }//if_levelThree
 
-
+        this.hThree.set('value',valueThree);
+        
         var iotrans = Y.io(M.cfg.wwwroot + '/report/manager/jobrole.php',
             {
                 method: 'POST',

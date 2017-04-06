@@ -22,6 +22,7 @@ $string['pluginname_help']      = 'Her finner du brukerens arbeidssteder og jobb
 $string['competence_profile']   = 'Arbeidsteder og jobbroller';
 
 $string['profile_desc'] = 'Dine arbeidssteder og jobbroller.<br >Vennligst legg til minst ett arbeidssted med tilhørende jobbrolle. Klikk på "Opprett ny" for å gjøre dette.';
+$string['comptence_desc'] = 'Your information about your companies and job roles';
 $string['lnk_update']   = 'Endre mine arbeidssteder og jobbroller';
 $string['lnk_edit']     = 'Rediger';
 $string['lnk_delete']   = 'Slett';
@@ -87,3 +88,5 @@ $string['request_just_rejected'] = 'Du har allerede avslått at <strong>{$a->com
 $string['request_just_approved'] = 'Forespørselen for arbeidsstedet <strong>{$a->company}</strong> og for brukeren <strong>{$a->user}</strong> er allerede godkjent.';
 
 $string['alert_approve'] = 'Vennligst vær oppmerksom på at du legger til korrekt arbeidssted på deg selv. Lederen for valgt arbeidssted blir automatisk varslet og kan avslå at du legger til arbeidsstedet hvis dette er feil.';
+
+$string['comp_delete'] = 'Denne brukeren er allerede fjernet fra dette arbeidsstedet.';

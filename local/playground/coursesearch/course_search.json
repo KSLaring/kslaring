@@ -1,0 +1,234 @@
+{
+  "tags": {
+    "groups": [
+      {
+        "groupname": "display",
+        "title": "Display options",
+        "shown": [
+          {
+            "type": "display",
+            "group": "date",
+            "name": "Sort by date",
+            "checked": 0
+          },
+          {
+            "type": "display",
+            "group": "sortdesc",
+            "name": "Sort descending",
+            "checked": 0
+          },
+          {
+            "type": "display",
+            "group": "tags",
+            "name": "Show course tags",
+            "checked": 0
+          }
+        ],
+        "hidden": []
+      },
+      {
+        "groupname": "region",
+        "title": "Region",
+        "shown": [
+          {
+            "type": "course",
+            "group": "region",
+            "name": "Oppland Fylkeskommune",
+            "amount": 44,
+            "checked": 0
+          },
+          {
+            "type": "course",
+            "group": "region",
+            "name": "Akershus Fylkeskommune",
+            "amount": 32,
+            "checked": 0
+          },
+          {
+            "type": "course",
+            "group": "region",
+            "name": "Oslo Fylkeskommune",
+            "amount": 15,
+            "checked": 0
+          }
+        ],
+        "hidden": [
+          {
+            "type": "course",
+            "group": "region",
+            "name": "Hordaland Fylkeskommune",
+            "amount": 1,
+            "checked": 0
+          },
+          {
+            "type": "course",
+            "group": "region",
+            "name": "Rogaland Fylkeskommune",
+            "amount": 1,
+            "checked": 0
+          },
+          {
+            "type": "course",
+            "group": "region",
+            "name": "Trondheim Fylkeskommune",
+            "amount": 0,
+            "checked": 0
+          }
+        ]
+      },
+      {
+        "groupname": "municipality",
+        "title": "Municipality",
+        "shown": [
+          {
+            "type": "course",
+            "group": "municipality",
+            "name": "Lillehammer",
+            "amount": 45,
+            "checked": 0
+          },
+          {
+            "type": "course",
+            "group": "municipality",
+            "name": "Gjøvik",
+            "amount": 23,
+            "checked": 0
+          },
+          {
+            "type": "course",
+            "group": "municipality",
+            "name": "Oslo",
+            "amount": 12,
+            "checked": 0
+          }
+        ],
+        "hidden": [
+          {
+            "type": "course",
+            "group": "municipality",
+            "name": "Åseral",
+            "amount": 10,
+            "checked": 0
+          },
+          {
+            "type": "course",
+            "group": "municipality",
+            "name": "Bergen",
+            "amount": 1,
+            "checked": 0
+          },
+          {
+            "type": "course",
+            "group": "municipality",
+            "name": "Sandnes",
+            "amount": 0,
+            "checked": 0
+          },
+          {
+            "type": "course",
+            "group": "municipality",
+            "name": "Stavanger",
+            "amount": 1,
+            "checked": 0
+          },
+          {
+            "type": "course",
+            "group": "municipality",
+            "name": "Rennebu",
+            "amount": 0,
+            "checked": 0
+          }
+        ]
+      },
+      {
+        "groupname": "type",
+        "title": "Type",
+        "shown": [
+          {
+            "type": "course",
+            "group": "type",
+            "name": "Netcourse",
+            "amount": 122,
+            "checked": 0
+          },
+          {
+            "type": "course",
+            "group": "type",
+            "name": "Classroom",
+            "amount": 220,
+            "checked": 0
+          },
+          {
+            "type": "course",
+            "group": "type",
+            "name": "Topics",
+            "amount": 1,
+            "checked": 0
+          }
+        ],
+        "hidden": [
+          {
+            "type": "course",
+            "group": "type",
+            "name": "Weeks",
+            "amount": 0,
+            "checked": 0
+          }
+        ],
+        "showdate": {
+          "title": "Date"
+        }
+      },
+      {
+        "groupname": "topics",
+        "title": "Topics",
+        "shown": [
+          {
+            "type": "course",
+            "group": "topics",
+            "name": "IT",
+            "amount": 230,
+            "checked": 0
+          },
+          {
+            "type": "course",
+            "group": "topics",
+            "name": "Oppvekst",
+            "amount": 65,
+            "checked": 0
+          },
+          {
+            "type": "course",
+            "group": "topics",
+            "name": "Helse",
+            "amount": 24,
+            "checked": 0
+          },
+          {
+            "type": "course",
+            "group": "topics",
+            "name": "Velferd",
+            "amount": 12,
+            "checked": 0
+          }
+        ],
+        "hidden": [
+          {
+            "type": "course",
+            "group": "topics",
+            "name": "Kultur",
+            "amount": 124,
+            "checked": 0
+          },
+          {
+            "type": "course",
+            "group": "topics",
+            "name": "Økonomisk planlegging og analyse",
+            "amount": 42,
+            "checked": 0
+          }
+        ]
+      }
+    ]
+  }
+}

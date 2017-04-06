@@ -57,6 +57,7 @@ define('APPROVAL_NONE',0);
 define('APPROVAL_REQUIRED',1);
 define('APPROVAL_MESSAGE',2);
 define('COMPANY_NO_DEMANDED',3);
+define('REDIRECT','redirect');
 
 class enrol_waitinglist_plugin extends enrol_plugin {
 
@@ -475,6 +476,7 @@ class enrol_waitinglist_plugin extends enrol_plugin {
     public function unenrol_user(stdClass $instance, $userid) {
         /* Variables */
         global $CFG;
+        global $DB;
         $user        = null;
         $course      = null;
         $context     = null;
@@ -485,6 +487,9 @@ class enrol_waitinglist_plugin extends enrol_plugin {
         try {
             /* First unenrol    */
             parent::unenrol_user($instance,$userid);
+
+            //remove from waiting list
+            $DB->delete_records(ENROL_WAITINGLIST_TABLE_QUEUE,array('userid'=>$userid));
 
             /* Extra information */
             $user       = get_complete_user_data('id',$userid);
@@ -861,11 +866,12 @@ class enrol_waitinglist_plugin extends enrol_plugin {
 		//iii) queue item will determine how to handle the seats
 		//iv) queue item will enrol or confirm users if needed 
 		foreach($instances as $instance){
-			$course = get_course($instance->courseid);
-			$methods = $this->get_methods($course, $instance->id);
-			$queueman= \enrol_waitinglist\queuemanager::get_by_course($instance->courseid);
-			$entryman= \enrol_waitinglist\entrymanager::get_by_course($instance->courseid);
+			$course         = get_course($instance->courseid);
+			$methods        = $this->get_methods($course, $instance->id);
+			$queueman       = \enrol_waitinglist\queuemanager::get_by_course($instance->courseid);
+			$entryman       = \enrol_waitinglist\entrymanager::get_by_course($instance->courseid);
 			$availableseats = $this->get_vacancy_count($instance);
+
 			$trace->output('waitinglist enrolment availabilities: ' . $availableseats);	
 			if($availableseats > 0 AND $queueman->get_listtotal() > 0){	
 				$allocatedseats=0;
@@ -1259,6 +1265,16 @@ class enrol_waitinglist_plugin extends enrol_plugin {
             $params['courseid']         = $courseid;
             $params['waitingid']        = $waitingLst->id;
             $DB->delete_records('enrol_waitinglist_unenrol',$params);
+
+            // Unroll from mdl_user_enrolments
+            $params = array();
+            $params['userid']    = $userid;
+            $params['enrolid']   = $waitingLst->id;
+            $rdo = $DB->get_record('user_enrolments',$params);
+            if ($rdo) {
+                // deleted
+                $DB->delete_records('user_enrolments',$params);
+            }
             
             return true;
         }catch (Exception $ex) {
@@ -1851,10 +1867,10 @@ class enrol_waitinglist_plugin extends enrol_plugin {
         $location       = null;
 
         try {
-            /* Plugin Info  */
+            // Plugin info
             $pluginInfo     = get_config('enrol_waitinglist');
             if ($pluginInfo) {
-                /* Get Location     */
+                // Get location to save iCal file
                 $fileLocation   = $CFG->dataroot . '/' . $pluginInfo->file_location;
                 if (file_exists($fileLocation)) {
                     if (is_dir($fileLocation)) {
@@ -1867,40 +1883,42 @@ class enrol_waitinglist_plugin extends enrol_plugin {
                     $created = true;
                 }
 
+                // File created
                 if ($created) {
-                    /* unique ID */
-                    $uid = uniqid();
+                    // Location connected with the course
+                    $location = self::get_location($course->id);
 
-                    /* Location     */
-                    $location = self::GetLocation($course->id);
+                    // Get events connected with course
+                    $myevents = $this->get_events($course->id);
 
-                    /* Content File */
+                    // iCal file -- Headers
                     $iCal  = "BEGIN:VCALENDAR"  . "\n";
                     $iCal .= "METHOD:PUBLISH"   . "\n";
                     $iCal .= "VERSION:2.0"      . "\n";
                     $iCal .= "PRODID:-//KSLæring//EN"   . "\n";
                     $iCal .= "CALSCALE:GREGORIAN" . "\n";
                     $iCal .= "X-WR-TIMEZONE:Europe/Oslo " . "\n";
-                    $iCal .= "BEGIN:VEVENT"     . "\n";
-                    $iCal .= "SUMMARY:"         . $course->fullname . "\n";
-                    $iCal .= "UID:"             . $uid . "\n";
-                    $iCal .= "DTSTART:"         . date('Ymd\THis', $course->startdate + 28800) . "\n";
-                    if ($location) {
-                        $iCal .= "LOCATION:"        . $location->name . '\n' . $location->address. "\n";
-                        if ($location->map) {
-                            $iCal .= "URL;VALUE=URI:" . $location->map . "\n";
-                        }
+                    // iCal file - Events
+                    if ($myevents) {
+                        foreach ($myevents as $event) {
 
-                        if ($location->detail) {
-                            $iCal .= "DESCRIPTION:"     . str_replace(',','\,',$location->detail) . "\n";
-                        }
-                    }//if_location
+                            // Add Event
+                            $this->add_ical_event($course->fullname,$event,$location,$iCal);
+                        }//for_event
+                    }else {
+                        $event = new stdClass();
+                        $event->date  = $course->startdate;
+                        $event->time  = null;
+                        $event->start = $course->startdate;
+                        $event->end   = $course->startdate;
 
-                    $iCal .= "END:VEVENT"       . "\n";
+                        // Add Event
+                        $this->add_ical_event($course->fullname,$event,$location,$iCal);
+                    }//if_myevents
                     $iCal .= "END:VCALENDAR"    . "\n";
 
-                    /* File Name    */
-                    $fileName  = 'Kalender' . $uid  . '.ics';
+                    // Save iCal
+                    $fileName  = 'Kalender' . uniqid()  . '.ics';
                     $fileCal = fopen($CFG->dataroot . '/iCal/' . $fileName,'w+');
                     fwrite($fileCal,$iCal);
                     fclose($fileCal);
@@ -1918,6 +1936,164 @@ class enrol_waitinglist_plugin extends enrol_plugin {
     }//iCalendar_StartDate
 
     /**
+     * Description
+     * Add an iCal event
+     *
+     * @param       String      $course
+     * @param       stdClass    $event
+     * @param       stdClass    $location
+     * @param       String      $ical
+     *
+     * @throws                  Exception
+     *
+     * @creationDate    05/04/2017
+     * @author          eFaktor     (fbv)
+     */
+    private function add_ical_event($course,$event,$location,&$ical) {
+        // Variables
+        $time = null;
+
+        try {
+            //local time
+            $time = time();
+
+            // Create event
+            $ical .= "BEGIN:VEVENT"     . "\n";
+            $ical .= "SUMMARY:"         . $course . "\n";
+            $ical .= "UID:"             . uniqid() . "\n";
+            $ical .= "DTSTART:"         . date('Ymd\THis', $event->start) . "\n";
+            $ical .= "DTEND:"           . date('Ymd\THis', $event->end) . "\n";
+            $ical .= "CREATED:"         . date('Ymd\THis', $time) . "\n";
+            $ical .= "LAST-MODIFIED:"   . date('Ymd\THis', $time) . "\n";
+            $ical .= "DTSTAMP:"         . date('Ymd\THis', $time) . "\n";
+            $ical .= "SEQUENCE:0"       . "\n";
+            $ical .= "STATUS:CONFIRMED" . "\n";
+            // Location
+            if ($location) {
+                $ical .= "LOCATION:"        . $location->name . '\n' . $location->address. "\n";
+                if ($location->map) {
+                    $ical .= "URL;VALUE=URI:" . $location->map . "\n";
+                }
+
+                if ($location->detail) {
+                    $ical .= "DESCRIPTION:"     . str_replace(',','\,',$location->detail) . "\n";
+                }
+            }//if_location
+            $ical .= "END:VEVENT"       . "\n";
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//add_ical_event
+
+    /**
+     * Description
+     * Get events connected with course
+     *
+     * @param       integer $courseid
+     *
+     * @return              array|null
+     * @throws              Exception
+     *
+     * @creationDate    05/04/2017
+     * @author          eFaktor     (fbv)
+     */
+    private function get_events($courseid) {
+        // Variables
+        global $DB;
+        $rdo        = null;
+        $sql        = null;
+        $params     = null;
+        $myevents   = null;
+        $timeslst   = null;
+        $event      = null;
+        $index      = null;
+        $time       = null;
+        $from       = null;
+        $to         = null;
+        $today      = null;
+        $year       = null;
+        $mydate     = null;
+
+        try {
+            // Checking
+            $today = getdate(time());
+            $year = $today['year'];
+
+            // Search criteria
+            $params = array();
+            $params['course'] = $courseid;
+
+            // SQL Instruction - get events
+            $sql = " SELECT	cf.id,
+                            cf.value
+                     FROM	{course_format_options}	cf
+                     WHERE	cf.courseid = :course
+                        AND cf.name like '%time%'
+                        AND cf.value != '' ";
+
+            // Execute
+            $rdo = $DB->get_record_sql($sql,$params);
+            if ($rdo) {
+                $timeslst = explode(',',$rdo->value);
+                // Get all eevents with the right format
+                foreach ($timeslst as $time) {
+                    // Extract date and time
+                    $time =  str_replace(chr(13),'',$time);
+                    $time =  str_replace("\r",'',$time);
+                    $time =  str_replace("\n",'',$time);
+                    $time  = str_replace('kl','#',str_replace('kl.','#',$time));
+                    $index = strrpos($time,'#');
+                    if ($index) {
+                        // Event
+                        $event = new stdClass();
+                        $event->date  = null;
+                        $event->time  = null;
+                        $event->start = null;
+                        $event->end   = null;
+
+                        // Extract date
+                        $mydate = strtotime(substr($time,0,$index));
+                        $mydate = getdate($mydate);
+                        if ($mydate['year'] >= $year) {
+                            $event->date =  substr($time,0,$index);
+                            // Extract time
+                            $event->time = substr($time,$index+1);
+
+                            // Extract From/to
+                            $index = strrpos($event->time,'-');
+                            if ($index) {
+                                $from   = substr($event->time,0,$index);
+                                $to     = substr($event->time,$index+1);
+
+                                // time start
+                                $event->start   = strtotime($event->date . ' ' . $from);
+                                // time end
+                                $event->end     = strtotime($event->date . ' ' . $to);
+                            }else {
+                                $event->start   = strtotime($event->date);
+                                $event->end     = strtotime($event->date);
+                            }//if_index
+                        }
+
+                    }//if_index
+
+                    // Add event
+                    if ($event) {
+                        $myevents[] = $event;
+                    }//if_Event
+                }//foreach
+            }//if_rdo
+
+            return $myevents;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//get_events
+
+    /**
+     * Description
+     * Get location connected with
+     *
      * @param           $courseId
      *
      * @return          null|stdClass
@@ -1926,8 +2102,8 @@ class enrol_waitinglist_plugin extends enrol_plugin {
      * @creationDate    15/09/2016
      * @author          eFaktor     (fbv)
      */
-    private function GetLocation($courseId) {
-        /* Variables */
+    private function get_location($courseId) {
+        // Variables
         global $DB;
         $sql            = null;
         $rdo            = null;
@@ -1935,41 +2111,40 @@ class enrol_waitinglist_plugin extends enrol_plugin {
         $infoLocation   = null;
 
         try {
-            /* Search Criteria  */
+            // Search criteria
             $params = array();
             $params['course'] = $courseId;
             $params['name']   = 'course_location';
 
-            /* SQL Instruction */
-            $sql = " SELECT	lo.name,
-                            lo.floor,
-                            lo.room,
-                            lo.street,
-                            lo.postcode,
-                            lo.city,
-                            trim(lo.urlmap) as 'urlmap'
-                     FROM		{course_format_options}	cf
-                        JOIN	{course_locations}		lo ON lo.id = cf.value
-                     WHERE	cf.courseid = :course
-                        AND	cf.name     = :name ";
+            // SQL instruction - get location
+            $sql = " SELECT	  lo.name,
+                              lo.floor,
+                              lo.room,
+                              lo.street,
+                              lo.postcode,
+                              lo.city,
+                              trim(lo.urlmap) as 'urlmap'
+                     FROM	  {course_format_options}	cf
+                        JOIN  {course_locations}		lo ON lo.id = cf.value
+                     WHERE	  cf.courseid = :course
+                        AND	  cf.name     = :name ";
 
-            /* Execute */
+            // Execute
             $rdo = $DB->get_record_sql($sql,$params);
             if ($rdo) {
-                /* Info Location    */
+                // Location
                 $infoLocation = new stdClass();
                 $infoLocation->name        = str_replace(',','\,',$rdo->name);
-                /* Detail */
+                // Detail
                 $infoLocation->detail      = get_string('location_floor','local_friadmin') . ': ' . str_replace(',','\,',$rdo->floor);
                 $infoLocation->detail     .= '\n';
                 $infoLocation->detail     .= get_string('location_room','local_friadmin')  . ': ' . str_replace(',','\,',$rdo->room);
                 $infoLocation->detail     .= '\n';
-                /* Address  */
+                // Address
                 $infoLocation->address     = str_replace(',','\,',$rdo->street);
                 $infoLocation->address    .= '\n';
                 $infoLocation->address    .= $rdo->postcode . ' ' . str_replace(',','\,',$rdo->city);
-
-                /* Url Map */
+                // Url map
                 $infoLocation->map         = $rdo->urlmap;
             }//if_Rdo
 
@@ -1977,7 +2152,7 @@ class enrol_waitinglist_plugin extends enrol_plugin {
         }catch (\Exception $ex) {
             throw $ex;
         }//try_catch
-    }//GetLocation
+    }//get_location
 
     /**
      * Restore role assignment. 

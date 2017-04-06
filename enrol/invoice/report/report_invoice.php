@@ -14,12 +14,16 @@
 require_once( '../../../config.php');
 require_once('../invoicelib.php');
 require_once($CFG->dirroot.'/lib/excellib.class.php');
+require_once($CFG->dirroot . '/local/course_page/locallib.php');
 
-/* PARAMS   */
+// Params
 $course_id          = required_param('courseid',PARAM_INT);
 $enrol_id           = required_param('id',PARAM_INT);
 $format             = optional_param('format',null,PARAM_TEXT);
 
+$coordinator        = null;
+$instructors        = null;
+$notin              = null;
 $course             = get_course($course_id);
 $context_course     = context_course::instance($course_id);
 $return_url         = new moodle_url('/course/view.php',array('id' => $course_id));
@@ -27,7 +31,7 @@ $url                = new moodle_url('/enrol/invoice/report/report_invoice.php',
 
 require_login($course);
 
-/* Capability   */
+// Capability
 require_capability('enrol/invoice:manage',$context_course);
 
 //HTTPS is required in this page when $CFG->loginhttps enabled
@@ -46,23 +50,32 @@ if (empty($CFG->loginhttps)) {
 
 $PAGE->verify_https_required();
 
-/* Invoices List        */
-$invoices_lst   = Invoices::Get_InvoicesUsers($course_id,$enrol_id);
-/* Course Information   */
-$course_info    = Invoices::Get_InfoCourse($course_id,$enrol_id);
+// Invoices list
+$invoices_lst   = Invoices::get_invoices_users($course_id,$enrol_id);
+// Course information
+$course_info    = Invoices::get_info_course($course_id,$enrol_id);
 
-/* Download             */
+// Get nstructors
+$coordinator              = course_page::get_courses_manager($course_id);
+if ($coordinator) {
+    $notin = $coordinator->id;
+}else {
+    $notin = 0;
+}
+$course_info->instructors = course_page::get_courses_teachers($course_id,$notin);
+
+// Download xls
 if ($format) {
-    Invoices::Download_RequestCourses($invoices_lst,$course_info);
+    Invoices::download_request_courses($invoices_lst,$course_info);
 }//if_format
 
-/* Print Header */
+// Header
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('report_title','enrol_invoice'));
 
-/* DISPLAY THE INVOICES  */
-echo Invoices::Display_InvoicesCourse($invoices_lst,$course_info,$enrol_id);
+// Invoices table
+echo Invoices::display_invoices_course($invoices_lst,$course_info,$enrol_id);
 
-/* Print Footer */
+// Footer
 echo $OUTPUT->footer();
 

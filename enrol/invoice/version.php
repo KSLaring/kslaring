@@ -12,7 +12,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2016092700;                    // The current plugin version (Date: YYYYMMDDXX)
+$plugin->version   = 2017032400;                    // The current plugin version (Date: YYYYMMDDXX)
 $plugin->requires  = 2012112900;                    // Requires this Moodle version
 $plugin->component = 'enrol_invoice';               // Full name of the plugin (used for diagnostics)
 $plugin->cron      = 60;

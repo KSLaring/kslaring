@@ -196,11 +196,11 @@ class outcome_report {
         $inThree            = null;
 
         try {
-            /* Outcome Report - Basic Information */
+            // Outcome report - basic information
             $outcome_id     = $data_form[REPORT_MANAGER_OUTCOME_LIST];
             $outcome_report = self::Get_OutcomeBasicInfo($outcome_id);
 
-            /* Clean Temporary */
+            // Clean temporary
             self::CleanTemporary($outcome_id);
 
             if ($outcome_report) {
@@ -208,23 +208,9 @@ class outcome_report {
                 $outcome_report->completed_before   = $data_form[REPORT_MANAGER_COMPLETED_LIST];
                 $outcome_report->levelZero          = $data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'0'];
                 $outcome_report->zero_name          = CompetenceManager::GetCompany_Name($data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'0']);
-                /* Level One    */
-                $levelOne = new stdClass();
-                $levelOne->id                               = $data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'1'];
-                $levelOne->name                             = CompetenceManager::GetCompany_Name($data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'1']);
-                $levelOne->levelTwo                         = null;
-                $outcome_report->levelOne[$levelOne->id]    = $levelOne;
-                /* Level Two    */
-                $levelTwo = new stdClass();
-                $levelTwo->id                               = $data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'2'];
-                $levelTwo->name                             = CompetenceManager::GetCompany_Name($data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'2']);
-                $levelTwo->levelThree                       = null;
-                $outcome_report->levelTwo[$levelTwo->id]    = $levelTwo;
-                /* Level Three  */
 
-
-                /* Get My Companies by Level    */
-                if (($IsReporter) && !is_siteadmin($USER->id)) {
+                // Get companies connected with by level
+                if ($IsReporter) {
                     $inOne   = $my_hierarchy->competence[$data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'0']]->levelOne;
                     $inTwo   = $my_hierarchy->competence[$data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'0']]->levelTwo;
                     $inThree = $my_hierarchy->competence[$data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'0']]->levelThree;
@@ -232,32 +218,31 @@ class outcome_report {
                     list($inZero,$inOne,$inTwo,$inThree) = CompetenceManager::GetMyCompanies_By_Level($my_hierarchy->competence,$my_hierarchy->my_level);
                 }//is_reporter
 
-                /* Job Roles Selected   */
+                // Job roles selected
                 $outcome_report->job_roles = self::Get_JobRolesOutcome_Report($outcome_id,$data_form);
 
-                /* Check if there are job_roles */
+                // Check if there are job roles
                 if ($outcome_report->job_roles) {
-                    /* Get Companies with Employees  */
+                    // Companies with employees
                     $companiesEmployees = self::GetCompaniesEmployees($data_form,$inOne,$inTwo,$inThree);
                     if ($companiesEmployees) {
-                        /* Get information to display by level          */
-                        /* Level zero    - That's common for all levels  */
+                        // Information to display.
+                        // Level zero common to all levels
                         $USER->levelZero            = $outcome_report->levelZero;
                         $USER->outcomeReport        = $outcome_id;
 
-                        /* Get Info courses */
+                        // Get info courses
                         if ($outcome_report->courses) {
-                            /* Courses  */
+                            // Courses
                             $courses = implode(',',array_keys($outcome_report->courses));
                             self::GetUsers_EnrolledIn($outcome_id,$courses,$outcome_report->job_roles,$companiesEmployees->levelThree);
                             self::GetUsers_NotEnrolIn($outcome_id,$outcome_report->courses,$outcome_report->job_roles,$companiesEmployees->levelThree);
                         }//if_courses
 
-                        /* Check Level  */
+                        // Check level report
                         switch ($data_form['rpt']) {
                             case 0:
-                                /* Level Zero    */
-                                /* Get info connected with Level Zero */
+                                // Get info connected with level zero
                                 if ($companiesEmployees->levelOne) {
                                     self::Get_CompanyReportInfo_LevelOne($outcome_report,$companiesEmployees);
                                 }else {
@@ -266,10 +251,18 @@ class outcome_report {
 
                                 break;
                             case 1:
-                                /* Get info connected with Level One */
+                                // Level one
+                                $levelOne = new stdClass();
+                                $levelOne->id                               = $data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'1'];
+                                $levelOne->name                             = CompetenceManager::GetCompany_Name($data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'1']);
+                                $levelOne->levelTwo                         = null;
+                                $outcome_report->levelOne[$levelOne->id]    = $levelOne;
+
+                                // Get info connected with level one
                                 if ($companiesEmployees->levelTwo) {
                                     $levelTwo   = CompetenceManager::GetCompaniesInfo($companiesEmployees->levelTwo);
                                     if ($levelTwo) {
+                                        // Get info connected with level two
                                         $levelOne->levelTwo      = self::Get_CompanyReportInfo_LevelTwo($outcome_report,$levelTwo,$companiesEmployees->levelThree);
                                         if ($levelOne->levelTwo) {
                                             $outcome_report->levelOne[$levelOne->id]  = $levelOne;
@@ -289,10 +282,25 @@ class outcome_report {
 
                                 break;
                             case 2:
-                                /* Get info connected with Level Two */
+                                // Level one
+                                $levelOne = new stdClass();
+                                $levelOne->id                               = $data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'1'];
+                                $levelOne->name                             = CompetenceManager::GetCompany_Name($data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'1']);
+                                $levelOne->levelTwo                         = null;
+                                $outcome_report->levelOne[$levelOne->id]    = $levelOne;
+
+                                // Level two
+                                $levelTwo = new stdClass();
+                                $levelTwo->id                               = $data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'2'];
+                                $levelTwo->name                             = CompetenceManager::GetCompany_Name($data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'2']);
+                                $levelTwo->levelThree                       = null;
+                                $outcome_report->levelTwo[$levelTwo->id]    = $levelTwo;
+
+                                // Get info connected with level two
                                 if ($companiesEmployees->levelThree) {
                                     $levelThree   = CompetenceManager::GetCompaniesInfo($companiesEmployees->levelThree);
                                     if ($levelThree) {
+                                        // Get info connected with leel three
                                         $levelTwo->levelThree      = self::Get_CompanyReportInfo_LevelThree($outcome_report,$levelThree);
                                         if ($levelTwo->levelThree) {
                                             $outcome_report->levelTwo[$levelTwo->id] = $levelTwo;
@@ -312,10 +320,24 @@ class outcome_report {
 
                                 break;
                             case 3:
-                                /* Get Info connected with the level three  */
+                                // Level one
+                                $levelOne = new stdClass();
+                                $levelOne->id                               = $data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'1'];
+                                $levelOne->name                             = CompetenceManager::GetCompany_Name($data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'1']);
+                                $levelOne->levelTwo                         = null;
+                                $outcome_report->levelOne[$levelOne->id]    = $levelOne;
+
+                                // Level two
+                                $levelTwo = new stdClass();
+                                $levelTwo->id                               = $data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'2'];
+                                $levelTwo->name                             = CompetenceManager::GetCompany_Name($data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'2']);
+                                $levelTwo->levelThree                       = null;
+                                $outcome_report->levelTwo[$levelTwo->id]    = $levelTwo;
+
+                                // Get info connected with level three
                                 if ($companiesEmployees->levelThree) {
                                     $levelThree   = CompetenceManager::GetCompaniesInfo($companiesEmployees->levelThree);
-                                    /* Get Company-ies selected */
+                                    // Companies selected level three
                                     $selectorThree = $data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'3'];
                                     $output         = array_slice($selectorThree, 0, 1);
                                     $selectorThree   = array_diff($selectorThree,$output);
@@ -327,7 +349,7 @@ class outcome_report {
                                         $levelThree     = array_intersect_key($levelThree,$companies);
                                     }
 
-                                    /* Level Three  */
+                                    // Level three
                                     if ($levelThree) {
                                         $outcome_report->levelThree = self::Get_CompanyReportInfo_LevelThree($outcome_report,$levelThree);
                                     }else {
@@ -374,10 +396,10 @@ class outcome_report {
         $companies  = null;
 
         try {
-            /* Level Zero */
+            // Level zero
             $levelZero = $data[MANAGER_OUTCOME_STRUCTURE_LEVEL .'0'];
 
-            /* Get Rest of the levels   */
+            // Rest of the levels
             switch ($data['rpt']) {
                 case 1:
                     $levelOne = array('0' => $data[MANAGER_OUTCOME_STRUCTURE_LEVEL .'1']);
@@ -443,7 +465,7 @@ class outcome_report {
                 $inThree = 0;
             }
 
-            /* Get Companies with Employees */
+            // Companies with employees
             $companies = CompetenceManager::GetCompanies_WithEmployees($levelZero,$inOne,$inTwo,$inThree);
 
             return $companies;
@@ -469,14 +491,14 @@ class outcome_report {
         $params = array();
 
         try {
-            /* Criteria */
+            // Search criteria
             $params['manager']  = $_SESSION['USER']->sesskey;
             $params['report']   = 'outcome';
             if ($outcomeId) {
                 $params['outcomeid'] = $outcomeId;
             }//if_outcome
 
-            /* Execute  */
+            // Execute
             $DB->delete_records('report_gen_temp',$params);
         }catch (Exception $ex) {
             throw $ex;
@@ -683,11 +705,11 @@ class outcome_report {
         $outcome_report  = null;
 
         try {
-            /* Search Criteria  */
+            // Search criteria
             $params = array();
             $params['outcome'] =  $outcome_id;
 
-            /* SQL Instruction  */
+            // SQL instruction - get outcomes information
             $sql = " SELECT		    o.id,
                                     o.fullname,
                                     o.description,
@@ -698,10 +720,10 @@ class outcome_report {
                         LEFT JOIN	{report_gen_outcome_exp}	    oe	ON  oe.outcomeid    = oc.outcomeid
                      WHERE			o.id = :outcome ";
 
-            /* Execute  */
+            // Execute
             $rdo = $DB->get_record_sql($sql,$params);
             if ($rdo) {
-                /* Outcome Report   */
+                // Outcome report
                 $outcome_report = new stdClass();
                 $outcome_report->id             = $rdo->id;
                 $outcome_report->name           = $rdo->fullname;
@@ -713,8 +735,6 @@ class outcome_report {
                 $outcome_report->levelOne       = null;
                 $outcome_report->levelTwo       = null;
                 $outcome_report->levelThree     = null;
-
-
             }//if_rdo
 
             return $outcome_report;
@@ -747,43 +767,43 @@ class outcome_report {
         $infoTempReport = null;
 
         try {
-            /* Extra Info   */
+            // Extra info
             $jobKeys    = array_flip(array_keys($jobRoles));
             $managerKey = $_SESSION['USER']->sesskey;
 
-            /* SQL Instruction  */
-            $sql = " SELECT	CONCAT(ue.id,'_',uic.id) as 'id',
-                            u.id 			                      as 'user',
-                            CONCAT(u.firstname, ' ', u.lastname)  as 'name',
-                            uic.companyid,
-                            uic.jobroles,
-                            e.courseid,
-                            IF (cc.timecompleted,cc.timecompleted,0) as 'timecompleted'
-                     FROM			{user_enrolments}			ue
-                        JOIN		{enrol}						e	ON 	e.id 	    = ue.enrolid
-                                                                    AND	e.courseid 	IN ($courses)
-                                                                    AND	e.status	= 0
-                        JOIN		{user}						u	ON 	u.id 		= ue.userid
-                                                                    AND	u.deleted	= 0
-                        JOIN		{user_info_competence_data}	uic	ON 	uic.userid 	= u.id
-                        LEFT JOIN	{course_completions}		cc	ON 	cc.userid	= uic.userid
-                                                                    AND cc.course 	= e.courseid ";
+            // SQL Instruction - users enrolled
+            $sql = " SELECT	      CONCAT(ue.id,'_',uic.id) as 'id',
+                                  u.id 			                      as 'user',
+                                  CONCAT(u.firstname, ' ', u.lastname)  as 'name',
+                                  uic.companyid,
+                                  uic.jobroles,
+                                  e.courseid,
+                                  IF (cc.timecompleted,cc.timecompleted,0) as 'timecompleted'
+                     FROM		  {user_enrolments}			  ue
+                        JOIN	  {enrol}					  e	  ON 	e.id 	    = ue.enrolid
+                                                                  AND	e.courseid 	IN ($courses)
+                                                                  AND	e.status	= 0
+                        JOIN	  {user}					  u	  ON 	u.id 		= ue.userid
+                                                                  AND	u.deleted	= 0
+                        JOIN	  {user_info_competence_data} uic ON 	uic.userid 	= u.id
+                        LEFT JOIN {course_completions}		  cc  ON 	cc.userid	= uic.userid
+                                                                  AND   cc.course 	= e.courseid ";
 
-            /* Companies Criteria    */
+            // Companies filter
             if ($companies) {
                 $sql .= " WHERE uic.companyid IN ($companies) ";
             }//if_companies
 
-            /* ORDER BY */
+            // Order by
             $sql .= " ORDER BY e.courseid,u.id ";
 
-            /* Execute  */
+            // Execute
             $rdo = $DB->get_records_sql($sql);
             if ($rdo) {
                 foreach ($rdo as $instance) {
                     $jrUsers = array_flip(explode(',',$instance->jobroles));
                     if (array_intersect_key($jobKeys,$jrUsers)) {
-                        /* Info Outcome Report  */
+                        // Info outcome
                         $infoTempReport = new stdClass();
                         $infoTempReport->manager    = $managerKey;
                         $infoTempReport->report     = 'outcome';
@@ -804,7 +824,7 @@ class outcome_report {
                             $infoTempReport->timecompleted  = null;
                         }//if_completed
 
-                        /* Execute  */
+                        // Execute
                         $DB->insert_record('report_gen_temp',$infoTempReport);
                     }//if_job_roles
                 }//for_rdo
@@ -839,15 +859,15 @@ class outcome_report {
         $infoTempReport = null;
 
         try {
-            /* Extra Info   */
+            // Extra info
             $jobKeys    = array_flip(array_keys($jobRoles));
             $managerKey = $_SESSION['USER']->sesskey;
 
-            /* Search Criteria  */
+            // Search criteria
             $params = array();
             $params['outcome']  = $outcomeId;
 
-            /* SQL Instruction  */
+            // SQL instruction - users not enrolled
             $sql = " SELECT		CONCAT(u.id,'_',uic.id),
                                 u.id,
                                 CONCAT(u.firstname, ' ', u.lastname)  as 'name',
@@ -863,23 +883,22 @@ class outcome_report {
                         AND	u.username != 'guest'
                         AND	tmp.id IS NULL ";
 
-            /* Companies Criteria    */
+            // Companies filter
             if ($companies) {
                 $sql .= " AND uic.companyid IN ($companies) ";
             }//if_companies
 
-
-            /* Get users not enroll for each course */
+            // Users enrolled for each course
             foreach ($courses as $id => $info) {
                 $params['course'] = $id;
 
-                /* Execute  */
+                // Execute
                 $rdo = $DB->get_records_sql($sql,$params);
                 if ($rdo) {
                     foreach ($rdo as $instance) {
                         $jrUsers = array_flip(explode(',',$instance->jobroles));
                         if (array_intersect_key($jobKeys,$jrUsers)) {
-                            /* Info Outcome Report  */
+                            // Info outcome report
                             $infoTempReport = new stdClass();
                             $infoTempReport->manager        = $managerKey;
                             $infoTempReport->report         = 'outcome';
@@ -893,7 +912,7 @@ class outcome_report {
                             $infoTempReport->notenrol       = 1;
                             $infoTempReport->timecompleted  = null;
 
-                            /* Execute  */
+                            // Execute
                             $DB->insert_record('report_gen_temp',$infoTempReport);
                         }//if_job_roles
                     }//for_rdo
@@ -923,7 +942,7 @@ class outcome_report {
 
         try {
             if ($courses) {
-                /* SQL Instruction  */
+                // SQL instruction - Course detail
                 $sql = " SELECT		c.id,
                                     c.fullname
                          FROM		{course}			        c
@@ -931,7 +950,7 @@ class outcome_report {
                             AND     c.id IN ($courses)
                          ORDER BY 	c.fullname ";
 
-                /* Execute  */
+                // Execute
                 $rdo = $DB->get_records_sql($sql);
                 if ($rdo) {
                     foreach ($rdo as $course) {
@@ -969,73 +988,85 @@ class outcome_report {
         $jr_level   = array();
 
         try {
+            // Get job roles connected with
             if (!empty($data_form[REPORT_MANAGER_JOB_ROLE_LIST])) {
+                // Selected
                 $list = join(',',$data_form[REPORT_MANAGER_JOB_ROLE_LIST]);
                 $job_roles = self::Outcome_JobRole_List($outcome_id,$list);
             }else {
-                /* Job Roles - Outcome          */
+                // all connected
                 $job_roles = self::Outcome_JobRole_List($outcome_id);
             }//if_else
 
-            /* Save Job Roles Selected  */
+            // Save job roles
             $SESSION->job_roles = array_keys($job_roles);
 
-            /* Job Roles - Outcome Level    */
+            // Job roles by level
             switch ($data_form['rpt']) {
                 case 0:
-                    /* Get Level        */
+                    // Get level
                     $levelZero = $data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'0'];
 
-                    /* Get Job Roles    */
+                    // Jobroles generics
                     if (CompetenceManager::IsPublic($levelZero)) {
                         CompetenceManager::GetJobRoles_Generics($jr_level);
                     }//if_public
+
+                    //job roles connected with level
                     CompetenceManager::GetJobRoles_Hierarchy($jr_level,0,$levelZero);
 
                     break;
                 case 1:
-                    /* Get Level        */
+                    // Get level
                     $levelZero = $data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'0'];
                     $levelOne  = $data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'1'];
 
-                    /* Get Job Roles    */
+                    // Job roles generics
                     if (CompetenceManager::IsPublic($levelZero)) {
                         CompetenceManager::GetJobRoles_Generics($jr_level);
                     }//if_public
+
+                    // job roles connected with level
                     CompetenceManager::GetJobRoles_Hierarchy($jr_level,0,$levelZero);
                     CompetenceManager::GetJobRoles_Hierarchy($jr_level,1,$levelZero,$levelOne);
 
                     break;
                 case 2:
-                    /* Get Level        */
+                    // Get level
                     $levelZero = $data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'0'];
                     $levelOne  = $data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'1'];
                     $levelTwo  = $data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'2'];
 
-                    /* Get Job Roles    */
+                    // Job roles generics
                     if (CompetenceManager::IsPublic($levelZero)) {
+
                         CompetenceManager::GetJobRoles_Generics($jr_level);
                     }//if_public
+
+                    // Job roles connected with level
                     CompetenceManager::GetJobRoles_Hierarchy($jr_level,0,$levelZero);
                     CompetenceManager::GetJobRoles_Hierarchy($jr_level,1,$levelZero,$levelOne);
                     CompetenceManager::GetJobRoles_Hierarchy($jr_level,2,$levelZero,$levelOne,$levelTwo);
 
                     break;
                 case 3:
-                    /* Get Level        */
+                    // Get level
                     $levelZero  = $data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'0'];
                     $levelOne   = $data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'1'];
                     $levelTwo   = $data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'2'];
 
-                    /* Get Job Roles    */
+                    // Job roles generics
                     if (CompetenceManager::IsPublic($levelZero)) {
                         CompetenceManager::GetJobRoles_Generics($jr_level);
                     }//if_public
+
+                    // Job roles connected with level
                     if (isset($data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'3']) && ($data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'3'])) {
+                        // level selected
                         $levelThree = implode(',',$data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'3']);
-                        /* Get Job Roles    */
                         CompetenceManager::GetJobRoles_Hierarchy($jr_level,3,$levelZero,$levelOne,$levelTwo,$levelThree);
                     }else {
+                        // All level three
                         CompetenceManager::GetJobRoles_Hierarchy($jr_level,0,$levelZero);
                         CompetenceManager::GetJobRoles_Hierarchy($jr_level,1,$levelZero,$levelOne);
                         CompetenceManager::GetJobRoles_Hierarchy($jr_level,2,$levelZero,$levelOne,$levelTwo);
@@ -1081,11 +1112,11 @@ class outcome_report {
         $output         = null;
 
         try {
-            /* Get Information Level One    */
+            // Level one information
             $levelOne       = CompetenceManager::GetCompaniesInfo($companiesEmployees->levelOne);
 
             foreach ($levelOne as $id => $company) {
-                /* Get Level Two connected with   */
+                // Get level two connected with
                 $company_list   = CompetenceManager::GetCompanies_LevelList(2,$id,$companiesEmployees->levelTwo);
                 $output         = array_slice($company_list, 0, 1);
                 $company_list   = array_diff($company_list,$output);
@@ -1093,7 +1124,7 @@ class outcome_report {
                 if ($company_list) {
                     $levelTwo       = self::Get_CompanyReportInfo_LevelTwo($outcome_report,$company_list,$companiesEmployees->levelThree);
                     if ($levelTwo) {
-                        /* Level One Info   */
+                        // Level one info
                         $companyInfo = new stdClass();
                         $companyInfo->name      = $company;
                         $companyInfo->id        = $id;
@@ -1101,7 +1132,7 @@ class outcome_report {
 
                         $outcome_report->levelOne[$id] = $companyInfo;
                     }//if_levelTwo
-                }
+                }//if_company_lst
 
             }//for_levelOne
         }catch (Exception $ex) {
@@ -1146,27 +1177,24 @@ class outcome_report {
         $company_list  = null;
 
         try {
-            /* Get Information Level Two    */
+            // Get information level two
             foreach ($parent_lst as $id=>$company) {
-                /* Get Level Three connected with   */
+                // Get level three connected with
                 $company_list   = CompetenceManager::GetCompanies_LevelList(3,$id,$inThree);
                 unset($company_list[0]);
 
-                /* Level Three */
+                // Level three
                 if ($company_list) {
-                    /* Get Info Level Three  */
-                    if ($company_list) {
-                        $levelThree = self::Get_CompanyReportInfo_LevelThree($outcome_report,$company_list);
-                        if ($levelThree) {
-                            /* Level two Info   */
-                            $companyInfo = new stdClass();
-                            $companyInfo->name       = $company;
-                            $companyInfo->id         = $id;
-                            $companyInfo->levelThree = $levelThree;
+                    $levelThree = self::Get_CompanyReportInfo_LevelThree($outcome_report,$company_list);
+                    if ($levelThree) {
+                        // Level two
+                        $companyInfo = new stdClass();
+                        $companyInfo->name       = $company;
+                        $companyInfo->id         = $id;
+                        $companyInfo->levelThree = $levelThree;
 
-                            $levelTwo[$id] = $companyInfo;
-                        }//if_levelTwo
-                    }//if_company_list
+                        $levelTwo[$id] = $companyInfo;
+                    }//if_levelTwo
                 }//if_company_list
             }//for_companies_level_Two
 
@@ -1213,31 +1241,31 @@ class outcome_report {
         $course_info    = null;
 
         try {
-            /* Get Information Level Three  */
+            // Get information level three
             if ($company_list) {
                 foreach ($company_list as $id=>$company) {
-                    /* Company Info */
+                    // Company info
                     $company_info = new stdClass();
                     $company_info->name       = $company;
                     $company_info->id         = $id;
                     $company_info->courses    = array();
                     $course_info              = null;
 
-                    /* Get Info Courses     */
+                    // Get info courses
                     foreach ($outcome_report->courses as $id_course=>$course) {
-                        /* Course info  */
+                        // Course info
                         $course_info = new stdClass();
                         $course_info->name          = $course;
-                        /* Completed,Not Completed, Not Enrol      */
+                        // Completed, not completed, not enrolled
                         list($course_info->completed,$course_info->not_completed,$course_info->not_enrol) = self::GetUsers_CompanyCourse($id,$id_course,$outcome_report->id,$outcome_report->completed_before,$outcome_report->expiration);
 
-                        /* Add Course Info  */
+                        // Add course info
                         if ($course_info->completed || $course_info->not_completed || $course_info->not_enrol) {
                             $company_info->courses[$id_course] = $course_info;;
                         }//if_uses
                     }//for_courses
 
-                    /* Add Level Three  */
+                    // Add level three
                     if ($company_info->courses) {
                         $levelThree[$id] = $company_info;
                     }//if_courses
@@ -1283,10 +1311,10 @@ class outcome_report {
         $timeFin            = null;
 
         try {
-            /* Get Interval dates   */
+            // Get range of dates
             list($timeIni,$timeFin) = self::GetExpirationIntervalsTime($completedNext);
 
-            /* Search Criteria  */
+            // Search criteria
             $params = array();
             $params['manager']  = $_SESSION['USER']->sesskey;
             $params['course']   = $course;
@@ -1294,20 +1322,22 @@ class outcome_report {
             $params['outcome']  = $outcome;
             $params['report']   = 'outcome';
 
-            /* SQL Instruction */
+            // SQL Instruction
             $sql = " SELECT	*
                      FROM	{report_gen_temp}
                      WHERE	outcomeid 	= :outcome
                         AND	courseid	= :course
                         AND	companyid	= :company
-                        AND report		= :report ";
+                        AND report		= :report
+                        AND manager     = :manager ";
 
-            /* Completed */
+            // Completed
             $params['ini'] = $timeIni;
             $params['end'] = $timeFin;
             $sqlCompleted = $sql . "AND completed	= 1
                                     AND date_add(FROM_UNIXTIME(timecompleted), INTERVAL $expiration MONTH) BETWEEN FROM_UNIXTIME(:ini) AND FROM_UNIXTIME(:end)";
-            /* Execute */
+
+            // Execute
             $rdo = $DB->get_records_sql($sqlCompleted,$params);
             if ($rdo) {
                 foreach ($rdo as $instance) {
@@ -1315,15 +1345,15 @@ class outcome_report {
                     $infoUser->name         = $instance->name;
                     $infoUser->completed    = $instance->timecompleted;
 
-                    /* Add User */
+                    // Add user
                     $completed[$instance->userid] = $infoUser;
                 }//for_rdo
             }//if_Rdo
 
-            /* Not completed    */
+            // Not completed
             $params['notcompleted'] = 1;
             $sqlNotCompleted = $sql . " AND notcompleted = :notcompleted ";
-            /* Execute */
+            // Execute
             $rdo = $DB->get_records_sql($sqlNotCompleted,$params);
             if ($rdo) {
                 foreach ($rdo as $instance) {
@@ -1331,16 +1361,15 @@ class outcome_report {
                     $infoUser->name         = $instance->name;
                     $infoUser->completed    = 0;
 
-                    /* Add User */
+                    // Add user
                     $notCompleted[$instance->userid] = $infoUser;
                 }//for_rdo
             }//if_rdo
 
-
-            /* Not Enrolled     */
+            // Not enrolled
             $params['notenrol'] = 1;
             $sqlNotEnrol = $sql . " AND notenrol = :notenrol ";
-            /* Execute */
+            // Execute
             $rdo = $DB->get_records_sql($sqlNotEnrol,$params);
             if ($rdo) {
                 foreach ($rdo as $instance) {
@@ -1348,7 +1377,7 @@ class outcome_report {
                     $infoUser->name         = $instance->name;
                     $infoUser->completed    = 0;
 
-                    /* Add User */
+                    // Add user
                     $notEnrol[$instance->userid] = $infoUser;
                 }//for_rdo
             }//if_rdo
@@ -1378,74 +1407,71 @@ class outcome_report {
         $time       = null;
 
         try {
-            /* Local Time   */
+            // Local time
             $time = usertime(time());
 
-            /* Gets start and end time */
+            // Start and end time
             $timeIni = strtotime('today', $time);
 
             switch ($index) {
                 case 0:
-                    /* Expired in one day       */
+                    // Expired in one day
                     $timeFin = strtotime(1  . ' day', $timeIni);
 
                     break;
                 case 1:
-                    /* Expired in 1 week        */
+                    // Expired in 1 week
                     $timeFin = strtotime(1  . ' week', $timeIni);
 
                     break;
                 case 2:
-                    /* Expired in two weeks     */
+                    // Expired in two weeks
                     $timeFin = strtotime(2  . ' weeks', $timeIni);
 
                     break;
                 case 3:
-                    /* Expired in 3 weeks       */
+                    // Expried in 3 weeks
                     $timeFin = strtotime(3  . ' weeks', $timeIni);
 
 
                     break;
                 case 4:
-                    /* Expired in 1 month       */
+                    // Expired 1 month
                     $timeFin = strtotime(1  . ' month', $timeIni);
-                    //$timeIni = strtotime('first day of', $time);
-                    //$timeFin = strtotime(1  . ' month', $timeIni);
-                    //$timeFin = strtotime('last day of', $timeFin);
 
                     break;
                 case 5:
-                    /* Expired in 2 months      */
+                    // Expired in 2 months
                     $timeFin = strtotime(2  . ' month', $timeIni);
 
                     break;
                 case 6:
-                    /* Expired in 3 months      */
+                    // Expired in 3 months
                     $timeFin = strtotime(3  . ' month', $timeIni);
 
                     break;
                 case 7:
-                    /* Expired in four months   */
+                    // Expired in 4 months
                     $timeFin = strtotime(4  . ' month', $timeIni);
 
                     break;
                 case 8:
-                    /* Expired in 5 months      */
+                    // Expired in 5 months
                     $timeFin = strtotime(5  . ' month', $timeIni);
 
                     break;
                 case 9:
-                    /* Expired in 6 months      */
+                    // Expired in 6 months
                     $timeFin = strtotime(6  . ' month', $timeIni);
 
                     break;
                 case 10:
-                    /* Expired next year        */
+                    // Expired next year
                     $timeFin = strtotime(1  . ' year', $timeIni);
 
                     break;
                 case 11:
-                    /* Expired in two years        */
+                    // Expired in 2 years
                     $timeFin = strtotime(2  . ' years', $timeIni);
 
                     break;

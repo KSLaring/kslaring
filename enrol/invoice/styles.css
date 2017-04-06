@@ -135,7 +135,7 @@ label.invoice_info {
 
 .block_enrol_invoices .block_invoices  td.user,
 .block_enrol_invoices .block_invoices  th.user {
-    width: 25%;
+    width: 20%;
     text-align: left;
     text-justify:inter-word;
     padding: 0px 10px 0px 0px;
@@ -143,7 +143,15 @@ label.invoice_info {
 
 .block_enrol_invoices .block_invoices  th.info,
 .block_enrol_invoices .block_invoices  td.info {
-    width: 25%;
+    width: 30%;
+    text-align: left;
+    text-justify:inter-word;
+    padding: 0px 10px 0px 0px;
+}
+
+.block_enrol_invoices .block_invoices  th.email,
+.block_enrol_invoices .block_invoices  td.email {
+    width: 18%;
     text-align: left;
     text-justify:inter-word;
     padding: 0px 10px 0px 0px;
@@ -151,7 +159,7 @@ label.invoice_info {
 
 .block_enrol_invoices .block_invoices  th.type,
 .block_enrol_invoices .block_invoices  td.type {
-    width: 17%;
+    width: 20%;
     text-align: left;
     text-justify:inter-word;
     padding: 0px 10px 0px 0px;
@@ -187,3 +195,114 @@ label.invoice_info {
     visibility: hidden;
 }
 
+@media (max-width: 767px) {
+    .block_invoices,
+    .block_enrol_invoices .block_invoices,
+    .block_enrol_invoices .block_invoices  table {
+        float: none;
+        width: 90%;
+        display: block;
+        text-justify: inter-word;
+        word-wrap: break-word;
+    }
+
+    /* Force table to not be like tables anymore */
+    .block_enrol_invoices .block_invoices  tbody, tr, th, td {
+        display: block;
+    }
+
+    .block_enrol_invoices .block_invoices table {
+        display:block;
+        background-color: white !important;
+        width:100%;
+    }
+
+    .block_enrol_invoices .block_invoices table thead tr {
+        display:none;
+    }
+
+
+    .block_enrol_invoices .block_invoices table tr {
+        width: 100%;
+        border: 1px solid darkgray;
+        background-color: white !important;
+        padding-bottom: 15px;
+    }
+
+    .block_enrol_invoices .block_invoices td {
+        width:100%;
+        border-top: 1px solid #f2f2f2;
+    }
+
+    .block_enrol_invoices .block_invoices table td.user,
+    .block_enrol_invoices .block_invoices table td.info,
+    .block_enrol_invoices .block_invoices table td.email,
+    .block_enrol_invoices .block_invoices table td.seats,
+    .block_enrol_invoices .block_invoices table td.type {
+        /* Behave  like a "row" */
+        position: relative;
+        padding-left: 50%;
+        padding-bottom: 0px;
+        width: 40%;
+        white-space: normal;
+        text-align:left;
+        background-color: white !important;
+        display: inline-block;
+        text-justify:inter-word;
+        word-wrap: break-word;
+    }
+
+    .block_enrol_invoices .block_invoices table td.user:before,
+    .block_enrol_invoices .block_invoices table td.info:before,
+    .block_enrol_invoices .block_invoices table td.email:before,
+    .block_enrol_invoices .block_invoices table td.seats:before,
+    .block_enrol_invoices .block_invoices table td.type:before {
+        /* Now like a table header */
+        position: absolute;
+        /* Top/left values mimic padding */
+        top: 6px;
+        left: 6px;
+        width: 45%;
+        padding-right: 5px;
+        padding-bottom: 0px;
+        text-align:left;
+        text-justify:inter-word;
+        word-wrap: break-word;
+        font-weight: bold;
+        background-color: white !important;
+    }
+
+    .block_enrol_invoices .block_invoices table td.user:before,
+    .block_enrol_invoices .block_invoices table td.info:before,
+    .block_enrol_invoices .block_invoices table td.email:before,
+    .block_enrol_invoices .block_invoices table td.seats:before,
+    .block_enrol_invoices .block_invoices table td.type:before {
+        content:attr(data-th);
+        background-color: white !important;
+        text-justify:inter-word;
+        word-wrap: break-word;
+        color:  #000;
+        font:bold 12px Verdana,Verdana Pro,sans-serif;
+    }
+
+}
+
+@media (min-width: 850px) and (max-width: 978px) {
+    .block_invoices,
+    .block_enrol_invoices .block_invoices,
+    .block_enrol_invoices .block_invoices  table {
+        float: none;
+        width: 100%;
+        display: block;
+    }
+}
+
+@media (min-width: 767px) and (max-width: 849px) {
+    .block_invoices,
+    .block_enrol_invoices .block_invoices,
+    .block_enrol_invoices .block_invoices  table {
+        float: none;
+        width: 100%;
+        display: block;
+    }
+}

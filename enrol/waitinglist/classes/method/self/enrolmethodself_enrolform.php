@@ -120,7 +120,7 @@ class enrolmethodself_enrolform extends \moodleform {
                 if ($waitinglist->{ENROL_WAITINGLIST_FIELD_INVOICE}) {
                     global $PAGE;
                     $PAGE->requires->js('/enrol/invoice/js/invoice.js');
-                    \Invoices::AddElements_ToForm($mform);
+                    \Invoices::add_elements_to_form($mform);
 
                     $mform->addElement('hidden', 'invoicedata');
                     $mform->setType('invoicedata', PARAM_INT);
@@ -380,7 +380,7 @@ class enrolmethodself_enrolform extends \moodleform {
          * Validate invoice data
          */
         if (isset($data['invoicedata']) && $data['invoicedata']) {
-            \Invoices::Validate_InvoiceData($data,$errors);
+            \Invoices::validate_invoice_data($data,$errors);
         }//if_invoicedata
 
         return $errors;

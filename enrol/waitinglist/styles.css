@@ -245,6 +245,89 @@ input#id_remove_sel {
 }
 
 @media (max-width: 767px) {
+    .block_approval,
+    .block_approval .block_requests,
+    .block_approval .block_requests table {
+        float: none;
+        width: 100%;
+        display: block;
+        text-justify: inter-word;
+        word-wrap: break-word;
+    }
+
+    /* Force table to not be like tables anymore */
+    .block_approval .block_requests  tbody, tr, th, td {
+        display: block;
+    }
+
+    .block_approval .block_requests table {
+        display:block;
+        background-color: white !important;
+        width:100%;
+    }
+
+    .block_approval .block_requests thead tr {
+        display:none;
+    }
+
+
+    .block_approval .block_requests table tr {
+        width: 100%;
+        border: 1px solid darkgray;
+        background-color: white !important;
+        padding-bottom: 15px;
+    }
+
+    .block_approval .block_requests td {
+        width:100%;
+        border-top: 1px solid #f2f2f2;
+    }
+
+    .block_approval .block_requests table td.user,
+    .block_approval .block_requests table td.info,
+    .block_approval .block_requests table td.action {
+        /* Behave  like a "row" */
+        position: relative;
+        padding-left: 50%;
+        padding-bottom: 0px;
+        width: 40%;
+        white-space: normal;
+        text-align:left;
+        background-color: white !important;
+        display: inline-block;
+        text-justify:inter-word;
+        word-wrap: break-word;
+    }
+
+    .block_approval .block_requests table td.user:before,
+    .block_approval .block_requests table td.info:before,
+    .block_approval .block_requests table td.action:before {
+        /* Now like a table header */
+        position: absolute;
+        /* Top/left values mimic padding */
+        top: 6px;
+        left: 6px;
+        width: 45%;
+        padding-right: 5px;
+        padding-bottom: 0px;
+        text-align:left;
+        text-justify:inter-word;
+        word-wrap: break-word;
+        font-weight: bold;
+        background-color: white !important;
+    }
+
+    .block_approval .block_requests table td.user:before,
+    .block_approval .block_requests table td.info:before,
+    .block_approval .block_requests table td.action:before  {
+        content:attr(data-th);
+        background-color: white !important;
+        text-justify:inter-word;
+        word-wrap: break-word;
+        color:  #000;
+        font:bold 12px Verdana,Verdana Pro,sans-serif;
+    }
+
     .userselector .sel_users_left {
         float: none;
         width: 100%;
@@ -269,6 +352,16 @@ input#id_remove_sel {
 }
 
 @media (min-width: 850px) and (max-width: 978px) {
+    .block_approval,
+    .block_approval .block_requests,
+    .block_approval .block_requests table {
+        float: none;
+        width: 100%;
+        display: block;
+        text-justify: inter-word;
+        word-wrap: break-word;
+    }
+
     .userselector .sel_users_left {
         float: none;
         width: 100%;
@@ -293,6 +386,16 @@ input#id_remove_sel {
 }
 
 @media (min-width: 767px) and (max-width: 849px) {
+    .block_approval,
+    .block_approval .block_requests,
+    .block_approval .block_requests table {
+        float: none;
+        width: 100%;
+        display: block;
+        text-justify: inter-word;
+        word-wrap: break-word;
+    }
+
     .userselector .sel_users_left {
         float: none;
         width: 100%;

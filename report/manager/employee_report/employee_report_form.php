@@ -159,7 +159,7 @@ class manager_employee_report_form extends moodleform {
         $parentZero     = null;
 
         /* Get My Companies by Level    */
-        if (($IsReporter) && (!is_siteadmin($USER->id))) {
+        if ($IsReporter) {
             $levelZero  = array_keys($myHierarchy->competence);
 
             if (count($levelZero) == 1) {

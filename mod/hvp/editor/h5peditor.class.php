@@ -33,7 +33,6 @@ class H5peditor {
     'scripts/h5peditor-none.js',
     'ckeditor/ckeditor.js',
   );
-
   private $h5p, $storage;
 
   /**
@@ -41,9 +40,6 @@ class H5peditor {
    *
    * @param \H5PCore $h5p Instance of core
    * @param \H5peditorStorage $storage Instance of h5peditor storage
-   * @param string $relativePathRegExp
-   * Optional custom regexp for detecting usage of files that's in another
-   * content folder or the editor's tmp directory
    */
   function __construct($h5p, $storage) {
     $this->h5p = $h5p;

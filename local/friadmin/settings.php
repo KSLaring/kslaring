@@ -31,7 +31,7 @@ if ($hassiteconfig) {
         get_string('pluginname', 'local_friadmin'));
     $ADMIN->add('localplugins', $settings);
 
-    // Template directory
+    // Template directory.
     $options = array('0' => get_string('coursetemplate_cat_select', 'local_friadmin'));
     /**
      * @updateDate  17/06/2015
@@ -50,4 +50,18 @@ if ($hassiteconfig) {
     $settings->add(new admin_setting_configselect('local_friadmin/template_category',
         get_string('coursetemplate_cat', 'local_friadmin'),
         get_string('coursetemplate_cat_desc', 'local_friadmin'), 0, $options));
+
+
+    // Add a course format list to select the template formats from.
+    $courseformats = get_sorted_course_formats(true);
+    $options = array();
+    foreach ($courseformats as $courseformat) {
+        $options[$courseformat] = get_string('pluginname', "format_$courseformat");
+    }
+    core_collator::asort($options);
+
+    $settings->add(new admin_setting_configmultiselect('local_friadmin/template_list',
+        get_string('courseformats', 'local_friadmin'),
+        get_string('courseformatsdesc', 'local_friadmin'),
+        array(), $options));
 }

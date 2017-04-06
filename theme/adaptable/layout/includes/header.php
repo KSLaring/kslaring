@@ -17,10 +17,10 @@
 /**
  * Version details
  *
- * @package    theme_adaptable
+ * @package   theme_adaptable
  * @copyright 2015 Jeremy Hopkins (Coventry University)
  * @copyright 2015 Fernando Acedo (3-bits.com)
- * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
  */
 
@@ -152,13 +152,18 @@ if (!empty($fonttitlename)  && $fonttitlename != 'default') {
 <body <?php echo $OUTPUT->body_attributes(array('two-column', $setzoom)); ?>>
 
 <?php echo $OUTPUT->standard_top_of_body_html() ?>
+
+<?php
+// Display dev alert.
+echo $OUTPUT->get_dev_alert();
+?>
+
 <div id="page" class="container-fluid <?php echo "$setfull $showiconsclass"; ?>">
 
 <?php
 // Display alerts.
 echo $OUTPUT->get_alert_messages();
 ?>
-
 
 <?php
 // Fixed header.
@@ -184,7 +189,7 @@ if (!isloggedin() || isguestuser()) {
     echo $OUTPUT->page_heading_menu();
     if ($PAGE->theme->settings->displaylogin == 'box') {
         // Login button.
- ?>
+?>
         <form action="<?php p($wwwroot) ?>/login/index.php" method="post">
             <input style="height: 12px; padding-bottom: 4px;" type="text" name="username" 
                     placeholder="<?php echo get_string('loginplaceholder', 'theme_adaptable'); ?>" size="10">
@@ -207,14 +212,17 @@ if (!isloggedin() || isguestuser()) {
 ?>
         <div class="dropdown secondone">
             <a class="dropdown-toggle usermendrop" data-toggle="dropdown" href="#">
-                <span class="fa fa-user"></span>
-                <span><?php echo fullname($USER) ?></span>
+<?php
+    $userpic = $OUTPUT->user_picture($USER, array('link' => false, 'size' => 80, 'class' => 'userpicture'));
+    echo $userpic;
+    echo $USER->firstname;
+?>
                 <span class="fa fa-angle-down"></span>
             </a>
 
     <ul class="dropdown-menu usermen" role="menu" aria-labelledby="dLabel">
 <?php
-    if (!empty($PAGE->theme->settings->enablemy)) { ?>
+if (!empty($PAGE->theme->settings->enablemy)) { ?>
         <li>
             <a href="<?php p($CFG->wwwroot) ?>/my"
                 title="<?php echo get_string('myhome') ?>">
@@ -223,10 +231,10 @@ if (!isloggedin() || isguestuser()) {
             </a>
         </li>
 <?php
-    }
+}
 ?>
 <?php
-    if (!empty($PAGE->theme->settings->enableprofile)) { ?>
+if (!empty($PAGE->theme->settings->enableprofile)) { ?>
         <li>
             <a href="<?php p($CFG->wwwroot) ?>/user/profile.php"
                 title="<?php echo get_string('viewprofile') ?>">
@@ -235,10 +243,10 @@ if (!isloggedin() || isguestuser()) {
             </a>
         </li>
 <?php
-    }
+}
 ?>
 <?php
-    if (!empty($PAGE->theme->settings->enableeditprofile)) { ?>
+if (!empty($PAGE->theme->settings->enableeditprofile)) { ?>
         <li>
             <a href="<?php p($CFG->wwwroot) ?>/user/edit.php"
                 title="<?php echo get_string('editmyprofile') ?>">
@@ -247,10 +255,10 @@ if (!isloggedin() || isguestuser()) {
             </a>
         </li>
 <?php
-    }
+}
 ?>
 <?php
-    if (!empty($PAGE->theme->settings->enableprivatefiles)) { ?>
+if (!empty($PAGE->theme->settings->enableprivatefiles)) { ?>
         <li>
         <a href="<?php p($CFG->wwwroot) ?>/user/files.php"
             title="<?php echo get_string('privatefiles', 'block_private_files') ?>">
@@ -259,10 +267,10 @@ if (!isloggedin() || isguestuser()) {
         </a>
         </li>
 <?php
-    }
+}
 ?>
 <?php
-    if (!empty($PAGE->theme->settings->enablegrades)) { ?>
+if (!empty($PAGE->theme->settings->enablegrades)) { ?>
         <li>
         <a href="<?php p($CFG->wwwroot) ?>/grade/report/overview/index.php"
             title="<?php echo get_string('grades') ?>">
@@ -270,21 +278,21 @@ if (!isloggedin() || isguestuser()) {
         </a>
         </li>
 <?php
-    }
+}
 ?>
 <?php
-    if (!empty($PAGE->theme->settings->enablebadges)) { ?>
+if (!empty($PAGE->theme->settings->enablebadges)) { ?>
         <li>
         <a href="<?php p($CFG->wwwroot) ?>/badges/mybadges.php" title="<?php echo get_string('badges') ?>">
                 <i class="fa fa-certificate"></i><?php echo get_string('badges') ?>
         </a>
         </li>
 <?php
-    }
+}
 ?>
 
 <?php
-    if ($CFG->version > 2015051100 && !empty($PAGE->theme->settings->enablepref)) { ?>
+if ($CFG->version > 2015051100 && !empty($PAGE->theme->settings->enablepref)) { ?>
         <li>
         <a href="<?php p($CFG->wwwroot) ?>/user/preferences.php"
             title="<?php echo get_string('preferences') ?>">
@@ -292,11 +300,11 @@ if (!isloggedin() || isguestuser()) {
         </a>
         </li>
 <?php
-    }
+}
 ?>
 
 <?php
-    if (!empty($PAGE->theme->settings->enablenote)) { ?>
+if (!empty($PAGE->theme->settings->enablenote)) { ?>
         <li>
         <a href="<?php p($CFG->wwwroot) ?>/message/edit.php"
             title="<?php echo get_string('notifications') ?>">
@@ -305,11 +313,11 @@ if (!isloggedin() || isguestuser()) {
         </a>
         </li>
 <?php
-    }
+}
 ?>
 
 <?php
-    if (!empty($PAGE->theme->settings->enableblog)) { ?>
+if (!empty($PAGE->theme->settings->enableblog)) { ?>
         <li>
         <a href="<?php p($CFG->wwwroot) ?>/blog/index.php"
             title="<?php echo get_string('enableblog', 'theme_adaptable') ?>">
@@ -318,11 +326,11 @@ if (!isloggedin() || isguestuser()) {
         </a>
         </li>
 <?php
-    }
+}
 ?>
 
 <?php
-    if (!empty($PAGE->theme->settings->enableposts)) { ?>
+if (!empty($PAGE->theme->settings->enableposts)) { ?>
         <li>
         <a href="<?php p($CFG->wwwroot) ?>/mod/forum/user.php"
             title="<?php echo get_string('enableposts', 'theme_adaptable') ?>">
@@ -331,11 +339,11 @@ if (!isloggedin() || isguestuser()) {
         </a>
         </li>
 <?php
-    }
+}
 ?>
 
 <?php
-    if (!empty($PAGE->theme->settings->enablefeed)) { ?>
+if (!empty($PAGE->theme->settings->enablefeed)) { ?>
         <li>
         <a href="<?php p($CFG->wwwroot) ?>/report/myfeedback/index.php"
             title="<?php echo get_string('enablefeed', 'theme_adaptable') ?>">
@@ -344,11 +352,11 @@ if (!isloggedin() || isguestuser()) {
         </a>
         </li>
 <?php
-    }
+}
 ?>
 
 <?php
-    if (!empty($PAGE->theme->settings->enablecalendar)) { ?>
+if (!empty($PAGE->theme->settings->enablecalendar)) { ?>
         <li>
         <a href="<?php p($CFG->wwwroot) ?>/calendar/view.php"
             title="<?php echo get_string('pluginname', 'block_calendar_month') ?>">
@@ -357,7 +365,7 @@ if (!isloggedin() || isguestuser()) {
         </a>
         </li>
 <?php
-    }
+}
 ?>
         <li>
         <a href="<?php echo $wwwroot.'/login/logout.php?sesskey='.sesskey(); ?>"
@@ -389,7 +397,7 @@ echo $OUTPUT->get_top_menus();
 <div id="page-header" class="clearfix container">
 
 
-<?php 
+<?php
 // Site title or logo.
 echo $OUTPUT->get_logo_title();
 ?>
@@ -435,7 +443,7 @@ if ($PAGE->theme->settings->socialorsearch == 'search') { ?>
 
 // Navbar Menu.
 
-if (isloggedin()) {
+if (isloggedin() && !isguestuser()) {
 ?>
     <div id="navwrap">
         <div class="container">
@@ -450,20 +458,20 @@ if (isloggedin()) {
                         <div class="nav-collapse collapse ">
                             <?php echo $OUTPUT->navigation_menu(); ?>
 <?php
-    if (empty($PAGE->theme->settings->disablecustommenu)) {
+if (empty($PAGE->theme->settings->disablecustommenu)) {
         echo $OUTPUT->custom_menu();
-    }
+}
 ?>
 <?php
-    if ($PAGE->theme->settings->enabletoolsmenus) {
+if ($PAGE->theme->settings->enabletoolsmenus) {
         echo $OUTPUT->tools_menu();
-    }
+}
 ?>
 
         <ul class="nav pull-right">
 <?php
-    if (isloggedin()) {
-        if ($PAGE->theme->settings->enableshowhideblocks) { ?>
+if (isloggedin()) {
+    if ($PAGE->theme->settings->enableshowhideblocks) { ?>
            <li class="hbl">
                <a href="#" class="moodlezoom" title="<?php echo get_string('hideblocks', 'theme_adaptable') ?>">
                    <i class="fa fa-indent fa-lg"></i>
@@ -477,9 +485,9 @@ if (isloggedin()) {
            </a>
        </li>
 <?php
-        }
+    }
 
-        if ($PAGE->theme->settings->enablezoom) { ?>
+    if ($PAGE->theme->settings->enablezoom) { ?>
             <li class="hbll">
                 <a href="#" class="moodlewidth" title="<?php echo get_string('fullscreen', 'theme_adaptable') ?>">
                 <i class="fa fa-expand fa-lg"></i>
@@ -493,8 +501,8 @@ if (isloggedin()) {
             </a>
             </li>
 <?php
-        }
     }
+}
 ?>
         </ul>
                             <div id="edittingbutton" class="pull-right breadcrumb-button">
@@ -512,4 +520,6 @@ if (isloggedin()) {
 </header>
 
 <?php
-    echo $OUTPUT->get_news_ticker();
+
+// Display News Ticker.
+echo $OUTPUT->get_news_ticker();

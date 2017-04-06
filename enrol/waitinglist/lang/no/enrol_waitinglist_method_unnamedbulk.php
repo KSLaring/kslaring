@@ -25,14 +25,16 @@
 $string['unnamedbulk_displayname'] = 'Bulkpåmelding';
 $string['unnamedbulk_menutitle'] = 'Reserver plasser';
 $string['waitlistmessagetitle_unnamedbulk'] = 'Kursplasser er lagt til i ventelisten for: {$a}';
-$string['waitlistmessagetitle_unnamedbulk_changed'] = 'Seats added to Waitlist for: {$a}. Changed seats';
+$string['waitlistmessagetitle_unnamedbulk_changed'] = 'Plasser lagt til i ventelisten for: {$a}. Endret plasser';
 $string['waitlistmessagetext_unnamedbulk'] = 'Du har reservert {$a->queueseats} kursplasser for: {$a->coursename}. Det var dessverre ikke {$a->queueseats} ledige plasser på dette kurset, og plassene du ikke er tildelt er derfor satt opp på ventelisten.
 
 Dine reserverte kursplasser er i øyeblikket nummer {$a->queueno} på ventelisten.
 
 Du kan når som helst redigere reservasjonen din her: {$a->editenrolurl}
 
-Ta derfor vare på denne eposten!';
+Ta derfor vare på denne eposten!
+
+Dette er en automatisk generert e-post fra {$a->site} og du kan ikke svare på e-posten.';
 $string['waitlistmessagetitleconfirmation_unnamedbulk'] = 'Du er tildelt plasser i kurset {$a}';
 $string['waitlistmessagetitleconfirmation_unnamedbulk_changed'] = 'Bekreftelse på endring av ønsket antall plasser i kurset {$a}';
 $string['sendconfirmmessage'] ='Send epost når kursplassene er bekreftet';
@@ -59,3 +61,4 @@ $string['unnamedbulk_enrolformintro'] = 'Bruk dette skjemaet til å reservere pl
 $string['unnamedbulk_enrolformqueuestatus'] = 'Du er tildelt {$a->assignedseats} og du har {$a->waitingseats} plasser på ventelisten.';
 $string['unnamedbulk_enrolformqueuestatus_label'] = 'Din reservasjon';
 $string['unnamedbulk_enrolformqueuestatus_all'] = 'Du har blitt tildelt alle dine forespurte plasser';
+$string['no_seats'] = 'You must reserve at least one seat';

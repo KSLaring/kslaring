@@ -71,4 +71,30 @@
         width: 100%;
     }
 }
+
+// Revert selectors in settings/tables.less.
+.path-grade-report-user .user-grade,
+.path-grade-edit-tree .setup-grades {
+    &.generaltable > tbody tr > td {
+        &.leveleven, &.levelodd {
+            a:not(.btn):not([role="menuitem"]),
+            a:not(.btn):not([role="menuitem"]):visited,
+            a:not(.btn):not([role="menuitem"]):hover,
+            a:not(.btn):not([role="menuitem"]):focus,
+            a:not(.btn):not([role="menuitem"]):active,
+            a.toggle-display,
+            a.toggle-display:visited,
+            a.toggle-display:hover,
+            a.toggle-display:focus,
+            a.toggle-display:active {
+                background-color: transparent;
+            }
+        }
+    }
+}
+
+.path-grade-report-user .generaltable.user-grade .dimmed_text {
+    text-decoration: line-through;
+}
+
 /* @end */

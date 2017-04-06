@@ -22,5 +22,5 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['namedbulk_displayname'] = 'Bulkpåmelding med navn';
+$string['namedbulk_displayname'] = 'Bulkpåmelding med navn til arrangement';
 $string['namedbulk_menutitle'] = 'Reserver plasser til kursdeltakere';

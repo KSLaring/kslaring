@@ -66,12 +66,18 @@ $string['removetmpfiles'] = 'Entfernen alter temporärer H5P-Dateien';
 $string['removeoldlogentries'] = 'Entfernen alter H5P-Logdateien';
 
 // Admin settings.
+$string['displayoptionnevershow'] = 'Nie zeigen';
+$string['displayoptionalwaysshow'] = 'Immer zeigen';
+$string['displayoptionpermissions'] = 'Nur zeigen, wenn der Nutzer H5P exportieren darf';
+$string['displayoptionauthoron'] = 'Vom Autor gesteuert, Standard ist an';
+$string['displayoptionauthoroff'] = 'Vom Autor gesteuert, Standard ist aus';
 $string['displayoptions'] = 'Optionen anzeigen';
 $string['enableframe'] = 'Menüleiste und Rahmen anzeigen.';
 $string['enabledownload'] = 'Download-Knopf';
 $string['enableembed'] = 'Einbetten-Knopf';
 $string['enablecopyright'] = 'Urheberrecht-Knopf';
 $string['enableabout'] = 'Über-H5P-Knopf';
+
 
 $string['externalcommunication'] = 'Externe Kommunikation';
 $string['externalcommunication_help'] = 'Die Entwicklung von H5P durch die Übermittlung von anonymen Nutzungsdaten unterstützen. Wenn diese Option ausgeschalten wird, wird diese Seite nicht mehr die akutellsten H5P-Updates erhalten. Mehr Informationen darüber,<a {$a}>welche Daten gesammelt werden</a> sind auf h5p.org verfügbar.';
@@ -168,6 +174,9 @@ $string['nosuchlibrary'] = 'Bibliothek nicht vorhanden';
 $string['noparameters'] = 'Keine Parameter';
 $string['invalidparameters'] = 'Ungültige Parameter';
 $string['missingcontentuserdata'] = 'Fehler: Konnte den Nutzerinhalt nicht finden';
+
+$string['maximumgrade'] = 'Beste Bewertung';
+$string['maximumgradeerror'] = 'Bitte gib einen positive ganze Zahl als maximale Punktzahl für diese Aktivität an.';
 
 // Capabilities
 $string['hvp:addinstance'] = 'Neue H5P-Aktivität hinzufügen';

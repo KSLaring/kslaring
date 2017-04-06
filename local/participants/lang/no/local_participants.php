@@ -34,9 +34,13 @@ $string['err_dates']            = 'Kan ikke være etter "Til"';
 $string['remove_filter']        = 'Fjern filter';
 
 $string['csvdownload']          = 'Last ned i regnearkformat (.xls)';
+$string['pdfdownload']          = 'Download in PDF format (.pdf)';
 
 $string['str_instructors']      = 'Instruktører';
 
-$string['header_wk'] = 'Arbeidssted';
-$string['header_se']    = 'Sektor';
-$string['header_lo']    = 'Sted';
+$string['header_wk']        = 'Arbeidssted';
+$string['header_se']        = 'Sektor';
+$string['header_lo']        = 'Sted';
+$string['header_mu']        = 'Kommune';
+$string['header_completed'] = 'Fullført';
+$string['page_number']      = 'Side ';

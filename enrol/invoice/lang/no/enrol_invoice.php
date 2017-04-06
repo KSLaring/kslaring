@@ -29,6 +29,9 @@ $string['rpt_work']             = 'Arbeidssted';
 $string['rpt_mail']             = 'Epost';
 $string['rpt_invoice']          = 'Type';
 $string['rpt_details']          = 'Faktura';
+$string['rpt_muni']             = 'Kommune';
+$string['rpt_sector']           = 'Sektor';
+$string['rpt_location']         = 'kurssted';
 
 $string['require_password']                 = 'Påmeldingsnøkkel er påkrevd';
 $string['require_password_desc']            = 'Påmeldingsnøkkel er påkrevd i nye kurs og hindre fjerning av påmeldingsnøkkel fra eksisterende kurs.';
@@ -64,7 +67,7 @@ $string['send_course_welcome_message_help'] = 'Når aktivert vil brukere få en 
 
 $string['cannt_enrol']                          = 'Påmelding er deaktivert eller inaktiv';
 $string['cohort_non_member_info']               = 'Bare medlemmer av brukergruppen \'{$a}\' kan registrere seg via fakturerinsmodulen.';
-$string['no_password']                          = 'Når du klikker på knappen under blir du automatisk meldt på og kurssiden vises.';
+$string['no_password']                          = 'Ingen påmeldingsnøkkel er påkrevd.';
 $string['password']                             = 'påmeldingsnøkkel';
 $string['password_help']                        = 'Påmeldingsnøkkelen sørger for tilgangen til kurset begrenses til de som kjenner nøkkelen.
 
@@ -74,9 +77,12 @@ Hvis det er satt en påmeldingsnøkkel må alle brukere som prøver å melde seg
 $string['password_invalid']                     = 'Ugyldig påmeldingsnøkkel, vennligst prøv på nytt';
 $string['password_invalid_hint']                = 'Påmeldingsnøkkelen var ugyldig, vennligst prøv på nytt<br />
 (Ett lite hint - den starter med \'{$a}\')';
-$string['welcome_to_course']                    = 'Du er påmeldt {$a} - velkommen!';
-$string['welcome_to_course_text']               = '<p>Du er påmeldt {$a->coursename} – velkommen!</p> <p>Husk å sette av datoen(e) i kalenderen.</p>
-<p>Dette er en automatisk generert e-post. Du kan ikke svare på e-posten.</p>';
+$string['welcome_to_course']                    = 'Velkommen til {$a}';
+$string['welcome_to_course_text']               = 'Velkommen til {$a->coursename}!
+
+Hvis du ikke har gjort det allerede ber vi deg om å redigere profilen din slik at vi kan bli bedre kjent med deg
+
+  {$a->profileurl}';
 
 $string['enrol_me']                             = 'Meld meg på';
 $string['unenrol']                              = 'Meld av bruker';
@@ -109,7 +115,7 @@ $string['invoice_service']                      = 'Tjenestenummer';
 $string['invoice_project']                      = 'Prosjektnummer';
 $string['invoice_act']                          = 'Aktivitetsnummer';
 
-$string['invoice_info']                         = 'Påmelding kan ikke fullføres før obligatorisk fakturainformasjon er utfylt.';
+$string['invoice_info']                         = 'Påmeldingen kan ikke fullføres før all fakturainformasjo.';
 $string['account_required']                     = 'Vennligst fyll inn feltet Ansvar- og tjenestenummer';
 $string['resp_required']                        = 'Vennligst fyll inn feltet Ansvarsnummer';
 $string['service_required']                     = 'Vennligst fyll inn feltet Tjenestenummer';
@@ -133,3 +139,8 @@ $string['invoice_approval'] = 'Fakturagodkjenner';
 $string['search_approval']  = 'Søk etter fakturagodkjenner';
 
 $string['rpt_resource']  = 'Ressursnummer';
+
+$string['price_int'] = 'Intern pris';
+$string['price_ext'] = 'Ekstern pris';
+
+$string['rpt_completed'] = 'Fullført';

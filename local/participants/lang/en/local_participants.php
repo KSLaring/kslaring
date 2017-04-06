@@ -34,9 +34,14 @@ $string['err_dates']            = 'It cannot be bigger than "To"';
 $string['remove_filter']        = 'Remove filter';
 
 $string['csvdownload']          = 'Download in spreadsheet format (.xls)';
+$string['pdfdownload']          = 'Download in PDF format (.pdf)';
 
 $string['str_instructors']      = 'Instructors';
 
-$string['header_wk'] = 'Workplace';
-$string['header_se'] = 'Sector';
-$string['header_lo']    = 'Location';
+$string['header_wk']        = 'Workplace';
+$string['header_se']        = 'Sector';
+$string['header_lo']        = 'Location';
+$string['header_mu']        = 'Municipality';
+$string['header_completed'] = 'Completed';
+$string['page_number']      = 'Page ';
+

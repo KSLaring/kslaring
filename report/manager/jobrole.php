@@ -34,7 +34,7 @@ $jobRoles       = array();
 $infoJR         = null;
 $jrOutcomes     = array();
 
-$context        = CONTEXT_SYSTEM::instance();
+$context        = context_system::instance();
 $url            = new moodle_url('/report/manager/jobrole.php');
 
 $PAGE->set_context($context);
@@ -99,7 +99,6 @@ switch ($level) {
 
         /* Job Roles connected with level   */
         if ($levelThree) {
-            $levelThree = str_replace('#',',',$levelThree);
             CompetenceManager::GetJobRoles_Hierarchy($options,$level,$levelZero,$levelOne,$levelTwo,$levelThree);
         }else {
             CompetenceManager::GetJobRoles_Hierarchy($options,$level-3,$levelZero);
