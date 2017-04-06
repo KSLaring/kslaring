@@ -99,16 +99,22 @@ class local_lessonexport {
      */
     public function export($download = true) {
         // Raise the max execution time to 5 min, not 30 seconds.
-        @set_time_limit(300);
 
-        $pages = $this->load_pages();
-        $exp = $this->start_export($download);
-        $this->add_coversheet($exp);
-        foreach ($pages as $page) {
-            $this->export_page($exp, $page);
+
+        try {
+            @set_time_limit(300);
+
+            $pages = $this->load_pages();
+            $exp = $this->start_export($download);
+            $this->add_coversheet($exp);
+            foreach ($pages as $page) {
+                $this->export_page($exp, $page);
+            }
+            return $this->end_export($exp, $download);
+        }catch (Exception $ex) {
+            throw $ex;
         }
-        return $this->end_export($exp, $download);
-    }
+    }//export
 
     /**
      * The cron tasks to run every time the cron is run.
@@ -602,12 +608,46 @@ class local_lessonexport {
  *
  * @param $unused
  */
-function local_lessonexport_extends_navigation_old($unused) {
-    local_lessonexport_extend_navigation_old($unused);
-}
+
+function local_lessonexport_extend_settings_navigation($settingsnav, $context) {
+    global $PAGE, $DB, $USER;
+    if (!$PAGE->cm || $PAGE->cm->modname != 'lesson') {
+        return;
+    }
+
+    $groupid = groups_get_activity_group($PAGE->cm);
+    $lesson = $DB->get_record('lesson', array('id' => $PAGE->cm->instance), '*', MUST_EXIST);
+
+    /**
+     * Description
+     * get_links only one parameter
+     *
+     * @updateDate  05/04/2017
+     * @author      eFaktor     (fbv)
+     */
+    if (!$links = local_lessonexport::get_links($PAGE->cm, $USER->id, $groupid)) {
+        return;
+    }
 
 
-function local_lessonexport_extend_navigation_old($unused) {
+    if ($settingnode = $settingsnav->find('modulesettings', navigation_node::TYPE_SETTING)) {
+        foreach ($links as $name => $url) {
+            $settingnode->add($name, $url, navigation_node::TYPE_SETTING);
+        }
+    }
+
+    // Use javascript to insert the pdf/epub links.
+    $jslinks = array();
+    foreach ($links as $name => $url) {
+        $link = html_writer::link($url, $name);
+        $link = html_writer::div($link, 'lesson_right');
+        $jslinks[] = $link;
+    }
+    $PAGE->requires->yui_module('moodle-local_lessonexport-printlinks', 'M.local_lessonexport.printlinks.init', array($jslinks));
+}//local_lessonexport_extend_settings_navigation
+
+
+function OLD_local_lessonexport_extend_settings($unused) {
     global $PAGE, $DB, $USER;
     if (!$PAGE->cm || $PAGE->cm->modname != 'lesson') {
         return;
@@ -632,11 +672,11 @@ function local_lessonexport_extend_navigation_old($unused) {
      * @updateDate  05/04/2017
      * @author      eFaktor     (fbv)
      */
-    $modulesettings = $PAGE->settingsnav->get('modulesettings');
-    if (!$modulesettings) {
+    //$modulesettings = $PAGE->settingsnav->get('modulesettings');
+    //if (!$modulesettings) {
         $modulesettings = $PAGE->settingsnav->prepend(get_string('pluginadministration', 'mod_lesson'), null,
                                                 navigation_node::TYPE_SETTING, null, 'modulesettings');
-    }
+    //}
 
     foreach ($links as $name => $url) {
         $modulesettings->add($name, $url, navigation_node::TYPE_SETTING);
