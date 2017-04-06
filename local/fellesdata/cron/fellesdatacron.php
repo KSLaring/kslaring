@@ -41,11 +41,14 @@ class FELLESDATA_CRON {
 
     public static function cron($plugin,$fstExecution) {
         /* Variables    */
+        global $SESSION;
         global $CFG;
         $dbLog              = null;
         $suspicious_path    = null;
 
         try {
+            unset($SESSION->manual);
+
             // Log
             $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START FELLESDATA CRON . ' . "\n";
 
@@ -98,9 +101,14 @@ class FELLESDATA_CRON {
     /* MANUAL EXECUTION */
     public static function cron_manual($fstExecution,$option) {
         /* Variables    */
+        global $SESSION;
         $pluginInfo = null;
 
         try {
+            if (!isset($SESSION->manual)) {
+                $SESSION->manual = true;
+            }
+
             /* Plugin Info      */
             $pluginInfo     = get_config('local_fellesdata');
 
@@ -991,7 +999,7 @@ class FELLESDATA_CRON {
      */
     private static function users_fs_synchronization($plugin) {
         /* Variables    */
-        global $DB,$CFG;
+        global $SESSION,$DB,$CFG;
         $rdo            = null;
         $total          = null;
         $industry       = null;
@@ -1006,6 +1014,11 @@ class FELLESDATA_CRON {
         try {
             // Industry code by default
             $industry = 0;
+
+            // To avoid problems timeout
+            if (isset($SESSION->manual) && ($SESSION->manual)) {
+                $limit          = 150;
+            }//if_session_manul
 
             // Log
             $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START Synchronization Users Accoutns . ' . "\n";
@@ -1143,6 +1156,7 @@ class FELLESDATA_CRON {
      */
     private static function companies_new_fs_synchronization($plugin) {
         /* Variables */
+        global $SESSION;
         global $CFG;
         $rdocompanies   = null;
         $toSynchronize  = null;
@@ -1153,6 +1167,11 @@ class FELLESDATA_CRON {
         $limit          = 1000;
 
         try {
+            // To avoid problems timeout
+            if (isset($SESSION->manual) && ($SESSION->manual)) {
+                $limit          = 150;
+            }//if_session_manul
+
             // Log
             $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START Companies NEW FS/KS Synchronization . ' . "\n";
 
@@ -1205,7 +1224,7 @@ class FELLESDATA_CRON {
      */
     private static function companies_no_new_fs_synchronization($plugin) {
         /* Variables */
-        global $CFG;
+        global $SESSION,$CFG;
         $rdocompanies   = null;
         $toSynchronize  = null;
         $response       = null;
@@ -1215,6 +1234,11 @@ class FELLESDATA_CRON {
         $limit          = 1000;
 
         try {
+            // To avoid problems timeout
+            if (isset($SESSION->manual) && ($SESSION->manual)) {
+                $limit          = 150;
+            }//if_session_manul
+
             // Log
             $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START Companies NO NEW FS/KS Synchronization . ' . "\n";
 
@@ -1248,6 +1272,8 @@ class FELLESDATA_CRON {
                     }//if_toSynchronize
                 }//for
             }//if_total
+
+            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -1379,7 +1405,7 @@ class FELLESDATA_CRON {
      */
     private static function user_competence_synchronization($pluginInfo,$service,$toDelete = false,$status = false) {
         /* Variables    */
-        global $CFG;
+        global $SESSION,$CFG;
         $toSynchronize  = null;
         $response       = null;
         $dbLog          = null;
@@ -1387,6 +1413,11 @@ class FELLESDATA_CRON {
         $limit          = 1000;
 
         try {
+            // To avoid problems timeout
+            if (isset($SESSION->manual) && ($SESSION->manual)) {
+                $limit          = 150;
+            }//if_session_manul
+
             // check if the synchronization can be run
             if (suspicious::run_synchronization(IMP_SUSP_COMPETENCE_JR)) {
                 // User competence to synchronize
@@ -1441,7 +1472,7 @@ class FELLESDATA_CRON {
      */
     private static function unmap_user_competence($pluginInfo,$service) {
         /* Variables */
-        global $CFG;
+        global $SESSION,$CFG;
         $toUnMap    = null;
         $response   = null;
         $dbLog      = null;
@@ -1449,6 +1480,11 @@ class FELLESDATA_CRON {
         $limit      = 1000;
         
         try {
+            // To avoid problems timeout
+            if (isset($SESSION->manual) && ($SESSION->manual)) {
+                $limit          = 150;
+            }//if_session_manul
+
             // Log
             $dbLog = userdate(time(),'%d.%m.%Y', 99, false) . " Start UNAMP User Competence Synchronization. " . "\n\n";
             
@@ -1501,7 +1537,7 @@ class FELLESDATA_CRON {
      */
     private static function manager_reporter_synchronization($pluginInfo,$service) {
         /* Variables    */
-        global $CFG;
+        global $SESSION,$CFG;
         $toSynchronize  = null;
         $rdomanagers    = null;
         $response       = null;
@@ -1511,6 +1547,11 @@ class FELLESDATA_CRON {
         $limit          = 1000;
 
         try {
+            // To avoid problems timeout
+            if (isset($SESSION->manual) && ($SESSION->manual)) {
+                $limit          = 150;
+            }//if_session_manul
+
             // Log
             $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START Manager Reporter Synchronization . ' . "\n";
 
@@ -1566,7 +1607,7 @@ class FELLESDATA_CRON {
      */
     private static function unmap_managers_reporters($pluginInfo,$service) {
         /* Variables    */
-        global $CFG;
+        global $SESSION,$CFG;
         $toUnMap  = null;
         $response = null;
         $dbLog    = null;
@@ -1575,6 +1616,11 @@ class FELLESDATA_CRON {
         $limit    = 1000;
 
         try {
+            // To avoid problems timeout
+            if (isset($SESSION->manual) && ($SESSION->manual)) {
+                $limit          = 150;
+            }//if_session_manul
+
             // Log
             $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START UnMap Manager/Reporter . ' . "\n";
 
