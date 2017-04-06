@@ -18,12 +18,10 @@ defined('MOODLE_INTERNAL') || die();
 
 class block_coinstructor extends block_base {
     public function init() {
-        // TODO -> declare visibility.
         $this->title = get_string('pluginname', 'block_coinstructor');
     }//init
 
     public function get_content() {
-        // TODO -> declare visibility.
 
         try {
             // Title Block!
