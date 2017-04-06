@@ -74,27 +74,27 @@ class ksl
                                         c.fullname            as 'coursename',
                                         r.shortname           as 'role',
                                         ccomp.timecompleted   as 'completed'
-                                FROM	mdl_user u
+                                FROM	{user} u
                                     -- Gender
-                                    LEFT JOIN mdl_user_info_data uid ON uid.userid = u.id
-                                                                     AND uid.fieldid = :gender
+                                    LEFT JOIN {user_info_data}          uid   ON uid.userid = u.id
+                                                                              AND uid.fieldid = :gender
                                     -- Get courses connected with the user
-                                    JOIN 	mdl_user_enrolments		ue	ON  ue.userid 	= u.id
-                                    JOIN	mdl_enrol				e	ON  e.id 		= ue.enrolid
-                                                                        AND e.status 	= 0
-                                    JOIN	mdl_course				c	ON  c.id 		= e.courseid
-                                    -- Whic role in the curse
-                                    JOIN    mdl_context				ct	ON  ct.instanceid = c.id
-                                    JOIN	mdl_role_assignments	ra	ON  ra.contextid  = ct.id
-                                                                        AND ra.userid 	  = ue.userid
-                                    JOIN 	mdl_role				r	ON  r.id		  = ra.roleid
+                                    JOIN 	{user_enrolments}		    ue	  ON  ue.userid 	= u.id
+                                    JOIN	{enrol}				        e	  ON  e.id 		= ue.enrolid
+                                                                              AND e.status 	= 0
+                                    JOIN	{course}				    c	  ON  c.id 		= e.courseid
+                                    -- Which role in the curse
+                                    JOIN    {context}				    ct	  ON  ct.instanceid = c.id
+                                    JOIN	{role_assignments}	        ra	  ON  ra.contextid  = ct.id
+                                                                              AND ra.userid 	  = ue.userid
+                                    JOIN 	{role}				        r	  ON  r.id		  = ra.roleid
                                     -- Completion
-                                    LEFT JOIN    mdl_course_completions		  ccomp	    ON  ccomp.course = c.id
-                                                                                        AND ccomp.userid = ue.userid
+                                    LEFT JOIN    {course_completions}   ccomp ON  ccomp.course = c.id
+                                                                              AND ccomp.userid = ue.userid
                                     -- Org
-                                    JOIN mdl_user_info_competence_data 	uic ON 	uic.userid = ra.userid
-                                    JOIN mdl_report_gen_companydata 	rgc ON	rgc.id = uic.companyid
-                                                                            AND rgc.id = :myid";
+                                    JOIN {user_info_competence_data} 	uic   ON 	uic.userid = ra.userid
+                                    JOIN {report_gen_companydata} 	    rgc   ON	rgc.id = uic.companyid
+                                                                              AND rgc.id = :myid";
 
         try {
             // Get the fieldid for gender.
@@ -212,7 +212,7 @@ class ksl
                               JOIN	{report_gen_company_relation}	  cr_four   ON  cr_four.companyid = co_three.id
                               JOIN	{report_gen_companydata}		  co_four   ON  co_four.id = cr_four.parentid
                                                                                 AND co_four.hierarchylevel = 0
-                         LEFT JOIN   {course_completions}		      ccomp	    ON  ccomp.course = course.id
+                         LEFT JOIN  {course_completions}		      ccomp	    ON  ccomp.course = course.id
 															                    AND ccomp.userid = enrol.userid
                          WHERE   uinfo.fieldid = 7 AND co.id = :myid";
 
@@ -616,6 +616,65 @@ class ksl
         $mylevelone     = get_string('headerlevelone', 'local_ksl') . '</br>' . get_string('headerlevelone1', 'local_ksl');
         $mylevelzero    = get_string('headerlevelzero', 'local_ksl') . '</br>' . get_string('headerlevelzero1', 'local_ksl');
 
+        $mylevelone = get_string('headerlevelone', 'local_ksl') . '</br>' . get_string('headerlevelone1', 'local_ksl');
+        $mylevelzero = get_string('headerlevelzero', 'local_ksl') . '</br>' . get_string('headerlevelzero1', 'local_ksl');
+
+        foreach ($userarray as $uservalue) {
+            $body .= html_writer::start_tag('tr');
+            // Username!
+            $body .= html_writer::start_tag('td', array('class' => 'user', 'data-label' => $strname));
+            $body .= $uservalue->firstname;
+            $body .= " ";
+            $body .= $uservalue->lastname;
+            $body .= html_writer::end_tag('td');
+
+            // Email!
+            $body .= html_writer::start_tag('td', array('class' => 'user', 'data-label' => $stremail));
+            $body .= $uservalue->email;
+            $body .= html_writer::end_tag('td');
+
+            // Gender!
+            $body .= html_writer::start_tag('td', array('class' => 'user', 'data-label' => $strgender));
+            $body .= $uservalue->gender;
+            $body .= html_writer::end_tag('td');
+
+            // Course!
+            $body .= html_writer::start_tag('td', array('class' => 'user', 'data-label' => $strcourse));
+            $body .= $uservalue->course;
+            $body .= html_writer::end_tag('td');
+
+            // Role!
+            $body .= html_writer::start_tag('td', array('class' => 'user', 'data-label' => $strrole));
+            $body .= $uservalue->role;
+            $body .= html_writer::end_tag('td');
+
+            // Completed!
+            $body .= html_writer::start_tag('td', array('class' => 'user', 'data-label' => $strcompleted));
+            $body .= $uservalue->completed;
+            $body .= html_writer::end_tag('td');
+
+            // Level Three!
+            $body .= html_writer::start_tag('td', array('class' => 'user', 'data-label' => $mylevelthree));
+            $body .= $uservalue->levelthree;
+            $body .= html_writer::end_tag('td');
+
+            // Level Two!
+            $body .= html_writer::start_tag('td', array('class' => 'user', 'data-label' => $myleveltwo));
+            $body .= $uservalue->leveltwo;
+            $body .= html_writer::end_tag('td');
+
+            // Level One!
+            $body .= html_writer::start_tag('td', array('class' => 'user', 'data-label' => $mylevelone));
+            $body .= $uservalue->levelone;
+            $body .= html_writer::end_tag('td');
+
+            // Level Zero!
+            $body .= html_writer::start_tag('td', array('class' => 'user', 'data-label' => $mylevelzero));
+            $body .= $uservalue->levelzero;
+            $body .= html_writer::end_tag('td');
+
+            $body .= html_writer::end_tag('tr');
+        }
         return $body;
     } //end add_user_content
 
