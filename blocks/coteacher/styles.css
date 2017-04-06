@@ -1,13 +1,15 @@
 .back_btn {
     padding-top: 10px;
+    padding-bottom: 10px;
 }
+
 .overviewtable {
+    padding-top: 10px;
     display:block;
     width:100%;
 }
 
 .overviewtable table {
-    /* background: white; */
     border-radius:3px;
     border-collapse: collapse;
     margin: auto;
@@ -29,6 +31,7 @@
 .overviewtable .header_overview {
     background: #d9d9d9;
     margin-left: 15px;
+    padding-top: 15px;
 }
 
 
@@ -51,7 +54,6 @@
 }
 
 .overviewtable td {
-    /* background:#FFFFFF; */
     padding:5px;
     text-align:left;
     vertical-align:middle;
@@ -71,13 +73,13 @@ only screen and (max-width: 760px),
     .overviewtable,
     .overviewtable table {
         display:block;
-        /* background-color: white !important; */
         width:100%;
     }
 
     .overviewtable td {
         border-right: 0px;
     }
+
     .overviewtable table thead tr {
         display:none;
     }
@@ -85,16 +87,11 @@ only screen and (max-width: 760px),
     .overviewtable table tr {
         width: 90%;
         margin-top: -1px;
-        /* background-color: white !important; */
     }
 
     .overviewtable table td {
         width:90%;
         margin-bottom: 15px;
-    }
-
-    .overviewtable tr:nth-child(even) {
-        /* background-color: white !important; */
     }
 
     .overviewtable table td.category,
@@ -105,7 +102,6 @@ only screen and (max-width: 760px),
         width: 45%;
         white-space: normal;
         text-align:left;
-        /* background-color: white !important; */
         display: inline-block;
         text-justify:inter-word;
         word-wrap: break-word;
@@ -123,13 +119,11 @@ only screen and (max-width: 760px),
         text-justify:inter-word;
         word-wrap: break-word;
         font-weight: bold;
-        /* background-color: white !important; */
     }
 
     .overviewtable table td.category:before,
     .overviewtable table td.course:before {
         content:attr(data-label);
-        /* background-color: white !important; */
         text-justify:inter-word;
         word-wrap: break-word;
     }

@@ -51,7 +51,7 @@ class coteacher
 	                    JOIN	{user_enrolments}	ue	ON ue.userid = ra.userid
 	                    JOIN	{course_categories}	ca	ON ca.id = c.category
                       WHERE archetype = 'teacher'
-                      -- AND ra.userid = :userid
+                      AND ra.userid = :userid
                       LIMIT 20";
 
         try {
@@ -167,19 +167,23 @@ class coteacher
     public static function display_overview($courselst) {
         // Variables!
         $out = '';
-        $url = null;
+        $url = new moodle_url('/my/');
+        $back = get_String('back', 'local_ksl');
+
+        // Add back url!
+        $out .= html_writer::start_div('back_btn');
+        $out .= "<div><a href=$url> $back </a>";
+        $out .= html_writer::end_div(); // ...back_btn.
 
         $out .= html_writer::start_div('overviewtable');
-            $out .= html_writer::start_tag('table');
-            $out .= self::add_headertable();
-            $out .= self::add_content($courselst);
-            $out .= html_writer::end_tag('table');
+        $out .= html_writer::start_tag('table');
+        $out .= self::add_headertable();
+        $out .= self::add_content($courselst);
+        $out .= html_writer::end_tag('table');
         $out .= html_writer::end_div(); // ...overviewtable.
 
         // Add back url!
         $out .= html_writer::start_div('back_btn');
-        $url = new moodle_url('/my/');
-        $back = get_String('back', 'local_ksl');
         $out .= "<div><a href=$url> $back </a>";
         $out .= html_writer::end_div(); // ...back_btn.
 

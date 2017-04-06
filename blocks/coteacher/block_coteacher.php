@@ -17,12 +17,12 @@
 defined('MOODLE_INTERNAL') || die();
 
 class block_coteacher extends block_base {
-    function init() {
+    public function init() {
         // TODO -> declare visibility.
         $this->title = get_string('pluginname', 'block_coteacher');
     }//init
 
-    function get_content() {
+    public function get_content() {
         // TODO -> declare visiblity.
         try {
             // Title Block!
@@ -45,7 +45,6 @@ class block_coteacher extends block_base {
 
             $this->content->text .= $mycourses;
 
-            $amount->count = 24;
             // Display the "show all" link if more than 20 results.
             if ($amount->count > 20) {
                 $this->content->text .= "</br>";
