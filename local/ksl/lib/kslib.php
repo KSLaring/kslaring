@@ -445,6 +445,8 @@ class ksl
         $out = '';
         $url = null;
         global $CFG;
+        $url = new moodle_url('/local/ksl/index.php');
+        $back = get_String('back', 'local_ksl');
 
         if ($userarray) {
             try {
@@ -456,6 +458,12 @@ class ksl
                         $out .= "<h5>" . get_string('industrycode', 'local_ksl') . "</h5><h6>" .  " " . $industrycode . "</h6>";
                         $out .= html_writer::end_div();
                     }
+
+                    // Add back url
+                    $out .= html_writer::start_div('back_btn');
+                    $out .= "<div><a href=$url> $back </a>";
+                    $out .= html_writer::end_div();//back_btn
+
                     $out .= html_writer::start_div('block_users');
                         // Add Users!
                         $out .= self::add_user_table($userarray);
@@ -463,8 +471,6 @@ class ksl
 
                     // Add back url
                     $out .= html_writer::start_div('back_btn');
-                        $url = new moodle_url('/local/ksl/index.php');
-                        $back = get_String('back', 'local_ksl');
                         $out .= "<div><a href=$url> $back </a>";
                     $out .= html_writer::end_div();//back_btn
                 } else {
