@@ -70,7 +70,7 @@ if (!isset($SESSION->notIn)) {
 }
 
 /* Get Companies to Map */
-$notIn = '0';
+$notIn = 0;
 if (($SESSION->notIn) && count($SESSION->notIn)) {
     $notIn = implode(',',$SESSION->notIn);
 }
