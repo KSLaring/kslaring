@@ -1,0 +1,8 @@
+{
+    "moodle-local_lessonexport-printlinks": {
+        "requires": [
+            "base",
+            "node"
+        ]
+    }
+}
