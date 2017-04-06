@@ -18,8 +18,8 @@
  * Version details
  *
  * @package    theme_adaptable
- * @copyright 2015 Jeremy Hopkins (Coventry University)
- * @copyright 2015 Fernando Acedo (3-bits.com)
+ * @copyright  2015-2016 Jeremy Hopkins (Coventry University)
+ * @copyright  2015-2016 Fernando Acedo (3-bits.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
  */
@@ -55,7 +55,7 @@
     $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
 
-    // Mian region background color.
+    // Main region background color.
     $name = 'theme_adaptable/regionmaincolor';
     $title = get_string('regionmaincolor', 'theme_adaptable');
     $description = get_string('regionmaincolordesc', 'theme_adaptable');
@@ -83,6 +83,25 @@
     $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
 
+    // Selection text color.
+    $name = 'theme_adaptable/selectiontext';
+    $title = get_string('selectiontext', 'theme_adaptable');
+    $description = get_string('selectiontextdesc', 'theme_adaptable');
+    $default = '#000000';
+    $previewconfig = null;
+    $setting = new admin_setting_configcolourpicker($name, $title, $description, $default, $previewconfig);
+    $setting->set_updatedcallback('theme_reset_all_caches');
+    $temp->add($setting);
+
+    // Selection background color.
+    $name = 'theme_adaptable/selectionbackground';
+    $title = get_string('selectionbackground', 'theme_adaptable');
+    $description = get_string('selectionbackgrounddesc', 'theme_adaptable');
+    $default = '#eeff41';
+    $previewconfig = null;
+    $setting = new admin_setting_configcolourpicker($name, $title, $description, $default, $previewconfig);
+    $setting->set_updatedcallback('theme_reset_all_caches');
+    $temp->add($setting);
 
     // Header colors heading.
     $name = 'theme_adaptable/settingsheadercolors';
@@ -175,6 +194,15 @@
     $description = get_string('menufontcolordesc', 'theme_adaptable');
     $previewconfig = null;
     $setting = new admin_setting_configcolourpicker($name, $title, $description, '#444444', $previewconfig);
+    $setting->set_updatedcallback('theme_reset_all_caches');
+    $temp->add($setting);
+
+    // Main menu hover color.
+    $name = 'theme_adaptable/menuhovercolor';
+    $title = get_string('menuhovercolor', 'theme_adaptable');
+    $description = get_string('menuhovercolordesc', 'theme_adaptable');
+    $previewconfig = null;
+    $setting = new admin_setting_configcolourpicker($name, $title, $description, '#b2dfdb', $previewconfig);
     $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
 
@@ -346,6 +374,32 @@
     $setting = new admin_setting_configcolourpicker($name, $title, $description, '#444444', $previewconfig);
     $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
+
+
+    // Messages pop-up colors heading.
+    $name = 'theme_adaptable/settingsmessagescolors';
+    $heading = get_string('settingsmessagescolors', 'theme_adaptable');
+    $setting = new admin_setting_heading($name, $heading, '');
+    $temp->add($setting);
+
+    // Messages pop-up background color.
+    $name = 'theme_adaptable/messagepopupbackground';
+    $title = get_string('messagepopupbackground', 'theme_adaptable');
+    $description = get_string('messagepopupbackgrounddesc', 'theme_adaptable');
+    $previewconfig = null;
+    $setting = new admin_setting_configcolourpicker($name, $title, $description, '#fff000', $previewconfig);
+    $setting->set_updatedcallback('theme_reset_all_caches');
+    $temp->add($setting);
+
+    // Messages pop-up text color.
+    $name = 'theme_adaptable/messagepopupcolor';
+    $title = get_string('messagepopupcolor', 'theme_adaptable');
+    $description = get_string('messagepopupcolordesc', 'theme_adaptable');
+    $previewconfig = null;
+    $setting = new admin_setting_configcolourpicker($name, $title, $description, '#333333', $previewconfig);
+    $setting->set_updatedcallback('theme_reset_all_caches');
+    $temp->add($setting);
+
 
     // Footer colors heading.
     $name = 'theme_adaptable/settingsfootercolors';

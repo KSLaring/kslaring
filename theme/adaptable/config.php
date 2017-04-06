@@ -18,13 +18,14 @@
  * Version details
  *
  * @package    theme_adaptable
- * @copyright 2015 Jeremy Hopkins (Coventry University)
- * @copyright 2015 Fernando Acedo (3-bits.com)
+ * @copyright  2015-2016 Jeremy Hopkins (Coventry University)
+ * @copyright  2015-2016 Fernando Acedo (3-bits.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
  */
 
 global $PAGE;
+
 if ($PAGE->pagetype == 'site-index') {
     $regions = array('side-post', 'middle', 'frnt-footer', 'frnt-market-a', 'frnt-market-b', 'frnt-market-c', 'frnt-market-d',
         'frnt-market-e', 'frnt-market-f', 'frnt-market-g', 'frnt-market-h', 'frnt-market-i', 'frnt-market-j', 'frnt-market-k',
@@ -37,7 +38,7 @@ if ($PAGE->pagetype == 'site-index') {
 $THEME->name = 'adaptable';
 $THEME->doctype = 'html5';
 $THEME->parents = array('bootstrapbase');
-$THEME->sheets = array('adaptable', 'blocks', 'menu', 'course', 'slider', 'extras', 'zoom', 'button', 'socialwall',  'custom');
+$THEME->sheets = array('adaptable', 'blocks', 'menu', 'course', 'slider', 'extras', 'zoom', 'button', 'socialwall', 'videojs', 'custom');
 $THEME->supportscssoptimisation = false;
 $THEME->yuicssmodules = array();
 
@@ -57,7 +58,7 @@ $THEME->rendererfactory = 'theme_overridden_renderer_factory';
 $THEME->layouts = array(
     // Most backwards compatible layout without the blocks - this is the layout used by default.
     'base' => array(
-        'file' => 'columns1.php',
+        'file' => 'columns2.php',
         'regions' => array(),
     ),
     // Standard layout with blocks, this is recommended for most pages with general information.
@@ -155,14 +156,13 @@ $THEME->layouts = array(
     ),
     // The pagelayout used for reports.
     'report' => array(
-        'file' => 'report.php',
+        'file' => 'columns2.php',
         'regions' => array('side-post'),
         'defaultregion' => 'side-post',
     ),
-
     // The pagelayout used for safebrowser and securewindow.
     'secure' => array(
-        'file' => 'secure.php',
+        'file' => 'columns2.php',
         'regions' => array('side-post'),
         'defaultregion' => 'side-post'
     ),

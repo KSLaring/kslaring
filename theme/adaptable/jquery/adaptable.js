@@ -39,7 +39,7 @@ jQuery(document).ready(function($) {
     $(".breadcrumb li:not(:last-child) span").not('.separator').addClass('');
     $(".breadcrumb li a" );
     $(".breadcrumb li:last-child").addClass("lastli");
-//    $(".breadcrumb li:first-child a").empty().append("<i class='fa fa-home fa-lg'></i>").addClass("firstli");
+
 
 // Slider *******************************************
 
@@ -116,7 +116,7 @@ $(".container.slidewrap").on('transitionend', function() {
     })
 });
 
-
+// Zoom ************************************************
 var onZoom = function() {
   var zoomin = Y.one('body').hasClass('zoomin');
   if (zoomin) {

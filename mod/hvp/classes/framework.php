@@ -296,7 +296,6 @@ class framework implements \H5PFrameworkInterface {
                 'Invalid selected option in multi-select.' => 'invalidmultiselectoption',
                 'Invalid selected option in select.' => 'invalidselectoption',
                 'H5P internal error: unknown content type "@type" in semantics. Removing content!' => 'invalidsemanticstype',
-                'Library used in content is not a valid library according to semantics' => 'invalidsemantics',
                 'Copyright information' => 'copyrightinfo',
                 'Title' => 'title',
                 'Author' => 'author',
@@ -324,7 +323,10 @@ class framework implements \H5PFrameworkInterface {
                 'Invalid audio file format. Use mp3 or wav.' => 'invalidaudioformat',
                 'Invalid video file format. Use mp4 or webm.' => 'invalidvideoformat',
                 'Could not save file.' => 'couldnotsave',
-                'Could not copy file.' => 'couldnotcopy'
+                'Could not copy file.' => 'couldnotcopy',
+                'The mbstring PHP extension is not loaded. H5P need this to function properly' => 'missingmbstring',
+                'The version of the H5P library %machineName used in this content is not valid. Content contains %contentLibrary, but it should be %semanticsLibrary.' => 'wrongversion',
+                'The H5P library %library used in the content is not valid' => 'invalidlibrary'
             ];
         }
 
@@ -871,7 +873,16 @@ class framework implements \H5PFrameworkInterface {
      * Implements alterLibrarySemantics
      */
     public function alterLibrarySemantics(&$semantics, $name, $majorVersion, $minorVersion) {
-        // TODO: Implement some way to alter semantics
+        global $PAGE;
+
+        $contextId = optional_param('contextId', null, PARAM_INT);
+        if (isset($contextId)) {
+            $context = \context::instance_by_id($contextId);
+            $PAGE->set_context($context);
+        }
+
+        $renderer = $PAGE->get_renderer('mod_hvp');
+        $renderer->hvp_alter_semantics($semantics, $name, $majorVersion, $minorVersion);
     }
 
     /**
@@ -960,7 +971,7 @@ class framework implements \H5PFrameworkInterface {
         $dependencies = array();
         foreach ($data as $dependency) {
             unset($dependency->unidepid);
-            $dependencies[] = \H5PCore::snakeToCamel($dependency);
+            $dependencies[$dependency->machine_name] = \H5PCore::snakeToCamel($dependency);
         }
 
         return $dependencies;
@@ -1123,7 +1134,7 @@ class framework implements \H5PFrameworkInterface {
         return (int) $DB->get_field_sql(
                 "SELECT COUNT(id)
                    FROM {hvp}
-                  WHERE filtered LIKE ''");
+                  WHERE " . $DB->sql_compare_text('filtered') . " = ''");
     }
 
     /**
@@ -1226,5 +1237,22 @@ class framework implements \H5PFrameworkInterface {
      * Implements afterExportCreated
      */
     public function afterExportCreated() {
+    }
+
+    /**
+     * Implements hasPermission
+     * @method hasPermission
+     * @param  [H5PPermission]        $permission
+     * @param  [int]        $contentId
+     * @return boolean
+     */
+    public function hasPermission($permission, $content_id = NULL) {
+        switch ($permission) {
+            case \H5PPermission::DOWNLOAD_H5P:
+                global $DB;
+                $context = \context_course::instance($DB->get_field('hvp', 'course', array('id' => $content_id)));
+                return has_capability('mod/hvp:getexport', $context);
+        }
+        return FALSE;
     }
 }

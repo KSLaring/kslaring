@@ -51,14 +51,6 @@
     $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
 
-    $name = 'theme_adaptable/blockheadercolor';
-    $title = get_string('blockheadercolor', 'theme_adaptable');
-    $description = get_string('blockheadercolordesc', 'theme_adaptable');
-    $previewconfig = null;
-    $setting = new admin_setting_configcolourpicker($name, $title, $description, '#009688', $previewconfig);
-    $setting->set_updatedcallback('theme_reset_all_caches');
-    $temp->add($setting);
-
     $name = 'theme_adaptable/blockbordercolor';
     $title = get_string('blockbordercolor', 'theme_adaptable');
     $description = get_string('blockbordercolordesc', 'theme_adaptable');

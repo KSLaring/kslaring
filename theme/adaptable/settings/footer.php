@@ -119,7 +119,7 @@ $name = 'theme_adaptable/footnote';
 $title = get_string('footnote', 'theme_adaptable');
 $description = get_string('footnotedesc', 'theme_adaptable');
 $default = '';
-$setting = new admin_setting_confightmleditor($name, $title, $description, $default);
+$setting = new adaptable_setting_confightmleditor($name, $title, $description, $default);
 $temp->add($setting);
 
 

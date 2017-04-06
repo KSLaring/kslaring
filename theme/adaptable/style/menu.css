@@ -44,7 +44,7 @@
 
 .navbar .nav > li > a:hover {
     color: [[setting:menufontcolor]];
-    background-color: none;
+    background-color: [[setting:menuhovercolor]] !important;
     text-decoration: none;
 }
 
@@ -53,7 +53,7 @@
 }
 
 .navbar .dropdown-submenu .dropdown-toggle{
-    height: 18px;
+    height: 28px;
 }
 
 .navbar .nav li.dropdown.open > .dropdown-toggle,
@@ -61,12 +61,14 @@
 .navbar .nav li.dropdown.open.active > .dropdown-toggle {
     background-color: transparent;
     color: #fff;
-     font-size: [[setting:menufontsize]];
+    font-size: [[setting:menufontsize]];
 }
 
-.navbar .btn-navbar, .navbar .btn-navbar:hover, .navbar .btn-navbar:active {
-    background-color:#001e3c;
-    background: #001e3c !Important;
+.navbar .btn-navbar,
+.navbar .btn-navbar:hover,
+.navbar .btn-navbar:active {
+    background-color: #001e3c;
+    background: #001e3c !important;
 }
 
 .navbar .pull-right a {
@@ -97,8 +99,8 @@
     padding: 5px 0;
     position: absolute;
     right: 0;
-    min-width: 250px;
-    top: 100%;
+    min-width: 200px;
+    top: 26px;
     z-index: 1000;
     border-radius: 6px;
 }
@@ -109,17 +111,18 @@
 }
 
 .nav .dropdown-menu li a {
-    border-bottom: 1px solid #EEEEEE;
-    color: #687074;
+    border-bottom: none;
+    color: [[setting:linkcolor]] !important;
     font-size: 13px;
     font-weight: 400;
     padding: 6px 10px;
     border-bottom-width: 1px !important;
 }
 
-.nav .dropdown-menu li a:hover, .navbar .nav > li > a:hover {
+.nav .dropdown-menu li a:hover,
+.navbar .nav > li > a:hover {
     background: rgba(255,255,255,.1);
-    color: #333;
+    color: #333333;
 }
 
 .dropdown-submenu:hover > a, .dropdown-submenu:focus > a {
@@ -181,7 +184,7 @@
   margin-top: 3px;
 }
 
-/*new menus */
+/* new menus */
 .newmenus {
   position: relative;
   margin-left: 20px;
@@ -194,7 +197,7 @@
 }
 
 .newmenus .dropdown-toggle {
-  color: [[setting:headertextcolor]];
+  color: [[setting:headertextcolor]] !important;
   background: transparent !important;
 }
 
@@ -285,7 +288,5 @@ color: [[setting:headertextcolor]];
 }
 
 @media (max-width: 768px) {
-  .newmenu1, .newmenu2, .newmenu3, .newmenu4, .newmenu5, .newmenu6, .newmenu7, .newmenu8, .newmenu9, .newmenu10, .newmenu11, .newmenu12, .newmenu13, .newmenu14, .newmenu15, .newmenu16[[setting:hidepagefootermobile]][[setting:hidebreadcrumbmobile]][[setting:hidealertsmobile]][[setting:hidesocialmobile]][[setting:hideheadermobile]][[setting:hidelogomobile]][[setting:hidecoursetitlemobile]] {
-      display: none;
-  }
+.newmenu1, .newmenu2, .newmenu3, .newmenu4, .newmenu5, .newmenu6, .newmenu7, .newmenu8, .newmenu9, .newmenu10, .newmenu11, .newmenu12, .newmenu13, .newmenu14, .newmenu15, .newmenu16[[setting:hidepagefootermobile]][[setting:hidebreadcrumbmobile]][[setting:hidealertsmobile]][[setting:hidesocialmobile]][[setting:hideheadermobile]][[setting:hidecoursetitlemobile]] {display: none;}
 }

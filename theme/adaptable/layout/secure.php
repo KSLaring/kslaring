@@ -18,8 +18,8 @@
  * Version details
  *
  * @package    theme_adaptable
- * @copyright 2015 Jeremy Hopkins (Coventry University)
- * @copyright 2015 Fernando Acedo (3-bits.com)
+ * @copyright  2015-2016 Jeremy Hopkins (Coventry University)
+ * @copyright  2015-2016 Fernando Acedo (3-bits.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
  */
@@ -27,7 +27,6 @@
 require_once(dirname(__FILE__) . '/includes/header.php');
 ?>
 <div id="page" class="container-fluid">
-
     <header id="page-header" class="clearfix">
         <?php echo $html->heading; ?>
     </header>
@@ -38,7 +37,7 @@ require_once(dirname(__FILE__) . '/includes/header.php');
                 <section id="region-main" class="span8 pull-right">
                     <?php echo $OUTPUT->main_content(); ?>
                 </section>
-                <?php echo $OUTPUT->blocks('side-pre', 'span4 desktop-first-column'); ?>
+                <?php echo $OUTPUT->blocks('side-post', 'span4 desktop-first-column'); ?>
             </div>
         </div>
         <?php echo $OUTPUT->blocks('side-post', 'span3'); ?>

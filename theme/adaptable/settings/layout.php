@@ -18,8 +18,8 @@
  * Version details
  *
  * @package    theme_adaptable
- * @copyright 2015 Jeremy Hopkins (Coventry University)
- * @copyright 2015 Fernando Acedo (3-bits.com)
+ * @copyright  2015 Jeremy Hopkins (Coventry University)
+ * @copyright  2015 Fernando Acedo (3-bits.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
  */
@@ -28,8 +28,8 @@
     $temp->add(new admin_setting_heading('theme_adaptable_layout', get_string('layoutsettingsheading', 'theme_adaptable'),
         format_text(get_string('layoutdesc', 'theme_adaptable'), FORMAT_MARKDOWN)));
 
-  // Background Image.
-  $name = 'theme_adaptable/homebk';
+    // Background Image.
+    $name = 'theme_adaptable/homebk';
     $title = get_string('homebk', 'theme_adaptable');
     $description = get_string('homebkdesc', 'theme_adaptable');
     $setting = new admin_setting_configstoredfile($name, $title, $description, 'homebk');
@@ -63,5 +63,16 @@
     $setting = new admin_setting_configselect($name, $title, $description, '98%', $from95to100percent);
     $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
+
+    // Emoticons size.
+    $name = 'theme_adaptable/emoticonsize';
+    $title = get_string('emoticonsize', 'theme_adaptable');
+    $description = get_string('emoticonsizedesc', 'theme_adaptable');
+    $default = '16px';
+    $choices = $standardfontsize;
+    $setting = new admin_setting_configselect($name, $title, $description, $default, $choices);
+    $setting->set_updatedcallback('theme_reset_all_caches');
+    $temp->add($setting);
+
 
     $ADMIN->add('theme_adaptable', $temp);

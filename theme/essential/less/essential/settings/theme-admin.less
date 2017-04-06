@@ -31,6 +31,17 @@ body {
     }
 }
 
+body.loginbackground {
+    background-image: ~"[[setting:loginbackground]]";
+    background-size: ~"[[setting:loginbackgroundstyle]]";
+    #page-header {
+        background-image: none;
+    }
+    #page-content {
+        opacity: ~"[[setting:loginbackgroundopacity]]";
+    }
+}
+
 .container-fluid {
     max-width: ~"[[setting:pagewidth]]";
 }
@@ -73,11 +84,6 @@ a {
 .bor {
     background-image: url(~"[[pix:theme|bg/dot]]");
     background-repeat: repeat-x;
-}
-
-img.userpicture,
-img.profilepicture {
-    box-shadow: 0px 0px 3px ~"[[setting:themecolor]]";
 }
 
 /* @end */

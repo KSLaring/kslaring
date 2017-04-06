@@ -39,6 +39,38 @@
     $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);
 
+    // Select type of login.
+    $name = 'theme_adaptable/displaylogin';
+    $title = get_string('displaylogin', 'theme_adaptable');
+    $description = get_string('displaylogindesc', 'theme_adaptable');
+    $choices = array(
+        'button' => get_string('displayloginbutton', 'theme_adaptable'),
+        'box' => get_string('displayloginbox', 'theme_adaptable'),
+        'no' => get_string('displayloginno', 'theme_adaptable')
+    );
+    $setting = new admin_setting_configselect($name, $title, $description, 'button', $choices);
+    $setting->set_updatedcallback('theme_reset_all_caches');
+    $temp->add($setting);
+
+
+    // Enable messaging menu in header.
+    $name = 'theme_adaptable/enablemessagemenu';
+    $title = get_string('enablemessagemenu', 'theme_adaptable');
+    $description = get_string('enablemessagemenudesc', 'theme_adaptable');
+    $default = true;
+    $setting = new admin_setting_configcheckbox($name, $title, $description, $default, true, false);
+    $setting->set_updatedcallback('theme_reset_all_caches');
+    $temp->add($setting);
+
+    // Filter admin messages
+    $name = 'theme_adaptable/filteradminmessages';
+    $title = get_string('filteradminmessages', 'theme_adaptable');
+    $description = get_string('filteradminmessagesdesc', 'theme_adaptable');
+    $default = false;
+    $setting = new admin_setting_configcheckbox($name, $title, $description, $default, true, false);
+    $setting->set_updatedcallback('theme_reset_all_caches');
+    $temp->add($setting);
+
     // Logo.
     $name = 'theme_adaptable/logo';
     $title = get_string('logo', 'theme_adaptable');
@@ -60,7 +92,7 @@
     $title = get_string('sitetitle', 'theme_adaptable');
     $description = get_string('sitetitledesc', 'theme_adaptable');
     $radchoices = array(
-// Removed        'disabled' => get_string('sitetitleoff', 'theme_adaptable'),.
+        'disabled' => get_string('sitetitleoff', 'theme_adaptable'),
         'default' => get_string('sitetitledefault', 'theme_adaptable'),
         'custom' => get_string('sitetitlecustom', 'theme_adaptable')
     );
@@ -73,7 +105,9 @@
     $title = get_string('sitetitletext', 'theme_adaptable');
     $description = get_string('sitetitletextdesc', 'theme_adaptable');
     $default = '';
-    $setting = new admin_setting_confightmleditor($name, $title, $description, $default);
+    $setting = new adaptable_setting_confightmleditor($name, $title, $description, $default);
+
+
     $temp->add($setting);
 
 
@@ -111,30 +145,6 @@
     $name = 'theme_adaptable/sitetitlemaxwidth';
     $title = get_string('sitetitlemaxwidth', 'theme_adaptable');
     $description = get_string('sitetitlemaxwidthdesc', 'theme_adaptable');
-    $setting = new admin_setting_configselect($name, $title, $description, '50%', $from35to80percent);
-    $setting->set_updatedcallback('theme_reset_all_caches');
-    $temp->add($setting);
-
-    // Course Title Padding Top.
-    $name = 'theme_adaptable/coursetitlepaddingtop';
-    $title = get_string('coursetitlepaddingtop', 'theme_adaptable');
-    $description = get_string('coursetitlepaddingtopdesc', 'theme_adaptable');
-    $setting = new admin_setting_configselect($name, $title, $description, '0px', $from0to20px);
-    $setting->set_updatedcallback('theme_reset_all_caches');
-    $temp->add($setting);
-
-    // Course Title Padding Left.
-    $name = 'theme_adaptable/coursetitlepaddingleft';
-    $title = get_string('coursetitlepaddingleft', 'theme_adaptable');
-    $description = get_string('coursetitlepaddingleftdesc', 'theme_adaptable');
-    $setting = new admin_setting_configselect($name, $title, $description, '0px', $from0to20px);
-    $setting->set_updatedcallback('theme_reset_all_caches');
-    $temp->add($setting);
-
-    // Course Title Maximum Width.
-    $name = 'theme_adaptable/coursetitlemaxwidth';
-    $title = get_string('coursetitlemaxwidth', 'theme_adaptable');
-    $description = get_string('coursetitlemaxwidthdesc', 'theme_adaptable');
     $setting = new admin_setting_configselect($name, $title, $description, '50%', $from35to80percent);
     $setting->set_updatedcallback('theme_reset_all_caches');
     $temp->add($setting);

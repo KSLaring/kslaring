@@ -125,13 +125,15 @@ function enrol_get_plugin($name) {
 
     $location = "$CFG->dirroot/enrol/$name";
 
-    if (!file_exists("$location/lib.php")) {
-        return null;
-    }
-    include_once("$location/lib.php");
     $class = "enrol_{$name}_plugin";
     if (!class_exists($class)) {
-        return null;
+        if (!file_exists("$location/lib.php")) {
+            return null;
+        }
+        include_once("$location/lib.php");
+        if (!class_exists($class)) {
+            return null;
+        }
     }
 
     return new $class();
@@ -1408,6 +1410,7 @@ abstract class enrol_plugin {
         }
 
         $ue->modifierid = $USER->id;
+        $ue->timemodified = time();
         $DB->update_record('user_enrolments', $ue);
         context_course::instance($instance->courseid)->mark_dirty(); // reset enrol caches
 
