@@ -1322,8 +1322,12 @@ class FS_MAPPING {
                      WHERE	fs_imp.imported  = :imported
                         AND fs_imp.action   != :action
                         AND	fs.id IS NULL
-                        AND	fs_imp.org_nivaa = :level
-                        AND fs_imp.org_enhet_id NOT IN ($notIn) ";
+                        AND	fs_imp.org_nivaa = :level ";
+
+            // Add notIn criteria
+            if ($notIn) {
+                $sql .= " AND fs_imp.org_enhet_id NOT IN ($notIn) ";
+            }//if_notIn
 
             if ($sector) {
                 $sqlMatch = null;
@@ -1484,8 +1488,12 @@ class FS_MAPPING {
                      WHERE	fs_imp.imported  = :imported
                         AND fs_imp.action   != :action
                         AND	fs.id IS NULL
-                        AND	fs_imp.org_nivaa = :level
-                        AND fs_imp.org_enhet_id NOT IN ($notIn) ";
+                        AND	fs_imp.org_nivaa = :level  ";
+
+            // Add notIn criteria
+            if ($notIn) {
+                $sql .= " AND fs_imp.org_enhet_id NOT IN ($notIn) ";
+            }//if_notIn
 
             /* Sector */
             if ($sector) {
