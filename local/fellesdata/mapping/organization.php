@@ -10,6 +10,7 @@
  * @author          eFaktor     (fbv)
  *
  */
+global $CFG,$PAGE,$OUTPUT;
 require_once('../../../config.php');
 require_once('../lib/mappinglib.php');
 require_once('mapping_forms.php');
@@ -69,7 +70,7 @@ if (!isset($SESSION->notIn)) {
 }
 
 /* Get Companies to Map */
-$notIn = 0;
+$notIn = '0';
 if (($SESSION->notIn) && count($SESSION->notIn)) {
     $notIn = implode(',',$SESSION->notIn);
 }
