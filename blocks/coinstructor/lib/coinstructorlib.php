@@ -228,7 +228,8 @@ class coinstructor
 
             // Course!
             $body .= html_writer::start_tag('td', array('class' => 'course', 'data-label' => $strcourse));
-            $body .= $course->coursename;
+            $url = new moodle_url('/grade/report/grader/index.php?id=' . $course->courseid);
+            $body .= "<a href=$url> " . $course->coursename;
             $body .= html_writer::end_tag('td');
             $body .= html_writer::end_tag('tr');
         }
