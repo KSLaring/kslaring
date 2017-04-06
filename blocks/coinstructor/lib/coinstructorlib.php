@@ -193,8 +193,8 @@ class coinstructor
         $strcourse      = get_string('headercourse', 'block_coteacher');
 
         // The table header!
-        $header .= html_writer::start_tag('thead');
-        $header .= html_writer::start_tag('tr', array('class' => 'header_overview'));
+        $header .= html_writer::start_tag('thead',array('class' => 'header_overview'));
+        $header .= html_writer::start_tag('tr');
 
         // Category!
         $header .= html_writer::start_tag('th', array('class' => 'category'));

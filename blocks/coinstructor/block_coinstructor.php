@@ -29,7 +29,7 @@ class block_coinstructor extends block_base {
             // Title Block!
             $this->title = get_string('blocktitle', 'block_coinstructor');
 
-            if ($this->content !== NULL) {
+            if ($this->content !== null) {
                 return $this->content;
             }
 

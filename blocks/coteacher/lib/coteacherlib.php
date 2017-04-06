@@ -51,7 +51,7 @@ class coteacher
 	                    JOIN	{user_enrolments}	ue	ON ue.userid = ra.userid
 	                    JOIN	{course_categories}	ca	ON ca.id = c.category
                       WHERE archetype = 'teacher'
-                      AND ra.userid = :userid
+                      -- AND ra.userid = :userid
                       LIMIT 20";
 
         try {
@@ -193,8 +193,8 @@ class coteacher
         $strcourse      = get_string('headercourse', 'block_coteacher');
 
         // The table header!
-        $header .= html_writer::start_tag('thead');
-            $header .= html_writer::start_tag('tr', array('class' => 'header_overview'));
+        $header .= html_writer::start_tag('thead',array('class' => 'header_overview'));
+            $header .= html_writer::start_tag('tr');
 
                 // Category!
                 $header .= html_writer::start_tag('th', array('class' => 'category'));

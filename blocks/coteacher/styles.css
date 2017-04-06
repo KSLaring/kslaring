@@ -1,58 +1,62 @@
+.back_btn {
+    padding-top: 10px;
+}
 .overviewtable {
     display:block;
     width:100%;
 }
 
 .overviewtable table {
-    background: white;
+    /* background: white; */
     border-radius:3px;
     border-collapse: collapse;
     margin: auto;
     padding:5px;
     width: 100%;
-    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
     animation: float 5s infinite;
 }
 
 .overviewtable table tr {
-    border-top: 1px solid #C1C3D1;
-    border-bottom: 1px solid #C1C3D1;
     color:#666B85;
     font-size:16px;
     font-weight:normal;
-    text-shadow: 0 1px 1px rgba(256, 256, 256, 0.1);
 }
 
-.overviewtable  td.category,
+.overviewtable tr:nth-child(even) {
+    background: #e8edf3;
+}
+
+.overviewtable .header_overview {
+    background: #d9d9d9;
+    margin-left: 15px;
+}
+
+
 .overviewtable  th.category,
-.overviewtable  td.course,
 .overviewtable  th.course {
     width: 50%;
     text-align: left;
     text-justify:inter-word;
-    padding: 1px 10px 1px 1px;
+    padding: 6px 10px 1px 1px;
+    margin-left: 15px;
 }
 
-.overviewtable th.category,
-.overviewtable th.course {
-    color:#000000;
-    background: #bbbbbb;
-    border: 1px solid #999999;
-    font-size: 16px;
-    font-weight: 100;
-    padding: 12px;
-    text-align:left;
-    vertical-align:middle;
+.overviewtable  td.category,
+.overviewtable  td.course {
+    width: 50%;
+    text-align: left;
+    text-justify:inter-word;
+    padding: 6px 10px 1px 1px;
+    margin-left: 15px;
 }
 
 .overviewtable td {
-    background:#FFFFFF;
+    /* background:#FFFFFF; */
     padding:5px;
     text-align:left;
     vertical-align:middle;
     font-weight:300;
-    font-size:18px;
-    border-right: 1px solid #C1C3D1;
+    font-size: 16px;
 }
 
 @media
@@ -67,7 +71,7 @@ only screen and (max-width: 760px),
     .overviewtable,
     .overviewtable table {
         display:block;
-        background-color: white !important;
+        /* background-color: white !important; */
         width:100%;
     }
 
@@ -80,14 +84,17 @@ only screen and (max-width: 760px),
 
     .overviewtable table tr {
         width: 90%;
-        border: 1px solid darkgray;
         margin-top: -1px;
-        background-color: white !important;}
+        /* background-color: white !important; */
+    }
 
     .overviewtable table td {
         width:90%;
-        border-top: 1px solid #f2f2f2;
         margin-bottom: 15px;
+    }
+
+    .overviewtable tr:nth-child(even) {
+        /* background-color: white !important; */
     }
 
     .overviewtable table td.category,
@@ -98,7 +105,7 @@ only screen and (max-width: 760px),
         width: 45%;
         white-space: normal;
         text-align:left;
-        background-color: white !important;
+        /* background-color: white !important; */
         display: inline-block;
         text-justify:inter-word;
         word-wrap: break-word;
@@ -116,13 +123,13 @@ only screen and (max-width: 760px),
         text-justify:inter-word;
         word-wrap: break-word;
         font-weight: bold;
-        background-color: white !important;
+        /* background-color: white !important; */
     }
 
     .overviewtable table td.category:before,
     .overviewtable table td.course:before {
         content:attr(data-label);
-        background-color: white !important;
+        /* background-color: white !important; */
         text-justify:inter-word;
         word-wrap: break-word;
     }
