@@ -312,7 +312,7 @@ class FS_MAPPING {
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 foreach ($rdo as $instance){
-                    $toDelete[$instance->id] = $instance->companyid;
+                    $toDelete[$instance->id] = $instance->id;
                 }//for_rdo
             }//if_rdo
 
