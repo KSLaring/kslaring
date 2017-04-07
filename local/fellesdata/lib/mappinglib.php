@@ -312,7 +312,7 @@ class FS_MAPPING {
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 foreach ($rdo as $instance){
-                    $toDelete[$instance->id] = $instance->companyid;
+                    $toDelete[$instance->id] = "'" . $instance->companyid . "'";
                 }//for_rdo
             }//if_rdo
 
@@ -820,7 +820,7 @@ class FS_MAPPING {
      * @param           $toMap
      * @param           $data
      *
-     * @return          bool
+     * @return          array
      * @throws          Exception
      *
      * @creationDate    08/02/2016
@@ -1122,7 +1122,7 @@ class FS_MAPPING {
                 $infoCompany->id = $DB->insert_record('fs_company',$infoCompany);
 
                 /* Save */
-                $SESSION->FS_COMP[$infoCompany->companyid] = $infoCompany;
+                $SESSION->FS_COMP["'" . $infoCompany->companyid . "'"] = $infoCompany;
             }//if_rdo
 
             /* Update Record as imported    */
