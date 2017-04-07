@@ -820,7 +820,7 @@ class FS_MAPPING {
      * @param           $toMap
      * @param           $data
      *
-     * @return          bool
+     * @return          array
      * @throws          Exception
      *
      * @creationDate    08/02/2016
