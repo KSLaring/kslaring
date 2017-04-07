@@ -1122,7 +1122,7 @@ class FS_MAPPING {
                 $infoCompany->id = $DB->insert_record('fs_company',$infoCompany);
 
                 /* Save */
-                $SESSION->FS_COMP["''" . $infoCompany->companyid . "''"] = $infoCompany;
+                $SESSION->FS_COMP["'" . $infoCompany->companyid . "'"] = $infoCompany;
             }//if_rdo
 
             /* Update Record as imported    */
