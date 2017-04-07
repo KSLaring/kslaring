@@ -242,11 +242,11 @@ class WS_DOSKOM {
                 // Get sql instruction
                 $sql = self::get_sql_users_completions_in_period($criteria['dateFrom'],$criteria['dateTo'],$criteria['companyId']);
 
-                $dblog .= "DATE FROM : " . $criteria['dateFrom'] . " - " . " DATE TO: " . $criteria['dateTo'] . " --> Company: " . $criteria['companyId'] . "</br>";
+                $dblog .= "DATE FROM : " . $criteria['dateFrom'] . " - " . " DATE TO: " . $criteria['dateTo'] . " --> Company: " . $criteria['companyId'] . "\n";
                 foreach ($rdo_courses as $course) {
                     // Log course
-                    $dblog .= ' Course: ' . $course->id . "\n";
-                    
+                    $dblog .= ' Course: ' . $course->id . ",";
+
                     // Search criteria
                     $courses = array();
                     $courses['courseId']    = $course->id;
@@ -269,11 +269,9 @@ class WS_DOSKOM {
                             $infoLog = new stdClass();
                             $infoLog->company       = $criteria['companyId'];
                             $infoLog->course        = $course->id;
-                            $infoLog->user          = $instance->secret;
+                            $infoLog->user          = $instance->user;
                             $infoLog->completion    = $instance->completiondate;
                             $infoLog->timesent      = $time;
-
-                            $dblog .= ' Info Log: ' . $instance->completiondate . "\n";
                             
                             // Add to the log
                             $log[] = $infoLog;
@@ -289,10 +287,15 @@ class WS_DOSKOM {
                 $dblog .= ' No courses ' . "\n";
             }//if_rdo_courses
 
+            // Close log
+            $dblog .= "\n";
             error_log($dblog, 3, $CFG->dataroot . "/doskom.log");
             
             return array($historical,$log);
         }catch (Exception $ex) {
+            $dblog .= "ERROR: " . $ex->getTraceAsString() . "\n";
+            error_log($dblog, 3, $CFG->dataroot . "/doskom.log");
+
             $result['error']        = 409;
             $result['msg_error']    = $ex->getMessage() . ' - ' . " -- Function: Historical Course COmpletion";
             throw $ex;
@@ -1297,16 +1300,16 @@ class WS_DOSKOM {
 
             // SQL Instruction
             $sql = " SELECT   cc.id,
-                              u.id,
+                              u.id as 'user',
                               u.secret,
                               FROM_UNIXTIME(cc.timecompleted,'%Y.%m.%d')as 'completiondate'
                      FROM	  {course_completions}	cc
                         -- USERS DOSSSIER
                         JOIN  {user}				u	  ON  u.id 		= cc.userid
-                                                                AND u.deleted	= 0
-                                                                AND	u.auth		= 'saml'
-                                                                AND u.source    IN ('DOSKOM','KOMMIT')
-                                                                AND u.secret	LIKE '"   . $secret . "%'
+                                                          AND u.deleted	= 0
+                                                          AND u.auth	= 'saml'
+                                                          AND u.source  IN ('DOSKOM','KOMMIT')
+                                                          AND u.secret	LIKE '"   . $secret . "%'
                      WHERE	  cc.course = :course
                         AND	  cc.timecompleted BETWEEN " . $from->getTimestamp() . " AND " . $to->getTimestamp();
 
