@@ -102,7 +102,9 @@ echo $OUTPUT->header();
 /* Table with locations */
 echo $OUTPUT->heading(get_string('filter','local_friadmin'));
 
-if (!$myCompetence->levelZero && !$IsAdmin) {
+if (!$myCompetence) {
+    $form->display();
+}else if (!$myCompetence->levelZero && !$IsAdmin) {
     echo $OUTPUT->heading(get_string('no_competence_profile', 'local_friadmin'),4);
 }else {
     $form->display();

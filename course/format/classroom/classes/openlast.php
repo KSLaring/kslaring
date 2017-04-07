@@ -1,4 +1,4 @@
-<?php
+    <?php
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -279,7 +279,8 @@ class format_classroom_openlast {
 
             // Exclude resource and folder modules to avoid the repeated automatic download trap
             if (strpos($row->component, 'mod_resource') !== false ||
-                strpos($row->component, 'mod_folder') !== false
+                strpos($row->component, 'mod_folder') !== false ||
+                strpos($row->component, 'mod_url') !== false
             ) {
                 $url = null;
             }
