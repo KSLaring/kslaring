@@ -189,7 +189,7 @@ class local_wsks_external extends external_api {
         $companyFSID    = new external_value(PARAM_TEXT,'Fellesdata Id');
         $companyKSID    = new external_value(PARAM_INT,'KS Company Id');
         $imported       = new external_value(PARAM_INT,'Imported');
-        $key            = new external_value(PARAM_INT,'Key Id record imported');
+        $key            = new external_value(PARAM_TEXT,'Key Id record imported');
 
         $companiesInfo  = new external_single_structure(array('fsId'        => $companyFSID,
                                                               'ksId'        => $companyKSID,
