@@ -171,10 +171,10 @@ class WS_FELLESDATA {
                     // Mark as imported
                     if ($companyId) {
                         $infoImported = new stdClass();
-                        $infoImported->fsId     = "'" . $company->fsid . "'";
+                        $infoImported->fsId     = $company->fsid;
                         $infoImported->ksId     = $companyId;
                         $infoImported->imported = 1;
-                        $infoImported->key      = "'" . $company->fsid . "'";
+                        $infoImported->key      = $company->fsid;
 
                         $imported["'" . $company->fsid . "'"] = $infoImported;
                     }//if_companyId
