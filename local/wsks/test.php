@@ -24,7 +24,7 @@ echo $OUTPUT->header();
 // Save file
 $dir = $CFG->dataroot . '/fellesdata';
 // File
-$path = $dir . '/wsUserCompetence.txt';
+$path = $dir . '/wsFSCompanies.txt';
 
 // Process content
 //if (file_exists($path)) {
