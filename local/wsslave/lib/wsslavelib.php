@@ -69,7 +69,7 @@ class WS_SLAVE {
      */
     private static function CheckService($service) {
         /* Variables */
-        global $DB;
+        global $DB,$CFG;
         $rdo    = null;
         $sql    = null;
         $params = null;
@@ -77,15 +77,21 @@ class WS_SLAVE {
         try {
             /* Search Criteria  */
             $params =array();
-            $params['plugin'] = 'local_' . $service['name'];
+            $params['plugin'] = 'local_' . trim($service['name']);
 
             /* SQL instruction  */
             $sql = " SELECT	cs.id
                      FROM	{config_plugins}	cs
                      WHERE	cs.plugin = :plugin
-                        AND	cs.value like '%" . $service['main'] . "%' ";
+                        AND	cs.value like '%" . trim($service['main']) . "%' ";
 
             /* Execute */
+            $dbLog = " SLAVES : " . "\n";
+            $dbLog .= " SQL : " .  $sql . "\n\n";
+            $dbLog .= " PLUGIN : " . $params['plugin'] . "\n";
+            $dbLog .= " VALUE : " . $service['main'] . "\n";
+            error_log($dbLog, 3, $CFG->dataroot . "/Slave.log");
+
             $rdo = $DB->get_record_sql($sql,$params);
             if ($rdo) {
                 return true;
@@ -138,6 +144,8 @@ class WS_SLAVE {
                 /* Execute */
                 $DB->update_record('config_plugins',$rdo);
                 $result['updated']      = 1;
+
+                set_config($rdo->name, $service['token'], $params['plugin']);
             }else {
                 /* No token to update */
                 $result['error']        = 500;

@@ -925,9 +925,7 @@ class FELLESDATA_CRON {
 
             // Build url end point
             $urlTradis = $pluginInfo->fs_point . '/' . $service . '?fromDate=' . $fromDate . '&toDate=' . $toDate;
-
             $urlTradis = trim($urlTradis);
-            echo $urlTradis . "</br>";
 
             // Call web service
             $ch = curl_init($urlTradis);
