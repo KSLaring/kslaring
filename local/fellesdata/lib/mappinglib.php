@@ -856,7 +856,7 @@ class FS_MAPPING {
                         if ($possibleMatch == 'new') {
                             self::NewMapFSCompany($fsCompany,$data->le);
                         }else if ($possibleMatch == 'no_sure') {
-                            $notIn[$fsCompany->fscompany] = $fsCompany->fscompany;
+                            $notIn["'" . $fsCompany->fscompany . "'"] = $fsCompany->fscompany;
                         }else {
                             /* Mapping between FSand KS */
                             $infoMatch = explode('#KS#',$data->$refFS);
