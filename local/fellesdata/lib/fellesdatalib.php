@@ -2561,6 +2561,8 @@ class FS {
                 $line           = str_replace('\"','"',$line);
                 $lineContent    = json_decode($line);
 
+                echo "KEY --> " . $key . "</br>" . $line . "</br>";
+
                 // Get New Entry
                 if ($lineContent) {
                     if ($status) {
