@@ -33,7 +33,7 @@ $PAGE->set_context($contextsystem);
 $PAGE->requires->js('/local/ksl/js/ksljs.js');  // Enable / Disable.
 $PAGE->requires->js('/local/ksl/js/levels.js'); // Activate / Clean.
 $page       = optional_param('page', 0, PARAM_INT);
-$perpage    = optional_param('page', 15, PARAM_INT);
+$perpage    = optional_param('page', 1, PARAM_INT);
 $sort       = 'asc';
 $out        = null;
 

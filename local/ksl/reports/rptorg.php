@@ -23,7 +23,7 @@ $contextsystem  = context_system::instance();
 $userarray      = null;
 $errormsg       = null;
 $page           = optional_param('page', 0, PARAM_INT);
-$perpage        = optional_param('perpage', 15, PARAM_INT);
+$perpage        = optional_param('perpage', 1, PARAM_INT);
 $sort           = 'asc';
 $url            = new moodle_url('/local/ksl/reports/rptorg.php', array('sort' => $sort, 'page' => $page));
 $out            = null;
