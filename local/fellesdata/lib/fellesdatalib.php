@@ -2557,7 +2557,6 @@ class FS {
             $time = time();
 
             // Each line file
-            $data = explode('\n',$data);
             foreach($data as $key=>$line) {
                 $lineContent    = json_decode($line);
 
