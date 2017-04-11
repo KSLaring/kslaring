@@ -34,9 +34,6 @@ class WS_SLAVE {
         
         try {
             /* Check if the service exits*/
-            global $CFG;
-            $dbLog = " SLAVES : HOLA" . "\n";
-            error_log($dbLog, 3, $CFG->dataroot . "/Slave.log");
             if (self::CheckService($service)) {
                 /* Upate token  */
                 self::UpdateToken($service,$result);

@@ -410,22 +410,22 @@ class FSKS_COMPANY {
 
             // SQL Instruction
             $sql = " SELECT	  DISTINCT 
-                                  fs.companyid                   as 'fsid',
-                                  IF(ks_fs.id,ks_fs.kscompany,0) as 'ksid',
-                                  fs.name,
+                                  fs.companyid                          as 'fsid',
+                                  IF(ks_fs.id,ks_fs.kscompany,0)        as 'ksid',
+                                  TRIM(fs.name)                         as 'name',
                                   fs.level,
-                                  ks.industrycode                 as 'industry',
+                                  ks.industrycode                       as 'industry',
                                   fs.parent,
-                                  IF(fs.privat,0,1)               as 'public',
-                                  IF(fs.ansvar,fs.ansvar,0)       as 'ansvar',
-                                  IF(fs.tjeneste,fs.tjeneste,0)   as 'tjeneste',
-                                  IF(fs.adresse1,fs.adresse1,0)   as 'adresse1',
-                                  IF(fs.adresse2,fs.adresse2,0)   as 'adresse2',
-                                  IF(fs.adresse3,fs.adresse3,0)   as 'adresse3',
-                                  IF(fs.postnr,fs.postnr,0)       as 'postnr',
-                                  IF(fs.poststed,fs.poststed,0)   as 'poststed',
-                                  IF(fs.epost,fs.epost,0)         as 'epost',
-                                  '0'                             as 'action'
+                                  IF(fs.privat,0,1)                     as 'public',
+                                  TRIM(IF(fs.ansvar,fs.ansvar,0))       as 'ansvar',
+                                  TRIM(IF(fs.tjeneste,fs.tjeneste,0))   as 'tjeneste',
+                                  TRIM(IF(fs.adresse1,fs.adresse1,0))   as 'adresse1',
+                                  TRIM(IF(fs.adresse2,fs.adresse2,0))   as 'adresse2',
+                                  TRIM(IF(fs.adresse3,fs.adresse3,0))   as 'adresse3',
+                                  TRIM(IF(fs.postnr,fs.postnr,0))       as 'postnr',
+                                  TRIM(IF(fs.poststed,fs.poststed,0))   as 'poststed',
+                                  TRIM(IF(fs.epost,fs.epost,0))         as 'epost',
+                                  '0'                                   as 'action'
                      FROM		  {fs_company}	  fs
                         JOIN      {ks_company}	  ks 	ON ks.companyid     = fs.parent
                         LEFT JOIN {ksfs_company}  ks_fs	ON ks_fs.fscompany 	= fs.companyid
@@ -524,19 +524,19 @@ class FSKS_COMPANY {
             $sql = " SELECT DISTINCT 
                               fs.companyid                    as 'fsid',
                               fk.kscompany                    as 'ksid',
-                              fs.name,
+                              TRIM(fs.name)                   as 'name',
                               fs.level,
                               fs.parent,
-                              ks_pa.industrycode              as 'industry',
-                              IF(fs.privat,0,1) 	          as 'public',
-                              IF(fs.ansvar,fs.ansvar,0)       as 'ansvar',
-                              IF(fs.tjeneste,fs.tjeneste,0)   as 'tjeneste',
-                              IF(fs.adresse1,fs.adresse1,0)   as 'adresse1',
-                              IF(fs.adresse2,fs.adresse2,0)   as 'adresse2',
-                              IF(fs.adresse3,fs.adresse3,0)   as 'adresse3',
-                              IF(fs.postnr,fs.postnr,0)       as 'postnr',
-                              IF(fs.poststed,fs.poststed,0)   as 'poststed',
-                              IF(fs.epost,fs.epost,0)         as 'epost',
+                              ks_pa.industrycode                    as 'industry',
+                              IF(fs.privat,0,1) 	                as 'public',
+                              TRIM(IF(fs.ansvar,fs.ansvar,0))       as 'ansvar',
+                              TRIM(IF(fs.tjeneste,fs.tjeneste,0))   as 'tjeneste',
+                              TRIM(IF(fs.adresse1,fs.adresse1,0))   as 'adresse1',
+                              TRIM(IF(fs.adresse2,fs.adresse2,0))   as 'adresse2',
+                              TRIM(IF(fs.adresse3,fs.adresse3,0))   as 'adresse3',
+                              TRIM(IF(fs.postnr,fs.postnr,0))       as 'postnr',
+                              TRIM(IF(fs.poststed,fs.poststed,0))   as 'poststed',
+                              TRIM(IF(fs.epost,fs.epost,0))         as 'epost',
                               fs_imp.action
                      FROM	  {fs_company}		fs
                         JOIN  {fs_imp_company}	fs_imp 	ON 	fs_imp.org_enhet_id = fs.companyid
@@ -648,7 +648,7 @@ class FSKS_COMPANY {
 
                 if ($objCompany->imported) {
                     // Get Company
-                    $infoCompany        = $companiesFSKS[$objCompany->fsId];
+                    $infoCompany        = $companiesFSKS["'" . $objCompany->fsId . "'"];
                     $infoCompany->ksid  = $objCompany->ksId;
 
                     // Synchronize Company

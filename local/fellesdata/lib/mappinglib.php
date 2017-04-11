@@ -21,6 +21,7 @@ define('ACT_UPDATE',1);
 define('ACT_DELETE',2);
 define('FS_LE_2',2);
 define('FS_LE_5',3);
+define('FS_LE_1',1);
 
 define('MAP',1);
 define('UNMAP',2);
@@ -856,7 +857,7 @@ class FS_MAPPING {
                         if ($possibleMatch == 'new') {
                             self::NewMapFSCompany($fsCompany,$data->le);
                         }else if ($possibleMatch == 'no_sure') {
-                            $notIn[$fsCompany->fscompany] = $fsCompany->fscompany;
+                            $notIn["'" . $fsCompany->fscompany . "'"] = "'" . $fsCompany->fscompany . "'";
                         }else {
                             /* Mapping between FSand KS */
                             $infoMatch = explode('#KS#',$data->$refFS);
@@ -1280,49 +1281,57 @@ class FS_MAPPING {
         $params         = null;
 
         try {
-            /* Search Criteria  */
+            // Search criteria
             $params = array();
             $params['imported'] = 0;
             $params['action']   = ACT_DELETE;
 
-            /* Get Level    */
+            // Get level
             switch ($level) {
+                case FS_LE_1:
+                    $params['level'] = $plugin->map_one;
+
+                    break;
+
                 case FS_LE_2:
                     $params['level'] = $plugin->map_two;
 
                     break;
+
                 case FS_LE_5;
                     $params['level'] = $plugin->map_three;
                     $granpa = true;
 
                     break;
+
                 default:
                     $params['level'] = '-1';
 
                     break;
             }//level
 
-            /* SQL Instruction  */
-            $sql = " SELECT DISTINCT fs_imp.id,
-                                     fs_imp.org_enhet_id    as 'fscompany',
-                                     fs_imp.org_nivaa,
-                                     fs_imp.org_navn	    as 'name',
-                                     fs_imp.org_enhet_over,
-                                     fs_imp.privat,
-                                     fs_imp.ansvar,
-                                     fs_imp.tjeneste,
-                                     fs_imp.adresse1,
-                                     fs_imp.adresse2,
-                                     fs_imp.adresse3,
-                                     fs_imp.postnr,
-                                     fs_imp.poststed,
-                                     fs_imp.epost
-                     FROM			{fs_imp_company}  fs_imp
-                        LEFT JOIN	{fs_company}	  fs	  ON fs.companyid = fs_imp.org_enhet_id
-                     WHERE	fs_imp.imported  = :imported
-                        AND fs_imp.action   != :action
-                        AND	fs.id IS NULL
-                        AND	fs_imp.org_nivaa = :level ";
+            // SQL Instruction
+            $sql = " SELECT DISTINCT 
+                                  fs_imp.id,
+                                  fs_imp.org_enhet_id   as 'fscompany',
+                                  fs_imp.org_nivaa,
+                                  fs_imp.org_navn	    as 'name',
+                                  fs_imp.org_enhet_over,
+                                  fs_imp.privat,
+                                  fs_imp.ansvar,
+                                  fs_imp.tjeneste,
+                                  fs_imp.adresse1,
+                                  fs_imp.adresse2,
+                                  fs_imp.adresse3,
+                                  fs_imp.postnr,
+                                  fs_imp.poststed,
+                                  fs_imp.epost
+                     FROM		  {fs_imp_company}  fs_imp
+                        LEFT JOIN {fs_company}	  fs	  ON fs.companyid = fs_imp.org_enhet_id
+                     WHERE	      fs_imp.imported  = :imported
+                          AND     fs_imp.action   != :action
+                          AND	  fs.id IS NULL
+                          AND	  fs_imp.org_nivaa = :level ";
 
             // Add notIn criteria
             if ($notIn) {
@@ -1350,22 +1359,22 @@ class FS_MAPPING {
                 $sql .= " AND (fs_imp.org_navn like '%" . $sector . "%' OR " . $sqlMatch . ")";
             }
 
-            /* Order Criteria   */
+            // Order criteria
             $sql .= " ORDER BY fs_imp.org_navn
                       LIMIT $start, $length ";
 
-            /* Execute  */
+            // Execute
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 foreach ($rdo as $instance) {
-                    /* Info Company */
+                    // Info company
                     $infoCompany = new stdClass();
                     $infoCompany->id            = $instance->id;
                     $infoCompany->fscompany     = $instance->fscompany;
                     $infoCompany->nivaa         = $instance->org_nivaa;
                     $infoCompany->name          = $instance->name;
                     $infoCompany->real_name     = $instance->name;
-                    /* Get Name Granpa */
+                    // Granparent name
                     if ($granpa) {
                         $granpaName = self::GetGranparentName($instance->org_enhet_over);
                         if ($granpaName) {
@@ -1374,7 +1383,7 @@ class FS_MAPPING {
                     }//if_ganpa
 
                     $infoCompany->fs_parent     = $instance->org_enhet_over;
-                    /* Invoice Data */
+                    // Invoice data
                     $infoCompany->privat        = $instance->privat;
                     $infoCompany->ansvar        = $instance->ansvar;
                     $infoCompany->tjeneste      = $instance->tjeneste;
@@ -1386,7 +1395,7 @@ class FS_MAPPING {
                     $infoCompany->epost         = $instance->epost;
                     $infoCompany->matches       = self::GetPossibleOrgMatches($instance->name,$level,$sector);
 
-                    /* Add FS Company   */
+                    // Add FS Company
                     $fsCompanies[$instance->id] = $infoCompany;
                 }//for_Rdo
             }//if_rdo
@@ -1488,7 +1497,7 @@ class FS_MAPPING {
                      WHERE	fs_imp.imported  = :imported
                         AND fs_imp.action   != :action
                         AND	fs.id IS NULL
-                        AND	fs_imp.org_nivaa = :level  ";
+                        AND	fs_imp.org_nivaa = :level ";
 
             // Add notIn criteria
             if ($notIn) {
@@ -1587,7 +1596,9 @@ class FS_MAPPING {
 
                 $sql .= " AND (ks.name like '%" . $fscompany . "%' OR " . $sqlMatch . ")";
             }else {
-                $sql .= " AND ks.name like '%" . $fscompany . "%'";
+                if ($level != FS_LE_1) {
+                    $sql .= " AND ks.name like '%" . $fscompany . "%'";
+                }
             }//if_sector
 
             /* Execute  */
