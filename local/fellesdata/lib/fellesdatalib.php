@@ -2559,7 +2559,6 @@ class FS {
             // Each line file
             foreach($data as $key=>$line) {
                 $line           = str_replace('\"','"',$line);
-                echo $line . "</br></br>";
                 $lineContent    = json_decode($line);
 
                 // Get New Entry
@@ -2793,6 +2792,7 @@ class FS {
             // FS Company Info
             foreach($data as $key => $infoFS) {
                 // Criteria
+                echo " --> " . $infoFS->ORG_ENHET_ID . "</br>";
                 $params['ORG_ENHET_ID'] = $infoFS->ORG_ENHET_ID;
 
                 // Execute
