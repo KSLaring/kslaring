@@ -1596,7 +1596,7 @@ class FS_MAPPING {
 
                 $sql .= " AND (ks.name like '%" . $fscompany . "%' OR " . $sqlMatch . ")";
             }else {
-                $sql .= " AND ks.name like '%" . $fscompany . "%'";
+                //$sql .= " AND ks.name like '%" . $fscompany . "%'";
             }//if_sector
 
             /* Execute  */
