@@ -2558,8 +2558,9 @@ class FS {
 
             // Each line file
             foreach($data as $key=>$line) {
-                $lineContent    = str_replace('\"','"',json_decode($line));
-                echo $lineContent . "</br>";
+                $line           = str_replace('\"','"',$line);
+                echo $line . "</br></br>";
+                $lineContent    = json_decode($line);
 
                 // Get New Entry
                 if ($lineContent) {
