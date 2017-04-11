@@ -271,6 +271,13 @@ $string['notemplate']        = 'None';
 $string['courseformats']     = 'Course template list';
 $string['courseformatsdesc'] = 'The course list. Please select the course formats that may be used as templates.';
 
-$string['summaryfrom'] = 'Fra:';
-$string['summaryto'] = 'Til:';
-$string['selectone'] = "Velg en...";
+$string['summaryfrom']  = 'Fra:';
+$string['summaryto']    = 'Til:';
+$string['selectone']    = 'Velg en...';
+$string['download']     = 'Last ned';
+$string['category']     = 'Kategori';
+$string['course']       = 'Kurs';
+
+$string['summaryheading']       = 'Kursoversikt rapport';
+$string['instructorheading']    = 'Kursinstruktør rapport';
+$string['coordinatorheading']   = 'Kurskoordinator rapport';

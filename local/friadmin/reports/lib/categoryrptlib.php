@@ -23,8 +23,6 @@
 // * @updateDate      20/01/2017                                            !
 // * @author          eFaktor     (nas)                                     !
 
-// require_once( '../../../../config.php');
-
 class friadminrpt
 {
 

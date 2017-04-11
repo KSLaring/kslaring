@@ -21,10 +21,10 @@ class summary_form extends moodleform {
         global $CFG;
         global $SESSION;
 
+        $mform = $this->_form;
+
         // Calls a function that gets all the categories from the database.
         $categorylist = friadminrpt::get_categories();
-
-        $mform = $this->_form;
 
         $mform->addElement('select', 'category', get_string('category', 'local_friadmin'), $categorylist);
         $mform->addRule('category', null, 'required');
@@ -35,13 +35,30 @@ class summary_form extends moodleform {
         $mform->addElement('date_selector', 'selsummaryto', get_string('summaryto', 'local_friadmin'),
             array('optional' => false));
         $mform->addRule('selsummaryto', null, 'required');
-        $this->add_action_buttons(false, get_string('downlaod', 'local_friadmin'));
+        $this->add_action_buttons(false, get_string('download', 'local_friadmin'));
 
     }
 
     public function validation($data, $files) {
         $errors = parent::validation($data, $files);
 
+        $date = time();
+        if ($data['selsummaryfrom'] > $data['selsummaryto']) {
+            $errors['selsummaryfrom'] = get_string('biggerthanto', 'local_friadmin');
+            $errors['selsummaryto'] = get_string('smallerthanfrom', 'local_friadmin)');
+        }
+
+        if ($data['selsummaryfrom'] > $date) {
+            $errors['selsummaryfrom'] = get_string('biggerthannow', 'local_friadmin');
+        }
+
+        if ($data['selsummaryto'] > $date) {
+            $errors['selsummaryto'] = get_string('biggerthannow', 'local_friadmin');
+        }
+
+        if ($data['selsummaryfrom'] < ($data['selsummaryto'] - 1000 * 60 * 60 * 24 * 365 * 2)) {
+            $errors['selsummaryfrom'] = get_string('morethantwoyears', 'local_friadmin');
+        }
         return $errors;
     }
 }
@@ -53,20 +70,15 @@ class course_instructor_form extends moodleform {
 
         $mform = $this->_form;
 
-        $category = array();
-        $category[0] = 'Select one...';
-        $category[1] = 'hello';
-        $category[2] = 'goodbye';
+        // Calls a function that gets all the categories from the database.
+        $categorylist = friadminrpt::get_categories();
 
-        $courses = array();
-        $courses[0] = 'Select one...';
-        $courses[1] = 'c1';
-        $courses[2] = 'c2';
+        $mform->addElement('select', 'category', get_string('category', 'local_friadmin'), $categorylist);
+        $mform->addRule('category', null, 'required');
 
-        $mform->addElement('select', 'category', get_string('category', 'local_ksl'), $category);
-        $mform->addElement('select', 'course', get_string('course', 'local_ksl'), $courses);
+        $mform->addElement('select', 'course', get_string('course', 'local_friadmin'), $courses);
 
-        $this->add_action_buttons(false, get_string('download'));
+        $this->add_action_buttons(false, get_string('download', 'local_friadmin'));
 
     }
 
@@ -84,20 +96,13 @@ class course_coordinator_form extends moodleform {
 
         $mform = $this->_form;
 
-        $category = array();
-        $category[0] = 'Select one...';
-        $category[1] = 'hello';
-        $category[2] = 'goodbye';
+        // Calls a function that gets all the categories from the database.
+        $categorylist = friadminrpt::get_categories();
 
-        $courses = array();
-        $courses[0] = 'Select one...';
-        $courses[1] = 'c1';
-        $courses[2] = 'c2';
+        $mform->addElement('select', 'category', get_string('category', 'local_friadmin'), $categorylist);
+        $mform->addElement('select', 'course', get_string('course', 'local_friadmin'), $courses);
 
-        $mform->addElement('select', 'category', get_string('category', 'local_ksl'), $category);
-        $mform->addElement('select', 'course', get_string('course', 'local_ksl'), $courses);
-
-        $this->add_action_buttons(false, get_string('download'));
+        $this->add_action_buttons(false, get_string('download', 'local_friadmin'));
 
     }
 

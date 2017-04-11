@@ -278,7 +278,13 @@ $string['notemplate']        = 'None';
 $string['courseformats']     = 'Course template list';
 $string['courseformatsdesc'] = 'The course list. Please select the course formats that may be used as templates.';
 
-$string['summaryfrom'] = 'From:';
-$string['summaryto'] = 'To:';
-$string['selectone'] = "Select one...";
+$string['summaryfrom']  = 'From:';
+$string['summaryto']    = 'To:';
+$string['selectone']    = "Select one...";
+$string['download']     = 'Download';
+$string['category']     = 'Category';
+$string['course']       = 'Course';
 
+$string['summaryheading']       = 'Course Summary report';
+$string['instructorheading']    = 'Course Instructor report';
+$string['coordinatorheading']   = 'Course Coordinator report';
