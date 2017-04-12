@@ -924,8 +924,6 @@ class FELLESDATA_CRON {
 
 
             // Build url end point
-            $fromDate="2017-03-01T22:00:00Z";
-            $toDate="2017-03-30T00:00:00Z";
             $urlTradis = $pluginInfo->fs_point . '/' . $service . '?fromDate=' . $fromDate . '&toDate=' . $toDate;
             $urlTradis = trim($urlTradis);
 
