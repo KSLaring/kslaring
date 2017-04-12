@@ -77,7 +77,7 @@ class FS_CRON {
                     return true;
                 }else {
                     $fsdate = getdate($fellesdata->nextruntime);
-                    $stdate = getdate($status->nextruntime);
+                    $stdate = getdate($status->lastruntime);
 
                     if ($fsdate && $stdate) {
                         if (($fsdate['year'] == $stdate['year'])
@@ -124,6 +124,7 @@ class FS_CRON {
         try {
             // SQL instruction - get mu nextime
             $sql = " SELECT nextruntime,
+                            lastruntime,
                             disabled
                      FROM 	{task_scheduled}
                      WHERE   component like '%$pluginmame%' ";
