@@ -43,7 +43,7 @@ class coteacher
 						        ca.name 		as 'categoryname',
 						        r.shortname 	as 'role',
 						        ra.userid		as 'user',
-                                caparent.name	as 'parent'
+                                ca.path         as 'path'
                       FROM 	    {course} 			c
 	                    JOIN 	{context} 	    	co 	ON co.instanceid = c.id
 	                    JOIN	{role_assignments} 	ra 	ON ra.contextid = co.id
@@ -51,12 +51,6 @@ class coteacher
 	                    JOIN	{enrol}				e	ON e.courseid = c.id
 	                    JOIN	{user_enrolments}	ue	ON ue.userid = ra.userid
 	                    JOIN	{course_categories}	ca	ON ca.id = c.category
-                        
-                        LEFT JOIN (
-							SELECT 	ca.name,
-									ca.parent
-                            FROM {course_categories} ca
-                        ) caparent on caparent.parent = ca.id
                         
                       WHERE archetype = 'editingteacher'
                       AND ra.userid = :userid
@@ -78,7 +72,7 @@ class coteacher
                     $infocourse->categoryname = $instance->categoryname;
                     $infocourse->role = $instance->role;
                     $infocourse->userid = $instance->user;
-                    $infocourse->parent = $instance->parent;
+                    $infocourse->path = $instance->path;
 
                     $courses[$instance->id] = $infocourse;
                 }
@@ -124,7 +118,7 @@ class coteacher
             $params['userid'] = $USER->id;
             $rdo = $DB->get_record_sql($userquery, $params);
             if ($rdo) {
-                return $rdo;
+                return $rdo->count;
             }
 
         } catch (Exception $ex) {
@@ -174,7 +168,7 @@ class coteacher
      *
      * Displays the courses from the "show all" link
      */
-    public static function display_overview($courselst) {
+    public static function display_overview($courselst, $path) {
         // Variables!
         $out = '';
         $url = new moodle_url('/my/');
@@ -188,7 +182,7 @@ class coteacher
         $out .= html_writer::start_div('overviewtable');
         $out .= html_writer::start_tag('table');
         $out .= self::add_headertable();
-        $out .= self::add_content($courselst);
+        $out .= self::add_content($courselst, $path);
         $out .= html_writer::end_tag('table');
         $out .= html_writer::end_div(); // ...overviewtable.
 
@@ -200,6 +194,55 @@ class coteacher
         return $out;
     }
 
+    public static function get_path($courses) {
+
+        $returnpath = array();
+
+        foreach ($courses as $coursevalue) {
+            $path = $coursevalue->path;
+
+            $mypath = explode('/', $path);
+
+            foreach ($mypath as $thispath) {
+                echo $thispath . 'thispth';
+                $returnpath[$thispath] .= self::get_mypath($thispath);
+                echo 'this is the path from get_path ' . $returnpath[$thispath] . '/' . '<br>';
+            }
+        }
+
+        if ($returnpath) {
+            return $returnpath;
+        } else {
+            return null;
+        }
+    }
+
+    private static function get_mypath($mypath) {
+        // Variables!
+        global $DB;
+        $rdo = null;
+
+        // The SQL Query!
+        $userquery = "SELECT 	ca.id,
+		                        ca.name
+                      FROM 	    {course_categories} ca
+                      WHERE 	ca.id = :id";
+
+        try {
+            // Parameters!
+            $params = array();
+            $params['id'] = $mypath;
+            $rdo = $DB->get_record_sql($userquery, $params);
+            if ($rdo) {
+                return $rdo->name;
+            } else {
+                return null;
+            }
+
+        } catch (Exception $ex) {
+            Throw $ex;
+        }  // end try_catch
+    }
     private static function add_headertable() {
         // Variables!
         $header         = '';
@@ -226,7 +269,7 @@ class coteacher
         return $header;
     }
 
-    private static function add_content($courselst) {
+    private static function add_content($courselst, $path) {
         // Variables!
         $body = ' ';
         $strcategory      = get_string('headercategory', 'block_coteacher');
@@ -237,7 +280,13 @@ class coteacher
 
                 // Category!
                 $body .= html_writer::start_tag('td', array('class' => 'category', 'data-label' => $strcategory));
-                $body .= $course->parent . '/' . $course->categoryname;
+
+                foreach ($path as $pathy) {
+                    $body .= $pathy . '/';
+                }
+
+                $body .= $course->categoryname;
+
                 $body .= html_writer::end_tag('td');
 
                 // Course!

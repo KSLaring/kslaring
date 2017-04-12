@@ -43,11 +43,10 @@ class block_coteacher extends block_base {
 
             $this->content->text .= $mycourses;
 
-            // Simply a test to show the link
-            $amount->count = 50;
+            $amount = 123918231289;
 
             // Display the "show all" link if more than 20 results.
-            if ($amount->count > 20) {
+            if ($amount > 20) {
                 $this->content->text .= "</br>";
                 $url = new moodle_url('/blocks/coteacher/courses.php');
                 $this->content->text .= "<div><a href=$url>" . get_string('showall', 'block_coteacher') . " </a> </div>";

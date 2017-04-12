@@ -38,20 +38,20 @@ $navbar->make_active();
 require_capability('block/coteacher:myaddinstance', $contextsystem);
 
 $courses    = coteacher::get_courses();
+$path       = coteacher::get_path($courses);
 $count      = coteacher::get_courses_count();
-$mycount    = $count->count;
-$out        = coteacher::display_overview($courses);
+$out        = coteacher::display_overview($courses, $path);
 
 // Print Header!
 echo $OUTPUT->header();
 
 echo $OUTPUT->heading(get_string('courseoverview', 'block_coteacher'));
 
-echo $OUTPUT->paging_bar($mycount, $page, $perpage, $url);
+echo $OUTPUT->paging_bar($count, $page, $perpage, $url);
 
 echo $out;
 
-echo $OUTPUT->paging_bar($mycount, $page, $perpage, $url);
+echo $OUTPUT->paging_bar($count, $page, $perpage, $url);
 
 // Print Footer!
 echo $OUTPUT->footer();

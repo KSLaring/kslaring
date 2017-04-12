@@ -44,9 +44,6 @@ class block_coinstructor extends block_base {
 
             $this->content->text .= $mycourses;
 
-            // Simply a test to show the link
-            $amount->count = 50;
-
             // Display the "show all" link if more than 20 results.
             if ($amount->count > 20) {
                 $this->content->text .= "</br>";
