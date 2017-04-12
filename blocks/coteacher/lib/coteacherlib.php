@@ -50,9 +50,9 @@ class coteacher
 	                    JOIN	{enrol}				e	ON e.courseid = c.id
 	                    JOIN	{user_enrolments}	ue	ON ue.userid = ra.userid
 	                    JOIN	{course_categories}	ca	ON ca.id = c.category
-                      WHERE archetype = 'teacher'
+                      WHERE archetype = 'editingteacher'
                       AND ra.userid = :userid
-                      LIMIT 20";
+                      LIMIT 2";
 
         try {
             // Parameters!
@@ -106,7 +106,7 @@ class coteacher
 	                    JOIN	{enrol}				e	ON e.courseid = c.id
 	                    JOIN	{user_enrolments}	ue	ON ue.userid = ra.userid
 	                    JOIN	{course_categories}	ca	ON ca.id = c.category
-                      WHERE archetype = 'teacher'
+                      WHERE archetype = 'editingteacher'
                       AND ra.userid = :userid";
 
         try {

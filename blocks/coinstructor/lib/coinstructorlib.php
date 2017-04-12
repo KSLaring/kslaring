@@ -25,7 +25,7 @@ class coinstructor
      *
      * Gets all the courses where the user is an editingteacher and returns the neccessary information in an object
      *
-     * @creationeDate   05/04/2017
+     * @creationDate   05/04/2017
      * @author          eFaktor     (nas)
      *
      */
@@ -50,9 +50,9 @@ class coinstructor
 	                    JOIN	{enrol}				e	ON e.courseid = c.id
 	                    JOIN	{user_enrolments}	ue	ON ue.userid = ra.userid
 	                    JOIN	{course_categories}	ca	ON ca.id = c.category
-                      WHERE archetype = 'editingteacher'
+                      WHERE archetype = 'teacher'
                       AND ra.userid = :userid
-                      LIMIT 20";
+                      LIMIT 2";
 
         try {
             // Parameters!
@@ -106,7 +106,7 @@ class coinstructor
 	                    JOIN	{enrol}				e	ON e.courseid = c.id
 	                    JOIN	{user_enrolments}	ue	ON ue.userid = ra.userid
 	                    JOIN	{course_categories}	ca	ON ca.id = c.category
-                      WHERE archetype = 'editingteacher'
+                      WHERE archetype = 'teacher'
                       AND ra.userid = :userid";
 
         try {

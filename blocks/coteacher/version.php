@@ -16,5 +16,5 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-$plugin->version  = 2017011901.05;
+$plugin->version  = 2017040600.00;
 $plugin->component = 'block_coteacher';
