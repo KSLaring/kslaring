@@ -153,7 +153,7 @@ function xmldb_local_doskom_install() {
         // user
         $tblLog->add_field('user',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
         // completion
-        $tblLog->add_field('completion',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
+        $tblLog->add_field('completion',XMLDB_TYPE_CHAR,'10',null, XMLDB_NOTNULL, null,null);
         // timesent
         $tblLog->add_field('timesent',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
 
