@@ -270,3 +270,7 @@ $string['body_uninstructor'] = '<p>Vi ønsker å informere deg om at du ikke len
 $string['notemplate']        = 'None';
 $string['courseformats']     = 'Course template list';
 $string['courseformatsdesc'] = 'The course list. Please select the course formats that may be used as templates.';
+
+$string['summaryfrom'] = 'Fra:';
+$string['summaryto'] = 'Til:';
+$string['selectone'] = "Velg en...";

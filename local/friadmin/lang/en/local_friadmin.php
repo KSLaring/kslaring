@@ -277,3 +277,8 @@ $string['body_uninstructor'] = '<p>We would like to inform you that you have jus
 $string['notemplate']        = 'None';
 $string['courseformats']     = 'Course template list';
 $string['courseformatsdesc'] = 'The course list. Please select the course formats that may be used as templates.';
+
+$string['summaryfrom'] = 'From:';
+$string['summaryto'] = 'To:';
+$string['selectone'] = "Select one...";
+
