@@ -23,9 +23,9 @@ class coteacher
      * @return null | object
      * @throws Exception
      *
-     * Gets all the courses where the user is an editingteacher and returns the neccessary information in an object
+     * Gets all the courses where the user is a editingteacher and returns the neccessary information in an object
      *
-     * @creationeDate   05/04/2017
+     * @creationDate   12/04/2017
      * @author          eFaktor     (nas)
      *
      */
@@ -42,7 +42,8 @@ class coteacher
 						        c.fullname 		as 'coursename',
 						        ca.name 		as 'categoryname',
 						        r.shortname 	as 'role',
-						        ra.userid		as 'user'
+						        ra.userid		as 'user',
+                                caparent.name	as 'parent'
                       FROM 	    {course} 			c
 	                    JOIN 	{context} 	    	co 	ON co.instanceid = c.id
 	                    JOIN	{role_assignments} 	ra 	ON ra.contextid = co.id
@@ -50,6 +51,13 @@ class coteacher
 	                    JOIN	{enrol}				e	ON e.courseid = c.id
 	                    JOIN	{user_enrolments}	ue	ON ue.userid = ra.userid
 	                    JOIN	{course_categories}	ca	ON ca.id = c.category
+                        
+                        LEFT JOIN (
+							SELECT 	ca.name,
+									ca.parent
+                            FROM {course_categories} ca
+                        ) caparent on caparent.parent = ca.id
+                        
                       WHERE archetype = 'editingteacher'
                       AND ra.userid = :userid
                       LIMIT 20";
@@ -70,6 +78,7 @@ class coteacher
                     $infocourse->categoryname = $instance->categoryname;
                     $infocourse->role = $instance->role;
                     $infocourse->userid = $instance->user;
+                    $infocourse->parent = $instance->parent;
 
                     $courses[$instance->id] = $infocourse;
                 }
@@ -228,7 +237,7 @@ class coteacher
 
                 // Category!
                 $body .= html_writer::start_tag('td', array('class' => 'category', 'data-label' => $strcategory));
-                $body .= $course->categoryname;
+                $body .= $course->parent . '/' . $course->categoryname;
                 $body .= html_writer::end_tag('td');
 
                 // Course!
