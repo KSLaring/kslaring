@@ -1102,7 +1102,7 @@ class FS_MAPPING {
                 $infoCompany = new stdClass();
                 $infoCompany->companyid     = $fsCompany->fscompany;
                 $infoCompany->name          = $fsCompany->real_name;
-                $infoCompany->fs_parent     = $fsCompany->fs_parent;
+                $infoCompany->fs_parent     = ($fsCompany->fs_parent ? $fsCompany->fs_parent : 0);
                 $infoCompany->parent        = 0;
                 $infoCompany->level         = $level;
                 $infoCompany->privat        = 0;
@@ -1185,7 +1185,7 @@ class FS_MAPPING {
                 $infoCompany = new stdClass();
                 $infoCompany->companyid     = $fsCompany->fscompany;
                 $infoCompany->name          = $fsCompany->real_name;
-                $infoCompany->fs_parent     = $fsCompany->fs_parent;
+                $infoCompany->fs_parent     = ($fsCompany->fs_parent ? $fsCompany->fs_parent : 0);
                 $infoCompany->parent        = $ksCompany->parent;
                 /* Invoice Data */
                 $infoCompany->privat        = 0;

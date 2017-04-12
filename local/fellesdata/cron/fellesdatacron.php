@@ -968,7 +968,7 @@ class FELLESDATA_CRON {
 
                 // Create a new response file
                 $responseFile = fopen($pathFile,'w');
-                fwrite($responseFile,$response);
+                fwrite($responseFile,str_replace('\"','"',$response));
                 fclose($responseFile);
 
                 if (isset($response->error)) {
