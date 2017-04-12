@@ -141,9 +141,10 @@ class coinstructor
 
         if ($mycourses) {
             try {
-                $url = new moodle_url('/grade/report/overview/index.php');
+
                 // Loops the object.
                 foreach ($mycourses as $coursevalue) {
+                    $url = new moodle_url('/grade/report/grader/index.php?id=' . $coursevalue->courseid);
                     $out .= "<div><a href=$url> $coursevalue->coursename </a> </div>";
                 }
 

@@ -46,19 +46,14 @@ class summary_form extends moodleform {
         if ($data['selsummaryfrom'] > $data['selsummaryto']) {
             $errors['selsummaryfrom'] = get_string('biggerthanto', 'local_friadmin');
             $errors['selsummaryto'] = get_string('smallerthanfrom', 'local_friadmin)');
-        }
-
-        if ($data['selsummaryfrom'] > $date) {
+        } else if ($data['selsummaryfrom'] > $date) {
             $errors['selsummaryfrom'] = get_string('biggerthannow', 'local_friadmin');
-        }
-
-        if ($data['selsummaryto'] > $date) {
+        } else if ($data['selsummaryto'] > $date) {
             $errors['selsummaryto'] = get_string('biggerthannow', 'local_friadmin');
-        }
-
-        if ($data['selsummaryfrom'] < ($data['selsummaryto'] - 1000 * 60 * 60 * 24 * 365 * 2)) {
+        } else if ($data['selsummaryfrom'] > ($data['selsummaryto'] - 1000 * 60 * 60 * 24 * 365 * 2)) {
             $errors['selsummaryfrom'] = get_string('morethantwoyears', 'local_friadmin');
         }
+
         return $errors;
     }
 }
@@ -73,10 +68,14 @@ class course_instructor_form extends moodleform {
         // Calls a function that gets all the categories from the database.
         $categorylist = friadminrpt::get_categories();
 
+        // Calls a function that gets all the courses from the database.
+        $courses = friadminrpt::get_courses();
+
         $mform->addElement('select', 'category', get_string('category', 'local_friadmin'), $categorylist);
         $mform->addRule('category', null, 'required');
 
         $mform->addElement('select', 'course', get_string('course', 'local_friadmin'), $courses);
+        $mform->addRule('course', null, 'required');
 
         $this->add_action_buttons(false, get_string('download', 'local_friadmin'));
 
@@ -99,8 +98,14 @@ class course_coordinator_form extends moodleform {
         // Calls a function that gets all the categories from the database.
         $categorylist = friadminrpt::get_categories();
 
+        // Calls a function that gets all the courses from the database.
+        $courses = friadminrpt::get_courses();
+
         $mform->addElement('select', 'category', get_string('category', 'local_friadmin'), $categorylist);
+        $mform->addRule('category', null, 'required');
+
         $mform->addElement('select', 'course', get_string('course', 'local_friadmin'), $courses);
+        $mform->addRule('course', null, 'required');
 
         $this->add_action_buttons(false, get_string('download', 'local_friadmin'));
 

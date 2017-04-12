@@ -41,9 +41,13 @@ $url = new moodle_url('/local/friadmin/reports/coordinator.php');
 $PAGE->set_url($url);
 $PAGE->set_pagelayout('admin');
 $PAGE->set_context($contextsystem);
+$PAGE->requires->js('/local/friadmin/reports/js/report.js');
 
 // Capabilities!
 require_capability('local/friadmin:course_locations_manage', $contextsystem);
+
+// Calls a function to get the javascript values to fill into the form based on the previous search criteria.
+friadminrpt::get_javascript_values('course', 'category', null);
 
 // Form!
 $mform = new course_coordinator_form(null);

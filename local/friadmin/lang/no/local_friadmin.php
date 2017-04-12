@@ -281,3 +281,8 @@ $string['course']       = 'Kurs';
 $string['summaryheading']       = 'Kursoversikt rapport';
 $string['instructorheading']    = 'Kursinstruktør rapport';
 $string['coordinatorheading']   = 'Kurskoordinator rapport';
+
+$string['biggerthanto']     = 'Den valgte fra-datoen kan ikke være større enn den valgte til-datoen';
+$string['smallerthanfrom']  = 'Den valgte til-datoen kan ikke være mindre enn den valgte fra-datoen';
+$string['biggerthannow']    = 'Den valgte datoen kan ikke være senere enn datoen i dag';
+$string['morethantwoyears'] = 'Forskjellen mellom datoene kan ikke vøre større enn 2 år';

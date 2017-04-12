@@ -41,6 +41,7 @@ $url = new moodle_url('/local/friadmin/reports/instructor.php');
 $PAGE->set_url($url);
 $PAGE->set_pagelayout('admin');
 $PAGE->set_context($contextsystem);
+$PAGE->requires->js('/local/friadmin/reports/js/report.js');
 
 // Capabilities!
 require_capability('local/friadmin:course_locations_manage', $contextsystem);
