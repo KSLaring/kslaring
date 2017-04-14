@@ -785,7 +785,6 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
             $remainder  = null;
 
             if ($waitinglist->{ENROL_WAITINGLIST_FIELD_APPROVAL} == APPROVAL_REQUIRED) {
-                $this->myManagers   = \Approval::managers_connected($USER->id,$data->level_3);
                 $infoRequest        = \Approval::get_request($USER->id,$waitinglist->courseid,$waitinglist->id);
                 $remainder          = \Approval::get_notification_sent($USER->id,$waitinglist->courseid);
             }//
