@@ -270,7 +270,7 @@ class WS_DOSKOM {
                             $infoLog->company       = $criteria['companyId'];
                             $infoLog->course        = $course->id;
                             $infoLog->user          = $instance->user;
-                            $infoLog->completion    = $instance->completiondate;
+                            $infoLog->completion    = $instance->timecompleted;
                             $infoLog->timesent      = $time;
                             
                             // Add to the log
@@ -1302,7 +1302,8 @@ class WS_DOSKOM {
             $sql = " SELECT   cc.id,
                               u.id as 'user',
                               u.secret,
-                              FROM_UNIXTIME(cc.timecompleted,'%Y.%m.%d')as 'completiondate'
+                              FROM_UNIXTIME(cc.timecompleted,'%Y.%m.%d')as 'completiondate',
+                              cc.timecompleted
                      FROM	  {course_completions}	cc
                         -- USERS DOSSSIER
                         JOIN  {user}				u	  ON  u.id 		= cc.userid
