@@ -200,17 +200,6 @@ body #region-main #mform-coursefilter:not(.unresponsive) .femptylabel .fitemtitl
   padding: 0px;
 }
 
-.locations_rpt_div .location_list td.head_detail {
-  width: 18%;
-  text-align: left;
-  padding-right: 10px;
-}
-
-.locations_rpt_div .location_list td.head_action {
-  width: 6%;
-  text-align: left;
-}
-
 .locations_rpt_div .location_list td.detail {
   width: 18%;
   text-align: left;
@@ -219,7 +208,7 @@ body #region-main #mform-coursefilter:not(.unresponsive) .femptylabel .fitemtitl
 }
 
 .locations_rpt_div .location_list td.action {
-  width: 6%;
+  width: 8%;
   text-align: left;
   font:12px Verdana,Verdana Pro,sans-serif;
 }
@@ -251,4 +240,87 @@ body #region-main #mform-coursefilter:not(.unresponsive) .femptylabel .fitemtitl
   margin-top: 15px;
   margin-bottom: 15px;
   text-indent: 10px;
+}
+
+@media (max-width: 767px) {
+  .locations_rpt_div,
+  .locations_rpt_div .location_list {
+    float: none;
+    width: 90%;
+    display: block;
+    text-justify: inter-word;
+    word-wrap: break-word;
+  }
+
+
+  /* Force table to not be like tables anymore */
+  .locations_rpt_div .location_list  tbody, tr, th, td {
+    display: block;
+  }
+
+  .locations_rpt_div .location_list table {
+    display:block;
+    background-color: white !important;
+    width:100%;
+    margin-top:45px;
+  }
+
+  .locations_rpt_div .location_list table thead tr {
+    display:none;
+  }
+
+
+  .locations_rpt_div .location_list table tr {
+    width: 100%;
+    border: 1px solid darkgray;
+    background-color: white !important;
+    padding-bottom: 15px;
+  }
+
+  .locations_rpt_div .location_list table td {
+    width:100%;
+    border-top: 1px solid #f2f2f2;
+    padding-bottom: 15px;
+  }
+
+  .locations_rpt_div .location_list table td.detail,
+  .locations_rpt_div .location_list table td.action{
+    /* Behave  like a "row" */
+    position: relative;
+    padding-left: 50%;
+    width: 40%;
+    white-space: normal;
+    text-align:left;
+    background-color: white !important;
+    display: inline-block;
+    text-justify:inter-word;
+    word-wrap: break-word;
+  }
+
+  .locations_rpt_div .location_list table td.detail:before,
+  .locations_rpt_div .location_list table td.action:before {
+    /* Now like a table header */
+    position: absolute;
+    /* Top/left values mimic padding */
+    top: 6px;
+    left: 6px;
+    width: 45%;
+    padding-right: 5px;
+    text-align:left;
+    text-justify:inter-word;
+    word-wrap: break-word;
+    font-weight: bold;
+    background-color: white !important;
+  }
+
+  .locations_rpt_div .location_list table td.detail:before,
+  .locations_rpt_div .location_list table td.action:before {
+    content:attr(data-th);
+    background-color: white !important;
+    text-justify:inter-word;
+    word-wrap: break-word;
+    color:  #000;
+    font:bold 12px Verdana,Verdana Pro,sans-serif;
+  }
+
 }
