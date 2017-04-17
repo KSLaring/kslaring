@@ -642,16 +642,18 @@ class FSKS_COMPANY {
         $objCompany     = null;
         
         try {
-            echo "KEYS --> " . implode(',',array_keys($companiesFSKS)) . "</br>";
             // Synchronize companies that have been imported
             foreach ($companiesImported as  $company) {
                 // Convert to object
                 $objCompany = (Object)$company;
-                echo " --> " . $objCompany->fsId . "</br>";
 
                 if ($objCompany->imported) {
                     // Get Company
-                    $infoCompany        = $companiesFSKS["'" . $objCompany->fsId . "'"];
+                    if (is_number($objCompany->fsId)) {
+                        $infoCompany        = $companiesFSKS[$objCompany->fsId];
+                    }else {
+                        $infoCompany        = $companiesFSKS["'" . $objCompany->fsId . "'"];
+                    }
                     $infoCompany->ksid  = $objCompany->ksId;
 
                     // Synchronize Company
