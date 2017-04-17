@@ -642,10 +642,12 @@ class FSKS_COMPANY {
         $objCompany     = null;
         
         try {
+            echo "KEYS --> " . array_keys($companiesFSKS) . "</br>";
             // Synchronize companies that have been imported
             foreach ($companiesImported as  $company) {
                 // Convert to object
                 $objCompany = (Object)$company;
+                echo " --> " . $objCompany->fsId . "</br>";
 
                 if ($objCompany->imported) {
                     // Get Company
