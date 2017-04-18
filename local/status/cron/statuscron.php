@@ -30,13 +30,13 @@ class STATUS_CRON {
             $industry = STATUS::get_industry_code($plugin->ks_muni);
 
             // Get competence from KS
-            //self::competence_data($plugin,$industry);
+            self::competence_data($plugin,$industry);
 
             // Get managers reporters from KS
-            //self::managers_reporters($plugin,$industry);
+            self::managers_reporters($plugin,$industry);
 
             // Import last status from fellesdata
-            //self::import_status($plugin);
+            self::import_status($plugin);
 
             // Syncronization
             self::synchronization($plugin,$industry);
@@ -219,28 +219,28 @@ class STATUS_CRON {
             $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START Synchronization Fellesdata STATUS. ' . "\n";
 
             // Synchronization FS Users
-            //self::sync_status_users_accounts($plugin,$industry);
+            self::sync_status_users_accounts($plugin,$industry);
             
             // Synchronization FS Companies
             self::sync_status_fs_organizations($plugin);
 
             // Synchronization FS Job roles
-            //self::sync_status_fs_jobroles($plugin);
+            self::sync_status_fs_jobroles($plugin);
             
             // Synchronization FS Managers/Reporters to delete
             // Managers
-            //self::sync_status_delete_managers_reporters($plugin,MANAGERS);
+            self::sync_status_delete_managers_reporters($plugin,MANAGERS);
             // Reporters
-            //self::sync_status_delete_managers_reporters($plugin,REPORTERS);
+            self::sync_status_delete_managers_reporters($plugin,REPORTERS);
 
             // Synchronization FS Managers/Reporters
-            //self::sync_status_managers_reporters($plugin);
+            self::sync_status_managers_reporters($plugin);
 
             // Synchronization FS User Competence to Delete
-            //self::sync_status_delete_competence($plugin);
+            self::sync_status_delete_competence($plugin);
 
             // Synchronization FS User Competence
-            //self::sync_status_competence($plugin);
+            self::sync_status_competence($plugin);
 
             // Log
             $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Synchronization Fellesdata STATUS. ' . "\n";
