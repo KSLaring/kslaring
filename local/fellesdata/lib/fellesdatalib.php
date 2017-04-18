@@ -1198,8 +1198,8 @@ class FSKS_USERS {
             $sql = " SELECT	DISTINCT
                             fs.id,
                             trim(fs.fodselsnr) 											as 'personalnumber',
-                            IF (fs.brukernavn,fs.brukernavn,0) 							as 'adfs',
-                            IF (fs.ressursnr,fs.ressursnr,0) 							as 'ressursnr',
+                            trim(IF (fs.brukernavn,fs.brukernavn,0)) 					as 'adfs',
+                            trim(IF (fs.ressursnr,fs.ressursnr,0)) 						as 'ressursnr',
                             $industry 												    as 'industry',
                             CONCAT(fs.fornavn,' ',IF(fs.mellomnavn,fs.mellomnavn,'')) 	as 'firstname',
                             trim(fs.etternavn) 											as 'lastname',

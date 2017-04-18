@@ -653,22 +653,22 @@ class STATUS {
         try {
             // SQL Instruction
             $sql = " SELECT	 DISTINCT
-                                  fs.companyid                    as 'fsid',
-                                  fk.kscompany                    as 'ksid',
-                                  fs.name,
+                                  fs.companyid                          as 'fsid',
+                                  fk.kscompany                          as 'ksid',
+                                  TRIM(fs.name)                         as 'name',
                                   fs.level,
                                   fs.parent,
-                                  ks_pa.industrycode              as 'industry',
-                                  IF(fs.privat,0,1) 	          as 'public',
-                                  IF(fs.ansvar,fs.ansvar,0)       as 'ansvar',
-                                  IF(fs.tjeneste,fs.tjeneste,0)   as 'tjeneste',
-                                  IF(fs.adresse1,fs.adresse1,0)   as 'adresse1',
-                                  IF(fs.adresse2,fs.adresse2,0)   as 'adresse2',
-                                  IF(fs.adresse3,fs.adresse3,0)   as 'adresse3',
-                                  IF(fs.postnr,fs.postnr,0)       as 'postnr',
-                                  IF(fs.poststed,fs.poststed,0)   as 'poststed',
-                                  IF(fs.epost,fs.epost,0)         as 'epost',
-                                  '2' 							  as 'action'
+                                  ks_pa.industrycode                    as 'industry',
+                                  TRIM(IF(fs.privat,0,1)) 	            as 'public',
+                                  TRIM(IF(fs.ansvar,fs.ansvar,0))       as 'ansvar',
+                                  TRIM(IF(fs.tjeneste,fs.tjeneste,0))   as 'tjeneste',
+                                  TRIM(IF(fs.adresse1,fs.adresse1,0))   as 'adresse1',
+                                  TRIM(IF(fs.adresse2,fs.adresse2,0))   as 'adresse2',
+                                  TRIM(IF(fs.adresse3,fs.adresse3,0))   as 'adresse3',
+                                  TRIM(IF(fs.postnr,fs.postnr,0))       as 'postnr',
+                                  TRIM(IF(fs.poststed,fs.poststed,0))   as 'poststed',
+                                  TRIM(IF(fs.epost,fs.epost,0))         as 'epost',
+                                  '2' 							        as 'action'
                      FROM	  	  {fs_company}		fs
                         -- INFO KS
                         JOIN  	  {ksfs_company}	fk 		ON 	fk.fscompany 	    = fs.companyid
@@ -765,21 +765,21 @@ class STATUS {
 
             // SQL Instruction
             $sql = " SELECT	DISTINCT 
-                              fs.companyid                    as 'fsid',
-                              fk.kscompany                    as 'ksid',
-                              fs.name,
+                              fs.companyid                          as 'fsid',
+                              fk.kscompany                          as 'ksid',
+                              TRIM(fs.name)                         as 'name',
                               fs.level,
                               fs.parent,
-                              ks_pa.industrycode              as 'industry',
-                              IF(fs.privat,0,1) 	          as 'public',
-                              IF(fs.ansvar,fs.ansvar,0)       as 'ansvar',
-                              IF(fs.tjeneste,fs.tjeneste,0)   as 'tjeneste',
-                              IF(fs.adresse1,fs.adresse1,0)   as 'adresse1',
-                              IF(fs.adresse2,fs.adresse2,0)   as 'adresse2',
-                              IF(fs.adresse3,fs.adresse3,0)   as 'adresse3',
-                              IF(fs.postnr,fs.postnr,0)       as 'postnr',
-                              IF(fs.poststed,fs.poststed,0)   as 'poststed',
-                              IF(fs.epost,fs.epost,0)         as 'epost',
+                              ks_pa.industrycode                    as 'industry',
+                              TRIM(IF(fs.privat,0,1)) 	            as 'public',
+                              TRIM(IF(fs.ansvar,fs.ansvar,0))       as 'ansvar',
+                              TRIM(IF(fs.tjeneste,fs.tjeneste,0))   as 'tjeneste',
+                              TRIM(IF(fs.adresse1,fs.adresse1,0))   as 'adresse1',
+                              TRIM(IF(fs.adresse2,fs.adresse2,0))   as 'adresse2',
+                              TRIM(IF(fs.adresse3,fs.adresse3,0))   as 'adresse3',
+                              TRIM(IF(fs.postnr,fs.postnr,0))       as 'postnr',
+                              TRIM(IF(fs.poststed,fs.poststed,0))   as 'poststed',
+                              TRIM(IF(fs.epost,fs.epost,0))         as 'epost',
                               fs_imp.action
                      FROM	  {fs_company}		fs
                         -- INFO KS
