@@ -31,28 +31,27 @@ $PAGE->set_pagelayout('admin');
 $PAGE->set_context($contextsystem);
 
 // Breadcrumb!
-$navbar = $PAGE->navbar->add(get_string('pluginname', 'block_coinstructor'),
-                    new moodle_url('/block/coinstructor/courses.php'), null);
+$navbar = $PAGE->navbar->add(get_string('pluginname', 'block_coinstructor'), new moodle_url('/block/coinstructor/courses.php'), null);
 $navbar->make_active();
 
 // Capabilities!
 require_capability('block/coinstructor:myaddinstance', $contextsystem);
 
 $courses    = coinstructor::get_courses();
+$path       = coinstructor::get_path($courses);
 $count      = coinstructor::get_courses_count();
-$mycount    = $count->count;
-$out        = coinstructor::display_overview($courses);
+$out        = coinstructor::display_overview($courses, $path);
 
 // Print Header!
 echo $OUTPUT->header();
 
 echo $OUTPUT->heading(get_string('courseoverview', 'block_coinstructor'));
 
-echo $OUTPUT->paging_bar($mycount, $page, $perpage, $url);
+echo $OUTPUT->paging_bar($count, $page, $perpage, $url);
 
 echo $out;
 
-echo $OUTPUT->paging_bar($mycount, $page, $perpage, $url);
+echo $OUTPUT->paging_bar($count, $page, $perpage, $url);
 
 // Print Footer!
 echo $OUTPUT->footer();

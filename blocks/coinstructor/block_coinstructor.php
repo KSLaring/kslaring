@@ -22,7 +22,6 @@ class block_coinstructor extends block_base {
     }//init
 
     public function get_content() {
-
         try {
             // Title Block!
             $this->title = get_string('blocktitle', 'block_coinstructor');
@@ -31,24 +30,24 @@ class block_coinstructor extends block_base {
                 return $this->content;
             }
 
-            // Add the content to the block.
+            // Add the content to the block!
             $this->content = new stdClass;
             $this->content->text = '';
             $this->content->footer = '';
 
-            // Add course info to the block.
+            // Add course info to the block!
             require_once('lib/coinstructorlib.php');
             $courses = coinstructor::get_courses();
             $mycourses = coinstructor::display_courses($courses);
             $amount = coinstructor::get_courses_count();
-
+            $amount = 50;
             $this->content->text .= $mycourses;
 
             // Display the "show all" link if more than 20 results.
-            if ($amount->count > 20) {
+            if ($amount > 20) {
                 $this->content->text .= "</br>";
                 $url = new moodle_url('/blocks/coinstructor/courses.php');
-                $this->content->text .= "<div><a href=$url>" . get_string('showall', 'block_coteacher') . " </a> </div>";
+                $this->content->text .= "<div><a href=$url>" . get_string('showall', 'block_coinstructor') . " </a> </div>";
             }
 
             return $this->content;
@@ -57,3 +56,4 @@ class block_coinstructor extends block_base {
         }//try_catch
     }//get_content
 }//block_coinstructor
+

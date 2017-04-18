@@ -43,7 +43,7 @@ class coinstructor
 						        ca.name 		as 'categoryname',
 						        r.shortname 	as 'role',
 						        ra.userid		as 'user',
-                                caparent.name	as 'parent'
+                                ca.path         as 'path'
                       FROM 	    {course} 			c
 	                    JOIN 	{context} 	    	co 	ON co.instanceid = c.id
 	                    JOIN	{role_assignments} 	ra 	ON ra.contextid = co.id
@@ -51,12 +51,6 @@ class coinstructor
 	                    JOIN	{enrol}				e	ON e.courseid = c.id
 	                    JOIN	{user_enrolments}	ue	ON ue.userid = ra.userid
 	                    JOIN	{course_categories}	ca	ON ca.id = c.category
-                        
-                        LEFT JOIN (
-							SELECT 	ca.name,
-									ca.parent
-                            FROM {course_categories} ca
-                        ) caparent on caparent.parent = ca.id
                         
                       WHERE archetype = 'teacher'
                       AND ra.userid = :userid
@@ -78,7 +72,8 @@ class coinstructor
                     $infocourse->categoryname = $instance->categoryname;
                     $infocourse->role = $instance->role;
                     $infocourse->userid = $instance->user;
-                    $infocourse->parent = $instance->parent;
+                    $infocourse->path = $instance->path;
+                    $infocourse->path_name = null;
 
                     $courses[$instance->id] = $infocourse;
                 }
@@ -124,7 +119,7 @@ class coinstructor
             $params['userid'] = $USER->id;
             $rdo = $DB->get_record_sql($userquery, $params);
             if ($rdo) {
-                return $rdo;
+                return $rdo->count;
             }
 
         } catch (Exception $ex) {
@@ -173,8 +168,12 @@ class coinstructor
      * @return string
      *
      * Displays the courses from the "show all" link
+     *
+     * @creationeDate   05/04/2017
+     * @author          eFaktor     (nas)
+     *
      */
-    public static function display_overview($courselst) {
+    public static function display_overview($courselst, $path) {
         // Variables!
         $out = '';
         $url = new moodle_url('/my/');
@@ -188,7 +187,7 @@ class coinstructor
         $out .= html_writer::start_div('overviewtable');
         $out .= html_writer::start_tag('table');
         $out .= self::add_headertable();
-        $out .= self::add_content($courselst);
+        $out .= self::add_content($courselst, $path);
         $out .= html_writer::end_tag('table');
         $out .= html_writer::end_div(); // ...overviewtable.
 
@@ -200,11 +199,86 @@ class coinstructor
         return $out;
     }
 
+    /**
+     * @param $courses
+     * @return array|null
+     *
+     * Used to return the path for the parents
+     *
+     * @creationeDate   18/04/2017
+     * @author          eFaktor     (nas)
+     *
+     */
+    public static function get_path($courses) {
+
+        $returnpath = array();
+
+        foreach ($courses as $coursevalue) {
+            $path = $coursevalue->path;
+
+            $mypath = explode('/', $path);
+
+            foreach ($mypath as $thispath) {
+                if ($thispath) {
+                    $coursevalue->path_name .=  self::get_mypath($thispath) . "/";
+                }
+            }
+
+            $returnpath[$coursevalue->courseid] = $coursevalue->path_name;
+        }
+
+        if ($returnpath) {
+            return $returnpath;
+        } else {
+            return null;
+        }
+    }
+
+    /**
+     * @param $mypath
+     * @return array|null
+     *
+     * Called from get_path and gets the path to it
+     *
+     * @creationeDate   18/04/2017
+     * @author          eFaktor     (nas)
+     *
+     */
+    private static function get_mypath($mypath) {
+        // Variables!
+        global $DB;
+        $rdo = null;
+
+        // The SQL Query!
+        $userquery = "SELECT 	ca.id,
+		                        ca.name
+                      FROM 	    {course_categories} ca
+                      WHERE 	ca.id = :id";
+
+        try {
+            // Parameters!
+            $params = array();
+            $params['id'] = $mypath;
+            $rdo = $DB->get_record_sql($userquery, $params);
+            if ($rdo) {
+                return $rdo->name;
+            } else {
+                return null;
+            }
+
+        } catch (Exception $ex) {
+            Throw $ex;
+        }  // end try_catch
+    }
+
+    /**
+     * @return string
+     */
     private static function add_headertable() {
         // Variables!
         $header         = '';
-        $strcategory    = get_string('headercategory', 'block_coteacher');
-        $strcourse      = get_string('headercourse', 'block_coteacher');
+        $strcategory    = get_string('headercategory', 'block_coinstructor');
+        $strcourse      = get_string('headercourse', 'block_coinstructor');
 
         // The table header!
         $header .= html_writer::start_tag('thead',array('class' => 'header_overview'));
@@ -226,22 +300,30 @@ class coinstructor
         return $header;
     }
 
-    private static function add_content($courselst) {
+    /**
+     * @param $courselst
+     * @param $path
+     * @return string
+     */
+    private static function add_content($courselst, $path) {
         // Variables!
         $body = ' ';
-        $strcategory      = get_string('headercategory', 'block_coteacher');
-        $strcourse        = get_string('headercourse', 'block_coteacher');
+        $strcategory      = get_string('headercategory', 'block_coinstructor');
+        $strcourse        = get_string('headercourse', 'block_coinstructor');
 
         foreach ($courselst as $course) {
             $body .= html_writer::start_tag('tr');
 
             // Category!
             $body .= html_writer::start_tag('td', array('class' => 'category', 'data-label' => $strcategory));
-            $body .= $course->parent . '/' . $course->categoryname;
+
+            $body .= $path[$course->courseid];
+
             $body .= html_writer::end_tag('td');
 
             // Course!
             $body .= html_writer::start_tag('td', array('class' => 'course', 'data-label' => $strcourse));
+
             $url = new moodle_url('/grade/report/grader/index.php?id=' . $course->courseid);
             $body .= "<a href=$url> " . $course->coursename;
             $body .= html_writer::end_tag('td');

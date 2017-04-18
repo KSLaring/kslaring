@@ -73,6 +73,7 @@ class coteacher
                     $infocourse->role = $instance->role;
                     $infocourse->userid = $instance->user;
                     $infocourse->path = $instance->path;
+                    $infocourse->path_name = null;
 
                     $courses[$instance->id] = $infocourse;
                 }
@@ -167,6 +168,10 @@ class coteacher
      * @return string
      *
      * Displays the courses from the "show all" link
+     *
+     * @creationeDate   05/04/2017
+     * @author          eFaktor     (nas)
+     *
      */
     public static function display_overview($courselst, $path) {
         // Variables!
@@ -194,6 +199,16 @@ class coteacher
         return $out;
     }
 
+    /**
+     * @param $courses
+     * @return array|null
+     *
+     * Used to return the path for the parents
+     *
+     * @creationeDate   18/04/2017
+     * @author          eFaktor     (nas)
+     *
+     */
     public static function get_path($courses) {
 
         $returnpath = array();
@@ -204,10 +219,12 @@ class coteacher
             $mypath = explode('/', $path);
 
             foreach ($mypath as $thispath) {
-                echo $thispath . 'thispth';
-                $returnpath[$thispath] .= self::get_mypath($thispath);
-                echo 'this is the path from get_path ' . $returnpath[$thispath] . '/' . '<br>';
+                if ($thispath) {
+                    $coursevalue->path_name .=  self::get_mypath($thispath) . "/";
+                }
             }
+
+            $returnpath[$coursevalue->courseid] = $coursevalue->path_name;
         }
 
         if ($returnpath) {
@@ -217,6 +234,16 @@ class coteacher
         }
     }
 
+    /**
+     * @param $mypath
+     * @return array|null
+     *
+     * Called from get_path and gets the path to it
+     *
+     * @creationeDate   18/04/2017
+     * @author          eFaktor     (nas)
+     *
+     */
     private static function get_mypath($mypath) {
         // Variables!
         global $DB;
@@ -243,6 +270,10 @@ class coteacher
             Throw $ex;
         }  // end try_catch
     }
+
+    /**
+     * @return string
+     */
     private static function add_headertable() {
         // Variables!
         $header         = '';
@@ -269,6 +300,11 @@ class coteacher
         return $header;
     }
 
+    /**
+     * @param $courselst
+     * @param $path
+     * @return string
+     */
     private static function add_content($courselst, $path) {
         // Variables!
         $body = ' ';
@@ -281,11 +317,7 @@ class coteacher
                 // Category!
                 $body .= html_writer::start_tag('td', array('class' => 'category', 'data-label' => $strcategory));
 
-                foreach ($path as $pathy) {
-                    $body .= $pathy . '/';
-                }
-
-                $body .= $course->categoryname;
+                $body .= $path[$course->courseid];
 
                 $body .= html_writer::end_tag('td');
 

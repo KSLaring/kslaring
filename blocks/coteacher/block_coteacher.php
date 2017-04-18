@@ -40,10 +40,8 @@ class block_coteacher extends block_base {
             $courses = coteacher::get_courses();
             $mycourses = coteacher::display_courses($courses);
             $amount = coteacher::get_courses_count();
-
+            $amount = 50;
             $this->content->text .= $mycourses;
-
-            $amount = 123918231289;
 
             // Display the "show all" link if more than 20 results.
             if ($amount > 20) {
