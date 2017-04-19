@@ -974,11 +974,14 @@ class FELLESDATA_CRON {
                 // Create a new response file
                 $responseFile = fopen($pathFile,'w');
                 // Remove bad characters
-                $response = str_replace('\"','"',$response);
-                $response = str_replace('\r','\n',$response);
-                //$response = str_replace('\n',chr(13),$response);
+                $content = str_replace('\"','"',$response);
+                $content = str_replace('\r',chr(13),$content);
+                $content = str_replace('\n',chr(13),$content);
 
-                fwrite($responseFile,$response);
+                $content = explode(chr(13),$content);
+                $content = json_encode($content);
+                
+                fwrite($responseFile,$content);
                 fclose($responseFile);
 
                 if (isset($response->error)) {
