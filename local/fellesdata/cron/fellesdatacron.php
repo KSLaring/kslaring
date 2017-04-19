@@ -637,8 +637,10 @@ class FELLESDATA_CRON {
                             echo $content . "</br>";
                             $content = json_decode($content);
                             if (is_array($content)) {
-                                foreach ($content as $line) {
-                                    print $line . "</br>";
+                                foreach ($content as $key => $line) {
+                                    echo "KEY: " . $key . "</br>";
+                                    echo "---  " . "</br>";
+                                    echo $line . "</br>";
                                 }
                             }
                             //FS::save_temporary_fellesdata($content,IMP_COMPANIES);
