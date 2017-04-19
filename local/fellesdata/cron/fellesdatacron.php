@@ -565,7 +565,8 @@ class FELLESDATA_CRON {
                     if ($plugin->suspicious_path) {
                         if (!suspicious::check_for_suspicious_data(TRADIS_FS_USERS,$pathFile)) {
                             // Get content
-                            $content = file($pathFile);
+                            $content = file_get_contents($pathFile);
+                            $content = explode(chr(13),$content);
 
                             FS::save_temporary_fellesdata($content,IMP_USERS);
                         }else {
@@ -578,7 +579,8 @@ class FELLESDATA_CRON {
                         }//if_suspicious
                     }else {
                         // Get content
-                        $content = file($pathFile);
+                        $content = file_get_contents($pathFile);
+                        $content = explode(chr(13),$content);
 
                         FS::save_temporary_fellesdata($content,IMP_USERS);
                     }
@@ -645,7 +647,8 @@ class FELLESDATA_CRON {
                         }//if_suspicious
                     }else {
                         // Get content
-                        $content = file($pathFile);
+                        $content = file_get_contents($pathFile);
+                        $content = explode(chr(13),$content);
 
                         FS::save_temporary_fellesdata($content,IMP_COMPANIES);
                     }///if_suspicous_path
@@ -703,7 +706,8 @@ class FELLESDATA_CRON {
                     if ($plugin->suspicious_path) {
                         if (!suspicious::check_for_suspicious_data(TRADIS_FS_JOBROLES,$pathFile)) {
                             // Get content
-                            $content = file($pathFile);
+                            $content = file_get_contents($pathFile);
+                            $content = explode(chr(13),$content);
 
                             FS::save_temporary_fellesdata($content,IMP_JOBROLES);
                         }else {
@@ -716,7 +720,8 @@ class FELLESDATA_CRON {
                         }//if_suspicious
                     }else {
                         // Get content
-                        $content = file($pathFile);
+                        $content = file_get_contents($pathFile);
+                        $content = explode(chr(13),$content);
 
                         FS::save_temporary_fellesdata($content,IMP_JOBROLES);
                     }//if_suspicious_path
@@ -774,7 +779,8 @@ class FELLESDATA_CRON {
                     if ($plugin->suspicious_path) {
                         if (!suspicious::check_for_suspicious_data(TRADIS_FS_MANAGERS_REPORTERS,$pathFile)) {
                             // Get content
-                            $content = file($pathFile);
+                            $content = file_get_contents($pathFile);
+                            $content = explode(chr(13),$content);
 
                             FS::save_temporary_fellesdata($content,IMP_MANAGERS_REPORTERS);
                         }else {
@@ -787,7 +793,8 @@ class FELLESDATA_CRON {
                         }//if_suspicious
                     }else {
                         // Get content
-                        $content = file($pathFile);
+                        $content = file_get_contents($pathFile);
+                        $content = explode(chr(13),$content);
 
                         FS::save_temporary_fellesdata($content,IMP_MANAGERS_REPORTERS);
                     }//if_suspicious_path
@@ -846,7 +853,8 @@ class FELLESDATA_CRON {
                     if ($plugin->suspicious_path) {
                         if (!suspicious::check_for_suspicious_data(TRADIS_FS_USERS_JOBROLES,$pathFile)) {
                             // Get content
-                            $content = file($pathFile);
+                            $content = file_get_contents($pathFile);
+                            $content = explode(chr(13),$content);
 
                             FS::save_temporary_fellesdata($content,IMP_COMPETENCE_JR);
                         }else {
@@ -859,7 +867,8 @@ class FELLESDATA_CRON {
                         }//if_suspicious
                     }else {
                         // Get content
-                        $content = file($pathFile);
+                        $content = file_get_contents($pathFile);
+                        $content = explode(chr(13),$content);
 
                         FS::save_temporary_fellesdata($content,IMP_COMPETENCE_JR);
                     }//if_suspicious_path
