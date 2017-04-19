@@ -2540,6 +2540,10 @@ class FS {
 
             // Each line file
             foreach($data as $key=>$line) {
+                echo "KEY " . $key . "</br>";
+                echo "--- " . "</br>";
+                echo $line . "</br>";
+
                 $lineContent    = json_decode($line);
 
                 // Get New Entry
