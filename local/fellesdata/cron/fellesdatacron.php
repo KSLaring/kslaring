@@ -634,14 +634,16 @@ class FELLESDATA_CRON {
                             //($content = file($pathFile);
                             $content = file_get_contents($pathFile);
                             $content = json_decode($content);
-                            
+
+                            foreach ($content as $key => $line) {
+                                echo "KEY: " . $key . "</br>";
+                                echo "---  " . "</br>";
+                                echo $line . "</br>";
+                            }
+
                             if (is_array($content)) {
                                 echo "ARRAY" . "</br>";
-                                foreach ($content as $key => $line) {
-                                    echo "KEY: " . $key . "</br>";
-                                    echo "---  " . "</br>";
-                                    echo $line . "</br>";
-                                }
+
                             }else {
                                 echo "NO ARRAY" . "</br>";
                             }
