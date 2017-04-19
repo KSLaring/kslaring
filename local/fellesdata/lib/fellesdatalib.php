@@ -2538,9 +2538,16 @@ class FS {
             // Local time
             $time = time();
 
+            echo "Content: " . $data . "</br>";
+            $index = strpos($data,'\r');
+            if ($index) {
+                $data = explode('\r',$data);
+            }
+
+
             // Each line file
             foreach($data as $key=>$line) {
-                echo "KEY: " . $key . " --> " . $line . "</br>";
+                echo "KEY: " . $key . "</br> Line: " . "</br>" . $line ;
                 $lineContent    = json_decode($line);
 
                 // Get New Entry
