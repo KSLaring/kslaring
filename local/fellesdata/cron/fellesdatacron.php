@@ -975,14 +975,14 @@ class FELLESDATA_CRON {
                 $responseFile = fopen($pathFile,'w');
                 echo $response . "</br>";
                 // Remove bad characters
-                //$content = str_replace('\"','"',$response);
-                //$content = str_replace('\r',chr(13),$content);
-                //$content = str_replace('\n',chr(13),$content);
+                $content = str_replace('\"','"',$response);
+                $content = str_replace('\r',chr(13),$content);
+                $content = str_replace('\n',chr(13),$content);
 
-                //$content = explode(chr(13),$content);
-                //$content = json_encode($content);
+                $content = explode(chr(13),$content);
+                $content = json_encode($content);
 
-                fwrite($responseFile,$response);
+                fwrite($responseFile,$content);
                 fclose($responseFile);
 
                 if (isset($response->error)) {
