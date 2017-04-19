@@ -633,7 +633,8 @@ class FELLESDATA_CRON {
                             // Get content
                             $content = file($pathFile);
 
-                            FS::save_temporary_fellesdata($content,IMP_COMPANIES);
+                            echo "Count : " . count($content) . "</br>";
+                            //FS::save_temporary_fellesdata($content,IMP_COMPANIES);
                         }else {
                             // Mark file as suspicious
                             $suspiciousPath = suspicious::mark_suspicious_file(TRADIS_FS_COMPANIES,$plugin);
