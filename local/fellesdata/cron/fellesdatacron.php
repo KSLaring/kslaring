@@ -629,24 +629,16 @@ class FELLESDATA_CRON {
                     // Get last changes
                     // First check if is a suspicious file
                     if ($plugin->suspicious_path) {
-                        if (!suspicious::check_for_suspicious_data(TRADIS_FS_COMPANIES,$pathFile)) {
-                            // Get content
-                            $content = file($pathFile);
-                            foreach($content as $key=>$line) {
-                                echo "KEY: " . $key . "</br> Line: " . "</br>" . $line ;
-                            }
+                        // Get content
+                        //$content = file($pathFile);
 
-                            //$content = file_get_contents($pathFile);
-                            //$content = explode(chr(13),$content);
-                            //FS::save_temporary_fellesdata($content,IMP_COMPANIES);
-                        }else {
-                            // Mark file as suspicious
-                            $suspiciousPath = suspicious::mark_suspicious_file(TRADIS_FS_COMPANIES,$plugin);
+                        $content = file_get_contents($pathFile);
+                        $content = explode(chr(13),$content);
+                        foreach($content as $key=>$line) {
+                            echo "KEY: " . $key . "</br> Line: " . "</br>" . $line ;
+                        }
 
-                            // Move file to the right folder
-                            copy($pathFile,$suspiciousPath);
-                            unlink($pathFile);
-                        }//if_suspicious
+                        //FS::save_temporary_fellesdata($content,IMP_COMPANIES);
                     }else {
                         // Get content
                         $content = file($pathFile);
