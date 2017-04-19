@@ -624,7 +624,8 @@ class FELLESDATA_CRON {
             // Import data into temporary tables
             if ($fsResponse) {
                 // Open file
-                $pathFile = $CFG->dataroot . '/fellesdata/' . TRADIS_FS_COMPANIES . '.txt';
+                //$pathFile = $CFG->dataroot . '/fellesdata/' . TRADIS_FS_COMPANIES . '.txt';
+                $pathFile = $CFG->dataroot . '/fellesdata/v_paqui.txt';
                 if (file_exists($pathFile)) {
                     // Get last changes
                     // First check if is a suspicious file
@@ -635,7 +636,7 @@ class FELLESDATA_CRON {
                         $content = file_get_contents($pathFile);
                         $content = explode(chr(13),$content);
                         foreach($content as $key=>$line) {
-                            echo "KEY: " . $key . "</br> Line: " . "</br>" . $line ;
+                            echo "</br>" . "KEY: " . $key . "</br> Line: " . "</br>" . $line ;
                         }
 
                         //FS::save_temporary_fellesdata($content,IMP_COMPANIES);
