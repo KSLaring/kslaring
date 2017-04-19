@@ -632,9 +632,8 @@ class FELLESDATA_CRON {
                         if (!suspicious::check_for_suspicious_data(TRADIS_FS_COMPANIES,$pathFile)) {
                             // Get content
                             $content = file($pathFile);
-
-
-                            //FS::save_temporary_fellesdata($content,IMP_COMPANIES);
+                            
+                            FS::save_temporary_fellesdata($content,IMP_COMPANIES);
                         }else {
                             // Mark file as suspicious
                             $suspiciousPath = suspicious::mark_suspicious_file(TRADIS_FS_COMPANIES,$plugin);
@@ -969,9 +968,11 @@ class FELLESDATA_CRON {
 
                 // Create a new response file
                 $responseFile = fopen($pathFile,'w');
+                // Remove bad characters
                 $response = str_replace('\"','"',$response);
                 $response = str_replace('\r',chr(13),$response);
-                echo "Response: " . "</br>" . $response;
+                $response = str_replace('\n',chr(13),$response);
+
                 fwrite($responseFile,$response);
                 fclose($responseFile);
 
