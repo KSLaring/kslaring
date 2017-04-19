@@ -630,16 +630,10 @@ class FELLESDATA_CRON {
                     // First check if is a suspicious file
                     if ($plugin->suspicious_path) {
                         // Get content
-                        //$content = file($pathFile);
-
                         $content = file_get_contents($pathFile);
                         $content = explode(chr(13),$content);
 
-                        foreach($content as $key=>$line) {
-                            echo "</br>" . "KEY: " . $key . "</br> Line: " . "</br>" . $line ;
-                        }
-
-                        //FS::save_temporary_fellesdata($content,IMP_COMPANIES);
+                        FS::save_temporary_fellesdata($content,IMP_COMPANIES);
                     }else {
                         // Get content
                         $content = file($pathFile);
@@ -964,8 +958,6 @@ class FELLESDATA_CRON {
                     unlink($pathFile);
                 }
 
-                echo $response . "</br>";
-                
                 // Create a new response file
                 $responseFile = fopen($pathFile,'w');
                 // Remove bad characters
