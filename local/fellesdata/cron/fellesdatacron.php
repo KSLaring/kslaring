@@ -962,6 +962,7 @@ class FELLESDATA_CRON {
                     unlink($pathFile);
                 }
 
+                echo $response . "</br>";
                 // Create a new response file
                 $responseFile = fopen($pathFile,'w');
                 // Remove bad characters
