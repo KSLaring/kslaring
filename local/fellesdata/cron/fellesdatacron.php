@@ -633,15 +633,17 @@ class FELLESDATA_CRON {
                             // Get content
                             //($content = file($pathFile);
                             $content = file_get_contents($pathFile);
-                            //echo "Count : " . count($content) . "</br>";
-                            echo $content . "</br>";
                             $content = json_decode($content);
+                            
                             if (is_array($content)) {
+                                echo "ARRAY" . "</br>";
                                 foreach ($content as $key => $line) {
                                     echo "KEY: " . $key . "</br>";
                                     echo "---  " . "</br>";
                                     echo $line . "</br>";
                                 }
+                            }else {
+                                echo "NO ARRAY" . "</br>";
                             }
                             //FS::save_temporary_fellesdata($content,IMP_COMPANIES);
                         }else {
