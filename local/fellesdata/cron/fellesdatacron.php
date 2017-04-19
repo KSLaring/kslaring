@@ -632,7 +632,7 @@ class FELLESDATA_CRON {
                         if (!suspicious::check_for_suspicious_data(TRADIS_FS_COMPANIES,$pathFile)) {
                             // Get content
                             $content = file($pathFile);
-                            
+
                             FS::save_temporary_fellesdata($content,IMP_COMPANIES);
                         }else {
                             // Mark file as suspicious
