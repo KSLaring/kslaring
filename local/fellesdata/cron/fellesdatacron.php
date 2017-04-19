@@ -569,7 +569,7 @@ class FELLESDATA_CRON {
                             if (strpos(chr(13),$content)) {
                                 $content = explode(chr(13),$content);
                             }else {
-                                $content = file($content);
+                                $content = file($pathFile);
                             }
 
                             FS::save_temporary_fellesdata($content,IMP_USERS);
@@ -587,7 +587,7 @@ class FELLESDATA_CRON {
                         if (strpos(chr(13),$content)) {
                             $content = explode(chr(13),$content);
                         }else {
-                            $content = file($content);
+                            $content = file($pathFile);
                         }
 
                         FS::save_temporary_fellesdata($content,IMP_USERS);
@@ -643,11 +643,9 @@ class FELLESDATA_CRON {
                             // Get content
                             $content = file_get_contents($pathFile);
                             if (strpos(chr(13),$content)) {
-                                echo "YES" . "</br>";
                                 $content = explode(chr(13),$content);
                             }else {
-                                echo "NO" . "</br>";
-                                $content = file($content);
+                                $content = file($pathFile);
                             }
 
                             FS::save_temporary_fellesdata($content,IMP_COMPANIES);
@@ -665,7 +663,7 @@ class FELLESDATA_CRON {
                         if (strpos(chr(13),$content)) {
                             $content = explode(chr(13),$content);
                         }else {
-                            $content = file($content);
+                            $content = file($pathFile);
                         }
 
                         FS::save_temporary_fellesdata($content,IMP_COMPANIES);
@@ -728,7 +726,7 @@ class FELLESDATA_CRON {
                             if (strpos(chr(13),$content)) {
                                 $content = explode(chr(13),$content);
                             }else {
-                                $content = file($content);
+                                $content = file($pathFile);
                             }
 
                             FS::save_temporary_fellesdata($content,IMP_JOBROLES);
@@ -746,7 +744,7 @@ class FELLESDATA_CRON {
                         if (strpos(chr(13),$content)) {
                             $content = explode(chr(13),$content);
                         }else {
-                            $content = file($content);
+                            $content = file($pathFile);
                         }
 
                         FS::save_temporary_fellesdata($content,IMP_JOBROLES);
@@ -809,7 +807,7 @@ class FELLESDATA_CRON {
                             if (strpos(chr(13),$content)) {
                                 $content = explode(chr(13),$content);
                             }else {
-                                $content = file($content);
+                                $content = file($pathFile);
                             }
 
                             FS::save_temporary_fellesdata($content,IMP_MANAGERS_REPORTERS);
@@ -827,7 +825,7 @@ class FELLESDATA_CRON {
                         if (strpos(chr(13),$content)) {
                             $content = explode(chr(13),$content);
                         }else {
-                            $content = file($content);
+                            $content = file($pathFile);
                         }
 
                         FS::save_temporary_fellesdata($content,IMP_MANAGERS_REPORTERS);
@@ -891,7 +889,7 @@ class FELLESDATA_CRON {
                             if (strpos(chr(13),$content)) {
                                 $content = explode(chr(13),$content);
                             }else {
-                                $content = file($content);
+                                $content = file($pathFile);
                             }
 
                             FS::save_temporary_fellesdata($content,IMP_COMPETENCE_JR);
@@ -909,7 +907,7 @@ class FELLESDATA_CRON {
                         if (strpos(chr(13),$content)) {
                             $content = explode(chr(13),$content);
                         }else {
-                            $content = file($content);
+                            $content = file($pathFile);
                         }
 
                         FS::save_temporary_fellesdata($content,IMP_COMPETENCE_JR);
