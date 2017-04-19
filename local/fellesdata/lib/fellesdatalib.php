@@ -2540,6 +2540,7 @@ class FS {
 
             // Each line file
             foreach($data as $key=>$line) {
+                echo $line . "</br>";
                 $lineContent    = json_decode($line);
 
                 // Get New Entry
@@ -2775,14 +2776,19 @@ class FS {
                 // Criteria
                 $params['ORG_ENHET_ID'] = $infoFS->ORG_ENHET_ID;
 
+                echo "ORG_ENHET_ID  " . $infoFS->ORG_ENHET_ID . " </br>";
                 // Execute
                 $rdo = $DB->get_record('fs_imp_company',$params);
                 if (!$rdo) {
+                    echo "INSERT ";
                     $DB->insert_record('fs_imp_company',$infoFS);
                 }else {
+                    echo "UPDATE ";
                     $infoFS->id             = $rdo->id;
                     $DB->update_record('fs_imp_company',$infoFS);
                 }//if_rdo
+
+                echo "</br>";
             }//for_each
 
             // Commit
