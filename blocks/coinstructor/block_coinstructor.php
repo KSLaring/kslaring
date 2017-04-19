@@ -40,7 +40,6 @@ class block_coinstructor extends block_base {
             $courses = coinstructor::get_courses();
             $mycourses = coinstructor::display_courses($courses);
             $amount = coinstructor::get_courses_count();
-            $amount = 50;
             $this->content->text .= $mycourses;
 
             // Display the "show all" link if more than 20 results.

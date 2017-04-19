@@ -317,7 +317,7 @@ class coinstructor
             // Category!
             $body .= html_writer::start_tag('td', array('class' => 'category', 'data-label' => $strcategory));
 
-            $body .= $path[$course->courseid];
+            $body .= substr($path[$course->courseid], 0, -1);
 
             $body .= html_writer::end_tag('td');
 
