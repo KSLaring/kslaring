@@ -978,9 +978,6 @@ class FELLESDATA_CRON {
                 $content = str_replace('\r',chr(13),$content);
                 $content = str_replace('\n',chr(13),$content);
 
-                $content = explode(chr(13),$content);
-                $content = json_encode($content);
-
                 fwrite($responseFile,$content);
                 fclose($responseFile);
 
