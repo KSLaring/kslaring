@@ -631,13 +631,9 @@ class FELLESDATA_CRON {
                     if ($plugin->suspicious_path) {
                         // Get content
                         $content = file_get_contents($pathFile);
-                        //$content = explode(chr(13),$content);
+                        $content = explode(chr(13),$content);
 
-                        //foreach($content as $key=>$line) {
-                        //    echo "</br>" . "KEY: " . $key . "</br> Line: " . "</br>" . $line ;
-                        //}
-
-                        //FS::save_temporary_fellesdata($content,IMP_COMPANIES);
+                        FS::save_temporary_fellesdata($content,IMP_COMPANIES);
                     }else {
                         // Get content
                         $content = file($pathFile);
@@ -962,17 +958,16 @@ class FELLESDATA_CRON {
                     unlink($pathFile);
                 }
 
-                echo $response . "</br>";
                 // Create a new response file
                 $responseFile = fopen($pathFile,'w');
                 // Remove bad characters
-                //$content = str_replace('\"','"',$response);
+                $content = str_replace('\"','"',$response);
                 // CR - LF && EOL
-                //$content = str_replace('\r',chr(13),$content);
-                //$content = str_replace('\n',chr(13),$content);
-                //$content = str_replace('\r\n',chr(13),$content);
+                $content = str_replace('\r',chr(13),$content);
+                $content = str_replace('\n',chr(13),$content);
+                $content = str_replace('\r\n',chr(13),$content);
 
-                fwrite($responseFile,$response);
+                fwrite($responseFile,$content);
                 fclose($responseFile);
 
                 if (isset($response->error)) {
