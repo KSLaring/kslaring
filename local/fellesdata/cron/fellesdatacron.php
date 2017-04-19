@@ -643,8 +643,10 @@ class FELLESDATA_CRON {
                             // Get content
                             $content = file_get_contents($pathFile);
                             if (strpos(chr(13),$content)) {
+                                echo "YES" . "</br>";
                                 $content = explode(chr(13),$content);
                             }else {
+                                echo "NO" . "</br>";
                                 $content = file($content);
                             }
 
