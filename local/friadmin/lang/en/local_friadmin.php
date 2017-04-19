@@ -293,3 +293,11 @@ $string['biggerthanto']     = 'The selected from-date can not be bigger than the
 $string['smallerthanfrom']  = 'The selected to-date can not be smaller than the selected from-date';
 $string['biggerthannow']    = 'The selected date can not be bigger than the current date';
 $string['morethantwoyears'] = 'The difference between the dates can not be more than 2 years';
+
+$string['header_instructorsfilter'] = 'Instructors filter';
+$string['header_coordinatorfilter'] = 'Coordinator filter';
+
+$string['userfullname'] = 'User full name';
+$string['username'] = 'Username';
+$string['useremail'] = 'eMail';
+$string['usercompetance'] = 'Competance';

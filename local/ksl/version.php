@@ -16,5 +16,5 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-$plugin->version  = 2017011901.12;
+$plugin->version  = 2017011901.13;
 $plugin->component = 'local_ksl';

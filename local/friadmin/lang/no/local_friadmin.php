@@ -286,3 +286,11 @@ $string['biggerthanto']     = 'Den valgte fra-datoen kan ikke være større enn 
 $string['smallerthanfrom']  = 'Den valgte til-datoen kan ikke være mindre enn den valgte fra-datoen';
 $string['biggerthannow']    = 'Den valgte datoen kan ikke være senere enn datoen i dag';
 $string['morethantwoyears'] = 'Forskjellen mellom datoene kan ikke vøre større enn 2 år';
+
+$string['header_instructorsfilter'] = 'Instruktør filter';
+$string['header_coordinatorfilter'] = 'Koordinator filter';
+
+$string['userfullname'] = 'Brukerens fulle navn ';
+$string['username'] = 'brukernavn';
+$string['useremail'] = 'e-post';
+$string['usercompetance'] = 'Kompetanse';
