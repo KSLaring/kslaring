@@ -631,22 +631,9 @@ class FELLESDATA_CRON {
                     if ($plugin->suspicious_path) {
                         if (!suspicious::check_for_suspicious_data(TRADIS_FS_COMPANIES,$pathFile)) {
                             // Get content
-                            //($content = file($pathFile);
-                            $content = file_get_contents($pathFile);
-                            $content = json_decode($content);
+                            $content = file($pathFile);
 
-                            foreach ($content as $key => $line) {
-                                echo "KEY: " . $key . "</br>";
-                                echo "---  " . "</br>";
-                                echo $line . "</br>";
-                            }
 
-                            if (is_array($content)) {
-                                echo "ARRAY" . "</br>";
-
-                            }else {
-                                echo "NO ARRAY" . "</br>";
-                            }
                             //FS::save_temporary_fellesdata($content,IMP_COMPANIES);
                         }else {
                             // Mark file as suspicious
@@ -982,7 +969,10 @@ class FELLESDATA_CRON {
 
                 // Create a new response file
                 $responseFile = fopen($pathFile,'w');
-                fwrite($responseFile,str_replace('\"','"',$response));
+                $response = str_replace('\"','"',$response);
+                $response = str_replace('\r',chr(13),$response);
+                echo "Response: " . "</br>" . $response;
+                fwrite($responseFile,$response);
                 fclose($responseFile);
 
                 if (isset($response->error)) {
