@@ -16,7 +16,7 @@ class Municipality  {
 
     /**
      * @param           $user_id
-     * @return          null|stdClass
+     * @return          bool
      * @throws          Exception
      *
      * @creationDate    22/08/2013
@@ -49,13 +49,11 @@ class Municipality  {
             /* Execute  */
             $rdo = $DB->get_record_sql($sql,$params);
             if ($rdo) {
-
                 $municipality = new stdClass();
                 $municipality->idmuni   = $rdo->idmuni;
                 $municipality->name     = $rdo->municipality;
-                $municipality->logo     = $CFG->dirroot . '/KommuneLogos/' . $rdo->logo;
+                $municipality->logo     = new moodle_url($CFG->wwwroot . '/KommuneLogos/' . $rdo->logo);
             }//if_rdo
-
             return $municipality;
         }catch (Exception $ex) {
             throw $ex;
