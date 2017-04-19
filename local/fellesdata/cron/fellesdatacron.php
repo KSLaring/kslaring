@@ -633,7 +633,11 @@ class FELLESDATA_CRON {
                         $content = file_get_contents($pathFile);
                         $content = explode(chr(13),$content);
 
-                        FS::save_temporary_fellesdata($content,IMP_COMPANIES);
+                        foreach($content as $key=>$line) {
+                            echo "</br>" . "KEY: " . $key . "</br> Line: " . "</br>" . $line ;
+                        }
+
+                        //FS::save_temporary_fellesdata($content,IMP_COMPANIES);
                     }else {
                         // Get content
                         $content = file($pathFile);
