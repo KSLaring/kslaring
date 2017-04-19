@@ -631,9 +631,10 @@ class FELLESDATA_CRON {
                     if ($plugin->suspicious_path) {
                         if (!suspicious::check_for_suspicious_data(TRADIS_FS_COMPANIES,$pathFile)) {
                             // Get content
-                            $content = file($pathFile);
-
-                            echo "Count : " . count($content) . "</br>";
+                            //($content = file($pathFile);
+                            $content = file_get_contents($pathFile);
+                            //echo "Count : " . count($content) . "</br>";
+                            echo $content . "</br>";
                             //FS::save_temporary_fellesdata($content,IMP_COMPANIES);
                         }else {
                             // Mark file as suspicious
