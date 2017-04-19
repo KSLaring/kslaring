@@ -973,7 +973,6 @@ class FELLESDATA_CRON {
 
                 // Create a new response file
                 $responseFile = fopen($pathFile,'w');
-                echo $response . "</br>";
                 // Remove bad characters
                 $content = str_replace('\"','"',$response);
                 $content = str_replace('\r',chr(13),$content);
