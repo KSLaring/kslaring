@@ -635,6 +635,12 @@ class FELLESDATA_CRON {
                             $content = file_get_contents($pathFile);
                             //echo "Count : " . count($content) . "</br>";
                             echo $content . "</br>";
+                            $content = json_decode($content);
+                            if (is_array($content)) {
+                                foreach ($content as $line) {
+                                    print $line . "</br>";
+                                }
+                            }
                             //FS::save_temporary_fellesdata($content,IMP_COMPANIES);
                         }else {
                             // Mark file as suspicious
