@@ -655,7 +655,7 @@ class FSKS_COMPANY {
                     $index = array_search('ppp',$keys);
                     echo "Index --> " . $index . "</br>";
 
-                    if ($index === false) {
+                    if ($index === true) {
                         echo "Index 2 --> " . $index . "</br>";
                         $infoCompany        = $companiesFSKS[$keys[$index]];
                     }
