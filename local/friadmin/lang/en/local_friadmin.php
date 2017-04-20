@@ -301,3 +301,16 @@ $string['userfullname'] = 'User full name';
 $string['username'] = 'Username';
 $string['useremail'] = 'eMail';
 $string['usercompetance'] = 'Competance';
+
+$string['producer'] = 'Producer';
+$string['levelone'] = 'City';
+$string['sector'] = 'Sector';
+$string['coordinator'] = 'Coordinator';
+$string['spots'] = 'Available seats';
+$string['prices'] = 'Prices';
+$string['instructors'] = 'Instructors';
+$string['students'] = 'Students';
+$string['waitinglist'] = 'Waitinglist';
+$string['completed'] = 'Completed';
+$string['visible'] = 'Visibility';
+$string['expiration'] = 'Expiration';

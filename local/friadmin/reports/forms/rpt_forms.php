@@ -50,7 +50,7 @@ class summary_form extends moodleform {
             $errors['selsummaryfrom'] = get_string('biggerthannow', 'local_friadmin');
         } else if ($data['selsummaryto'] > $date) {
             $errors['selsummaryto'] = get_string('biggerthannow', 'local_friadmin');
-        } else if ($data['selsummaryfrom'] > ($data['selsummaryto'] - 1000 * 60 * 60 * 24 * 365 * 2)) {
+        } else if ($data['selsummaryto'] - $data['selsummaryfrom'] > 60 * 60 * 24 * 365 * 2) {
             $errors['selsummaryfrom'] = get_string('morethantwoyears', 'local_friadmin');
         }
 

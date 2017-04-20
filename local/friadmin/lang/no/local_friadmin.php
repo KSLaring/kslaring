@@ -294,3 +294,16 @@ $string['userfullname'] = 'Brukerens fulle navn ';
 $string['username'] = 'brukernavn';
 $string['useremail'] = 'e-post';
 $string['usercompetance'] = 'Kompetanse';
+
+$string['producer'] = 'Producer';
+$string['levelone'] = 'City';
+$string['sector'] = 'Sector';
+$string['coordinator'] = 'Coordinator';
+$string['spots'] = 'Available seats';
+$string['prices'] = 'Prices';
+$string['instructors'] = 'Instructors';
+$string['students'] = 'Students';
+$string['waitinglist'] = 'Waitinglist';
+$string['completed'] = 'Completed';
+$string['visible'] = 'Visibility';
+$string['expiration'] = 'Expiration';

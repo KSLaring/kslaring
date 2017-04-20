@@ -22,15 +22,18 @@ M.core_user.init_courses = function (Y, course, category, prevcourse) {
 
 
         init : function() {
-            this.category.on('change', this.Activate_course, this);
-            if (this.category = 0) {
+            var cat = this.category.get('value');
+
+            if(cat == 0) {
                 Y.one('#id_course').setAttribute('disabled', 'disabled');
-                alert('bob');
             }
-            if (this.category != 0) {
+
+            if(cat != 0) {
                 this.Activate_course();
                 Y.one('#id_course').removeAttribute('disabled');
             }
+
+            this.category.on('change', this.Activate_course, this);
         },
 
         Activate_course : function(e) {

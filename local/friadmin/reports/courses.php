@@ -14,10 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle. If not, see <http://www.gnu.org/licenses/>.
 //
-// * Historical(local) - courses
+// * Friadmin(local) - courses
 // *
 // * @package         local                                                 !
-// * @subpackage      historical/reports                                    !
+// * @subpackage      friadmin/reports                                    !
 // * @copyright       2017        eFaktor {@link http://www.efaktor.no}     !
 // *                                                                        !
 // * @updateDate      20/01/2017                                            !
