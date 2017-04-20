@@ -528,15 +528,18 @@ class FS_MAPPING {
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 foreach ($rdo as $instance) {
-
-                    if ($granpalevel == $instance->parentnivaa) {
-                        $name = $instance->parentname . ' > ' . $instance->name ;
-                    }else {
-                        $granpaName = self::GetGranparentName($instance->org_enhet_over);
-                        if ($granpaName) {
-                            $name = $granpaName . ' > ' . $instance->name ;
+                    if ($instance->org_enhet_over) {
+                        if ($granpalevel == $instance->parentnivaa) {
+                            $name = $instance->parentname . ' > ' . $instance->name ;
+                        }else {
+                            $granpaName = self::GetGranparentName($instance->org_enhet_over);
+                            if ($granpaName) {
+                                $name = $granpaName . ' > ' . $instance->name;
+                            }
                         }
-                    }
+                    }else {
+                        $name = $instance->name;
+                    }//if_org_enhet_over
 
                     $fsCompanies[$instance->id] = $name;
                 }
