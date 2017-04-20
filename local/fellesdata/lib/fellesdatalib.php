@@ -652,7 +652,7 @@ class FSKS_COMPANY {
                 if ($objCompany->imported) {
                     // Get Company
                     echo "COmpany --> " . $objCompany->fsId . "</br>";
-                    $index = array_search('ppp',$keys);
+                    $index = array_search($objCompany->fsId,$keys);
                     echo "Index --> " . $index . "</br>";
 
                     if ($index === true) {
