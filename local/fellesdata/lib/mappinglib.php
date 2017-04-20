@@ -532,10 +532,12 @@ class FS_MAPPING {
                         if ($granpalevel == $instance->parentnivaa) {
                             $name = $instance->parentname . ' > ' . $instance->name ;
                         }else {
-                            $granpaName = self::GetGranparentName($instance->fs_parent);
-                            if ($granpaName) {
-                                $name = $granpaName . ' > ' . $instance->name;
-                            }
+                            if ($instance->parentparent) {
+                                $granpaName = self::GetGranparentName($instance->parentparent,$granpalevel);
+                                if ($granpaName) {
+                                    $name = $granpaName . ' > ' . $instance->name;
+                                }
+                            }//if_parentparent
                         }
                     }else {
                         $name = $instance->name;
@@ -1418,12 +1420,16 @@ class FS_MAPPING {
                     $infoCompany->real_name     = $instance->name;
                     // Granparent name
                     if ($granpa) {
-                        if ($granpalevel == $instance->parentnivaa) {
-                            $infoCompany->name = $instance->parentname . ' > ' . $infoCompany->name ;
-                        }else {
-                            $granpaName = self::GetGranparentName($instance->org_enhet_over);
-                            if ($granpaName) {
-                                $infoCompany->name = $granpaName . ' > ' . $infoCompany->name ;
+                        if ($instance->org_enhet_over) {
+                            if ($granpalevel == $instance->parentnivaa) {
+                                $infoCompany->name = $instance->parentname . ' > ' . $infoCompany->name;
+                            }else {
+                                if ($instance->parentparent) {
+                                    $granpaName = self::GetGranparentName($instance->parentparent,$granpalevel);
+                                    if ($granpaName) {
+                                        $infoCompany->name = $granpaName . ' > ' . $infoCompany->name;
+                                    }
+                                }//if_parentparent
                             }
                         }
                     }//if_ganpa
@@ -1453,7 +1459,8 @@ class FS_MAPPING {
     }//GetFSCompaniesToMap
 
     /**
-     * @param           $parentId
+     * @param           $parent
+     * @param           $granpalevel
      *
      * @return          null
      * @throws          Exception
@@ -1464,36 +1471,64 @@ class FS_MAPPING {
      * Description
      * Return the granparent name
      */
-    private static function GetGranparentName($parentId) {
+    private static function GetGranparentName($parent,$granpalevel) {
         /* Variables */
         global $DB;
         $name   = null;
-        $sql    = null;
-        $rdo    = null;
-        $params = null;
+        $granpa = null;
+        $stop   = false;
 
         try {
-            /* Search Criteria  */
-            $params = array();
-            $params['parent'] = $parentId;
+            // Get granpa object
+            $granpa = self::get_parent($parent,$granpalevel);
 
-            /* SQL Instruction  */
-            $sql = " SELECT         fs_granpa.org_navn		as 'granpa'
-                     FROM	        {fs_imp_company}    fs_imp
-                        LEFT JOIN	{fs_imp_company}	fs_granpa	ON fs_granpa.org_enhet_id = fs_imp.org_enhet_over
-                    WHERE	fs_imp.org_enhet_id = :parent ";
-
-            /* Execute */
-            $rdo = $DB->get_record_sql($sql,$params);
-            if ($rdo) {
-                $name = $rdo->granpa;
-            }//IF_RDO
+            if ($granpa) {
+                $name = $granpa->parentname;
+            }
 
             return $name;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
     }//GetGranparentName
+
+    private static function get_parent($parent,$parentlevel) {
+        /* Variables */
+        global $DB;
+        $granpalevel = null;
+        $granpa      = null;
+        $sql         = null;
+        $rdo         = null;
+        $params      = null;
+
+        try {
+            // Search criteria
+            $params = array();
+            $params['parent'] = $parent;
+
+            // SQL Instruction
+            $sql = " SELECT        	
+                                    fs_granpa.ORG_NIVAA 		as 'parentnivaa',
+                                    fs_granpa.ORG_ENHET_OVER	as 'parentparent',
+                                    fs_granpa.ORG_NAVN			as 'parentname'
+                     FROM	      	{fs_imp_company}    	fs_imp
+                        LEFT JOIN	{fs_imp_company}		fs_granpa	ON fs_granpa.org_enhet_id = fs_imp.org_enhet_over
+                     WHERE	        fs_imp.org_enhet_id = :parent ";
+
+            // Execute
+            $rdo = $DB->get_record_sql($sql,$params);
+            if ($rdo) {
+                if ($parentlevel != $rdo->parentnivaa) {
+                    self::get_parent($rdo->parentparent,$parentlevel);
+                }
+            }
+
+            return $rdo;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//get_parent
+
 
     /**
      * @param       Object  $plugin
