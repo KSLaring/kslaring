@@ -1386,11 +1386,11 @@ class FS_MAPPING {
                     // Granparent name
                     if ($granpa) {
                         if ($granpalevel == $instance->parentnivaa) {
-                            $infoCompany->name = $instance->ORG_ENHET_OVER ." - " . $instance->parentname . ' > ' . $infoCompany->name ;
+                            $infoCompany->name = $instance->parentname . ' > ' . $infoCompany->name ;
                         }else {
                             $granpaName = self::GetGranparentName($instance->org_enhet_over);
                             if ($granpaName) {
-                                $infoCompany->name = $instance->ORG_ENHET_OVER ." - " . $granpaName . ' > ' . $infoCompany->name ;
+                                $infoCompany->name = $granpaName . ' > ' . $infoCompany->name ;
                             }
                         }
                     }//if_ganpa
