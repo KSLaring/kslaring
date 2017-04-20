@@ -2784,8 +2784,6 @@ class FS {
                     $infoFS->id             = $rdo->id;
                     $DB->update_record('fs_imp_company',$infoFS);
                 }//if_rdo
-
-                echo "</br>";
             }//for_each
 
             // Commit
