@@ -1279,6 +1279,7 @@ class FS_MAPPING {
         $sql            = null;
         $rdo            = null;
         $params         = null;
+        $granpalevel    = null;
 
         try {
             // Search criteria
@@ -1295,11 +1296,14 @@ class FS_MAPPING {
 
                 case FS_LE_2:
                     $params['level'] = $plugin->map_two;
+                    $granpalevel     = $plugin->map_one;
+                    $granpa = true;
 
                     break;
 
                 case FS_LE_5;
                     $params['level'] = $plugin->map_three;
+                    $granpalevel     = $plugin->map_two;
                     $granpa = true;
 
                     break;
@@ -1312,26 +1316,31 @@ class FS_MAPPING {
 
             // SQL Instruction
             $sql = " SELECT DISTINCT 
-                                  fs_imp.id,
-                                  fs_imp.org_enhet_id   as 'fscompany',
-                                  fs_imp.org_nivaa,
-                                  fs_imp.org_navn	    as 'name',
-                                  fs_imp.org_enhet_over,
-                                  fs_imp.privat,
-                                  fs_imp.ansvar,
-                                  fs_imp.tjeneste,
-                                  fs_imp.adresse1,
-                                  fs_imp.adresse2,
-                                  fs_imp.adresse3,
-                                  fs_imp.postnr,
-                                  fs_imp.poststed,
-                                  fs_imp.epost
-                     FROM		  {fs_imp_company}  fs_imp
-                        LEFT JOIN {fs_company}	  fs	  ON fs.companyid = fs_imp.org_enhet_id
-                     WHERE	      fs_imp.imported  = :imported
-                          AND     fs_imp.action   != :action
-                          AND	  fs.id IS NULL
-                          AND	  fs_imp.org_nivaa = :level ";
+                                fs_imp.id,
+                                fs_imp.org_enhet_id   		as 'fscompany',
+                                fs_imp.org_nivaa,
+                                fs_imp.org_navn	    		as 'name',
+                                fs_imp.org_enhet_over,
+                                fs_imp.privat,
+                                fs_imp.ansvar,
+                                fs_imp.tjeneste,
+                                fs_imp.adresse1,
+                                fs_imp.adresse2,
+                                fs_imp.adresse3,
+                                fs_imp.postnr,
+                                fs_imp.poststed,
+                                fs_imp.epost,
+                                fs_granpa.ORG_NIVAA 		as 'parentnivaa',
+                                fs_granpa.ORG_ENHET_OVER	as 'parentparent',
+                                fs_granpa.ORG_NAVN			as 'parentname'
+                     FROM			{fs_imp_company}    fs_imp
+                        LEFT JOIN 	{fs_company}	    fs	  		ON fs.companyid 			= fs_imp.org_enhet_id
+                        -- Granparent information
+                        LEFT JOIN	mdl_fs_imp_company	fs_granpa	ON fs_granpa.org_enhet_id 	= fs_imp.org_enhet_over
+                     WHERE	  fs_imp.imported  = :imported
+                        AND   fs_imp.action   != :action
+                        AND	  fs.id IS NULL
+                        AND	  fs_imp.org_nivaa = :level ";
 
             // Add notIn criteria
             if ($notIn) {
@@ -1376,9 +1385,13 @@ class FS_MAPPING {
                     $infoCompany->real_name     = $instance->name;
                     // Granparent name
                     if ($granpa) {
-                        $granpaName = self::GetGranparentName($instance->org_enhet_over);
-                        if ($granpaName) {
-                            $infoCompany->name = $granpaName . ' > ' . $infoCompany->name ;
+                        if ($granpalevel == $instance->parentnivaa) {
+                            $infoCompany->name = $instance->ORG_ENHET_OVER ." - " . $instance->parentname . ' > ' . $infoCompany->name ;
+                        }else {
+                            $granpaName = self::GetGranparentName($instance->org_enhet_over);
+                            if ($granpaName) {
+                                $infoCompany->name = $instance->ORG_ENHET_OVER ." - " . $granpaName . ' > ' . $infoCompany->name ;
+                            }
                         }
                     }//if_ganpa
 
