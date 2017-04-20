@@ -463,19 +463,46 @@ class FS_MAPPING {
         $fsCompanies    = array();
         $granpaName     = null;
         $name           = null;
+        $plugin         = null;
+        $granpalevel    = null;
 
         try {
-            /* Search Criteria  */
+            // Plugin info
+            $plugin     = get_config('local_fellesdata');
+
+            // Search criteria
             $params = array();
             $params['level']        = $level;
             $params['new']          = 1;
             $params['synchronized'] = 0;
 
-            /* SQL Instruction */
-            $sql = " SELECT	fs.id,
-                            fs.fs_parent,
-                            fs.name
-                     FROM	{fs_company} fs
+            // Level of the parent
+            switch ($level) {
+                case FS_LE_2:
+                    $granpalevel     = $plugin->map_one;
+
+                    break;
+
+                case FS_LE_5;
+                    $granpalevel     = $plugin->map_two;
+
+                    break;
+
+                default:
+                    $granpalevel = '0';
+
+                    break;
+            }//level
+
+            // SQL Instruction
+            $sql = " SELECT	      fs.id,
+                                  fs.fs_parent,
+                                  fs.name,
+                                  fs_granpa.ORG_NIVAA 		as 'parentnivaa',
+                                  fs_granpa.ORG_ENHET_OVER	as 'parentparent',
+                                  fs_granpa.ORG_NAVN		as 'parentname'
+                     FROM		  {fs_company} 		fs
+                        LEFT JOIN {fs_imp_company}	fs_granpa	ON fs_granpa.org_enhet_id 	= fs.fs_parent
                      WHERE	(fs.parent IS NULL
                              OR
                              fs.parent = 0)
@@ -501,11 +528,14 @@ class FS_MAPPING {
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 foreach ($rdo as $instance) {
-                    $granpaName = self::GetGranparentName($instance->fs_parent);
-                    if ($granpaName) {
-                        $name = $granpaName . ' > ' . $instance->name ;
+
+                    if ($granpalevel == $instance->parentnivaa) {
+                        $name = $instance->fs_parent . " - " .$instance->parentname . ' > ' . $instance->name ;
                     }else {
-                        $name = $instance->name;
+                        $granpaName = self::GetGranparentName($instance->org_enhet_over);
+                        if ($granpaName) {
+                            $name = $instance->fs_parent . " - " . $granpaName . ' > ' . $instance->name ;
+                        }
                     }
 
                     $fsCompanies[$instance->id] = $name;
