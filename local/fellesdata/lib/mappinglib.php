@@ -530,11 +530,11 @@ class FS_MAPPING {
                 foreach ($rdo as $instance) {
 
                     if ($granpalevel == $instance->parentnivaa) {
-                        $name = $instance->fs_parent . " - " .$instance->parentname . ' > ' . $instance->name ;
+                        $name = $instance->parentname . ' > ' . $instance->name ;
                     }else {
                         $granpaName = self::GetGranparentName($instance->org_enhet_over);
                         if ($granpaName) {
-                            $name = $instance->fs_parent . " - " . $granpaName . ' > ' . $instance->name ;
+                            $name = $granpaName . ' > ' . $instance->name ;
                         }
                     }
 
