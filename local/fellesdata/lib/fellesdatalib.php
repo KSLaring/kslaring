@@ -655,7 +655,7 @@ class FSKS_COMPANY {
                     $index = array_search($objCompany->fsId,$keys);
                     echo "Index --> " . $index . "</br>";
 
-                    if ($index = array_search($objCompany->fsId,$keys)) {
+                    if ($index === false) {
                         echo "Index 2 --> " . $index . "</br>";
                         $infoCompany        = $companiesFSKS[$keys[$index]];
                     }
