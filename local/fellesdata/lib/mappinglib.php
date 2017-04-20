@@ -1492,6 +1492,18 @@ class FS_MAPPING {
         }//try_catch
     }//GetGranparentName
 
+    /**
+     * Description
+     * Get parent object connected with
+     * @param           $parent
+     * @param           $parentlevel
+     *
+     * @return          mixed|null
+     * @throws          Exception
+     *
+     * @creationDate    20/04/17
+     * @author          eFaktor     (fbv)
+     */
     private static function get_parent($parent,$parentlevel) {
         /* Variables */
         global $DB;
@@ -1521,7 +1533,7 @@ class FS_MAPPING {
                 if ($parentlevel != $rdo->parentnivaa) {
                     self::get_parent($rdo->parentparent,$parentlevel);
                 }
-            }
+            }//if_rdo
 
             return $rdo;
         }catch (Exception $ex) {
