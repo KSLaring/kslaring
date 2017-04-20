@@ -643,7 +643,7 @@ class FSKS_COMPANY {
         
         try {
             $keys = array_keys($companiesFSKS);
-            echo implode(',',$keys);
+            echo "KEYYS --> " . implode(',',$keys) . "</br>";
             // Synchronize companies that have been imported
             foreach ($companiesImported as  $company) {
                 // Convert to object
@@ -652,6 +652,7 @@ class FSKS_COMPANY {
                 if ($objCompany->imported) {
                     // Get Company
                     if ($index = array_search($objCompany->fsId,$keys)) {
+                        echo "Index --> " . $index . "</br>";
                         $infoCompany        = $companiesFSKS[$keys[$index]];
                     }
                     /*
