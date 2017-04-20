@@ -1227,7 +1227,7 @@ class FELLESDATA_CRON {
         try {
             // To avoid problems timeout
             if (isset($SESSION->manual) && ($SESSION->manual)) {
-                $limit          = 1;
+                $limit          = 150;
             }//if_session_manul
 
             // Log
@@ -1238,7 +1238,7 @@ class FELLESDATA_CRON {
 
             // Synchronize
             if ($total) {
-                //for ($i=0;$i<=$total;$i=$i+$limit) {
+                for ($i=0;$i<=$total;$i=$i+$limit) {
                     // Get companies to synchronize
                     list($toSynchronize,$rdocompanies) = FSKS_COMPANY::get_new_companiesfs_to_synchronize($start,$limit);
                     
@@ -1261,7 +1261,7 @@ class FELLESDATA_CRON {
                             $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' Finish ERROR Companies NEW FS/KS Synchronization . ' . "\n";
                         }//if_response
                     }//if_toSynchronize
-                //}//for
+                }//for
             }//if_total
 
             error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");

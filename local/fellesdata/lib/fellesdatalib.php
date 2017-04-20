@@ -643,7 +643,6 @@ class FSKS_COMPANY {
         
         try {
             $keys = array_keys($companiesFSKS);
-            echo "KEYYS --> " . implode(',',$keys) . "</br>";
             // Synchronize companies that have been imported
             foreach ($companiesImported as  $company) {
                 // Convert to object
@@ -651,20 +650,10 @@ class FSKS_COMPANY {
 
                 if ($objCompany->imported) {
                     // Get Company
-                    echo "COmpany --> " . $objCompany->fsId . "</br>";
                     if (in_array($objCompany->fsId,$keys)) {
                         $index = array_search($objCompany->fsId,$keys);
-                        echo "Index 2 --> " . $index . "</br>";
                         $infoCompany        = $companiesFSKS[$keys[$index]];
-                    }else {
-                        echo "NOD INDEX";
                     }
-                    /*
-                    if (is_number($objCompany->fsId)) {
-                        $infoCompany        = $companiesFSKS[$objCompany->fsId];
-                    }else {
-                        $infoCompany        = $companiesFSKS["'" . $objCompany->fsId . "'"];
-                    } */
 
                     $infoCompany->ksid  = $objCompany->ksId;
 
