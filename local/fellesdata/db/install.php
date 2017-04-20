@@ -438,7 +438,7 @@ class Fellesdata_Install {
             /* Id --> Primary key                           */
             $tblImpUsersJR->add_field('id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
             /* stillingsnr --> Extra primary key from fellesdata                           */
-            $tblImpUsersJR->add_field('stillingsnr',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
+            $tblImpUsersJR->add_field('stillingsnr',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
             /* fodselsnr    --> Personal number             */
             $tblImpUsersJR->add_field('fodselsnr',XMLDB_TYPE_CHAR,'50',null, XMLDB_NOTNULL, null,null);
             /* fornavn      --> First name                  */
@@ -574,7 +574,7 @@ class Fellesdata_Install {
             $tblImpUsers->add_field('timeimport',XMLDB_TYPE_INTEGER,'10',null, null, null,null);
             /* Time modified */
             $tblImpUsers->add_field('timemodified',XMLDB_TYPE_INTEGER,'10',null, null, null,null);
-
+            
             /* Keys     */
             $tblImpUsers->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
             /* Index    */

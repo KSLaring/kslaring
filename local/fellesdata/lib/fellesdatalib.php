@@ -642,6 +642,7 @@ class FSKS_COMPANY {
         $objCompany     = null;
         
         try {
+            $keys = array_keys($companiesFSKS);
             // Synchronize companies that have been imported
             foreach ($companiesImported as  $company) {
                 // Convert to object
@@ -649,7 +650,11 @@ class FSKS_COMPANY {
 
                 if ($objCompany->imported) {
                     // Get Company
-                    $infoCompany        = $companiesFSKS["'" . $objCompany->fsId . "'"];
+                    if (in_array($objCompany->fsId,$keys)) {
+                        $index = array_search($objCompany->fsId,$keys);
+                        $infoCompany        = $companiesFSKS[$keys[$index]];
+                    }
+
                     $infoCompany->ksid  = $objCompany->ksId;
 
                     // Synchronize Company
@@ -942,8 +947,11 @@ class FSKS_COMPANY {
             //  Apply Synchronization
             switch ($companyKSFS->action) {
                 case ADD:
+                case UPDATE:
                 case STATUS:
                     if ($rdoCompany) {
+                        $rdoCompany->name          = $companyKSFS->name;
+                        $rdoCompany->parent        = $companyKSFS->parent;
                         $rdoCompany->synchronized  = 1;
                         $rdoCompany->timemodified  = $time;
 
@@ -963,11 +971,21 @@ class FSKS_COMPANY {
 
                             // Execute
                             $DB->insert_record('ks_company',$infoCompany);
+                        }else {
+                            $rdo->companyid         = $companyKSFS->ksid;
+                            $rdo->name              = $companyKSFS->name;
+                            $rdo->industrycode      = $companyKSFS->industry;
+                            $rdo->hierarchylevel    = $companyKSFS->level;
+                            $rdo->parent            = $companyKSFS->parent;
+
+                            $DB->update_record('ks_company',$rdo);
                         }//if_no_exist
 
                         // Relation FS KS Companies
+                        // Check it with kscompany  --> 0 For new companies
+                        // Check it with kscompany  --> $companyKSFS->ksid
                         $params = array();
-                        $params['kscompany']    = 0;
+                        $params['kscompany']    = $companyKSFS->ksid;
                         $params['fscompany']    = $companyKSFS->fsid;
                         $rdoRelation = $DB->get_record('ksfs_company',$params);
                         if ($rdoRelation) {
@@ -983,45 +1001,9 @@ class FSKS_COMPANY {
                         // Synchronized
                         $sync = true;
                     }//if_exists
-                    break;
-                case UPDATE:
-                case STATUS:
-                    if ($rdoCompany) {
-                        $rdoCompany->name          = $companyKSFS->name;
-                        $rdoCompany->parent        = $companyKSFS->parent;
-                        $rdoCompany->synchronized  = 1;
-                        $rdoCompany->timemodified  = $time;
-
-                        // Execute
-                        $DB->update_record('fs_company',$rdoCompany);
-
-                        // Relation FS KS Companies
-                        $params = array();
-                        $params['kscompany']    = $companyKSFS->ksid;
-                        $params['fscompany']    = $companyKSFS->fsid;
-                        $rdoRelation = $DB->get_record('ksfs_company',$params);
-                        if (!$rdoRelation) {
-                            // Execute
-                            $DB->insert_record_raw('ksfs_company',$params,false);
-                        }//if_rdo
-
-                        // Update
-                        $rdo = $DB->get_record('ks_company',array('companyid' => $companyKSFS->ksid));
-                        if ($rdo) {
-                            $rdo->companyid         = $companyKSFS->ksid;
-                            $rdo->name              = $companyKSFS->name;
-                            $rdo->industrycode      = $companyKSFS->industry;
-                            $rdo->hierarchylevel    = $companyKSFS->level;
-                            $rdo->parent            = $companyKSFS->parent;
-
-                            $DB->update_record('ks_company',$rdo);
-                        }
-
-                        // Synchronized
-                        $sync = true;
-                    }//if_exists
 
                     break;
+
                 case DELETE:
                     // Delete from fs_company
                     $DB->delete_records('fs_company',array('companyid' => $companyKSFS->fsid));
@@ -1194,8 +1176,8 @@ class FSKS_USERS {
             $sql = " SELECT	DISTINCT
                             fs.id,
                             trim(fs.fodselsnr) 											as 'personalnumber',
-                            IF (fs.brukernavn,fs.brukernavn,0) 							as 'adfs',
-                            IF (fs.ressursnr,fs.ressursnr,0) 							as 'ressursnr',
+                            trim(IF (fs.brukernavn,fs.brukernavn,0)) 					as 'adfs',
+                            trim(IF (fs.ressursnr,fs.ressursnr,0)) 						as 'ressursnr',
                             $industry 												    as 'industry',
                             CONCAT(fs.fornavn,' ',IF(fs.mellomnavn,fs.mellomnavn,'')) 	as 'firstname',
                             trim(fs.etternavn) 											as 'lastname',

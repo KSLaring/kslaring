@@ -463,19 +463,46 @@ class FS_MAPPING {
         $fsCompanies    = array();
         $granpaName     = null;
         $name           = null;
+        $plugin         = null;
+        $granpalevel    = null;
 
         try {
-            /* Search Criteria  */
+            // Plugin info
+            $plugin     = get_config('local_fellesdata');
+
+            // Search criteria
             $params = array();
             $params['level']        = $level;
             $params['new']          = 1;
             $params['synchronized'] = 0;
 
-            /* SQL Instruction */
-            $sql = " SELECT	fs.id,
-                            fs.fs_parent,
-                            fs.name
-                     FROM	{fs_company} fs
+            // Level of the parent
+            switch ($level) {
+                case FS_LE_2:
+                    $granpalevel     = $plugin->map_one;
+
+                    break;
+
+                case FS_LE_5;
+                    $granpalevel     = $plugin->map_two;
+
+                    break;
+
+                default:
+                    $granpalevel = '0';
+
+                    break;
+            }//level
+
+            // SQL Instruction
+            $sql = " SELECT	      fs.id,
+                                  fs.fs_parent,
+                                  fs.name,
+                                  fs_granpa.ORG_NIVAA 		as 'parentnivaa',
+                                  fs_granpa.ORG_ENHET_OVER	as 'parentparent',
+                                  fs_granpa.ORG_NAVN		as 'parentname'
+                     FROM		  {fs_company} 		fs
+                        LEFT JOIN {fs_imp_company}	fs_granpa	ON fs_granpa.org_enhet_id 	= fs.fs_parent
                      WHERE	(fs.parent IS NULL
                              OR
                              fs.parent = 0)
@@ -501,12 +528,18 @@ class FS_MAPPING {
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 foreach ($rdo as $instance) {
-                    $granpaName = self::GetGranparentName($instance->fs_parent);
-                    if ($granpaName) {
-                        $name = $granpaName . ' > ' . $instance->name ;
+                    if ($instance->fs_parent) {
+                        if ($granpalevel == $instance->parentnivaa) {
+                            $name = $instance->parentname . ' > ' . $instance->name ;
+                        }else {
+                            $granpaName = self::GetGranparentName($instance->fs_parent);
+                            if ($granpaName) {
+                                $name = $granpaName . ' > ' . $instance->name;
+                            }
+                        }
                     }else {
                         $name = $instance->name;
-                    }
+                    }//if_org_enhet_over
 
                     $fsCompanies[$instance->id] = $name;
                 }
@@ -1279,6 +1312,7 @@ class FS_MAPPING {
         $sql            = null;
         $rdo            = null;
         $params         = null;
+        $granpalevel    = null;
 
         try {
             // Search criteria
@@ -1295,11 +1329,14 @@ class FS_MAPPING {
 
                 case FS_LE_2:
                     $params['level'] = $plugin->map_two;
+                    $granpalevel     = $plugin->map_one;
+                    $granpa = true;
 
                     break;
 
                 case FS_LE_5;
                     $params['level'] = $plugin->map_three;
+                    $granpalevel     = $plugin->map_two;
                     $granpa = true;
 
                     break;
@@ -1312,26 +1349,31 @@ class FS_MAPPING {
 
             // SQL Instruction
             $sql = " SELECT DISTINCT 
-                                  fs_imp.id,
-                                  fs_imp.org_enhet_id   as 'fscompany',
-                                  fs_imp.org_nivaa,
-                                  fs_imp.org_navn	    as 'name',
-                                  fs_imp.org_enhet_over,
-                                  fs_imp.privat,
-                                  fs_imp.ansvar,
-                                  fs_imp.tjeneste,
-                                  fs_imp.adresse1,
-                                  fs_imp.adresse2,
-                                  fs_imp.adresse3,
-                                  fs_imp.postnr,
-                                  fs_imp.poststed,
-                                  fs_imp.epost
-                     FROM		  {fs_imp_company}  fs_imp
-                        LEFT JOIN {fs_company}	  fs	  ON fs.companyid = fs_imp.org_enhet_id
-                     WHERE	      fs_imp.imported  = :imported
-                          AND     fs_imp.action   != :action
-                          AND	  fs.id IS NULL
-                          AND	  fs_imp.org_nivaa = :level ";
+                                fs_imp.id,
+                                fs_imp.org_enhet_id   		as 'fscompany',
+                                fs_imp.org_nivaa,
+                                fs_imp.org_navn	    		as 'name',
+                                fs_imp.org_enhet_over,
+                                fs_imp.privat,
+                                fs_imp.ansvar,
+                                fs_imp.tjeneste,
+                                fs_imp.adresse1,
+                                fs_imp.adresse2,
+                                fs_imp.adresse3,
+                                fs_imp.postnr,
+                                fs_imp.poststed,
+                                fs_imp.epost,
+                                fs_granpa.ORG_NIVAA 		as 'parentnivaa',
+                                fs_granpa.ORG_ENHET_OVER	as 'parentparent',
+                                fs_granpa.ORG_NAVN			as 'parentname'
+                     FROM			{fs_imp_company}    fs_imp
+                        LEFT JOIN 	{fs_company}	    fs	  		ON fs.companyid 			= fs_imp.org_enhet_id
+                        -- Granparent information
+                        LEFT JOIN	mdl_fs_imp_company	fs_granpa	ON fs_granpa.org_enhet_id 	= fs_imp.org_enhet_over
+                     WHERE	  fs_imp.imported  = :imported
+                        AND   fs_imp.action   != :action
+                        AND	  fs.id IS NULL
+                        AND	  fs_imp.org_nivaa = :level ";
 
             // Add notIn criteria
             if ($notIn) {
@@ -1376,9 +1418,13 @@ class FS_MAPPING {
                     $infoCompany->real_name     = $instance->name;
                     // Granparent name
                     if ($granpa) {
-                        $granpaName = self::GetGranparentName($instance->org_enhet_over);
-                        if ($granpaName) {
-                            $infoCompany->name = $granpaName . ' > ' . $infoCompany->name ;
+                        if ($granpalevel == $instance->parentnivaa) {
+                            $infoCompany->name = $instance->parentname . ' > ' . $infoCompany->name ;
+                        }else {
+                            $granpaName = self::GetGranparentName($instance->org_enhet_over);
+                            if ($granpaName) {
+                                $infoCompany->name = $granpaName . ' > ' . $infoCompany->name ;
+                            }
                         }
                     }//if_ganpa
 

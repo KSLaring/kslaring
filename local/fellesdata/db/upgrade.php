@@ -47,7 +47,7 @@ function xmldb_local_fellesdata_upgrade($oldVersion) {
             $tblImpUsersJR = new xmldb_table('fs_imp_users_jr');
 
             /* New Field    */
-            $fldStillins = new xmldb_field('STILLINGSNR', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null, 'FODSELSNR');
+            $fldStillins = new xmldb_field('STILLINGSNR', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null, 'FODSELSNR');
             if (!$dbMan->field_exists($tblImpUsersJR, $fldStillins)) {
                 $dbMan->add_field($tblImpUsersJR, $fldStillins);
             }//if_not_exists
