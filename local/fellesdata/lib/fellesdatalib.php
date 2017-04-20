@@ -658,6 +658,8 @@ class FSKS_COMPANY {
                     if ($index === true) {
                         echo "Index 2 --> " . $index . "</br>";
                         $infoCompany        = $companiesFSKS[$keys[$index]];
+                    }else {
+                        echo "NOD INDEX";
                     }
                     /*
                     if (is_number($objCompany->fsId)) {
