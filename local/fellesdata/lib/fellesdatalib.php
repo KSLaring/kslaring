@@ -651,8 +651,12 @@ class FSKS_COMPANY {
 
                 if ($objCompany->imported) {
                     // Get Company
+                    echo "COmpany --> " . $objCompany->fsId . "</br>";
+                    $index = array_search($objCompany->fsId,$keys);
+                    echo "Index --> " . $index . "</br>";
+
                     if ($index = array_search($objCompany->fsId,$keys)) {
-                        echo "Index --> " . $index . "</br>";
+                        echo "Index 2 --> " . $index . "</br>";
                         $infoCompany        = $companiesFSKS[$keys[$index]];
                     }
                     /*
