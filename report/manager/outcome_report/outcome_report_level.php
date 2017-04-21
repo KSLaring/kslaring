@@ -151,11 +151,12 @@ if ($form->is_cancelled()) {
     $data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL . '2'] = $data_form['h2'];
     $data_form['h3'] = explode(',',$data_form['h3']);
     $three = array();
-    foreach ($three as $id) {
+    foreach ($data_form['h3'] as $id) {
         $three[$id] = $id;
     }
     $data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL . '3'] = $three;
-    
+    $data_form['h3']                                 = $three;
+
     $outcome_report = outcome_report::Get_OutcomeReportLevel($data_form,$my_hierarchy,$IsReporter);
 
     /* Keep selection data --> when it returns to the main page */

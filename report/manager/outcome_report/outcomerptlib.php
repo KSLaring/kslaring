@@ -224,6 +224,9 @@ class outcome_report {
                 // Check if there are job roles
                 if ($outcome_report->job_roles) {
                     // Companies with employees
+                    if ($data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'3']) {
+                        $inThree = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'3'];
+                    }
                     $companiesEmployees = self::GetCompaniesEmployees($data_form,$inOne,$inTwo,$inThree);
                     if ($companiesEmployees) {
                         // Information to display.
@@ -337,17 +340,6 @@ class outcome_report {
                                 // Get info connected with level three
                                 if ($companiesEmployees->levelThree) {
                                     $levelThree   = CompetenceManager::GetCompaniesInfo($companiesEmployees->levelThree);
-                                    // Companies selected level three
-                                    $selectorThree = $data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'3'];
-                                    $output         = array_slice($selectorThree, 0, 1);
-                                    $selectorThree   = array_diff($selectorThree,$output);
-
-                                    if ($selectorThree) {
-                                        $company_keys   = array_keys($levelThree);
-                                        $companies      = array_intersect($data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'3'],$company_keys);
-                                        $companies      = array_fill_keys($companies,null);
-                                        $levelThree     = array_intersect_key($levelThree,$companies);
-                                    }
 
                                     // Level three
                                     if ($levelThree) {
