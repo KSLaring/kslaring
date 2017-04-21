@@ -157,7 +157,7 @@ if ($form->is_cancelled()) {
     $data_form[MANAGER_COURSE_STRUCTURE_LEVEL . '2'] = $data_form['h2'];
     $data_form['h3'] = explode(',',$data_form['h3']);
     $three = array();
-    foreach ($three as $id) {
+    foreach ($data_form['h3'] as $id) {
         $three[$id] = $id;
     }
     $data_form[MANAGER_COURSE_STRUCTURE_LEVEL . '3'] = $three;

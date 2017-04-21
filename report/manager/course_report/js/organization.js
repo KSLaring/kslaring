@@ -302,7 +302,7 @@ var level_structure = {
         }//if_levelThree
 
         this.hThree.set('value',valueThree);
-        
+
         var iotrans = Y.io(M.cfg.wwwroot + '/report/manager/jobrole.php',
             {
                 method: 'POST',

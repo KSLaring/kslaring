@@ -529,7 +529,7 @@ class manager_course_report_level_form extends moodleform {
                 /* Level Two    */
                 $levelTwo   = optional_param(MANAGER_COURSE_STRUCTURE_LEVEL . ($level-1), 0, PARAM_INT);
                 /* Level Three  */
-                $levelThree = (Array)optional_param_array(MANAGER_COURSE_STRUCTURE_LEVEL . $level, 0,PARAM_INT);
+                $levelThree = (Array)optional_param_array(MANAGER_COURSE_STRUCTURE_LEVEL . $level, 0,PARAM_RAW);
 
                 /* Check old selection */
                 if (isset($SESSION->selection)) {

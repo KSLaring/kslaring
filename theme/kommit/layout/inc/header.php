@@ -33,7 +33,7 @@ if ($loggedin) {
             if ($municipality) {
                 echo '<div class="muni-logo">
                     <img class="logo" alt="' . $municipality->name . '"
-                    src="' . $municipality->logo . '"/></div>';
+                    src="'. $municipality->logo .'"/></div>';
             }
             ?>
         </div>

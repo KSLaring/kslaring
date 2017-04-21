@@ -139,7 +139,7 @@ YUI().use('node', function(Y) {
         Y.one('#id_level_3').on('change', function (e) {
             var LevelThree = 0;
             Y.one("#id_level_3").get("options").each( function() {
-                if (this.get('selected') && this.get('value') != 0) {
+                if (this.get('selected') && this.get('value') !== 0) {
                     if (LevelThree == 0) {
                         LevelThree = this.get('value');
                     }else {

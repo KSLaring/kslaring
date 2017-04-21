@@ -19,7 +19,7 @@ require_once('../../config.php');
 require_once('managerlib.php');
 require_once( 'outcome_report/outcomerptlib.php');
 
-/* PARAMS   */
+// PARAMS
 $level          = required_param('level',PARAM_INT);
 $levelZero      = required_param('levelZero',PARAM_INT);
 $levelOne       = optional_param('levelOne',0,PARAM_INT);
@@ -40,76 +40,72 @@ $url            = new moodle_url('/report/manager/jobrole.php');
 $PAGE->set_context($context);
 $PAGE->set_url($url);
 
-/* Check the correct access */
+// Correct access
 require_login();
 require_sesskey();
 
 echo $OUTPUT->header();
 
-/* Get Data */
+// Get data
 $data       = array('jr' => array());
 
-/* Get Job Roles    */
+// Get job roles
 $options[0] = get_string('select_level_list','report_manager');
 switch ($level) {
     case 0:
-        /* Job Roles connected with level   */
+        // Job roles connected with the level
         if ($levelZero) {
-            /* Add Generics --> Only Public Job Roles   */
+            // Public job roles
             if (CompetenceManager::IsPublic($levelZero)) {
                 CompetenceManager::GetJobRoles_Generics($options);
             }//if_isPublic
 
+            // Job roles connected with the level
             CompetenceManager::GetJobRoles_Hierarchy($options,$level,$levelZero);
         }//if_level_Zero
 
         break;
     case 1:
-        /* Add Generics --> Only Public Job Roles   */
+        // Public job roles
         if (CompetenceManager::IsPublic($levelZero)) {
             CompetenceManager::GetJobRoles_Generics($options);
         }//if_isPublic
 
-        /* Job Roles connected with level   */
+        // Job roles connected with the level
         if ($levelOne) {
-            CompetenceManager::GetJobRoles_Hierarchy($options,$level-1,$levelZero);
             CompetenceManager::GetJobRoles_Hierarchy($options,$level,$levelZero,$levelOne);
         }//if_level_One
 
         break;
     case 2:
-        /* Add Generics --> Only Public Job Roles   */
+        // Generics job roles
         if (CompetenceManager::IsPublic($levelOne)) {
             CompetenceManager::GetJobRoles_Generics($options);
         }//if_isPublic
 
-        /* Job Roles connected with level   */
+        // Job roles connected with the level
         if ($levelTwo) {
-            CompetenceManager::GetJobRoles_Hierarchy($options,$level-2,$levelZero);
-            CompetenceManager::GetJobRoles_Hierarchy($options,$level-1,$levelZero,$levelOne);
             CompetenceManager::GetJobRoles_Hierarchy($options,$level,$levelZero,$levelOne,$levelTwo);
         }//if_level_Two
 
         break;
     case 3:
-        /* Add Generics --> Only Public Job Roles   */
+        // Generic job roles
         if (CompetenceManager::IsPublic($levelTwo)) {
             CompetenceManager::GetJobRoles_Generics($options);
         }//if_isPublic
 
-        /* Job Roles connected with level   */
+        // Job roles connected with the level
         if ($levelThree) {
             CompetenceManager::GetJobRoles_Hierarchy($options,$level,$levelZero,$levelOne,$levelTwo,$levelThree);
         }else {
-            CompetenceManager::GetJobRoles_Hierarchy($options,$level-3,$levelZero);
-            CompetenceManager::GetJobRoles_Hierarchy($options,$level-2,$levelZero,$levelOne);
             CompetenceManager::GetJobRoles_Hierarchy($options,$level-1,$levelZero,$levelOne,$levelTwo);
         }//if_level_Three
 
         break;
 }//switch_level
 
-/* Only the Job Roles connected to the outcome and level    */
+// Only job roles connected with the level and the outcome
 if ($outcome) {
     $jrOutcomes = outcome_report::Outcome_JobRole_List($outcome);
     if ($jrOutcomes) {
@@ -119,7 +115,7 @@ if ($outcome) {
 }//if_outcome_selected
 
 foreach ($options as $id => $jr) {
-    /* Info Company */
+    // Company info
     $infoJR            = new stdClass;
     $infoJR->id        = $id;
     $infoJR->name      = $jr;
