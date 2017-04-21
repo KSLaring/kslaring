@@ -42,8 +42,8 @@ class block_coinstructor extends block_base {
             $amount = coinstructor::get_courses_count();
             $this->content->text .= $mycourses;
 
-            // Display the "show all" link if more than 20 results.
-            if ($amount > 20) {
+            // Display the "show all" link if more than the max lsited results.
+            if ($amount > MAX_LISTED) {
                 $this->content->text .= "</br>";
                 $url = new moodle_url('/blocks/coinstructor/courses.php');
                 $this->content->text .= "<div><a href=$url>" . get_string('showall', 'block_coinstructor') . " </a> </div>";
@@ -55,4 +55,3 @@ class block_coinstructor extends block_base {
         }//try_catch
     }//get_content
 }//block_coinstructor
-

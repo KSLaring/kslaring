@@ -53,8 +53,7 @@ class coteacher
 	                    JOIN	{course_categories}	ca	ON ca.id = c.category
                         
                       WHERE archetype = 'editingteacher'
-                      AND ra.userid = :userid
-                      LIMIT 20";
+                      AND ra.userid = :userid";
 
         try {
             // Parameters!
@@ -134,7 +133,7 @@ class coteacher
      *
      * Displays the users with a link to the overview page
      *
-     * @creationeDate   05/04/2017
+     * @updatedate   20/04/2017
      * @author          eFaktor     (nas)
      *
      */
@@ -145,11 +144,15 @@ class coteacher
 
         if ($mycourses) {
             try {
+                $i = 0;
 
                 // Loops the object.
                 foreach ($mycourses as $coursevalue) {
-                    $url = new moodle_url('/grade/report/grader/index.php?id=' . $coursevalue->courseid);
-                    $out .= "<div><a href=$url> $coursevalue->coursename </a> </div>";
+                    if ($i <= MAX_LISTED) {
+                        $url = new moodle_url('/grade/report/grader/index.php?id=' . $coursevalue->courseid);
+                        $out .= "<div><a href=$url> $coursevalue->coursename </a> </div>";
+                    }
+                    $i++;
                 }
 
             } catch (Exception $ex) {
