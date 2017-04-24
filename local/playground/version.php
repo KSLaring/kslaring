@@ -11,6 +11,6 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-$plugin->version = 2017033000; /* The current plugin version (Date: YYYYMMDDXX)  */
+$plugin->version = 2017042400; /* The current plugin version (Date: YYYYMMDDXX)  */
 $plugin->requires = 2014051208;  /* Requires this Moodle version                   */
 $plugin->component = 'local_playground'; /* Full name of the plugin (used for diagnostics) */

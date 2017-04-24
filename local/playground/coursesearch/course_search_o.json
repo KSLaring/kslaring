@@ -1,0 +1,215 @@
+{
+  "tags": {
+    "groups": [
+      {
+        "groupname": "provider",
+        "title": "Provider",
+        "shown": [
+          {
+            "id": 1,
+            "type": "course",
+            "group": "region",
+            "name": "Oppland Fylkeskommune",
+            "amount": 44,
+            "checked": 0
+          },
+          {
+            "id": 2,
+            "type": "course",
+            "group": "region",
+            "name": "Akershus Fylkeskommune",
+            "amount": 32,
+            "checked": 0
+          },
+          {
+            "id": 3,
+            "type": "course",
+            "group": "region",
+            "name": "Oslo Fylkeskommune",
+            "amount": 15,
+            "checked": 0
+          },
+          {
+            "id": 4,
+            "type": "course",
+            "group": "municipality",
+            "name": "Åseral",
+            "amount": 10,
+            "checked": 0
+          },
+          {
+            "id": 5,
+            "type": "course",
+            "group": "municipality",
+            "name": "Bergen",
+            "amount": 1,
+            "checked": 0
+          },
+          {
+            "id": 6,
+            "type": "course",
+            "group": "municipality",
+            "name": "Gjøvik",
+            "amount": 23,
+            "checked": 0
+          },
+          {
+            "id": 7,
+            "type": "course",
+            "group": "municipality",
+            "name": "Lillehammer",
+            "amount": 45,
+            "checked": 0
+          },
+          {
+            "id": 8,
+            "type": "course",
+            "group": "municipality",
+            "name": "Oslo",
+            "amount": 12,
+            "checked": 0
+          },
+          {
+            "id": 9,
+            "type": "course",
+            "group": "municipality",
+            "name": "Stavanger",
+            "amount": 1,
+            "checked": 0
+          }
+        ]
+      },
+      {
+        "groupname": "topics",
+        "title": "Topics",
+        "shown": [
+          {
+            "id": 10,
+            "type": "course",
+            "group": "topics",
+            "name": "IT",
+            "amount": 230,
+            "checked": 0
+          },
+          {
+            "id": 11,
+            "type": "course",
+            "group": "topics",
+            "name": "Oppvekst",
+            "amount": 65,
+            "checked": 0
+          },
+          {
+            "id": 12,
+            "type": "course",
+            "group": "topics",
+            "name": "Helse",
+            "amount": 24,
+            "checked": 0
+          },
+          {
+            "id": 13,
+            "type": "course",
+            "group": "topics",
+            "name": "Velferd",
+            "amount": 12,
+            "checked": 0
+          }
+        ]
+      },
+      {
+        "groupname": "audience",
+        "title": "Audience",
+        "shown": [
+          {
+            "id": 14,
+            "type": "course",
+            "group": "audience",
+            "name": "Ansatt",
+            "amount": 0,
+            "checked": 0
+          },
+          {
+            "id": 15,
+            "type": "course",
+            "group": "audience",
+            "name": "Leder",
+            "amount": 0,
+            "checked": 0
+          }
+        ]
+      },
+      {
+        "groupname": "type",
+        "title": "Type",
+        "shown": [
+          {
+            "id": 16,
+            "type": "course",
+            "group": "type",
+            "name": "Netcourse",
+            "amount": 122,
+            "checked": 0
+          },
+          {
+            "id": 17,
+            "type": "course",
+            "group": "type",
+            "name": "Classroom",
+            "amount": 220,
+            "checked": 0
+          },
+          {
+            "id": 18,
+            "type": "course",
+            "group": "type",
+            "name": "Topics",
+            "amount": 1,
+            "checked": 0
+          }
+        ],
+        "showdate": {
+          "title": "Date"
+        }
+      }
+    ],
+    "diplayoptions": [
+      {
+        "groupname": "display",
+        "title": "Display options",
+        "shown": [
+          {
+            "type": "display",
+            "group": "sort",
+            "name": "Sort by",
+            "sort": "name",
+            "isselect": 1,
+            "elementitems": [
+              "name",
+              "date",
+              "availseats",
+              "deadline",
+              "municipality",
+              "location"
+            ],
+            "checked": 1
+          },
+          {
+            "type": "display",
+            "group": "sortdesc",
+            "name": "Sort descending",
+            "isselect": 0,
+            "checked": 0
+          },
+          {
+            "type": "display",
+            "group": "tags",
+            "name": "Show course tags",
+            "isselect": 0,
+            "checked": 0
+          }
+        ]
+      }
+    ]
+  }
+}

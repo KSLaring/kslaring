@@ -27,25 +27,28 @@
 .row-fluid [class*="span"]:first-of-type {
   margin-left: 0;
 }
+.checkbox input[type="checkbox"] {
+  margin-top: 3px;
+}
+.checkbox .amount {
+  display: inline-block;
+  float: right;
+}
+.light-box {
+  background-color: #fff;
+  padding: 1em .7em;
+}
+.light-box h4 {
+  font-size: 1em;
+}
 #catalog-area {
   margin-bottom: 1em;
 }
 #search-area {
   min-height: 10em;
 }
-#tag-area {
-  padding: .1em 0 .8em;
-}
-#result-area {
-  margin-top: 1em;
-  min-height: 10em;
-}
-#search-area {
-  background-color: #fff;
-  padding: 1em .7em;
-}
-#search-area h4 {
-  font-size: 1em;
+#search-area .form-search > h4 {
+  margin-top: 0;
 }
 #search-area .collapse-group {
   margin-bottom: 1em;
@@ -53,12 +56,22 @@
 #search-area .collapse-group .btn {
   padding-left: 0;
 }
-.checkbox input[type="checkbox"] {
-  margin-top: 3px;
+#search-area #course-search {
+  border-radius: 0;
+  margin-bottom: .5em;
+  max-width: 20em;
+  width: 85%;
 }
-.checkbox .amount {
-  display: inline-block;
-  float: right;
+#search-area .course-search-btn {
+  margin-top: 0;
+  vertical-align: top;
+}
+#tag-area {
+  padding: .1em 0 .8em;
+}
+#result-area {
+  margin-top: 1em;
+  min-height: 10em;
 }
 .selected-tags li {
   display: inline-block;
@@ -72,16 +85,6 @@
   margin-top: 2px;
   margin-left: .3em;
 }
-#search-area #course-search {
-  border-radius: 0;
-  margin-bottom: .5em;
-  max-width: 20em;
-  width: 85%;
-}
-#search-area .course-search-btn {
-  margin-top: 0;
-  vertical-align: top;
-}
 .in.collapse + a.btn.showdetails:after {
   content: 'Show less ...';
 }
@@ -90,6 +93,17 @@
 }
 #tablist table {
   width: 100%;
+}
+#course-list .course-list-col-titles th {
+  cursor: pointer;
+}
+#course-list .course-list-col-titles th.sortasc {
+  background: transparent url("/pix/t/down.svg") 0 50% no-repeat;
+  padding-left: 16px;
+}
+#course-list .course-list-col-titles th.sortdesc {
+  background: transparent url("/pix/t/up.svg") 0 50% no-repeat;
+  padding-left: 16px;
 }
 .course-list th,
 .course-list td {
@@ -194,4 +208,18 @@
 #page-course-search .datepicker table tr td.active.active {
   background: #0e7b9e;
   color: #fff;
+}
+#tag-preselect-area .group-box {
+  float: left;
+  margin: 0 2% 1em 0;
+  min-width: 45%;
+}
+#tag-preselect-area .group-box .light-box {
+  margin-bottom: 1em;
+}
+#tag-preselect-area .group-box .light-box h4 {
+  margin-top: 0;
+}
+#tag-preselect-area .group-box .light-box h4 .btn-toggle-open {
+  margin: 0;
 }

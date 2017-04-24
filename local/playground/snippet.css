@@ -1,0 +1,162 @@
+.standardbutton {
+    display: block !important;
+    border: #000000 !important;
+    border-width: 1px
+    border-radius: 4px;
+    padding: 2px;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    color: #df193b;
+    font-family: "DINMedium", helvetica, arial, sans-serif;
+    font-size: 25px;
+    font-weight: bold;
+    margin-left: 22px;
+    padding: 0;
+}
+
+.container-fluid {
+    max-width: 1200px;
+}
+
+.navbar-fixed-top .navbar-inner, .navbar-static-top .navbar-inner {
+    padding: 9px;
+}
+
+.breadcrumb > li {
+    text-shadow: none;
+    color: #df193b;
+}
+
+.breadcrumb {
+    background-color: transparent;
+}
+
+.navbar .brand {
+    visibility: hidden;
+}
+
+.navbar .nav {
+    margin-left: -136px;
+}
+
+.block {
+    background-color: #fff;
+    border: 1px solid #a4a4a4;
+    -webkit-box-shadow: #a4a4a4 2px 2px 2px 2px;
+    -moz-box-shadow: #a4a4a4 2px 2px 2px 2px;
+    box-shadow: 2px 2px 2px 2px #a4a4a4;
+    -webkit-border-radius: 0;
+    font-size: 15px;
+}
+
+#region-main {
+    margin-bottom: 20px;
+    padding: 20px;
+    background-color: #fff;
+    border: 1px solid #a4a4a4;
+    -webkit-box-shadow: #a4a4a4 2px 2px 2px 2px;
+    -moz-box-shadow: #a4a4a4 2px 2px 2px 2px;
+    box-shadow: 2px 2px 2px 2px #a4a4a4;
+    -webkit-border-radius: 0;
+}
+
+.block .header .title h2 {
+    color: #000;
+    font-size: 15px 0.4;
+    font-weight: normal;
+    line-height: 1.375;
+}
+
+#page {
+    margin-top: 10px;
+}
+
+#page-footer {
+    background-color: #df193b;
+    color: #fff;
+    margin-top: 40px;
+    padding-bottom: 2.5em;
+}
+
+#page-footer a {
+    color: #fff;
+}
+
+#page-footer {
+    background: #df193b url('http://www.norskluftambulanse.no/wp-content/themes/norskluftambulanse/images/footerBg.png');
+    background-repeat: no-repeat;
+    background-position: 0px 0px;
+}
+
+#page-site-index #region-main {
+    background: #f5ec72 url('https://www.akuttportalen.no/theme/image.php/snla/theme/1483450099/frontpage_box_bg') 0 0 no-repeat;
+    border: 1px solid #a4a4a4;
+    margin-top: 0;
+    margin-bottom: 1em;
+    padding: .8em .5em .3em 35px;
+    -webkit-box-shadow: #a4a4a4 2px 2px 2px 2px;
+    -moz-box-shadow: #a4a4a4 2px 2px 2px 2px;
+    box-shadow: 2px 2px 2px 2px #a4a4a4;
+}
+
+body, p, ul, ol, dl, input, textarea {
+    font-family: "DINRegular", helvetica, arial, sans-serif;
+    color: #000;
+}
+
+/* FONTS*/
+@font-face {
+    font-family: "DINBold";
+    src: url("http://utvikling.akuttportalen.no/theme/more/fonts/dinbd___-webfont.eot");
+    src: url("http://utvikling.akuttportalen.no/theme/more/fonts/dinbd___-webfont.eot?#iefix") format('embedded-opentype'),
+url("http://utvikling.akuttportalen.no/theme/more/fonts/dinbd___-webfont.woff") format('woff'),
+url("http://utvikling.akuttportalen.no/theme/more/fonts/dinbd___-webfont.ttf") format('truetype'),
+url("http://utvikling.akuttportalen.no/theme/more/fonts/dinbd___-webfont.svg#DINBold") format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "DINBlack";
+    src: url("http://utvikling.akuttportalen.no/theme/more/fonts/dinbk___-webfont.eot");
+    src: url("http://utvikling.akuttportalen.no/theme/more/fonts/dinbk___-webfont.eot?#iefix") format('embedded-opentype'),
+url("http://utvikling.akuttportalen.no/theme/more/fonts/dinbk___-webfont.woff") format('woff'),
+url("http://utvikling.akuttportalen.no/theme/more/fonts/dinbk___-webfont.ttf") format('truetype'),
+url("http://utvikling.akuttportalen.no/theme/more/fonts/dinbk___-webfont.svg#DINBlack") format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "DINLight";
+    src: url("http://utvikling.akuttportalen.no/theme/more/fonts/dinli___-webfont.eot");
+    src: url("http://utvikling.akuttportalen.no/theme/more/fonts/dinli___-webfont.eot?#iefix") format('embedded-opentype'),
+url("http://utvikling.akuttportalen.no/theme/more/fonts/dinli___-webfont.woff") format('woff'),
+url("http://utvikling.akuttportalen.no/theme/more/fonts/dinli___-webfont.ttf") format('truetype'),
+url("http://utvikling.akuttportalen.no/theme/more/fonts/dinli___-webfont.svg#DINLight") format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "DINMedium";
+    src: url("http://utvikling.akuttportalen.no/theme/more/fonts/dinmd___-webfont.eot");
+    src: url("http://utvikling.akuttportalen.no/theme/more/fonts/dinmd___-webfont.eot?#iefix") format('embedded-opentype'),
+url("http://utvikling.akuttportalen.no/theme/more/fonts/dinmd___-webfont.woff") format('woff'),
+url("http://utvikling.akuttportalen.no/theme/more/fonts/dinmd___-webfont.ttf") format('truetype'),
+url("http://utvikling.akuttportalen.no/theme/more/fonts/dinmd___-webfont.svg-#DINMedium") format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "DINRegular";
+    src: url("http://utvikling.akuttportalen.no/theme/more/fonts/dinrg___-webfont.eot");
+    src: url("http://utvikling.akuttportalen.no/theme/more/fonts/dinrg___-webfont.eot?#iefix") format('embedded-opentype'),
+url("http://utvikling.akuttportalen.no/theme/more/fonts/dinrg___-webfont.woff") format('woff'),
+url("http://utvikling.akuttportalen.no/theme/more/fonts/dinrg___-webfont.ttf") format('truetype'),
+url("http://utvikling.akuttportalen.no/theme/more/fonts/dinrg___-webfont.svg#DINRegular") format('svg');
+    font-weight: normal;
+    font-style: normal;
+}

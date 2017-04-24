@@ -1,0 +1,17 @@
+<div>
+    <h4>Preselect the search criteria</h4>
+
+    {{#taglist}}
+        {{#hassubcategories}}
+            <div class="group-box has-subcategories">
+                <h4>{{{title}}}</h4>
+
+                <div class="accordion" id="accordion-{{{type}}}">
+                    {{#subcategories}}
+                        {{> local_playground/course_search_tag_preselect_area_group }}
+                    {{/subcategories}}
+                </div>
+            </div>
+        {{/hassubcategories}}
+    {{/taglist}}
+</div>

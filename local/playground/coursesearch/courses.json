@@ -57,6 +57,10 @@
           "name": "Gjøvik"
         },
         {
+          "group": "audience",
+          "name": "Ansatt"
+        },
+        {
           "group": "type",
           "name": "Netcourse"
         },
@@ -90,6 +94,10 @@
         {
           "group": "municipality",
           "name": "Oslo"
+        },
+        {
+          "group": "audience",
+          "name": "Leder"
         },
         {
           "group": "type",
@@ -131,6 +139,10 @@
           "name": "Åseral"
         },
         {
+          "group": "audience",
+          "name": "Ansatt"
+        },
+        {
           "group": "type",
           "name": "Netcourse"
         },
@@ -170,6 +182,10 @@
           "name": "Åseral"
         },
         {
+          "group": "audience",
+          "name": "Ansatt"
+        },
+        {
           "group": "type",
           "name": "Topics"
         },
@@ -203,6 +219,10 @@
         {
           "group": "municipality",
           "name": "Oslo"
+        },
+        {
+          "group": "audience",
+          "name": "Ansatt"
         },
         {
           "group": "type",
@@ -240,6 +260,10 @@
           "name": "Stavanger"
         },
         {
+          "group": "audience",
+          "name": "Ansatt"
+        },
+        {
           "group": "type",
           "name": "Classroom"
         },
@@ -269,6 +293,10 @@
         {
           "group": "municipality",
           "name": "Bergen"
+        },
+        {
+          "group": "audience",
+          "name": "Ansatt"
         },
         {
           "group": "type",

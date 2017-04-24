@@ -1,0 +1,24 @@
+<h3>Category select</h3>
+
+<section id="category-select" class="row-fluid">
+    <form action="/local/playground/categoryselect/index.php" method="post" id="category-select-form" class="mform">
+        <div class="input-append">
+            <select name="category-select-select" id="category-select-select">
+                <option value="1" selected="selected">In fermentum faucibus</option>
+            </select>
+
+            <button class="btn btn-select" type="button" data-toggle="collapse" data-target="#category-select-list-container">
+                Select
+            </button>
+        </div>
+
+        <div id="category-select-list-container" class="collapse in">
+            {{> local_playground/categoryselect_category_list}}
+        </div>
+
+        <br>
+        <div class="form-actions">
+            <input type="submit" class="btn btn-primary" value="Save settings" />
+        </div>
+    </form>
+</section>

@@ -1,0 +1,94 @@
+@kommitBlueLight: #00aef0;
+@kommitBlueGayLight: #b5c5da;
+@kommitBlueGayLighter: #e8edf3;
+@kommitBlue: #0e7b9e;
+@kommitBlueDark: #003876;
+@kommitGray: #7e7e7e;
+@kommitGrayWarm: #e8e8e8;
+@kommitGreyDark: #1a1a1a;
+@kommitGrayLight: #f2f2f3;
+@kommitMenuBg: #f9f9f9;
+
+@kommitRed: #bf4126;
+@kommitOrange: #f9b233;
+
+// Grays
+// -------------------------
+@black: #000;
+@grayDarker: #222;
+@grayDark: #333333;
+@gray: #555;
+@grayMid: #999;
+@grayLight: #ccc;
+@grayLight2: #ddd;
+@grayLighter: #eee;
+@white: #fff;
+
+// Scaffolding
+// -------------------------
+@bodyBackground: @white;
+@textColor: @grayDark;
+
+// Links
+// -------------------------
+@linkColor: @kommitBlueDark;
+@linkColorHover: darken(@linkColor, 15%);
+
+#category-select-form {
+    .input-append {
+        margin-bottom: 0;
+    }
+    .btn-select {
+        margin: 0;
+    }
+    .category-select-list {
+        background-color: @kommitMenuBg;
+        float: left;
+        min-width: 20em;
+        padding: .5em .8em;
+
+        &.list-depth-0 {
+            border: 1px solid @grayLight;
+        }
+
+        li {
+            &.collapsed {
+                padding-bottom: .5em;
+            }
+            &:last-of-type {
+                padding-bottom: 0;
+            }
+            .tree-icon {
+                background-image: url('/pix/t/collapsed_empty.svg');
+                background-position: 0 2px;
+                background-repeat: no-repeat;
+                display: inline-block;
+                height: 16px;
+                margin: 0;
+                width: 16px;
+            }
+            .catname {
+                cursor: pointer;
+                display: inline-block;
+            }
+        }
+        > li {
+            &.with-children {
+                > div {
+                    > .tree-icon {
+                        background-image: url('/pix/t/expanded.svg');
+                        cursor: pointer;
+                    }
+                }
+                &.collapsed {
+                    > div {
+                        > .tree-icon {
+                            background-image: url('/pix/t/collapsed.svg');
+                            cursor: pointer;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

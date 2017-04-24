@@ -1,0 +1,14 @@
+<ul id="category-select-list-{{{catparent}}}" class="category-select-list unlist list-depth-{{{catlistdepth}}}">
+    {{#categorylist}}
+        <li class="collapsed{{{withchildren}}}" data-catid="{{{catid}}}" data-catdepth="{{{catdepth}}}"
+            data-catpath="{{{catpath}}}">
+            <div class="info">
+                <span class="tree-icon{{#withchildren}} with-children{{/withchildren}}"></span> <span
+                    class="catname">{{{catname}}}</span>
+            </div>
+            {{#withchildren}}
+                <div id="category-select-subcategory-list-{{{catid}}}" class="collapse content"></div>
+            {{/withchildren}}
+        </li>
+    {{/categorylist}}
+</ul>
