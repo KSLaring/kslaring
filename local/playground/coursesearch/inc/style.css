@@ -47,6 +47,9 @@
 #search-area {
   min-height: 10em;
 }
+#search-area input[type="text"] {
+  width: 80%;
+}
 #search-area .form-search > h4 {
   margin-top: 0;
 }
@@ -209,11 +212,6 @@
   background: #0e7b9e;
   color: #fff;
 }
-#tag-preselect-area .group-box {
-  float: left;
-  margin: 0 2% 1em 0;
-  min-width: 45%;
-}
 #tag-preselect-area .group-box .light-box {
   margin-bottom: 1em;
 }
@@ -222,4 +220,7 @@
 }
 #tag-preselect-area .group-box .light-box h4 .btn-toggle-open {
   margin: 0;
+}
+#tag-preselect-area .accordion-inner .unlist {
+  columns: 1em 3;
 }

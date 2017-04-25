@@ -103,6 +103,10 @@
 #search-area {
     min-height: 10em;
 
+    input[type="text"] {
+        width: 80%;
+    }
+
     .form-search {
         > h4 {
             margin-top: 0;
@@ -347,9 +351,9 @@
 
 #tag-preselect-area {
     .group-box {
-        float: left;
-        margin: 0 2% 1em 0;
-        min-width: 45%;
+        //float: left;
+        //margin: 0 2% 1em 0;
+        //min-width: 45%;
 
         .light-box {
             margin-bottom: 1em;
@@ -361,6 +365,11 @@
                     margin: 0;
                 }
             }
+        }
+    }
+    .accordion-inner {
+        .unlist {
+            columns: 1em 3;
         }
     }
 }

@@ -1,6 +1,98 @@
 {
   "taglist": [
     {
+      "type": "others",
+      "hassubcategories": 1,
+      "title": "Preselect others",
+      "subcategories": [
+        {
+          "type": "topics",
+          "hassubcategories": 0,
+          "title": "Topics",
+          "tags": [
+            {
+              "id": 449,
+              "name": "IT"
+            },
+            {
+              "id": 450,
+              "name": "Helse"
+            },
+            {
+              "id": 451,
+              "name": "Kultur"
+            },
+            {
+              "id": 452,
+              "name": "Oppvekst"
+            },
+            {
+              "id": 453,
+              "name": "Velferd"
+            },
+            {
+              "id": 454,
+              "name": "Økonomisk planlegging og analyse"
+            },
+            {
+              "id": 455,
+              "name": "Sed eu"
+            },
+            {
+              "id": 456,
+              "name": "Maecenas quis tempor"
+            },
+            {
+              "id": 457,
+              "name": "Cras scelerisque eget"
+            }
+          ]
+        },
+        {
+          "type": "audience",
+          "hassubcategories": 0,
+          "title": "Audience",
+          "tags": [
+            {
+              "id": 458,
+              "name": "Ansatt"
+            },
+            {
+              "id": 459,
+              "name": "Leder"
+            }
+          ]
+        },
+        {
+          "type": "type",
+          "hassubcategories": 0,
+          "title": "Type",
+          "tags": [
+            {
+              "id": 460,
+              "name": "Netcourse"
+            },
+            {
+              "id": 461,
+              "name": "Event"
+            },
+            {
+              "id": 462,
+              "name": "Classroom"
+            },
+            {
+              "id": 463,
+              "name": "Topics"
+            },
+            {
+              "id": 464,
+              "name": "Weekly"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "type": "provider",
       "hassubcategories": 1,
       "title": "Preselect provider",
@@ -1720,13 +1812,7 @@
             {
               "id": 428,
               "name": "Voss"
-            }
-          ]
-        },
-        {
-          "type": "region",
-          "title": "Region",
-          "tags": [
+            },
             {
               "id": 429,
               "name": "Østfold Fylkeskommune"
@@ -1808,96 +1894,26 @@
               "name": "Longyearbyen lokalstyre"
             }
           ]
-        }
-      ]
-    },
-    {
-      "type": "others",
-      "hassubcategories": 1,
-      "title": "Preselect others",
-      "subcategories": [
+        },
         {
-          "type": "topics",
-          "hassubcategories": 0,
-          "title": "Topics",
+          "type": "region",
+          "title": "Region",
           "tags": [
             {
               "id": 449,
-              "name": "IT"
+              "name": "Kongsbergregionen"
             },
             {
               "id": 450,
-              "name": "Helse"
+              "name": "Lister-regionen"
             },
             {
               "id": 451,
-              "name": "Kultur"
+              "name": "Orkidé-regionen"
             },
             {
               "id": 452,
-              "name": "Oppvekst"
-            },
-            {
-              "id": 453,
-              "name": "Velferd"
-            },
-            {
-              "id": 454,
-              "name": "Økonomisk planlegging og analyse"
-            },
-            {
-              "id": 455,
-              "name": "Sed eu"
-            },
-            {
-              "id": 456,
-              "name": "Maecenas quis tempor"
-            },
-            {
-              "id": 457,
-              "name": "Cras scelerisque eget"
-            }
-          ]
-        },
-        {
-          "type": "audience",
-          "hassubcategories": 0,
-          "title": "Audience",
-          "tags": [
-            {
-              "id": 458,
-              "name": "Ansatt"
-            },
-            {
-              "id": 459,
-              "name": "Leder"
-            }
-          ]
-        },
-        {
-          "type": "type",
-          "hassubcategories": 0,
-          "title": "Type",
-          "tags": [
-            {
-              "id": 460,
-              "name": "Netcourse"
-            },
-            {
-              "id": 461,
-              "name": "Event"
-            },
-            {
-              "id": 462,
-              "name": "Classroom"
-            },
-            {
-              "id": 463,
-              "name": "Topics"
-            },
-            {
-              "id": 464,
-              "name": "Weekly"
+              "name": "eKommune-Sunnmøre"
             }
           ]
         }
