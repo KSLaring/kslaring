@@ -18,7 +18,6 @@ defined('MOODLE_INTERNAL') || die();
 
 class coinstructor
 {
-
     /**
      * @return null | object
      * @throws Exception
@@ -29,7 +28,7 @@ class coinstructor
      * @author          eFaktor     (nas)
      *
      */
-    public static function get_courses() {
+    public static function get_courses($limit = null) {
         // Variables!
         global $DB, $USER;
         $courses    = null;
@@ -59,7 +58,13 @@ class coinstructor
             // Parameters!
             $params = array();
             $params['userid'] = $USER->id;
-            $rdo = $DB->get_records_sql($userquery, $params);
+            if ($limit) {
+                // Block content
+                $rdo = $DB->get_records_sql($userquery, $params, 0,$limit);
+            }else {
+                // Overview
+                $rdo = $DB->get_records_sql($userquery, $params);
+            }
 
             // Exec!
             if ($rdo) {
@@ -144,15 +149,11 @@ class coinstructor
 
         if ($mycourses) {
             try {
-                $i = 0;
 
                 // Loops the object.
                 foreach ($mycourses as $coursevalue) {
-                    if ($i <= MAX_LISTED) {
-                        $url = new moodle_url('/grade/report/grader/index.php?id=' . $coursevalue->courseid);
-                        $out .= "<div><a href=$url> $coursevalue->coursename </a> </div>";
-                    }
-                    $i++;
+                    $url = new moodle_url('/grade/report/grader/index.php?id=' . $coursevalue->courseid);
+                    $out .= "<div><a href=$url> $coursevalue->coursename </a> </div>";
                 }
 
             } catch (Exception $ex) {

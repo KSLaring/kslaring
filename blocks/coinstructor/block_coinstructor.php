@@ -23,6 +23,9 @@ class block_coinstructor extends block_base {
 
     public function get_content() {
         try {
+
+            $config = get_config('block_coinstructor');
+
             // Title Block!
             $this->title = get_string('blocktitle', 'block_coinstructor');
 
@@ -37,13 +40,13 @@ class block_coinstructor extends block_base {
 
             // Add course info to the block!
             require_once('lib/coinstructorlib.php');
-            $courses = coinstructor::get_courses();
+            $courses = coinstructor::get_courses($config->max);
             $mycourses = coinstructor::display_courses($courses);
             $amount = coinstructor::get_courses_count();
             $this->content->text .= $mycourses;
 
-            // Display the "show all" link if more than the max lsited results.
-            if ($amount > MAX_LISTED) {
+            // Display the "show all" link if more than the max listed results.
+            if ($amount > $config->max) {
                 $this->content->text .= "</br>";
                 $url = new moodle_url('/blocks/coinstructor/courses.php');
                 $this->content->text .= "<div><a href=$url>" . get_string('showall', 'block_coinstructor') . " </a> </div>";
@@ -54,4 +57,10 @@ class block_coinstructor extends block_base {
             throw $ex;
         }//try_catch
     }//get_content
+
+    public function has_config()
+    {
+        return true;
+    }
+
 }//block_coinstructor

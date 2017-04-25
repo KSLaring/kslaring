@@ -15,7 +15,6 @@
 // along with Moodle. If not, see <http://www.gnu.org/licenses/>.
 
 defined('MOODLE_INTERNAL') || die();
-define('MAX_LISTED', 20);
 
 class block_coteacher extends block_base {
     public function init() {
@@ -24,6 +23,9 @@ class block_coteacher extends block_base {
 
     public function get_content() {
         try {
+
+            $config = get_config('block_coteacher');
+
             // Title Block!
             $this->title = get_string('blocktitle', 'block_coteacher');
 
@@ -38,13 +40,13 @@ class block_coteacher extends block_base {
 
             // Add course info to the block!
             require_once('lib/coteacherlib.php');
-            $courses = coteacher::get_courses();
+            $courses = coteacher::get_courses($config->max);
             $mycourses = coteacher::display_courses($courses);
             $amount = coteacher::get_courses_count();
             $this->content->text .= $mycourses;
 
             // Display the "show all" link if more than the max listed results.
-            if ($amount > MAX_LISTED) {
+            if ($amount > $config->max) {
                 $this->content->text .= "</br>";
                 $url = new moodle_url('/blocks/coteacher/courses.php');
                 $this->content->text .= "<div><a href=$url>" . get_string('showall', 'block_coteacher') . " </a> </div>";
@@ -55,4 +57,10 @@ class block_coteacher extends block_base {
             throw $ex;
         }//try_catch
     }//get_content
+
+    public function has_config()
+    {
+        return true;
+    }
+
 }//block_coteacher

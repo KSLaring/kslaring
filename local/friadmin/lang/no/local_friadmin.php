@@ -320,3 +320,6 @@ $string['fromto'] = 'From - To';
 $string['dates'] = 'Dates';
 $string['coursecoordinator'] = 'Course Coordinator';
 $string['numberofdays'] = 'Number of days';
+
+$string['yes'] = 'Ja';
+$string['no'] = 'Nei';

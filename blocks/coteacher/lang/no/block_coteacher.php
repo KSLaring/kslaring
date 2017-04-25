@@ -20,3 +20,4 @@ $string['showall'] = 'Vis alle...';
 $string['headercategory'] = 'Kategory';
 $string['headercourse'] = 'Kurs';
 $string['courseoverview'] = 'Kurs som lærer';
+$string['block_max_courses'] = 'Maks antall kurs oppført i blokken';
