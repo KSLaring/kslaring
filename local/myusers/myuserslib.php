@@ -692,12 +692,17 @@ class MyUsers {
         global $DB;
         $rdo = null;
         $sql = null;
+        $jr_lst = null;
 
         try {
+            if (substr($jobroles,0,1) == ',') {
+                $jr_lst = substr($jobroles,1);
+            }
+
             //SQL Instruction
             $sql = " SELECT   GROUP_CONCAT(DISTINCT jr.name ORDER BY jr.name SEPARATOR ',</br> ') as 'job_roles'
                      FROM	  {report_gen_jobrole} jr
-                     WHERE	  jr.id IN ($jobroles)
+                     WHERE	  jr.id IN ($jr_lst)
                      ORDER BY jr.name ";
 
             // Execute
