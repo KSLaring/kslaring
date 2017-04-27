@@ -1,4 +1,4 @@
-/*global require: false, define: false, M: true */
+/*global require: false, define: false, M: true, console: false */
 define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates', 'local_playground/cookie', 'theme_bootstrapbase/bootstrap'],
     function ($, notification, log, ajax, templates, cookie) {
         "use strict";
@@ -266,7 +266,6 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
         var preselectedCheckboxChangeHandler = function () {
             var $ele = $(this),
                 checked = $ele.is(":checked"),
-                $relatedSearchTag = null,
                 $group = null,
                 group = '',
                 tagcontext = {};
@@ -369,6 +368,28 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
             } else if ($ele.data('type') === 'display') {
                 updateCourseDisplay();
             }
+        };
+
+        var handleTagFilterText = function (e) {
+            var $input = null,
+                filter = '',
+                $tagLists = null,
+                $tags = null;
+
+
+            $input = $(e.currentTarget);
+            filter = $input.val().toLowerCase();
+            $tagLists = $tagpreselectarea.find('.unlist');
+            $tags = $tagLists.find('label');
+
+            $tags.each(function () {
+                var $ele = $(this);
+                if ($ele.find('input').data('name').toLowerCase().indexOf(filter) !== -1) {
+                    $ele.parent('li').removeClass('hidden');
+                } else {
+                    $ele.parent('li').addClass('hidden');
+                }
+            });
         };
 
         var handleTextSearch = function (e) {
@@ -765,6 +786,7 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                 $resultarea.on('click', 'th.coltitle', colTitleClickHandler);
                 $tagarea.on('click', 'button', selectedTagClickHandler);
                 $tagpreselectarea.on('change', '[type="checkbox"]', preselectedCheckboxChangeHandler);
+                $tagpreselectarea.on('keyup', '#tagFilter', handleTagFilterText);
                 $coursesearchform.on('submit', handleTextSearch);
                 $switchDisplay.on('click', handleToggleTagPreselectPage);
             }
