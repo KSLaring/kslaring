@@ -2332,7 +2332,7 @@ class WS_FELLESDATA {
                         // Relation parent
                         if ($companyInfo->parent) {
                             // Check if already exists
-                            $rdo = $DB->get_record('report_gen_company_relation',array('companyid' => $companyInfo->ksid,'parentid' => $companyInfo->parent),'id');
+                            $rdo = $DB->get_record('report_gen_company_relation',array('companyid' => $companyId,'parentid' => $companyInfo->parent),'id');
                             if (!$rdo) {
                                 // Create relation
                                 $instanceParent = new stdClass();
