@@ -2328,28 +2328,33 @@ class WS_FELLESDATA {
                     if (!$rdo) {
                         // Execute
                         $companyId = $DB->insert_record('report_gen_companydata',$instanceCompany);
-
-                        // Relation parent
-                        if ($companyInfo->parent) {
-                            // Check if already exists
-                            $rdo = $DB->get_record('report_gen_company_relation',array('companyid' => $companyId,'parentid' => $companyInfo->parent),'id');
-                            if (!$rdo) {
-                                // Create relation
-                                $instanceParent = new stdClass();
-                                $instanceParent->companyid  = $companyInfo->ksid;
-                                $instanceParent->parentid   = $companyInfo->parent;
-                                $instanceParent->modified   = $time;
-
-                                // Execute
-                                $DB->insert_record('report_gen_company_relation',$instanceParent);
-                            }//if_!rdo
-                        }//if_parent
                     }else {
                         // Execute
                         $companyId           = $rdo->id;
                         $instanceCompany->id = $rdo->id;
                         $DB->update_record('report_gen_companydata',$instanceCompany);
                     }//if_no_exists
+
+                // Log
+                    global $CFG;
+                $dbLog = 'Comapny: ' . $companyId . "\n";
+                error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+                
+                    // Relation parent
+                    if ($companyInfo->parent) {
+                        // Check if already exists
+                        $rdo = $DB->get_record('report_gen_company_relation',array('companyid' => $companyId,'parentid' => $companyInfo->parent),'id');
+                        if (!$rdo) {
+                            // Create relation
+                            $instanceParent = new stdClass();
+                            $instanceParent->companyid  = $companyId;
+                            $instanceParent->parentid   = $companyInfo->parent;
+                            $instanceParent->modified   = $time;
+
+                            // Execute
+                            $DB->insert_record('report_gen_company_relation',$instanceParent);
+                        }//if_!rdo
+                    }//if_parent
 
                     break;
 
