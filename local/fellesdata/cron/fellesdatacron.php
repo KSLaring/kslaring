@@ -308,7 +308,7 @@ class FELLESDATA_CRON {
             $infoLevel->company   = $pluginInfo->ks_muni;
             $infoLevel->level     = 1;
             // Don't import all companies over and over
-            $infoLevel->notIn     = KS::existing_companies();
+            $infoLevel->notIn     = 0;//KS::existing_companies();
 
             // Call web service
             $params = array('topCompany' => $infoLevel);
