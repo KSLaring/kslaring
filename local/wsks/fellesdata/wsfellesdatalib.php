@@ -2335,11 +2335,6 @@ class WS_FELLESDATA {
                         $DB->update_record('report_gen_companydata',$instanceCompany);
                     }//if_no_exists
 
-                // Log
-                    global $CFG;
-                $dbLog = 'Comapny: ' . $companyId . "\n";
-                error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
-                
                     // Relation parent
                     if ($companyInfo->parent) {
                         // Check if already exists
