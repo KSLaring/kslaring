@@ -697,6 +697,8 @@ class MyUsers {
         try {
             if (substr($jobroles,0,1) == ',') {
                 $jr_lst = substr($jobroles,1);
+            }else {
+                $jr_lst = $jobroles;
             }
 
             //SQL Instruction
