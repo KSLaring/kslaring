@@ -337,7 +337,7 @@ class CompanyReport {
                     $i = 0;
 
                         foreach ($companyTracker->users as $id=>$user) {
-                            $out_report .= html_writer::start_tag('div');
+                            $out_report .= html_writer::start_tag('div',array('class' => 'company_rpt_div'));
 
                             /* User Header - Toogle               */
                             $toggleUser = 'YUI_' . $id;
@@ -367,7 +367,7 @@ class CompanyReport {
                                 if ($i < $total) {
                                     $out_report .= '<hr class="line_rpt">';
                                 }//if_total
-                            $out_report .= html_writer::end_div('');//user_list
+                            $out_report .= html_writer::end_div();//user_list
 
 
                             $out_report .= html_writer::end_tag('div');//company_content
@@ -1015,13 +1015,13 @@ class CompanyReport {
             /* Col One  */
             $header .= html_writer::start_div('col_one');
                 $header .= '<button class="toggle_outcome_company_rpt" type="image" id="' . $toogle . '"><img id="' . $toogle . '_img' . '" src="' . $img . '">' . '</button>';
-            $header .= html_writer::end_div('');//col_one
+            $header .= html_writer::end_div();//col_one
 
             /* Col Two  */
             $header .= html_writer::start_div('col_two');
                 $header .= '<h5>' . $user . '</h5>';
-            $header .= html_writer::end_div('');//col_two
-        $header .= html_writer::end_div('');//header_user_rpt
+            $header .= html_writer::end_div();//col_two
+        $header .= html_writer::end_div();//header_user_rpt
 
         return $header;
     }//Add_CompanyHeader_Screen
@@ -1043,13 +1043,13 @@ class CompanyReport {
         $header .= html_writer::start_div('header_user_job_roles_rpt');
             /* Col One  */
             $header .= html_writer::start_div('col_one');
-            $header .= html_writer::end_div('');//col_one
+            $header .= html_writer::end_div();//col_one
 
             /* Col Two  */
             $header .= html_writer::start_div('col_two');
                 $header .= '<h6>' . $job_roles . '</h6>';
-            $header .= html_writer::end_div('');//col_two
-        $header .= html_writer::end_div('');//header_user_rpt
+            $header .= html_writer::end_div();//col_two
+        $header .= html_writer::end_div();//header_user_rpt
 
         return $header;
     }//Add_UserJobRoles_Header_Screen
@@ -1079,7 +1079,7 @@ class CompanyReport {
         /* Content Table        */
         $out_individual .= html_writer::start_tag('div',array('class' => 'course_list','id' => $toggleIndividual . '_div'));
             $out_individual .= self::AddContent_IndividualCoursesTable($completed,$not_completed);
-        $out_individual .= html_writer::end_div('');//course_list
+        $out_individual .= html_writer::end_div();//course_list
 
         return $out_individual;
     }//Add_IndividualCourses
@@ -1108,7 +1108,7 @@ class CompanyReport {
         /* Content Table        */
         $out_outcome .= html_writer::start_tag('div',array('class' => 'course_list','id' => $toggleOutcome . '_div'));
             $out_outcome .= self::AddContent_OutcomesCoursesTable($outcome);
-        $out_outcome .= html_writer::end_div('');//course_list
+        $out_outcome .= html_writer::end_div();//course_list
 
         return $out_outcome;
     }//Add_OutcomesCourses
@@ -1164,27 +1164,27 @@ class CompanyReport {
             $header .= html_writer::start_tag('table');
                 $header .= html_writer::start_tag('tr',array('class' => 'head'));
                     /* Empty Col   */
-                    $header .= html_writer::start_tag('td',array('class' => 'head_first'));
+                    $header .= html_writer::start_tag('th',array('class' => 'head_first'));
                         $header .= '<button class="toggle" type="image" id="' . $toogle . '"><img id="' . $toogle . '_img' . '" src="' . $img . '">' . '</button>';
-                    $header .= html_writer::end_tag('td');
+                    $header .= html_writer::end_tag('th');
                     /* Course           */
-                    $header .= html_writer::start_tag('td',array('class' => 'head_course'));
+                    $header .= html_writer::start_tag('th',array('class' => 'head_course'));
                         $header .= $strCourse;
-                    $header .= html_writer::end_tag('td');
+                    $header .= html_writer::end_tag('th');
                     /* Status        */
-                    $header .= html_writer::start_tag('td',array('class' => 'head_status'));
+                    $header .= html_writer::start_tag('th',array('class' => 'head_status'));
                         $header .= $strState;
-                    $header .= html_writer::end_tag('td');
+                    $header .= html_writer::end_tag('th');
                     /* Completion    */
-                    $header .= html_writer::start_tag('td',array('class' => 'head_status'));
+                    $header .= html_writer::start_tag('th',array('class' => 'head_status'));
                         $header .= $strCompletion;
-                    $header .= html_writer::end_tag('td');
+                    $header .= html_writer::end_tag('th');
                     /* Valid        */
-                    $header .= html_writer::start_tag('td',array('class' => 'head_status'));
+                    $header .= html_writer::start_tag('th',array('class' => 'head_status'));
                         if (!$individual) {
                             $header .= $strValid;
                         }//if_not_individual
-                    $header .= html_writer::end_tag('td');
+                    $header .= html_writer::end_tag('th');
                 $header .= html_writer::end_tag('tr');
             $header .= html_writer::end_tag('table');
         $header .= html_writer::end_tag('div');//course_list
@@ -1213,6 +1213,11 @@ class CompanyReport {
         $not_enrol      = null;
         $class          = null;
         $label          = null;
+        // Headers
+        $strCourse      = get_string('course');
+        $strState       = get_string('state','local_tracker_manager');
+        $strValid       = get_string('outcome_valid_until','local_tracker_manager');
+        $strCompletion  = get_string('completion_time','local_tracker_manager');
 
         try {
             $content .= html_writer::start_tag('table');
@@ -1225,19 +1230,19 @@ class CompanyReport {
                             $content .= html_writer::start_tag('td',array('class' => 'first'));
                             $content .= html_writer::end_tag('td');
                             /* Course           */
-                            $content .= html_writer::start_tag('td',array('class' => 'course'));
+                            $content .= html_writer::start_tag('td',array('class' => 'course','data-th' => $strCourse));
                                 $content .= $course->name;
                             $content .= html_writer::end_tag('td');
                             /* Status        */
-                            $content .= html_writer::start_tag('td',array('class' => 'status'));
+                            $content .= html_writer::start_tag('td',array('class' => 'status','data-th' => $strState));
                                 $content .= get_string('outcome_course_started','local_tracker_manager');
                             $content .= html_writer::end_tag('td');
                             /* Completion    */
-                            $content .= html_writer::start_tag('td',array('class' => 'status'));
+                            $content .= html_writer::start_tag('td',array('class' => 'status','data-th' => $strCompletion));
                                 $content .= '-';
                             $content .= html_writer::end_tag('td');
                             /* Valid        */
-                            $content .= html_writer::start_tag('td',array('class' => 'status'));
+                            $content .= html_writer::start_tag('td',array('class' => 'status','data-th' => $strValid));
                                 $content .= '&nbsp;';
                             $content .= html_writer::end_tag('td');
                         $content .= html_writer::end_tag('tr');
@@ -1254,19 +1259,19 @@ class CompanyReport {
                             $content .= html_writer::start_tag('td',array('class' => 'first'));
                             $content .= html_writer::end_tag('td');
                             /* Course           */
-                            $content .= html_writer::start_tag('td',array('class' => 'course'));
+                            $content .= html_writer::start_tag('td',array('class' => 'course','data-th' => $strCourse));
                                 $content .= $course->name;
                             $content .= html_writer::end_tag('td');
                             /* Status        */
-                            $content .= html_writer::start_tag('td',array('class' => 'status'));
+                            $content .= html_writer::start_tag('td',array('class' => 'status not_enroll','data-th' => $strState));
                                 $content .= get_string('outcome_course_not_enrolled','local_tracker_manager');
                             $content .= html_writer::end_tag('td');
                             /* Completion    */
-                            $content .= html_writer::start_tag('td',array('class' => 'status'));
+                            $content .= html_writer::start_tag('td',array('class' => 'status','data-th' => $strCompletion));
                                 $content .= '-';
                             $content .= html_writer::end_tag('td');
                             /* Valid        */
-                            $content .= html_writer::start_tag('td',array('class' => 'status'));
+                            $content .= html_writer::start_tag('td',array('class' => 'status','data-th' => $strValid));
                                 $content .= '&nbsp;';
                             $content .= html_writer::end_tag('td');
                         $content .= html_writer::end_tag('tr');
@@ -1291,19 +1296,19 @@ class CompanyReport {
                             $content .= html_writer::start_tag('td',array('class' => 'first'));
                             $content .= html_writer::end_tag('td');
                             /* Course           */
-                            $content .= html_writer::start_tag('td',array('class' => 'course'));
+                            $content .= html_writer::start_tag('td',array('class' => 'course','data-th' => $strCourse));
                                 $content .= $course->name;
                             $content .= html_writer::end_tag('td');
                             /* Status        */
-                            $content .= html_writer::start_tag('td',array('class' => 'status'));
+                            $content .= html_writer::start_tag('td',array('class' => 'status ' . $class,'data-th' => $strState));
                                 $content .= $label;
                             $content .= html_writer::end_tag('td');
                             /* Completion    */
-                            $content .= html_writer::start_tag('td',array('class' => 'status'));
+                            $content .= html_writer::start_tag('td',array('class' => 'status','data-th' => $strCompletion));
                                 $content .= userdate($course->completed,'%d.%m.%Y', 99, false);
                             $content .= html_writer::end_tag('td');
                             /* Valid        */
-                            $content .= html_writer::start_tag('td',array('class' => 'status'));
+                            $content .= html_writer::start_tag('td',array('class' => 'status','data-th' => $strValid));
                                 $content .= userdate($ts,'%d.%m.%Y', 99, false);
                             $content .= html_writer::end_tag('td');
                         $content .= html_writer::end_tag('tr');
@@ -1334,6 +1339,11 @@ class CompanyReport {
         $content    = '';
         $url        = null;
         $strUrl     = null;
+        // Headers
+        $strCourse         = get_string('course');
+        $strState          = get_string('state','local_tracker_manager');
+        $strValid          = get_string('outcome_valid_until','local_tracker_manager');
+        $strCompletion     = get_string('completion_time','local_tracker_manager');
 
         try {
             $content .= html_writer::start_tag('table');
@@ -1345,19 +1355,19 @@ class CompanyReport {
                             $content .= html_writer::start_tag('td',array('class' => 'first'));
                             $content .= html_writer::end_tag('td');
                             /* Course           */
-                            $content .= html_writer::start_tag('td',array('class' => 'course'));
+                            $content .= html_writer::start_tag('td',array('class' => 'course','data-th' => $strCourse));
                                 $content .= $course->name;
                             $content .= html_writer::end_tag('td');
                             /* Status        */
-                            $content .= html_writer::start_tag('td',array('class' => 'status'));
+                            $content .= html_writer::start_tag('td',array('class' => 'status','data-th' => $strState));
                                 $content .= get_string('outcome_course_started','local_tracker_manager');
                             $content .= html_writer::end_tag('td');
                             /* Completion    */
-                            $content .= html_writer::start_tag('td',array('class' => 'status'));
+                            $content .= html_writer::start_tag('td',array('class' => 'status','data-th' => $strCompletion));
                                 $content .= '-';
                             $content .= html_writer::end_tag('td');
                             /* Valid        */
-                            $content .= html_writer::start_tag('td',array('class' => 'status'));
+                            $content .= html_writer::start_tag('td',array('class' => 'status','data-th' => $strValid));
                                 $content .= '&nbsp;';
                             $content .= html_writer::end_tag('td');
                         $content .= html_writer::end_tag('tr');
@@ -1372,19 +1382,19 @@ class CompanyReport {
                             $content .= html_writer::start_tag('td',array('class' => 'first'));
                             $content .= html_writer::end_tag('td');
                             /* Course           */
-                            $content .= html_writer::start_tag('td',array('class' => 'course'));
+                            $content .= html_writer::start_tag('td',array('class' => 'course','data-th' => $strCourse));
                                 $content .= $course->name;
                             $content .= html_writer::end_tag('td');
                             /* Status        */
-                            $content .= html_writer::start_tag('td',array('class' => 'status'));
+                            $content .= html_writer::start_tag('td',array('class' => 'status completed','data-th' => $strState));
                                 $content .= get_string('outcome_course_finished','local_tracker_manager');
                             $content .= html_writer::end_tag('td');
                             /* Completion    */
-                            $content .= html_writer::start_tag('td',array('class' => 'status'));
+                            $content .= html_writer::start_tag('td',array('class' => 'status','data-th' => $strCompletion));
                                 $content .= userdate($course->completed,'%d.%m.%Y', 99, false);;
                             $content .= html_writer::end_tag('td');
                             /* Valid        */
-                            $content .= html_writer::start_tag('td',array('class' => 'status'));
+                            $content .= html_writer::start_tag('td',array('class' => 'status','data-th' => $strValid));
                                 $content .= '&nbsp;';
                             $content .= html_writer::end_tag('td');
                         $content .= html_writer::end_tag('tr');
