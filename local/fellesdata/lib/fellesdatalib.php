@@ -657,6 +657,7 @@ class FSKS_COMPANY {
 
                     $infoCompany->ksid  = $objCompany->ksId;
 
+                    echo "Company -->  " . $objCompany->ksId . "</br>";
                     // Synchronize Company
                     self::synchronize_company_ksfs($infoCompany,$objCompany->fsId);
                 }//if_imported
