@@ -697,7 +697,9 @@ class MyUsers {
         try {
             if (substr($jobroles,0,1) == ',') {
                 $jr_lst = substr($jobroles,1);
-            }
+            }else {
+                $jr_lst = $jobroles;
+            }//if_
 
             //SQL Instruction
             $sql = " SELECT   GROUP_CONCAT(DISTINCT jr.name ORDER BY jr.name SEPARATOR ',</br> ') as 'job_roles'
