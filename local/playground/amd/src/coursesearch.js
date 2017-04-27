@@ -1,22 +1,36 @@
-/*global define: false, M: true, console: false */
-// define(['jquery', 'jqueryui', 'core/notification', 'core/log', 'core/ajax', 'core/templates', 'theme_bootstrapbase/bootstrap'],
-//     function ($, $ui, notification, log, ajax, templates) {
-define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates', 'theme_bootstrapbase/bootstrap'],
-    function ($, notification, log, ajax, templates) {
+/*global require: false, define: false, M: true, console: false */
+define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates', 'local_playground/cookie', 'theme_bootstrapbase/bootstrap'],
+    function ($, notification, log, ajax, templates, cookie) {
         "use strict";
+
+        // Add the jQuery object globaly or debugging.
+        window.$ = $;
 
         log.debug('AMD module loaded.');
 
-        var selectedCourseTags = [],
+        var sortbystate = 'name',
+            sortascstate = true,
+            showtagliststate = false,
+            preselectedTagsAddedState = false,
+            searcharearenderedstate = false,
+            selectedCourseTags = [],
             courses = [],
             $searcharea = null,
             $coursesearchform = null,
+            $resultarea = null,
+            $tagpreselectarea = null,
             $formsearch = null,
             $tagarea = null,
             $selectedCourseTags = null,
-            $resultarea = null,
+            $switchDisplay = null,
+            preselecttagsloaded = false,
             hideitemClass = 'hide-item',
-            activityContextObj = {type: null, group: null, name: null, pretext: null, posttext: null, remove: 0};
+            cookiename = 'preselectedtags',
+            // The preselected tags are sotored in a cookie. The tag ids are sepaarated by commy,
+            // the sections are separated by »|«.
+            preselectedtags = '433,430,431,16,39,108,196,268,352|449,452,450,453|458,459|460,462,463',
+            tagContextObj = {id: 0, type: null, group: null, name: null},
+            activityContextObj = {id: 0, type: null, group: null, name: null, sort: null, pretext: null, posttext: null, remove: 0};
 
         var grepselectedCourseTags = function (data) {
             var groups = data.tags.groups,
@@ -46,21 +60,97 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                 });
         };
 
-        var renderTags = function (context) {
+        var renderSearchArea = function (context) {
             templates
                 .render('local_playground/course_search_region_search', context)
                 .done(function (html) {
                     $formsearch.after(html);
+
+                    searcharearenderedstate = true;
+
                     activateDatePicker();
+                    addPreselectedTags();
                 });
         };
 
-        var renderResults = function (context) {
+        var renderDisplayArea = function (context) {
             templates
-                .render('local_playground/course_search_results', context)
+                .render('local_playground/course_search_result_area', context)
                 .done(function (html) {
                     $resultarea.append(html);
                     updateCourseDisplay();
+                });
+        };
+
+        var renderTagPreselectArea = function (context) {
+            templates
+                .render('local_playground/course_search_tag_preselect_area', context)
+                .done(function (html) {
+                    $tagpreselectarea.append(html);
+
+                    preselecttagsloaded = true;
+
+                    addPreselectedTags();
+                });
+        };
+
+        var addPreselectedTags = function () {
+            if (preselectedTagsAddedState) {
+                return;
+            }
+
+            if (!preselecttagsloaded || !searcharearenderedstate) {
+                return;
+            }
+
+            var tags = cookie.read(cookiename),
+                tagarray = [],
+                tagarrayextracted = [],
+                $taggroups = null;
+
+            // Create an array of arrays from the cookie data.
+            if (tags !== null) {
+                tagarray = tags.split('|');
+                tagarray.forEach(function (ele) {
+                    tagarrayextracted.push(ele.split(','));
+                });
+
+                console.log(tagarrayextracted);
+
+                $taggroups = $searcharea.find('.tag-group');
+                if ($taggroups.length) {
+                    $taggroups.each(function (i) {
+                        var $group = $(this),
+                            $onetag = null,
+                            tagcontext = {};
+
+                        tagarrayextracted[i].forEach(function (ele) {
+                            $onetag = $tagpreselectarea.find('[data-id="' + ele + '"]');
+                            if ($onetag.length) {
+                                $onetag.prop('checked', true);
+                                tagcontext = $.extend({}, tagContextObj, {
+                                    id: $onetag.data('id'),
+                                    type: $onetag.data('type'),
+                                    group: $onetag.data('group'),
+                                    name: $onetag.data('name')
+                                });
+
+                                renderSearchTagItem($group, tagcontext);
+                            }
+                        });
+                    });
+                }
+            }
+
+            preselectedTagsAddedState = true;
+        };
+
+
+        var renderSearchTagItem = function ($where, context) {
+            templates
+                .render('local_playground/course_search_region_search_groups_item', context)
+                .done(function (html) {
+                    $where.append(html);
                 });
         };
 
@@ -123,12 +213,13 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
             updateCourseDisplay();
         };
 
-        var checkboxClickHandler = function () {
+        var checkboxChangeHandler = function () {
             var $ele = $(this),
                 $parent = $ele.parent(),
                 checked = $ele.is(":checked"),
                 $relatedTag = null,
                 activityContext = $.extend({}, activityContextObj, {
+                    id: $parent.data('id'),
                     type: $parent.data('type'),
                     group: $parent.data('group'),
                     name: $parent.data('name')
@@ -142,6 +233,22 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                     .parent('li')
                     .remove();
                 activityContext.remove = 1;
+            } else if ($ele.parent().data('group') === 'sort') {
+                // If the sort changed then remove the exisiting sort tag and add the new.
+                $relatedTag = $tagarea
+                    .find('button')
+                    .filter('[data-group="sort"]')
+                    .parent('li')
+                    .remove();
+
+                // Prepare sort related data.
+                activityContext.sort = $parent.data('sort');
+                activityContext.name = "Sort by " + activityContext.sort;
+                templates
+                    .render('local_playground/course_search_selected_tags_item', activityContext)
+                    .done(function (html) {
+                        $selectedCourseTags.append(html);
+                    });
             } else {
                 templates
                     .render('local_playground/course_search_selected_tags_item', activityContext)
@@ -154,6 +261,86 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                 updateCourses();
             }
             updateCourseDisplay();
+        };
+
+        var preselectedCheckboxChangeHandler = function () {
+            var $ele = $(this),
+                checked = $ele.is(":checked"),
+                $group = null,
+                group = '',
+                tagcontext = {};
+
+            if (!checked) {
+                $coursesearchform.find('[data-id="' + $ele.data('id') + '"]').remove();
+            } else {
+                group = $ele.data('group');
+
+                // Hack to speed up. Add provider as a data property.
+                if (group === 'municipality' || group === 'region') {
+                    group = 'provider';
+                }
+
+                $group = $coursesearchform.find('.' + group);
+                tagcontext = $.extend({}, tagContextObj, {
+                    id: $ele.data('id'),
+                    type: $ele.data('type'),
+                    group: $ele.data('group'),
+                    name: $ele.data('name')
+                });
+
+                console.log(group, $group, tagcontext);
+                renderSearchTagItem($group, tagcontext);
+            }
+        };
+
+        var sortSelectHandler = function () {
+            var $ele = $(this),
+                $selected = $ele.find("option:selected").eq(0),
+                $relatedCheckboxLabel = $ele.siblings('.hidden').eq(0),
+                selecteditem = '';
+
+            selecteditem = $selected.val().toLowerCase();
+
+            if (sortbystate === selecteditem) {
+                return;
+            } else {
+                sortbystate = selecteditem;
+            }
+
+            $relatedCheckboxLabel.data('sort', selecteditem);
+            $relatedCheckboxLabel
+                .find('input')
+                .trigger('change');
+        };
+
+        var colTitleClickHandler = function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            var $target = $(e.target),
+                $selectSort = $searcharea.find('#select-sort'),
+                $selectSortOptions = $selectSort.find('option'),
+                $relatedCheckboxLabel = $selectSort.siblings('.hidden').eq(0),
+                sortwhat = '';
+
+            sortwhat = $target.data('sort');
+
+            if (sortbystate === sortwhat) {
+                sortascstate = !sortascstate;
+                $searcharea.find('[data-group="sortdesc"]').find('input').click();
+            } else {
+                sortbystate = sortwhat;
+            }
+
+            $selectSortOptions.find(':selected').prop('selected', false);
+            $selectSortOptions.filter(function () {
+                return ($(this).val() === sortwhat); // To select the related option
+            }).prop('selected', true);
+
+            $relatedCheckboxLabel.data('sort', sortwhat);
+            $relatedCheckboxLabel
+                .find('input')
+                .trigger('change');
         };
 
         var selectedTagClickHandler = function () {
@@ -181,6 +368,28 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
             } else if ($ele.data('type') === 'display') {
                 updateCourseDisplay();
             }
+        };
+
+        var handleTagFilterText = function (e) {
+            var $input = null,
+                filter = '',
+                $tagLists = null,
+                $tags = null;
+
+
+            $input = $(e.currentTarget);
+            filter = $input.val().toLowerCase();
+            $tagLists = $tagpreselectarea.find('.unlist');
+            $tags = $tagLists.find('label');
+
+            $tags.each(function () {
+                var $ele = $(this);
+                if ($ele.find('input').data('name').toLowerCase().indexOf(filter) !== -1) {
+                    $ele.parent('li').removeClass('hidden');
+                } else {
+                    $ele.parent('li').addClass('hidden');
+                }
+            });
         };
 
         var handleTextSearch = function (e) {
@@ -245,14 +454,14 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
             date = $("#date-from-eurodate").val();
             if (date !== "") {
                 dates.from = date;
-                dates.datesset = true
+                dates.datesset = true;
             }
 
             // Check and set the from date.
             date = $("#date-to-eurodate").val();
             if (date !== "") {
                 dates.to = date;
-                dates.datesset = true
+                dates.datesset = true;
             }
 
             return dates;
@@ -266,7 +475,11 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
             checkeditems.each(function () {
                 var $item = $(this);
                 if ($item.data('type') === 'display') {
-                    displayItems.push($item.data('group'));
+                    if ($item.data('group') === 'sort') {
+                        displayItems.push('sort-' + $item.data('sort'));
+                    } else {
+                        displayItems.push($item.data('group'));
+                    }
                 }
             });
 
@@ -282,11 +495,11 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
             var $list = null,
                 $sortedlist = null,
                 selectedDisplayTags = getSelectedDisplayTags(),
-                asc = true,
-                what = 'name';
+                what = 'name',
+                $coltitle = null;
 
             var sortFkt = function (a, b) {
-                if (asc) {
+                if (sortascstate) {
                     return ($(b).data(what)) < ($(a).data(what)) ? 1 : -1;
                 } else {
                     return ($(b).data(what)) > ($(a).data(what)) ? 1 : -1;
@@ -294,17 +507,28 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
             };
 
             if (selectedDisplayTags.indexOf('tags') !== -1) {
-                $resultarea.find(".course-list").removeClass(' tags-hidden');
+                $resultarea.find(".course-list").removeClass('tags-hidden');
             } else {
-                $resultarea.find(".course-list").addClass(' tags-hidden');
+                $resultarea.find(".course-list").addClass('tags-hidden');
             }
 
-            if (selectedDisplayTags.indexOf('sortdesc') !== -1) {
-                asc = false;
-            }
+            sortascstate = selectedDisplayTags.indexOf('sortdesc') === -1;
 
-            if (selectedDisplayTags.indexOf('date') !== -1) {
-                what = 'date';
+            selectedDisplayTags.forEach(function (item) {
+                if (item.indexOf('sort-') !== -1) {
+                    what = item.replace('sort-', '');
+                }
+            });
+
+            // Set the CSS class to show the sort arrow.
+            $resultarea.find('.course-list-col-titles').find('.sortasc').removeClass('sortasc');
+            $resultarea.find('.course-list-col-titles').find('.sortdesc').removeClass('sortdesc');
+
+            $coltitle = $resultarea.find('.course-list-col-titles').find('[data-sort="' + what + '"]');
+            if (sortascstate) {
+                $coltitle.addClass('sortasc');
+            } else {
+                $coltitle.addClass('sortdesc');
             }
 
             $list = $resultarea.find("#tabcards").find('.course-cards').eq(0);
@@ -431,6 +655,49 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
             }
         };
 
+        var handleToggleTagPreselectPage = function () {
+            var taglist = '',
+                $taggroups = null,
+                gl,
+                tl;
+
+            // Save the tag selection in the cookie.
+            if (showtagliststate) {
+                $taggroups = $searcharea.find('.tag-group');
+                gl = $taggroups.length - 1;
+                if ($taggroups.length) {
+                    $taggroups.each(function (i) {
+                        var $group = $(this),
+                            $tags = null;
+
+                        $tags = $group.find('.checkbox');
+
+                        tl = $tags.length - 1;
+                        if ($tags.length) {
+                            $tags.each(function (j) {
+                                taglist += $(this).data('id');
+
+                                if (j < tl) {
+                                    taglist += ',';
+                                }
+                            });
+                        }
+
+                        if (i < gl) {
+                            taglist += '|';
+                        }
+                    });
+                }
+                console.log(taglist);
+                cookie.create(cookiename, taglist, 14);
+            }
+
+            showtagliststate = !showtagliststate;
+
+            $resultarea.toggleClass('hidden');
+            $tagpreselectarea.toggleClass('hidden');
+        };
+
         /**
          * Collect all texts from the course title and summary and the tag names into one text string
          * to speed up the text and the tag filter.
@@ -476,19 +743,25 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
             init: function () {
                 log.debug('AMD module init.');
 
+                if (cookie.read(cookiename) === null) {
+                    cookie.create(cookiename, preselectedtags);
+                }
+
                 // Get the relevant DOM elements.
                 $searcharea = $('#search-area');
                 $coursesearchform = $('#course-search-form');
-                $tagarea = $('#tag-area');
                 $resultarea = $('#result-area');
+                $tagpreselectarea = $('#tag-preselect-area');
+                $tagarea = $('#tag-area');
                 $formsearch = $searcharea.find('.form-search');
+                $switchDisplay = $searcharea.find('#switch-display');
 
                 // Get the search data.
                 $.getJSON("./course_search.json", function (data) {
                     log.debug(data);
 
                     grepselectedCourseTags(data);
-                    renderTags(data);
+                    renderSearchArea(data);
                 }).fail(notification.exception);
 
                 // Get the course data.
@@ -497,13 +770,25 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
 
                     courses = indexCourseData(data.courses);
                     data.baseurl = M.cfg.wwwroot;
-                    renderResults(data);
+                    renderDisplayArea(data);
+                }).fail(notification.exception);
+
+                // Get all available tags.
+                $.getJSON("./tags.json", function (data) {
+                    log.debug(data);
+
+                    renderTagPreselectArea(data);
                 }).fail(notification.exception);
 
                 // Set the event handlers.
-                $searcharea.on('click', '[type="checkbox"]', checkboxClickHandler);
+                $searcharea.on('change', '[type="checkbox"]', checkboxChangeHandler);
+                $searcharea.on('change', 'select', sortSelectHandler);
+                $resultarea.on('click', 'th.coltitle', colTitleClickHandler);
                 $tagarea.on('click', 'button', selectedTagClickHandler);
+                $tagpreselectarea.on('change', '[type="checkbox"]', preselectedCheckboxChangeHandler);
+                $tagpreselectarea.on('keyup', '#tagFilter', handleTagFilterText);
                 $coursesearchform.on('submit', handleTextSearch);
+                $switchDisplay.on('click', handleToggleTagPreselectPage);
             }
         };
     }

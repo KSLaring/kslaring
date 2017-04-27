@@ -1,0 +1,37 @@
+<fieldset class="{{{groupname}}}{{#type}} {{{.}}}-group {{/type}}collapse-group">
+    <h4>{{{title}}}</h4>
+    <div class="tags">
+        {{#shown}}
+            {{> local_playground/course_search_region_search_groups_item }}
+        {{/shown}}
+    </div>
+    <div class="collapse" id="viewmore{{{groupname}}}">
+        {{#hidden}}
+            <div class="tags">
+                {{> local_playground/course_search_region_search_groups_item }}
+            </div>
+        {{/hidden}}
+    </div>
+    {{#hidden}}<a class="btn btn-link showdetails" data-toggle="collapse" data-target="#viewmore{{{groupname}}}"></a>{{/hidden}}
+</fieldset>
+{{#showdate}}
+    <div class="dates">
+        <h4>{{{title}}}</h4>
+        <div class="input-group input-append date" data-type="course" data-group="date-from" data-name="Date from"
+             data-date="" data-date-format="dd.mm.yyyy">
+            <label for="date-from" class="lbl">From:<br>
+                <input type="hidden" id="date-from-eurodate" value=""/>
+                <input id="date-from" type="text" class="form-control">
+                <span class="add-on"><i class="icon-th"></i></span>
+            </label>
+        </div>
+        <div class="input-group input-append date" data-type="course" data-group="date-to" data-name="Date to"
+             data-date="" data-date-format="dd.mm.yyyy">
+            <label for="date-to" class="lbl">To:<br>
+                <input type="hidden" id="date-to-eurodate" value=""/>
+                <input id="date-to" type="text" class="form-control">
+                <span class="add-on"><i class="icon-th"></i></span>
+            </label>
+        </div>
+    </div>
+{{/showdate}}

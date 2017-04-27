@@ -14,7 +14,7 @@
       "location": "",
       "tags": [
         {
-          "group": "region",
+          "group": "municipality",
           "name": "Oppland Fylkeskommune"
         },
         {
@@ -49,12 +49,16 @@
       "location": "",
       "tags": [
         {
-          "group": "region",
+          "group": "municipality",
           "name": "Oppland Fylkeskommune"
         },
         {
           "group": "municipality",
           "name": "Gjøvik"
+        },
+        {
+          "group": "audience",
+          "name": "Ansatt"
         },
         {
           "group": "type",
@@ -84,12 +88,16 @@
       "location": "Room 113 - B-Office",
       "tags": [
         {
-          "group": "region",
+          "group": "municipality",
           "name": "Oslo Fylkeskommune"
         },
         {
           "group": "municipality",
           "name": "Oslo"
+        },
+        {
+          "group": "audience",
+          "name": "Leder"
         },
         {
           "group": "type",
@@ -123,12 +131,16 @@
       "location": "",
       "tags": [
         {
-          "group": "region",
+          "group": "municipality",
           "name": "Akershus Fylkeskommune"
         },
         {
           "group": "municipality",
           "name": "Åseral"
+        },
+        {
+          "group": "audience",
+          "name": "Ansatt"
         },
         {
           "group": "type",
@@ -162,12 +174,16 @@
       "location": "",
       "tags": [
         {
-          "group": "region",
+          "group": "municipality",
           "name": "Akershus Fylkeskommune"
         },
         {
           "group": "municipality",
           "name": "Åseral"
+        },
+        {
+          "group": "audience",
+          "name": "Ansatt"
         },
         {
           "group": "type",
@@ -197,12 +213,16 @@
       "location": "Room 1107 - Helsehuset",
       "tags": [
         {
-          "group": "region",
+          "group": "municipality",
           "name": "Oslo Fylkeskommune"
         },
         {
           "group": "municipality",
           "name": "Oslo"
+        },
+        {
+          "group": "audience",
+          "name": "Ansatt"
         },
         {
           "group": "type",
@@ -232,12 +252,16 @@
       "location": "Kurs og kompetansesenteret, Sandvigå 7, Data 3",
       "tags": [
         {
-          "group": "region",
+          "group": "municipality",
           "name": "Rogaland Fylkeskommune"
         },
         {
           "group": "municipality",
           "name": "Stavanger"
+        },
+        {
+          "group": "audience",
+          "name": "Ansatt"
         },
         {
           "group": "type",
@@ -263,12 +287,16 @@
       "location": "Åsane brannstasjon",
       "tags": [
         {
-          "group": "region",
+          "group": "municipality",
           "name": "Hordaland Fylkeskommune"
         },
         {
           "group": "municipality",
           "name": "Bergen"
+        },
+        {
+          "group": "audience",
+          "name": "Ansatt"
         },
         {
           "group": "type",

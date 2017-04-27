@@ -201,7 +201,7 @@ Class Approval {
      * @param           int     $seats      Seats
      * @param           int     $waitingId  Id enrol waiting list
      *
-     * @return          stdClass
+     * @return          array
      * @throws          Exception
      *
      * @creationDate    28/12/2015

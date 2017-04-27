@@ -176,7 +176,7 @@ class WS_FELLESDATA {
                         $infoImported->imported = 1;
                         $infoImported->key      = $company->fsid;
 
-                        $imported[$company->fsid] = $infoImported;
+                        $imported["'" . $company->fsid . "'"] = $infoImported;
                     }//if_companyId
                 }//company
             }//if_path
@@ -2297,6 +2297,11 @@ class WS_FELLESDATA {
             // Check if already exists
             $rdo = $DB->get_record('report_gen_companydata',array('id' => $companyInfo->ksid));
 
+            // Check if already exists with the name
+            if (!$rdo) {
+                $rdo = $DB->get_record('report_gen_companydata',array('name' => $companyInfo->name));
+            }
+
             // Extract info company
             $instanceCompany = new stdClass();
             $instanceCompany->name              = $companyInfo->name;
@@ -2318,6 +2323,7 @@ class WS_FELLESDATA {
             // Apply action
             switch ($companyInfo->action) {
                 case ADD_ACTION:
+                case UPDATE_ACTION:
                 case STATUS_ACTION:
                     if (!$rdo) {
                         // Execute
@@ -2325,13 +2331,18 @@ class WS_FELLESDATA {
 
                         // Relation parent
                         if ($companyInfo->parent) {
-                            $instanceParent = new stdClass();
-                            $instanceParent->companyid  = $companyId;
-                            $instanceParent->parentid   = $companyInfo->parent;
-                            $instanceParent->modified   = $time;
+                            // Check if already exists
+                            $rdo = $DB->get_record('report_gen_company_relation',array('companyid' => $companyInfo->ksid,'parentid' => $companyInfo->parent),'id');
+                            if (!$rdo) {
+                                // Create relation
+                                $instanceParent = new stdClass();
+                                $instanceParent->companyid  = $companyInfo->ksid;
+                                $instanceParent->parentid   = $companyInfo->parent;
+                                $instanceParent->modified   = $time;
 
-                            // Execute
-                            $DB->insert_record('report_gen_company_relation',$instanceParent);
+                                // Execute
+                                $DB->insert_record('report_gen_company_relation',$instanceParent);
+                            }//if_!rdo
                         }//if_parent
                     }else {
                         // Execute
@@ -2341,35 +2352,7 @@ class WS_FELLESDATA {
                     }//if_no_exists
 
                     break;
-                case UPDATE_ACTION:
-                case STATUS_ACTION:
-                    if (!$rdo) {
-                        // Execute
-                        $companyId = $DB->insert_record('report_gen_companydata',$instanceCompany);
-                    }else {
-                        // Execute
-                        $companyId           = $rdo->id;
-                        $instanceCompany->id = $rdo->id;
-                        $DB->update_record('report_gen_companydata',$instanceCompany);
-                    }
 
-                    // Creation relation
-                    if ($companyInfo->parent) {
-                        // Check if already exists
-                        $rdo = $DB->get_record('report_gen_company_relation',array('companyid' => $companyInfo->ksid,'parentid' => $companyInfo->parent),'id');
-                        if (!$rdo) {
-                            // Create relation
-                            $instanceParent = new stdClass();
-                            $instanceParent->companyid  = $companyInfo->ksid;
-                            $instanceParent->parentid   = $companyInfo->parent;
-                            $instanceParent->modified   = $time;
-
-                            // Execute
-                            $DB->insert_record('report_gen_company_relation',$instanceParent);
-                        }//if_!rdo
-                    }//if_parent
-
-                    break;
                 case DELETE_ACTION:
                     $companyId = $companyInfo->ksid;
                     // Delete company

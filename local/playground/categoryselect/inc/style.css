@@ -1,0 +1,42 @@
+#category-select-form .input-append {
+  margin-bottom: 0;
+}
+#category-select-form .btn-select {
+  margin: 0;
+}
+#category-select-form .category-select-list {
+  background-color: #f9f9f9;
+  float: left;
+  min-width: 20em;
+  padding: .5em .8em;
+}
+#category-select-form .category-select-list.list-depth-0 {
+  border: 1px solid #ccc;
+}
+#category-select-form .category-select-list li.collapsed {
+  padding-bottom: .5em;
+}
+#category-select-form .category-select-list li:last-of-type {
+  padding-bottom: 0;
+}
+#category-select-form .category-select-list li .tree-icon {
+  background-image: url('/pix/t/collapsed_empty.svg');
+  background-position: 0 2px;
+  background-repeat: no-repeat;
+  display: inline-block;
+  height: 16px;
+  margin: 0;
+  width: 16px;
+}
+#category-select-form .category-select-list li .catname {
+  cursor: pointer;
+  display: inline-block;
+}
+#category-select-form .category-select-list > li.with-children > div > .tree-icon {
+  background-image: url('/pix/t/expanded.svg');
+  cursor: pointer;
+}
+#category-select-form .category-select-list > li.with-children.collapsed > div > .tree-icon {
+  background-image: url('/pix/t/collapsed.svg');
+  cursor: pointer;
+}
