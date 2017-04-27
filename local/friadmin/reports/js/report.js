@@ -23,12 +23,9 @@ M.core_user.init_courses = function (Y, course, category, prevcourse) {
 
         init : function() {
             var cat = this.category.get('value');
-
             if(cat == 0) {
                 Y.one('#id_course').setAttribute('disabled', 'disabled');
-            }
-
-            if(cat != 0) {
+            } else {
                 this.Activate_course();
                 Y.one('#id_course').removeAttribute('disabled');
             }
@@ -38,6 +35,11 @@ M.core_user.init_courses = function (Y, course, category, prevcourse) {
 
         Activate_course : function(e) {
             var cat = this.category.get('value');
+            if(cat == 0) {
+                Y.one('#id_course').setAttribute('disabled', 'disabled');
+            } else {
+                Y.one('#id_course').removeAttribute('disabled');
+            }
             // Trigger an ajax search after a delay.
             this.cancel_timeout();
             this.timeoutid  = Y.later(this.querydelay * 1000, e, function(obj){obj.send_query(cat)}, this);
@@ -92,8 +94,8 @@ M.core_user.init_courses = function (Y, course, category, prevcourse) {
             var indexCourse;
             var info;
 
-            if (this.course) {
-                this.course.all('option').each(function(option){
+            if (Y.one('#id_course')) {
+                Y.one('#id_course').all('option').each(function(option){
                     if (option.get('value') != 0) {
                         option.remove();
                     }
@@ -103,19 +105,12 @@ M.core_user.init_courses = function (Y, course, category, prevcourse) {
             for (index in data.results) {
                 dataCourses = data.results[index];
                 lstCourses = dataCourses.courses;
-
                 for (indexCourse in lstCourses) {
                     info = lstCourses[indexCourse];
-
                     var option = Y.Node.create('<option value="' + info.id + '">' + info.name + '</option>');
-                    Y.one("#id_" + course).append(option);
-
-                    if (info.id == prevcourse) {
-                        option.setAttribute('selected','selected');
-                    }
+                    Y.one('#id_course').append(option);
                 }
             }
-
         },
 
         cancel_timeout : function() {

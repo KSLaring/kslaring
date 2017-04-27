@@ -50,12 +50,17 @@ require_capability('local/friadmin:course_locations_manage', $contextsystem);
 $mform = new course_instructor_form(null);
 
 // Calls a function to get the javascript values to fill into the form based on the previous search criteria.
-friadminrpt::get_javascript_values('course_sel', 'category', null);
+friadminrpt::get_javascript_values('course', 'category', null);
 
 if ($mform->is_cancelled()) {
 
 } else if ($fromform = $mform->get_data()) {
+    $instructors = friadminrpt::get_course_instructor_data($fromform->course, $fromform->category, $fromform->userfullname);
 
+    ob_end_clean();
+    friadminrpt::download_participants_list_instructor($instructors);
+
+    die;
 }
 
 // Print Header!
