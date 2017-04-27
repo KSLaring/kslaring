@@ -1230,7 +1230,7 @@ class FELLESDATA_CRON {
                 $limit          = 150;
             }//if_session_manul
 
-            $limit = 1;
+            $limit = 10;
             // Log
             $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START Companies NEW FS/KS Synchronization . ' . "\n";
 
