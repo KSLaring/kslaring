@@ -1019,20 +1019,20 @@ class FELLESDATA_CRON {
                 // Create a new response file
                 $responseFile = fopen($pathFile,'w');
                 // Remove bad characters
-                $content = str_replace('\"','"',$response);
+                //$content = str_replace('\"','"',$response);
                 // CR - LF && EOL
-                $content = str_replace('\r',chr(13),$content);
-                $content = str_replace('\n',chr(13),$content);
-                $content = str_replace('\r\n',chr(13),$content);
+                //$content = str_replace('\r',chr(13),$content);
+                //$content = str_replace('\n',chr(13),$content);
+                //$content = str_replace('\r\n',chr(13),$content);
                 // Remove "
-                if (substr($content,0,1) == '"') {
-                    $content = substr($content,1);
-                }
-                if (substr($content,strlen($content)-1,1) == '"') {
-                    $content = substr($content,0,strlen($content)-1);
-                }
+                //if (substr($content,0,1) == '"') {
+                //    $content = substr($content,1);
+                //}
+                //if (substr($content,strlen($content)-1,1) == '"') {
+                //    $content = substr($content,0,strlen($content)-1);
+                //}
 
-                fwrite($responseFile,$content);
+                fwrite($responseFile,$response);
                 fclose($responseFile);
 
                 if (isset($response->error)) {
