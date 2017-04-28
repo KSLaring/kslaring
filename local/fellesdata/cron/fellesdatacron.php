@@ -643,13 +643,20 @@ class FELLESDATA_CRON {
                             // Get content
                             $content = file_get_contents($pathFile);
                             if (strpos(chr(13),$content)) {
+                                if (substr($content,0,1) == '"') {
+                                    $content = substr($content,1);
+                                }
+                                if (substr($content,strlen($content)-1,1) == '"') {
+                                    $content = substr($content,0,strlen($content)-1);
+                                }
+
+                                echo $content;
                                 $content = explode(chr(13),$content);
                             }else {
                                 $content = file($pathFile);
                             }
 
-                            $content = file($pathFile);
-                            FS::save_temporary_fellesdata($content,IMP_COMPANIES);
+                            //FS::save_temporary_fellesdata($content,IMP_COMPANIES);
                         }else {
                             // Mark file as suspicious
                             $suspiciousPath = suspicious::mark_suspicious_file(TRADIS_FS_COMPANIES,$plugin);
