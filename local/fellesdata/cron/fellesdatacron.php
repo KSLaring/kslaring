@@ -645,13 +645,6 @@ class FELLESDATA_CRON {
                             // Get content
                             $content = file_get_contents($pathFile);
                             if (strpos(chr(13),$content)) {
-                                if (substr($content,0,1) == '"') {
-                                    $content = substr($content,1);
-                                }
-                                if (substr($content,strlen($content)-1,1) == '"') {
-                                    $content = substr($content,0,strlen($content)-1);
-                                }
-
                                 echo $content;
                                 $content = explode(chr(13),$content);
                             }else {
@@ -1036,6 +1029,13 @@ class FELLESDATA_CRON {
                 $content = str_replace('\r',chr(13),$content);
                 $content = str_replace('\n',chr(13),$content);
                 $content = str_replace('\r\n',chr(13),$content);
+                // Remove "
+                if (substr($content,0,1) == '"') {
+                    $content = substr($content,1);
+                }
+                if (substr($content,strlen($content)-1,1) == '"') {
+                    $content = substr($content,0,strlen($content)-1);
+                }
 
                 fwrite($responseFile,$content);
                 fclose($responseFile);
