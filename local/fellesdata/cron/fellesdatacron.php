@@ -648,6 +648,7 @@ class FELLESDATA_CRON {
                                 $content = file($pathFile);
                             }
 
+                            $content = file($pathFile);
                             FS::save_temporary_fellesdata($content,IMP_COMPANIES);
                         }else {
                             // Mark file as suspicious
