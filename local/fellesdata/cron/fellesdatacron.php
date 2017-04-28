@@ -639,9 +639,7 @@ class FELLESDATA_CRON {
                     // Get last changes
                     // First check if is a suspicious file
                     if ($plugin->suspicious_path) {
-                        echo "HOLA " .  "</br>";
                         if (!suspicious::check_for_suspicious_data(TRADIS_FS_COMPANIES,$pathFile)) {
-                            echo "HOLA 1" .  "</br>";
                             // Get content
                             $content = file_get_contents($pathFile);
                             if (strpos(chr(13),$content)) {
@@ -651,9 +649,9 @@ class FELLESDATA_CRON {
                                 $content = file($pathFile);
                             }
 
-                            //FS::save_temporary_fellesdata($content,IMP_COMPANIES);
+                            echo $content ;
+                            FS::save_temporary_fellesdata($content,IMP_COMPANIES);
                         }else {
-                            echo "HOLA 2" .  "</br>";
                             // Mark file as suspicious
                             $suspiciousPath = suspicious::mark_suspicious_file(TRADIS_FS_COMPANIES,$plugin);
 
@@ -662,7 +660,6 @@ class FELLESDATA_CRON {
                             unlink($pathFile);
                         }//if_suspicious
                     }else {
-                        echo "HOLA ELSE" .  "</br>";
                         // Get content
                         $content = file_get_contents($pathFile);
                         if (strpos(chr(13),$content)) {
