@@ -642,6 +642,7 @@ class FELLESDATA_CRON {
                         if (!suspicious::check_for_suspicious_data(TRADIS_FS_COMPANIES,$pathFile)) {
                             // Get content
                             $content = file_get_contents($pathFile);
+                            echo $content . "</br>";
                             if (strpos(chr(13),$content)) {
                                 echo $content;
                                 $content = explode(chr(13),$content);
@@ -649,7 +650,6 @@ class FELLESDATA_CRON {
                                 $content = file($pathFile);
                             }
 
-                            echo $content ;
                             FS::save_temporary_fellesdata($content,IMP_COMPANIES);
                         }else {
                             // Mark file as suspicious
