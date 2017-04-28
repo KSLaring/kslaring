@@ -1173,7 +1173,7 @@ class FELLESDATA_CRON {
                     self::companies_new_fs_synchronization($pluginInfo);
 
                     // Synchronize no new companies
-                    //self::companies_no_new_fs_synchronization($pluginInfo);
+                    self::companies_no_new_fs_synchronization($pluginInfo);
 
                     // Send notifications
                     // Notification manual synchronization
