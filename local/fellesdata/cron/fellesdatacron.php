@@ -647,8 +647,9 @@ class FELLESDATA_CRON {
                             }else {
                                 $content = file($pathFile);
                             }
-                            $content = file($pathFile);
-                            FS::save_temporary_fellesdata($content,IMP_COMPANIES);
+
+                            //$content = file($pathFile);
+                            //FS::save_temporary_fellesdata($content,IMP_COMPANIES);
                         }else {
                             // Mark file as suspicious
                             $suspiciousPath = suspicious::mark_suspicious_file(TRADIS_FS_COMPANIES,$plugin);
@@ -1019,20 +1020,30 @@ class FELLESDATA_CRON {
                 // Create a new response file
                 $responseFile = fopen($pathFile,'w');
                 // Remove bad characters
-                //$content = str_replace('\"','"',$response);
+                $content = str_replace('\"','"',$response);
                 // CR - LF && EOL
-                //$content = str_replace('\r',chr(13),$content);
-                //$content = str_replace('\n',chr(13),$content);
-                //$content = str_replace('\r\n',chr(13),$content);
-                // Remove "
-                //if (substr($content,0,1) == '"') {
-                //    $content = substr($content,1);
-                //}
-                //if (substr($content,strlen($content)-1,1) == '"') {
-                //    $content = substr($content,0,strlen($content)-1);
-                //}
+                if (strpos('\r',$content)) {
+                    echo "YES \r";
+                }
+                if (strpos('\n',$content)) {
+                    echo "YES \n";
+                }
+                if (strpos('\r\n',$content)) {
+                    echo "YES \r\n";
+                }
 
-                fwrite($responseFile,$response);
+                $content = str_replace('\r',chr(13),$content);
+                $content = str_replace('\n',chr(13),$content);
+                $content = str_replace('\r\n',chr(13),$content);
+                // Remove "
+                if (substr($content,0,1) == '"') {
+                    $content = substr($content,1);
+                }
+                if (substr($content,strlen($content)-1,1) == '"') {
+                    $content = substr($content,0,strlen($content)-1);
+                }
+
+                fwrite($responseFile,$content);
                 fclose($responseFile);
 
                 if (isset($response->error)) {
