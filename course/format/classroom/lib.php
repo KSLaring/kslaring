@@ -760,7 +760,7 @@ class format_classroom extends format_base {
                         0 => 'style="width:95%;"'
                     )
                 )
-                
+
             );
             $courseformatoptions = array_merge_recursive($courseformatoptions,
                 $courseformatoptionsedit);
@@ -880,7 +880,7 @@ class format_classroom extends format_base {
 
         return $elements;
     }
-    
+
     /**
      * Updates format options for a course
      *
@@ -937,7 +937,7 @@ class format_classroom extends format_base {
                     //if_homepage
 
                     break;
-                
+
                 case 'ratings':
                     if (isset($data['ratings']) && $data['ratings']) {
                         $data[$key] = 1;
@@ -947,7 +947,7 @@ class format_classroom extends format_base {
                     //if_homepage
 
                     break;
-                
+
                 case 'participant':
                     if (isset($data['participant']) && $data['participant']) {
                         $data[$key] = 1;
@@ -957,7 +957,7 @@ class format_classroom extends format_base {
                     //if_homepage
 
                     break;
-                
+
                 case 'homesummary':
                     if (isset($data['homesummary_editor']) && ($data['homesummary_editor'])) {
                         $data[$key] = course_page::get_home_summary_editor($data['homesummary_editor']);
@@ -965,7 +965,7 @@ class format_classroom extends format_base {
                     // Homesummary_editor.
 
                     break;
-                
+
                 case 'pagegraphics':
                     if (isset($data['pagegraphics']) && isset($data['pagegraphics_filemanager'])) {
                         $graphic_id = course_page::postupdate_homegraphics_manager($this->courseid,'pagegraphics','pagegraphics_filemanager',$data['pagegraphics_filemanager']);
@@ -973,7 +973,7 @@ class format_classroom extends format_base {
                     }
 
                     break;
-                
+
                 case 'pagevideo':
                     if (isset($data['deletevideo']) && ($data['deletevideo'])) {
                         $delete = true;
@@ -989,7 +989,7 @@ class format_classroom extends format_base {
                     } // If_page_video_pagevideo_filemanager.
 
                     break;
-                
+
                 case 'course_sector':
                     if (isset($_COOKIE['sectors'])) {
                         $data['course_sector'] = $_COOKIE['sectors'];
@@ -1228,9 +1228,19 @@ class format_classroom extends format_base {
 
         if (!is_null($cm)) {
             if ($cm->modname === 'lesson') {
-                global $pageid, $USER, $lesson, $lessonoutput;
+                global $fullme, $pageid, $USER, $lesson, $lessonoutput;
 
-                // hack: page->cm is null in this state, add it here.
+                // Don't need the following information for the lessonexport.
+                if (!empty($fullme) && strpos($fullme, 'lessonexport') !== false) {
+                    return $retval;
+                }
+
+                // If no lesson page is set we don't need the following information.
+                if (is_null($pageid)) {
+                    return $retval;
+                }
+
+                // Hack: page->cm is null in this state, add it here.
                 $PAGE->set_cm($cm);
 
                 // Get the lesson library with the lesson class and create a new instance
@@ -1258,7 +1268,9 @@ class format_classroom extends format_base {
                 // and force the progressbar off to avoid the lesson's own progressbar
                 // at the bottom of the lesson page. The progressbar will be rendered
                 // independent of the lesson settings.
-                $lesson->properties()->progressbar = 1;
+                if (!empty($lesson->pages)) {
+                    $lesson->properties()->progressbar = 1;
+                }
 
                 // The lesson page with the pageid -9 is the last lesson page
                 // On the last page force the progress bar to 100% which happens when
@@ -1266,7 +1278,7 @@ class format_classroom extends format_base {
                 $showgrades = $PAGE->course->showgrades;
                 $actualpageid = null;
                 $nextpage = $lesson->get_next_page($pageid);
-                // Force the progress bar to 100%
+                // Force the progress bar to 100%.
                 if ($pageid === -9) {
                     if (!isset($USER->modattempts[$lesson->id])) {
                         $USER->modattempts[$lesson->id] = true;
@@ -1284,15 +1296,9 @@ class format_classroom extends format_base {
                     $lastpage = self::LESSON_LASTPAGE_GRADINGOFF;
                 }
                 self::$lastlessonpage = $lastpage;
-                // Check the values in the browser with ChromePHP
-//                ChromePhp::log('$showgrades: ' . $showgrades);
-//                ChromePhp::log('$pageid: ' . $pageid);
-//                ChromePhp::log('$nextpage: ' . $nextpage);
-//                ChromePhp::log('$lastpage: ' . $lastpage);
 
                 $progressbar = $lessonoutput_local->progress_bar($lesson);
                 $lesson->properties()->progressbar = 0;
-//                $lesson->progressbar = 0;
 
                 // Create the object for the course content header renderer.
                 $retval = new format_classroom_specialnav($progressbar);
