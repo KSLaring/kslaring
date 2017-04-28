@@ -2542,7 +2542,7 @@ class FS {
             // Each line file
             foreach($data as $key=>$line) {
 
-                echo $line . "</br>----</br>";
+                echo $key . " </br>---</br>" . $line . "</br>----</br>";
 
                 $lineContent    = json_decode($line);
 
