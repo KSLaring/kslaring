@@ -648,8 +648,7 @@ class FELLESDATA_CRON {
                                 $content = file($pathFile);
                             }
 
-                            //$content = file($pathFile);
-                            //FS::save_temporary_fellesdata($content,IMP_COMPANIES);
+                            FS::save_temporary_fellesdata($content,IMP_COMPANIES);
                         }else {
                             // Mark file as suspicious
                             $suspiciousPath = suspicious::mark_suspicious_file(TRADIS_FS_COMPANIES,$plugin);
@@ -1022,16 +1021,6 @@ class FELLESDATA_CRON {
                 // Remove bad characters
                 $content = str_replace('\"','"',$response);
                 // CR - LF && EOL
-                if (strpos('\r',$content)) {
-                    echo "YES \r";
-                }
-                if (strpos('\n',$content)) {
-                    echo "YES \n";
-                }
-                if (strpos('\r\n',$content)) {
-                    echo "YES \r\n";
-                }
-
                 $content = str_replace('\r',chr(13),$content);
                 $content = str_replace('\n',chr(13),$content);
                 $content = str_replace('\r\n',chr(13),$content);
