@@ -25,16 +25,6 @@
 defined('MOODLE_INTERNAL') || die();
 
 $capabilities = array(
-    'local/lessonexport:exportepub' => array(
-        'captype' => 'read',
-        'contextlevel' => CONTEXT_MODULE,
-        'archetypes' => array(
-            'student' => CAP_ALLOW,
-            'teacher' => CAP_ALLOW,
-            'editingteacher' => CAP_ALLOW,
-        ),
-    ),
-
     'local/lessonexport:exportpdf' => array(
         'captype' => 'read',
         'contextlevel' => CONTEXT_MODULE,

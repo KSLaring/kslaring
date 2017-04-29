@@ -25,24 +25,21 @@
 defined('MOODLE_INTERNAL') || die();
 
 $string['created'] = 'Created on {$a}';
-$string['exportepub'] = 'Export as epub';
 $string['exportpdf'] = 'Export as PDF';
 $string['failedinsertimage'] = 'Failed to insert image: {$a}';
 $string['filename'] = 'Export {$a->lessonname} {$a->timestamp}';
 $string['modified'] = 'Last modified by {$a->modifiedby} on {$a->timemodified}';
-$string['pluginname'] = 'Lesson Export';
+$string['pluginname'] = 'Lesson Export PDF';
 $string['printed'] = 'This document was downloaded on {$a}';
 $string['publishemail'] = 'Auto-publish email';
 $string['publishemail_desc'] = 'The email address that PDFs will be sent to automatically whenever a lesson changes';
 $string['publishername'] = 'Unknown';
-$string['lessonexport:exportepub'] = 'Export lesson as epub';
 $string['lessonexport:exportpdf'] = 'Export lesson as PDF';
 $string['lessonexportfailed'] = 'Export of lesson \'{$a}\' failed';
 $string['lessonexportfailed_body'] = 'The lesson \'{$a->name}\' has been updated, but the attempt to export and email it has failed, after {$a->exportattempts} attempts. If the lesson is updated again, then further attempts will be made to export it. The Lesson can be found at: {$a->url}.';
 $string['lessonupdated'] = 'Lesson \'{$a}\' updated';
 $string['lessonupdated_body'] = 'Updated export attached';
-$string['customstyle'] = 'Custom EPUB style rules';
-$string['customstyle_desc'] = 'Custom CSS to apply only to the exported EPUB';
+
 $string['customfont'] = 'Default PDF font family';
 $string['customfont_desc'] = 'Default font to use in the printed PDF. Possible fonts include: times (Times-Roman), timesb (Times-Bold), timesi (Times-Italic), timesbi (Times-BoldItalic), helvetica (Helvetica), helveticab (Helvetica-Bold), helveticai, helveticabi, courier (Courier), courierb (Courier-Bold), courieri (Courier-Oblique), courierbi (Courier-BoldOblique), symbol (Symbol), zapfdingbats (ZapfDingbats)';
 $string['pdfuserpassword'] = 'PDF document user password';
@@ -53,6 +50,7 @@ $string['pdfprotection'] = 'PDF permissions';
 $string['pdfprotection_desc'] = 'Permissions to apply to generated PDF documents.';
 $string['exportstrict'] = 'Strict exporting';
 $string['exportstrict_desc'] = 'Whether documents should throw exceptions or suppress them when erroring.';
+
 $string['pdffootertopleft'] = 'The top-left field of the footer.';
 $string['pdffootertopleft_desc'] = 'The top-left area of the footer to be filled with text. This may include HTML tags for formatting, links, etc.';
 $string['pdffootertopmiddle'] = 'The top-middle field of the footer.';
@@ -65,8 +63,11 @@ $string['pdffooterbottommiddle'] = 'The bottom-middle field of the footer.';
 $string['pdffooterbottommiddle_desc'] = 'The bottom-middle area of the footer to be filled with text. This may include HTML tags for formatting, links, etc.';
 $string['pdffooterbottomright'] = 'The bottom-right field of the footer.';
 $string['pdffooterbottomright_desc'] = 'The bottom-right area of the footer to be filled with text. This may include HTML tags for formatting, links, etc.';
+
 $string['pdffrontcoverpagenumbers'] = 'Front cover page numbers';
 $string['pdffrontcoverpagenumbers_desc'] = 'Toggles whether or not page numbers should be shown on the front cover of a document.';
+$string['covercolour'] = 'Front cover banner colour';
+$string['covercolour_desc'] = 'The colour of the banner on the front cover that contains the lesson title.';
 
 $string['printpermission'] = 'print';
 $string['printpermission_desc'] = 'Print the document';
@@ -79,7 +80,7 @@ $string['annotatepermission_desc'] = 'Annotate document forms';
 $string['formfillpermission'] = 'fill-forms';
 $string['formfillpermission_desc'] = 'Fill forms on the document';
 $string['extractpermission'] = 'extract';
-$string['extractpermission_desc'] = 'Extract pages fromt he document';
+$string['extractpermission_desc'] = 'Extract pages from the document';
 $string['assemblepermission'] = 'assemble';
 $string['assemblepermission_desc'] = 'Assemble the document';
 $string['highdefpermission'] = 'print-high';

@@ -28,14 +28,6 @@ if ($hassiteconfig) {
     $ADMIN->add('modules', new admin_category('lessonexport', get_string('pluginname', 'local_lessonexport')));
     $page = new admin_settingpage('lessonexportpage', get_string('pluginname', 'local_lessonexport'));
 
-    $customStyleDefault = '
-        html, body {
-            font-family: "Helvetica", sans-serif;
-        }';
-    $page->add(new admin_setting_configtextarea('local_lessonexport/customstyle',
-                                            get_string('customstyle', 'local_lessonexport'),
-                                            get_string('customstyle_desc', 'local_lessonexport'), $customStyleDefault, PARAM_RAW));
-
     $page->add(new admin_setting_configtext('local_lessonexport/customfont',
                                             get_string('customfont', 'local_lessonexport'),
                                             get_string('customfont_desc', 'local_lessonexport'), 'helvetica', PARAM_RAW));
@@ -103,6 +95,9 @@ if ($hassiteconfig) {
 
     $page->add(new admin_setting_configcheckbox('local_lessonexport/exportstrict', get_string('exportstrict', 'local_lessonexport'),
     get_string('exportstrict_desc', 'local_lessonexport'), 0));
+
+    $page->add(new admin_setting_configcolourpicker('local_lessonexport/coverColour', get_string('covercolour', 'local_lessonexport'),
+                                            get_string('covercolour_desc', 'local_lessonexport'), '#12A053'));
 
     $ADMIN->add('lessonexport', $page);
 }

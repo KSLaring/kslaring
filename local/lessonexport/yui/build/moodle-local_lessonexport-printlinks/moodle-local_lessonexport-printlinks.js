@@ -10,9 +10,9 @@ M.local_lessonexport.printlinks = {
         try {
             el = Y.one('#region-main>[role="main"]')
             el = el.one('#maincontent');
-            if (el.next('#maincontent')) {
-                el = el.next('#maincontent');
-            }
+            // if (el.next('#maincontent')) {
+            //     el = el.next('#maincontent');
+            // }
             el = el.next();
             parent = el.ancestor();
         } catch (e) {
