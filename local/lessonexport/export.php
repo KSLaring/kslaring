@@ -23,19 +23,24 @@
  */
 
 require_once(dirname(__FILE__).'/../../config.php');
-global $CFG, $DB, $PAGE;
+global $CFG, $DB, $USER, $PAGE;
 require_once($CFG->dirroot.'/local/lessonexport/lib.php');
 
 $cmid = required_param('id', PARAM_INT);
+$exporttype = required_param('type', PARAM_ALPHA);
 $cm = get_coursemodule_from_id('lesson', $cmid, 0, false, MUST_EXIST);
 $course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
 $lesson = $DB->get_record('lesson', array('id' => $cm->instance), '*', MUST_EXIST);
-$url = new moodle_url('/local/lessonexport/export.php', array('id' => $cm->id));
+$url = new moodle_url('/local/lessonexport/export.php', array('id' => $cm->id, 'type' => $exporttype));
 
 $PAGE->set_url($url);
 require_login($course, false, $cm);
 
-$export = new local_lessonexport($cm, $lesson);
+$export = new local_lessonexport($cm, $lesson, $exporttype);
 $export->check_access();
 
-$export->export();
+if ($exporttype == "pdf") {
+    $export->export(true);
+} else {
+    $export->export();
+}

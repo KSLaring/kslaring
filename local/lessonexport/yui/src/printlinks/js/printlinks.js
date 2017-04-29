@@ -1,6 +1,6 @@
 /*global M*/
 M.local_lessonexport = M.local_lessonexport || {};
-M.local_lessonexport.printlinks = {
+M.local_lessonexport.printlinks = {    
     init: function(links) {
         var el, parent, i;
 
@@ -8,14 +8,13 @@ M.local_lessonexport.printlinks = {
         try {
             el = Y.one('#region-main>[role="main"]')
             el = el.one('#maincontent');
-            // if (el.next('#maincontent')) {
-            //     el = el.next('#maincontent');
-            // }
+            if (el.next('#maincontent')) {
+                el = el.next('#maincontent');
+            }
             el = el.next();
             parent = el.ancestor();
         } catch (e) {
-            // The correct location to add the links was not found.
-            return;
+            return; // The correct location to add the links was not found.
         }
 
         for (i in links) {
