@@ -1,0 +1,13 @@
+<div class="input-append">
+    <select name="{{{selectname}}}" id="{{{selectid}}}">
+        <option value="{{{selcatid}}}" selected="selected" data-selcatpath="{{{selcatpath}}}">{{{selcatname}}}</option>
+    </select>
+
+    <!--<button class="btn btn-select" type="button" data-toggle="collapse" data-target="#friadmin-category-select-list-container">-->
+        <!--Select-->
+    <!--</button>-->
+</div>
+
+<div id="friadmin-category-select-list-container" class="collapse">
+    {{> local_friadmin/friadmin_categoryselect_category_list}}
+</div>

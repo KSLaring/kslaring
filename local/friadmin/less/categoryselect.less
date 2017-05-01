@@ -1,0 +1,61 @@
+@grayLight: #ccc;
+@kommitMenuBg: #f9f9f9;
+
+#mform-mysettings-select {
+    .input-append {
+        margin-bottom: 0;
+    }
+    .btn-select {
+        margin: 0;
+    }
+    .friadmin-category-select-list {
+        background-color: @kommitMenuBg;
+        float: left;
+        min-width: 20em;
+        padding: .5em .8em;
+
+        &.list-depth-0 {
+            border: 1px solid @grayLight;
+        }
+
+        li {
+            &.collapsed {
+                padding-bottom: .5em;
+            }
+            &:last-of-type {
+                padding-bottom: 0;
+            }
+            .tree-icon {
+                background-image: url(~"[[pix:t/collapsed_empty]]");
+                background-position: 0 2px;
+                background-repeat: no-repeat;
+                display: inline-block;
+                height: 16px;
+                margin: 0;
+                width: 16px;
+            }
+            .catname {
+                cursor: pointer;
+                display: inline-block;
+            }
+        }
+        > li {
+            &.with-children {
+                > div {
+                    > .tree-icon {
+                        background-image: url(~"[[pix:t/expanded]]");
+                        cursor: pointer;
+                    }
+                }
+                &.collapsed {
+                    > div {
+                        > .tree-icon {
+                            background-image: url(~"[[pix:t/collapsed]]");
+                            cursor: pointer;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

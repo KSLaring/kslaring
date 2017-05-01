@@ -29,17 +29,62 @@ require_once($CFG->dirroot . '/lib/formslib.php');
  */
 class local_friadmin_mysettings_select_form extends \moodleform {
     function definition() {
+        global $CFG;
+
         $mform = $this->_form;
         $customdata = $this->_customdata;
 
-        $options = array('' => get_string('seltemplcategory', 'local_friadmin'));
-        $options = $options + $customdata['categories'];
+        //$options = array('' => get_string('seltemplcategory', 'local_friadmin'));
+        //$options += $customdata['categories'];
 
-        $mform->addElement('select', 'selcategory',
-            get_string('seltemplcategorylabel', 'local_friadmin'), $options);
+        // Set up the varianbles.
+        require_once($CFG->libdir . '/coursecatlib.php');
+        $selectedcat = $customdata['localtempcategory'];
+        $selectedcategory = null;
+        if (!empty($selectedcat)) {
+            $selectedcategory = coursecat::get($selectedcat);
+        }
+        $categoryid = 0;
+        $context = (object)array(
+            'selectname' => '',
+            'selectid' => '',
+            'selcatid' => $selectedcat,
+            'selcatname' => $customdata['categories'][$selectedcat],
+            'selcatpath' => !is_null($selectedcategory) ? $selectedcategory->path : '/',
+            'catparent' => $categoryid,
+            'catlistdepth' => 0,
+            'categorylist' => array()
+        );
+
+        // Set up the data.
+        $coursecategies = coursecat::get($categoryid)->get_children();
+
+        foreach ($coursecategies as $cat) {
+            $listitem = array(
+                'catid' => $cat->id,
+                'catname' => $cat->name,
+                'catdepth' => $cat->depth,
+                'catpath' => $cat->path,
+                'withchildren' => coursecat::get($cat->id)->has_children() ? ' with-children not-loaded' : null
+            );
+            $context->categorylist[] = (object)$listitem;
+        }
+
+        //$mform->addElement('select', 'selcategory',
+        //    get_string('seltemplcategorylabel', 'local_friadmin'), $options);
+
+        // Use own extended quickform select element.
+        MoodleQuickForm::registerElementType('category_select',
+            "$CFG->dirroot/local/friadmin/classes/category_select_form_element.php",
+            'local_friadmin_category_select_form_element');
+        // Add the template data to the $attributes because Moodle seams not to be able to handle a fifth parameter.
+        $mform->addElement('category_select', 'selcategory',
+            get_string('seltemplcategorylabel', 'local_friadmin'),
+            array($selectedcat => $customdata['categories'][$selectedcat]), array('context' => $context));
         $mform->addRule('selcategory', get_string('missingseltemplcategory', 'local_friadmin'),
             'required', null, 'client');
         $mform->setDefault('selcategory', $customdata['localtempcategory']);
+
         $mform->addElement('static', 'seltemplcategorydesc', '',
             get_string('seltemplcategorydesc', 'local_friadmin'));
 
