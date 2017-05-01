@@ -43,6 +43,9 @@ if (!$friadmin->__get('superuser')) {
 /* @var $PAGE moodle_page The Moodle page object. */
 $output = $PAGE->get_renderer('local_friadmin');
 
+// Require needed JavaScript.
+$PAGE->requires->js_call_amd('local_friadmin/categoryselect', 'init');
+
 // Prepare the renderables for the page and the page areas.
 $page = new local_friadmin_mysettings_page();
 $select = new local_friadmin_mysettings_select();
