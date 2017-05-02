@@ -12,7 +12,7 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-$plugin->version    = 2016071200;                   /* The current plugin version (Date: YYYYMMDDXX)  */
+$plugin->version    = 2017040400;                   /* The current plugin version (Date: YYYYMMDDXX)  */
 //$plugin->requires = 2012061700;                   /* Requires this Moodle version                   */
 $plugin->component  = 'local_participants';         /* Full name of the plugin (used for diagnostics) */
 

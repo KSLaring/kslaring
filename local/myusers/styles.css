@@ -1,0 +1,153 @@
+.col_rol {
+    max-width: 100px!important;
+    text-align: left;
+    text-justify:inter-word;
+    cursor: default;
+    word-wrap: break-word;
+}
+
+
+.block_my_users {
+    width: 100%;
+    display:block;
+}
+
+.block_my_users .button_order {
+    margin: 0px;
+    padding: 0px;
+    text-decoration: underline;
+    display: inline-block;
+    height: 20px;
+    line-height: 20px;
+    color:  #000;
+    font:bold 12px Verdana,Verdana Pro,sans-serif;
+    background-color:  #d2d2d2;
+}
+
+.block_my_users table {
+    width: 100%;
+    border-collapse:collapse;
+    display: table;
+    margin-top:15px;
+    margin-bottom: 15px;
+}
+
+.block_my_users tr.header_users {
+    background-color:  #e7e7e7;
+    color:  #000;
+    padding: 0;
+    margin-bottom: 0;
+    font:bold 12px Verdana,Verdana Pro,sans-serif;
+    border-bottom: 2px solid #d8d8d8;
+    vertical-align: middle;
+    height: 30px;
+}
+
+.block_my_users td.user,
+.block_my_users th.user {
+    width: 20%;
+    text-align: left;
+    text-justify:inter-word;
+    padding: 0px 10px 0px 0px;
+}
+
+.block_my_users td.info,
+.block_my_users th.info {
+    width: 15%;
+    text-align: left;
+    text-justify:inter-word;
+    padding: 0px 10px 0px 0px;
+}
+
+.block_my_users td.action,
+.block_my_users th.action {
+    width: 15%;
+    text-align: left;
+    text-justify:inter-word;
+    padding: 0px 10px 0px 0px;
+}
+
+@media (max-width: 767px) {
+    .block_my_users {
+        float: none;
+        width: 100%;
+        display: block;
+        text-justify: inter-word;
+        word-wrap: break-word;
+    }
+
+    /* Force table to not be like tables anymore */
+    .block_my_users  tbody, tr, th, td {
+        display: block;
+    }
+
+    .block_my_users table {
+        display:block;
+        background-color: white !important;
+        width:100%;
+        margin-top:15px;
+        margin-bottom: 15px;
+    }
+
+    .block_my_users table thead tr {
+        display:none;
+    }
+
+
+    .block_my_users table tr {
+        width: 100%;
+        border: 1px solid darkgray;
+        background-color: white !important;
+        padding-bottom: 15px;
+    }
+
+    .block_my_users table td {
+        width:100%;
+        border-top: 1px solid #f2f2f2;
+    }
+
+    .block_my_users table td.user,
+    .block_my_users table td.info,
+    .block_my_users table td.action {
+        /* Behave  like a "row" */
+        position: relative;
+        padding-left: 50%;
+        width: 40%;
+        white-space: normal;
+        text-align:left;
+        background-color: white !important;
+        display: inline-block;
+        text-justify:inter-word;
+        word-wrap: break-word;
+    }
+
+    .block_my_users table td.user:before,
+    .block_my_users table td.info:before,
+    .block_my_users table td.action:before {
+        /* Now like a table header */
+        position: absolute;
+        /* Top/left values mimic padding */
+        top: 6px;
+        left: 6px;
+        width: 45%;
+        padding-right: 5px;
+        text-align:left;
+        text-justify:inter-word;
+        word-wrap: break-word;
+        font-weight: bold;
+        background-color: white !important;
+    }
+
+    .block_my_users table td.user:before,
+    .block_my_users table td.info:before,
+    .block_my_users table td.action:before {
+        content:attr(data-th);
+        background-color: white !important;
+        text-justify:inter-word;
+        word-wrap: break-word;
+        color:  #000;
+        font:bold 12px Verdana,Verdana Pro,sans-serif;
+    }
+
+}
+

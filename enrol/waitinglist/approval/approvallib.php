@@ -201,7 +201,7 @@ Class Approval {
      * @param           int     $seats      Seats
      * @param           int     $waitingId  Id enrol waiting list
      *
-     * @return          stdClass
+     * @return          array
      * @throws          Exception
      *
      * @creationDate    28/12/2015
@@ -698,6 +698,9 @@ Class Approval {
         $lnkCourse  = null;
 
         try {
+            // Return course
+            $url        = new moodle_url('/course/view.php',array('id' => $approvalRequests->id));
+
             $content .= html_writer::start_div('block_approval');
                 // Name Course
                 $content .= self::add_name_course($approvalRequests->id,$approvalRequests->name);
@@ -711,13 +714,14 @@ Class Approval {
                     // Basic Info
                     $content .= self::add_basic_info($approvalRequests);
 
+                    $content .= '</br>';
+                    $content .= $OUTPUT->action_link($url,get_string('rpt_back','enrol_waitinglist'));
+
                     // Requests
                     $content .= self::add_requests_info($approvalRequests);
                 }//if_requests
 
                 // Return to the course
-                $url        = new moodle_url('/course/view.php',array('id' => $approvalRequests->id));
-                $content .= '</br>';
                 $content .= $OUTPUT->action_link($url,get_string('rpt_back','enrol_waitinglist'));
             $content .= html_writer::end_div();//block_approval
 
@@ -1997,6 +2001,7 @@ Class Approval {
                         LEFT JOIN {report_gen_companydata}  co	ON	co.id	= 	ea.companyid
                      WHERE	      ea.courseid 		= :course
                         AND       ea.waitinglistid 	= :waiting
+                        AND       ea.unenrol        = 0
                      ORDER BY     u.firstname,u.lastname ";
 
             // Execute
@@ -2409,6 +2414,13 @@ Class Approval {
         $params         = null;
 
         try {
+            // Headers
+            $strName        = get_string('rpt_name','enrol_waitinglist');
+            $strMail        = get_string('rpt_mail','enrol_waitinglist');
+            $strPlace       = get_string('rpt_workplace','enrol_waitinglist');
+            $strArguments   = get_string('rpt_arguments','enrol_waitinglist');
+            $strAction      = get_string('rpt_action','enrol_waitinglist');
+
             // Params Link Action
             $params = array();
             $params['co'] = $courseId;
@@ -2420,24 +2432,24 @@ Class Approval {
                 $params['act']  = null;
                 $content .= html_writer::start_tag('tr');
                     // User Name
-                    $content .= html_writer::start_tag('td',array('class' => 'user'));
+                    $content .= html_writer::start_tag('td',array('class' => 'user','data-th' => $strName));
                         $lnkUser = new moodle_url('/user/profile.php',array('id' => $request->user));
                         $content .= '<a href="' . $lnkUser . '">' . $request->name . '</a>';;
                     $content .= html_writer::end_tag('td');
                     // Workplace
-                    $content .= html_writer::start_tag('td',array('class' => 'user'));
+                    $content .= html_writer::start_tag('td',array('class' => 'user','data-th' => $strPlace));
                         $content .= $request->arbeidssted;
                     $content .= html_writer::end_tag('td');
                     // Mail
-                    $content .= html_writer::start_tag('td',array('class' => 'info'));
+                    $content .= html_writer::start_tag('td',array('class' => 'info','data-th' => $strMail));
                         $content .= $request->email;
                     $content .= html_writer::end_tag('td');
                     // Arguments
-                    $content .= html_writer::start_tag('td',array('class' => 'info'));
+                    $content .= html_writer::start_tag('td',array('class' => 'info','data-th' => $strArguments));
                         $content .= $request->arguments;
                     $content .= html_writer::end_tag('td');
                     // Action
-                    $content .= html_writer::start_tag('td',array('class' => 'action'));
+                    $content .= html_writer::start_tag('td',array('class' => 'action','data-th' => $strAction));
                         // Approve Action
                         $params['id'] = $request->user;
                         $params['act'] = APPROVED_ACTION;

@@ -133,21 +133,21 @@ class course_report {
         $inThree            = null;
 
         try {
-            /* Course Report - Basic Information */
-            $course_id     = $data_form[REPORT_MANAGER_COURSE_LIST];
-            $course_report = self::Get_CourseBasicInfo($course_id);
+            // Course Report - Basic Information
+            $course_id      = $data_form[REPORT_MANAGER_COURSE_LIST];
+            $course_report  = self::Get_CourseBasicInfo($course_id);
 
-            /* Clean Temporary */
+            // Clean temporary data
             self::CleanTemporary($course_id);
 
-            /* Get the rest of data to display          */
-            /* Users and status of each user by company */
+            // Get the rest of data to displat
+            // Users and status of each user by company
             if ($course_report) {
                 $course_report->rpt                = $data_form['rpt'];
                 $course_report->completed_before   = $data_form[REPORT_MANAGER_COMPLETED_LIST];
 
-                /* Get My Companies by Level    */
-                if (($IsReporter) && !is_siteadmin($USER->id)) {
+                // Get companies connected with user by level
+                if ($IsReporter) {
                     $inOne   = $my_hierarchy->competence[$data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'0']]->levelOne;
                     $inTwo   = $my_hierarchy->competence[$data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'0']]->levelTwo;
                     $inThree = $my_hierarchy->competence[$data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'0']]->levelThree;
@@ -155,28 +155,35 @@ class course_report {
                     list($inZero,$inOne,$inTwo,$inThree) = CompetenceManager::GetMyCompanies_By_Level($my_hierarchy->competence,$my_hierarchy->my_level);
                 }//if_reporter
 
-                /* Job Roles Selected   */
+                // Job roles selected
                 $course_report->job_roles = self::Get_JobRolesCourse_Report($data_form);
 
-                /* Get Companies with Employees  */
+                // Companies with employees
+                if ($data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'3']) {
+                    $inThree = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'3'];
+                }
                 $companiesEmployees = self::GetCompaniesEmployees($data_form,$inOne,$inTwo,$inThree);
                 if ($companiesEmployees) {
-                    /* Get information to display by level          */
-                    /* Level zero    - That's common for all levels  */
+                    // Level Zero - Common for all levels
                     $course_report->levelZero   = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'0'];
                     $course_report->zero_name   = CompetenceManager::GetCompany_Name($data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'0']);
+                    $course_report->levelOne    = null;
+                    $course_report->levelTwo    = null;
+                    $course_report->levelThree  = null;
+                    
+                    // Get information to display by level
                     $USER->levelZero            = $course_report->levelZero;
                     $USER->courseReport         = $course_id;
 
-                    /* Get Info Course   */
+                    // Get info course
                     self::GetUsers_EnrolledIn($course_id,$course_report->job_roles,$companiesEmployees->levelThree);
                     self::GetUsers_NotEnrolIn($course_id,$course_report->job_roles,$companiesEmployees->levelThree);
 
-                    /* Check Level  */
+                    // Check level
                     switch ($data_form['rpt']) {
                         case 0:
-                            /* Level Zero    */
-                            /* Get info connected with Level Zero */
+                            // Level zero
+                            // Get info connected with level zero
                             if ($companiesEmployees->levelOne) {
                                 self::Get_CompanyReportInfo_LevelOne($course_report,$companiesEmployees);
                             }else {
@@ -185,13 +192,13 @@ class course_report {
 
                             break;
                         case 1:
-                            /* Level One    */
+                            // Level one
                             $levelOne = new stdClass();
                             $levelOne->id           = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'1'];
                             $levelOne->name         = CompetenceManager::GetCompany_Name($data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'1']);
                             $levelOne->levelTwo     = null;
 
-                            /* Get info connected with Level One */
+                            // Get info connected with level one
                             if ($companiesEmployees->levelTwo) {
                                 $levelTwo   = CompetenceManager::GetCompaniesInfo($companiesEmployees->levelTwo);
                                 if ($levelTwo) {
@@ -213,20 +220,20 @@ class course_report {
 
                             break;
                         case 2:
-                            /* Level One    */
+                            // Level one
                             $levelOne = new stdClass();
                             $levelOne->id                               = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'1'];
                             $levelOne->name                             = CompetenceManager::GetCompany_Name($data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'1']);
                             $levelOne->levelTwo                         = null;
                             $course_report->levelOne[$levelOne->id]     = $levelOne;
 
-                            /* Level Two    */
+                            // Level two
                             $levelTwo = new stdClass();
                             $levelTwo->id           = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'2'];
                             $levelTwo->name         = CompetenceManager::GetCompany_Name($data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'2']);
                             $levelTwo->levelThree   = null;
 
-                            /* Get info connected with Level Two */
+                            // Get info connected with level two
                             if ($companiesEmployees->levelThree) {
                                 $levelThree   = CompetenceManager::GetCompaniesInfo($companiesEmployees->levelThree);
                                 if ($levelThree) {
@@ -246,39 +253,27 @@ class course_report {
                                 $course_report->levelTwo[$levelTwo->id] = $levelTwo;
                             }//if_companies_employees_levelthree
 
-
                             break;
                         case 3:
-                            /* Level One    */
+                            // Level one
                             $levelOne = new stdClass();
                             $levelOne->id                               = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'1'];
                             $levelOne->name                             = CompetenceManager::GetCompany_Name($data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'1']);
                             $levelOne->levelTwo                         = null;
                             $course_report->levelOne[$levelOne->id]     = $levelOne;
 
-                            /* Level Two    */
+                            // Level two
                             $levelTwo = new stdClass();
                             $levelTwo->id                               = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'2'];
                             $levelTwo->name                             = CompetenceManager::GetCompany_Name($data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'2']);
                             $levelTwo->levelThree                       = null;
                             $course_report->levelTwo[$levelTwo->id]     = $levelTwo;
 
-                            /* Get Info connected with the level three  */
+                            // Get info connected with level three
                             if ($companiesEmployees->levelThree) {
                                 $levelThree   = CompetenceManager::GetCompaniesInfo($companiesEmployees->levelThree);
-                                /* Get Company-ies selected */
-                                $selectorThree = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'3'];
-                                $output         = array_slice($selectorThree, 0, 1);
-                                $selectorThree   = array_diff($selectorThree,$output);
 
-                                if ($selectorThree) {
-                                    $company_keys   = array_keys($levelThree);
-                                    $companies      = array_intersect_key($data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'3'],$company_keys);
-                                    $companies      = array_fill_keys($companies,null);
-                                    $levelThree     = array_intersect_key($levelThree,$companies);
-                                }
-
-                                /* Level Three  */
+                                // Level three
                                 if ($levelThree) {
                                     $course_report->levelThree   = self::Get_CompanyReportInfo_LevelThree($course_report,$levelThree);
                                 }else {
@@ -287,14 +282,14 @@ class course_report {
                             }else {
                                 $course_report->levelThree = null;
                             }//if_employees_levelthree
-                            
+
                             break;
                         default:
                             $course_report = null;
 
                             break;
-                    }//switch_level
-                }
+                    }//switch_rpt
+                }//if_companies_with employees
             }//if_course_report
 
             return $course_report;
@@ -324,10 +319,10 @@ class course_report {
         $companies  = null;
 
         try {
-            /* Level Zero */
+            // Level zero
             $levelZero = $data[MANAGER_COURSE_STRUCTURE_LEVEL .'0'];
 
-            /* Get Rest of the levels   */
+            // Rest of the levels
             switch ($data['rpt']) {
                 case 1:
                     $levelOne = array('0' => $data[MANAGER_COURSE_STRUCTURE_LEVEL .'1']);
@@ -393,7 +388,7 @@ class course_report {
                 $inThree = 0;
             }
 
-            /* Get Companies with Employees */
+            // Get only companies with employees
             $companies = CompetenceManager::GetCompanies_WithEmployees($levelZero,$inOne,$inTwo,$inThree);
 
             return $companies;
@@ -686,47 +681,47 @@ class course_report {
         $params         = null;
 
         try {
-            /* Extra Info   */
+            // Extra info
             $jobKeys    = $jobRoles ? array_flip(array_keys($jobRoles)) : null;
             $managerKey = $_SESSION['USER']->sesskey;
 
-            /* Criteria */
+            // Criteria
             $params = array();
             $params['course'] = $courseId;
 
-            /* SQL Instruction  */
-            $sql = " SELECT	CONCAT(ue.id,'_',uic.id) as 'id',
-                            u.id 			                      as 'user',
-                            CONCAT(u.firstname, ' ', u.lastname)  as 'name',
-                            uic.companyid,
-                            uic.jobroles,
-                            IF (cc.timecompleted,cc.timecompleted,0) as 'timecompleted'
-                     FROM			{user_enrolments}			ue
-                        JOIN		{enrol}						e	ON 	e.id 	    = ue.enrolid
-                                                                    AND	e.courseid 	= :course
-                                                                    AND	e.status	= 0
-                        JOIN		{user}						u	ON 	u.id 		= ue.userid
-                                                                    AND	u.deleted	= 0
-                        JOIN		{user_info_competence_data}	uic	ON 	uic.userid 	= u.id
-                        LEFT JOIN	{course_completions}		cc	ON 	cc.userid	= uic.userid
-                                                                    AND cc.course 	= e.courseid ";
+            // SQL Instruction - Users enrolled with time completion
+            $sql = " SELECT	      CONCAT(ue.id,'_',uic.id) as 'id',
+                                  u.id 			                      as 'user',
+                                  CONCAT(u.firstname, ' ', u.lastname)  as 'name',
+                                  uic.companyid,
+                                  uic.jobroles,
+                                  IF (cc.timecompleted,cc.timecompleted,0) as 'timecompleted'
+                     FROM		  {user_enrolments}			  ue
+                        JOIN	  {enrol}					  e	  ON 	e.id 	    = ue.enrolid
+                                                                  AND	e.courseid 	= :course
+                                                                  AND	e.status	= 0
+                        JOIN	  {user}					  u	  ON 	u.id 		= ue.userid
+                                                                  AND	u.deleted	= 0
+                        JOIN      {user_info_competence_data} uic ON 	uic.userid 	= u.id
+                        LEFT JOIN {course_completions}		  cc  ON 	cc.userid	= uic.userid
+                                                                  AND   cc.course 	= e.courseid ";
 
-            /* Companies Criteria    */
+            // Companies filter criteria
             if ($companies) {
                 $sql .= " WHERE uic.companyid IN ($companies) ";
             }//if_companies
 
-            /* ORDER BY */
+            // Order by
             $sql .= " ORDER BY e.courseid,u.id ";
 
-            /* Execute  */
+            // Execute
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 foreach ($rdo as $instance) {
                     if (isset($SESSION->job_roles) && $SESSION->job_roles && $jobRoles) {
                         $jrUsers = array_flip(explode(',',$instance->jobroles));
                         if (array_intersect_key($jobKeys,$jrUsers)) {
-                            /* Info Course Report  */
+                            // Info Course report
                             $infoTempReport = new stdClass();
                             $infoTempReport->manager    = $managerKey;
                             $infoTempReport->report     = 'course';
@@ -747,11 +742,11 @@ class course_report {
                                 $infoTempReport->timecompleted  = null;
                             }//if_completed
 
-                            /* Execute  */
+                            // Execute
                             $DB->insert_record('report_gen_temp',$infoTempReport);
                         }//if_job_role
                     }else {
-                        /* Info Course Report  */
+                        // Info Course report
                         $infoTempReport = new stdClass();
                         $infoTempReport->manager    = $managerKey;
                         $infoTempReport->report     = 'course';
@@ -772,7 +767,7 @@ class course_report {
                             $infoTempReport->timecompleted  = null;
                         }//if_completed
 
-                        /* Execute  */
+                        // Execute
                         $DB->insert_record('report_gen_temp',$infoTempReport);
                     }//if_jobroles_selected
                 }//for_rdo
@@ -806,23 +801,23 @@ class course_report {
         $infoTempReport = null;
 
         try {
-            /* Extra Info   */
+            // Extra info
             $jobKeys    = $jobRoles ? array_flip(array_keys($jobRoles)) : null;
             $managerKey = $_SESSION['USER']->sesskey;
 
-            /* Search Criteria  */
+            // Search criteria
             $params = array();
             $params['course']  = $courseId;
 
-            /* SQL Instruction  */
-            $sql = " SELECT		CONCAT(u.id,'_',uic.id),
-                                u.id,
-                                CONCAT(u.firstname, ' ', u.lastname)  as 'name',
-                                uic.companyid,
-                                uic.jobroles
-                     FROM			{user} 						  u
-                        JOIN		{user_info_competence_data}	  uic		ON 	uic.userid 		= u.id
-                        LEFT JOIN	{report_gen_temp}			  tmp		ON 	tmp.userid 		= uic.userid
+            // SQL Isntruction - Get users not enrolled
+            $sql = " SELECT		  CONCAT(u.id,'_',uic.id),
+                                  u.id,
+                                  CONCAT(u.firstname, ' ', u.lastname)  as 'name',
+                                  uic.companyid,
+                                  uic.jobroles
+                     FROM		  {user} 						  u
+                        JOIN	  {user_info_competence_data}	  uic		ON 	uic.userid 		= u.id
+                        LEFT JOIN {report_gen_temp}			  tmp		ON 	tmp.userid 		= uic.userid
                                                                             AND	tmp.outcomeid	IS NULL
                                                                             AND tmp.report      = 'course'
                                                                             AND tmp.courseid 	= :course
@@ -830,19 +825,19 @@ class course_report {
                         AND	u.username != 'guest'
                         AND	tmp.id IS NULL ";
 
-            /* Companies Criteria    */
+            // Companies Criteria
             if ($companies) {
                 $sql .= " AND uic.companyid IN ($companies) ";
             }//if_companies
 
-            /* Execute  */
+            // Excute
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 foreach ($rdo as $instance) {
                     if (isset($SESSION->job_roles) && $SESSION->job_roles && $jobRoles) {
                         $jrUsers = array_flip(explode(',',$instance->jobroles));
                         if (array_intersect_key($jobKeys,$jrUsers)) {
-                            /* Info Course Report  */
+                            // Info course report
                             $infoTempReport = new stdClass();
                             $infoTempReport->manager        = $managerKey;
                             $infoTempReport->report         = 'course';
@@ -856,11 +851,11 @@ class course_report {
                             $infoTempReport->notenrol       = 1;
                             $infoTempReport->timecompleted  = null;
 
-                            /* Execute  */
+                            // Execute
                             $DB->insert_record('report_gen_temp',$infoTempReport);
                         }//if_job_role
                     }else {
-                        /* Info Course Report  */
+                        // Info Course report
                         $infoTempReport = new stdClass();
                         $infoTempReport->manager        = $managerKey;
                         $infoTempReport->report         = 'course';
@@ -874,7 +869,7 @@ class course_report {
                         $infoTempReport->notenrol       = 1;
                         $infoTempReport->timecompleted  = null;
 
-                        /* Execute  */
+                        // Execute
                         $DB->insert_record('report_gen_temp',$infoTempReport);
                     }//if_jobroles_selected
                 }//for_rdo
@@ -1069,11 +1064,11 @@ class course_report {
         $output         = null;
 
         try {
-            /* Get Information Level One    */
+            // Get information connected with level one
             $levelOne       = CompetenceManager::GetCompaniesInfo($companiesEmployees->levelOne);
 
             foreach ($levelOne as $id => $company) {
-                /* Get Level Two connected with   */
+                // Get level two connected two
                 $company_list   = CompetenceManager::GetCompanies_LevelList(2,$id,$companiesEmployees->levelTwo);
                 $output         = array_slice($company_list, 0, 1);
                 $company_list   = array_diff($company_list,$output);
@@ -1081,7 +1076,7 @@ class course_report {
                 if ($company_list) {
                     $levelTwo       = self::Get_CompanyReportInfo_LevelTwo($course_report,$company_list,$companiesEmployees->levelThree);
                     if ($levelTwo) {
-                        /* Level One Info   */
+                        // Level one
                         $companyInfo = new stdClass();
                         $companyInfo->name      = $company;
                         $companyInfo->id        = $id;
@@ -1132,19 +1127,19 @@ class course_report {
         $output         = null;
 
         try {
-            /* Get Information Level Two    */
+            // Get information level two
             foreach ($parent_lst as $id=>$company) {
-                /* Get Level Three connected with   */
+                // Get level three connected with
                 $company_list   = CompetenceManager::GetCompanies_LevelList(3,$id,$inThree);
                 $output         = array_slice($company_list, 0, 1);
                 $company_list   = array_diff($company_list,$output);
 
-                /* Level Three */
+                // Level three
                 if ($company_list) {
-                    /* Get Info Level Three  */
+                    // Get info level three
                     $levelThree = self::Get_CompanyReportInfo_LevelThree($course_report,$company_list);
                     if ($levelThree) {
-                        /* Level two Info   */
+                        // Level two info
                         $companyInfo = new stdClass();
                         $companyInfo->name       = $company;
                         $companyInfo->id         = $id;
@@ -1186,17 +1181,17 @@ class course_report {
         $levelThree     = array();
 
         try {
-            /* Get Information Level Three  */
+            // Get information level three
             if ($company_list) {
                 foreach ($company_list as $id=>$company) {
-                    /* Company Info */
+                    // Company info
                     $company_info = new stdClass();
                     $company_info->name       = $company;
                     $company_info->id         = $id;
-                    /* Users Completed, Not Completed && Not Enrol          */
+                    // Users completed, not completed && not enrolled
                     list($company_info->completed,$company_info->not_completed,$company_info->not_enrol) = self::GetUsers_CompanyCourse($id,$course_report->id,$course_report->completed_before);
 
-                    /* Add Level Three  */
+                    // Add level three
                     if ($company_info->completed || $company_info->not_completed || $company_info->not_enrol) {
                         $levelThree[$id] = $company_info;
                     }//if_uses
@@ -1647,20 +1642,20 @@ class course_report {
         $color              = null;
 
         try {
-            /* Url to back */
+            // Url to back
             $return_url = new moodle_url('/report/manager/course_report/course_report_level.php',array('rpt' => $course_report->rpt));
             $indexUrl   = new moodle_url('/report/manager/index.php');
 
-            /* Course Report    */
+            // Course report
             $out_report .= html_writer::start_div('outcome_rpt_div');
-                /* Course Report Header */
+                // Header
                 $out_report .= html_writer::start_div('outcome_detail_rpt');
-                    /* Course Title */
+                    // Course name
                     $out_report .= '<h3>';
                         $out_report .= get_string('course') . ' "' . $course_report->name . '"';
                     $out_report .= '</h3>';
 
-                    /* Outcomes Connected         */
+                    // Outcomes connected
                     $out_report .= '<h5>';
                         $out_report .= get_string('outcomes', 'report_manager');
                     $out_report .= '</h5>';
@@ -1676,7 +1671,7 @@ class course_report {
                         $out_report .= '<h6>-</h6>';
                     }//if_outcomes
 
-                    /* Job Roles    */
+                    // Job roles
                     $out_report .= '<h5>';
                         $out_report .= get_string('job_roles', 'report_manager');
                     $out_report .= '</h5>';
@@ -1686,35 +1681,33 @@ class course_report {
                         $out_report .= '</h6>';
                     }//if_job_roles
 
-                    /* Company Levels   */
+                    // Company levels
                     $out_report .= '</br>';
                     $out_report .= '<ul class="level-list unlist">';
-                        /* Level Zero       */
+                        // Level zero
                         $out_report .= '<li>';
                             $out_report .= '<h3>'. get_string('company_structure_level', 'report_manager', 0) . ': ' . $course_report->zero_name . '</h3>';
                         $out_report .= '</li>';
-                        /* Level One        */
+                        // Level one
                         $levelOne = array_shift($course_report->levelOne);
                         $out_report .= '<li>';
                             $out_report .= '<h3>'. get_string('company_structure_level', 'report_manager', 1) . ': ' . $levelOne->name . '</h3>';
                         $out_report .= '</li>';
-                        /* Level Two    */
+                        // Level two
                         $levelTwo = array_shift($course_report->levelTwo);
-                        if ($levelTwo) {
-                            $out_report .= '<li>';
-                                $out_report .= '<h3>'. get_string('company_structure_level', 'report_manager', 2) . ': ' . $levelTwo->name . '</h3>';
-                            $out_report .= '</li>';
-                        }//if_level_two
+                        $out_report .= '<li>';
+                            $out_report .= '<h3>'. get_string('company_structure_level', 'report_manager', 2) . ': ' . $levelTwo->name . '</h3>';
+                        $out_report .= '</li>';
                     $out_report .= '</ul>';
 
-                    /* Expiration Before    */
+                    // Completed last
                     $options = CompetenceManager::GetCompletedList();
                     $out_report .= html_writer::start_div('expiration');
                         $out_report .= str_replace(' ...',' : ',get_string('completed_list','report_manager')) .  $options[$course_report->completed_before];
                     $out_report .= html_writer::end_div();//expiration
                 $out_report .= html_writer::end_div();//outcome_detail_rpt
 
-                /* Level Three  */
+                // Level three
                 $levelThree = $levelTwo->levelThree;
                 if (!$levelThree) {
                     $out_report .= '<h3>';
@@ -1932,13 +1925,13 @@ class course_report {
             /* Col One  */
             $header_company .= html_writer::start_div('header_col_one');
                 $header_company .= '<button class="toggle_outcome_company_rpt" type="image" id="' . $toogle . '"><img id="' . $toogle . '_img' . '" src="' . $img . '">' . '</button>';
-            $header_company .= html_writer::end_div('');//header_col_one
+            $header_company .= html_writer::end_div();//header_col_one
 
             /* Col Two  */
             $header_company .= html_writer::start_div('header_col_two');
                 $header_company .= '<h4>' . $company . '</h4>';
-            $header_company .= html_writer::end_div('');//header_col_two
-        $header_company .= html_writer::end_div('');//header_outcome_company_rpt
+            $header_company .= html_writer::end_div();//header_col_two
+        $header_company .= html_writer::end_div();//header_outcome_company_rpt
 
         return $header_company;
     }//Add_CompanyHeader_Screen
@@ -1964,13 +1957,13 @@ class course_report {
             /* Col One  */
             $header_company .= html_writer::start_div('header_col_one');
                 $header_company .= '<button class="toggle_outcome_company_rpt" type="image" id="' . $toogle . '"><img id="' . $toogle . '_img' . '" src="' . $img . '">' . '</button>';
-            $header_company .= html_writer::end_div('');//header_col_one
+            $header_company .= html_writer::end_div();//header_col_one
 
             /* Col Two  */
             $header_company .= html_writer::start_div('header_col_two');
                 $header_company .= '<h5>' . $company . '</h5>';
-            $header_company .= html_writer::end_div('');//header_col_two
-        $header_company .= html_writer::end_div('');//header_outcome_company_rpt
+            $header_company .= html_writer::end_div();//header_col_two
+        $header_company .= html_writer::end_div();//header_outcome_company_rpt
 
         return $header_company;
     }//Add_CompanyHeader_Screen
@@ -1997,28 +1990,28 @@ class course_report {
         $header_table .= html_writer::start_tag('table');
             $header_table .= html_writer::start_tag('tr',array('class' => 'head'));
                 /* Empty Col   */
-                $header_table .= html_writer::start_tag('td',array('class' => 'head_first'));
-                $header_table .= html_writer::end_tag('td');
+                $header_table .= html_writer::start_tag('th',array('class' => 'head_first'));
+                $header_table .= html_writer::end_tag('th');
                 /* Company          */
-                $header_table .= html_writer::start_tag('td',array('class' => 'head_company'));
+                $header_table .= html_writer::start_tag('th',array('class' => 'head_company'));
                     $header_table .= $str_company;
-                $header_table .= html_writer::end_tag('td');
+                $header_table .= html_writer::end_tag('th');
                 /* Not Enrol        */
-                $header_table .= html_writer::start_tag('td',array('class' => 'head_status'));
+                $header_table .= html_writer::start_tag('th',array('class' => 'head_status'));
                     $header_table .= $str_not_enrol;
-                $header_table .= html_writer::end_tag('td');
+                $header_table .= html_writer::end_tag('th');
                 /* Not Completed    */
-                $header_table .= html_writer::start_tag('td',array('class' => 'head_status'));
+                $header_table .= html_writer::start_tag('th',array('class' => 'head_status'));
                     $header_table .= $str_not_completed;
-                $header_table .= html_writer::end_tag('td');
+                $header_table .= html_writer::end_tag('th');
                 /* Completed        */
-                $header_table .= html_writer::start_tag('td',array('class' => 'head_status'));
+                $header_table .= html_writer::start_tag('th',array('class' => 'head_status'));
                     $header_table .= $str_completed;
-                $header_table .= html_writer::end_tag('td');
+                $header_table .= html_writer::end_tag('th');
                 /* Total            */
-                $header_table .= html_writer::start_tag('td',array('class' => 'head_status'));
+                $header_table .= html_writer::start_tag('th',array('class' => 'head_status'));
                     $header_table .= $str_total;
-                $header_table .= html_writer::end_tag('td');
+                $header_table .= html_writer::end_tag('th');
             $header_table .= html_writer::end_tag('tr');
         $header_table .= html_writer::end_tag('table');
 
@@ -2040,30 +2033,36 @@ class course_report {
     private static function Add_ContentTable_LevelTwo_Screen($url_level_three,$company_info,$color) {
         /* Variables    */
         $content    = null;
-        //$url_level_three    = null;
+        // Headers
+        $str_company        = get_string('company','report_manager');
+        $str_not_enrol      = get_string('not_start','report_manager');
+        $str_not_completed  = get_string('progress','report_manager');
+        $str_completed      = get_string('completed','report_manager');
+        $str_total          = get_string('count','report_manager');
+
 
         $content .= html_writer::start_tag('tr',array('class' => $color));
             /* Empty Col   */
             $content .= html_writer::start_tag('td',array('class' => 'first'));
             $content .= html_writer::end_tag('td');
             /* Company          */
-            $content .= html_writer::start_tag('td',array('class' => 'company'));
+            $content .= html_writer::start_tag('td',array('class' => 'company','data-th' => $str_company));
                 $content .= '<a href="' . $url_level_three . '">' . $company_info->name . '</a>';
             $content .= html_writer::end_tag('td');
             /* Not Enrol        */
-            $content .= html_writer::start_tag('td',array('class' => 'status'));
+            $content .= html_writer::start_tag('td',array('class' => 'status','data-th' => $str_not_enrol));
                 $content .= count($company_info->not_enrol);
             $content .= html_writer::end_tag('td');
             /* Not Completed    */
-            $content .= html_writer::start_tag('td',array('class' => 'status'));
+            $content .= html_writer::start_tag('td',array('class' => 'status','data-th' => $str_not_completed));
                 $content .= count($company_info->not_completed);
             $content .= html_writer::end_tag('td');
             /* Completed        */
-            $content .= html_writer::start_tag('td',array('class' => 'status'));
+            $content .= html_writer::start_tag('td',array('class' => 'status','data-th' => $str_completed));
                 $content .= count($company_info->completed);
             $content .= html_writer::end_tag('td');
             /* Total            */
-            $content .= html_writer::start_tag('td',array('class' => 'status'));
+            $content .= html_writer::start_tag('td',array('class' => 'status','data-th' => $str_total));
                 $content .= count($company_info->completed) + count($company_info->not_completed) + count($company_info->not_enrol);
             $content .= html_writer::end_tag('td');
         $content .= html_writer::end_tag('tr');
@@ -2091,23 +2090,23 @@ class course_report {
         $header_table .= html_writer::start_tag('table');
             $header_table .= html_writer::start_tag('tr',array('class' => 'head'));
                 /* Empty Col   */
-                $header_table .= html_writer::start_tag('td',array('class' => 'head_first'));
-                $header_table .= html_writer::end_tag('td');
+                $header_table .= html_writer::start_tag('th',array('class' => 'head_first'));
+                $header_table .= html_writer::end_tag('th');
 
                 /* Course Col   */
-                $header_table .= html_writer::start_tag('td',array('class' => 'head_course'));
+                $header_table .= html_writer::start_tag('th',array('class' => 'head_course'));
                     $header_table .= $str_user;
-                $header_table .= html_writer::end_tag('td');
+                $header_table .= html_writer::end_tag('th');
 
                 /* Status Col   */
-                $header_table .= html_writer::start_tag('td',array('class' => 'head_status'));
+                $header_table .= html_writer::start_tag('th',array('class' => 'head_status'));
                     $header_table .= $str_state;
-                $header_table .= html_writer::end_tag('td');
+                $header_table .= html_writer::end_tag('th');
 
                 /* Completion Col   */
-                $header_table .= html_writer::start_tag('td',array('class' => 'head_status'));
+                $header_table .= html_writer::start_tag('th',array('class' => 'head_status'));
                     $header_table .= $str_completion;
-                $header_table .= html_writer::end_tag('td');
+                $header_table .= html_writer::end_tag('th');
             $header_table .= html_writer::end_tag('tr');
         $header_table .= html_writer::end_tag('table');
 
@@ -2132,6 +2131,10 @@ class course_report {
         $completed      = null;
         $not_completed  = null;
         $not_enrol      = null;
+        // Headers
+        $str_user       = get_string('user');
+        $str_state      = get_string('state','local_tracker_manager');
+        $str_completion = get_string('completion_time','local_tracker_manager');
 
         $content .= html_writer::start_tag('table');
             /* Completed    */
@@ -2144,16 +2147,16 @@ class course_report {
                         $content .= html_writer::start_tag('td',array('class' => 'first'));
                         $content .= html_writer::end_tag('td');
                         /* User Col   */
-                        $content .= html_writer::start_tag('td',array('class' => 'course'));
+                        $content .= html_writer::start_tag('td',array('class' => 'course','data-th' => $str_user));
                             $content .= $user->name;
                         $content .= html_writer::end_tag('td');
                         /* Status Col   */
-                        $content .= html_writer::start_tag('td',array('class' => 'status'));
+                        $content .= html_writer::start_tag('td',array('class' => 'status','data-th' => $str_state));
                             $content .= get_string('outcome_course_finished','local_tracker_manager');;
                         $content .= html_writer::end_tag('td');
 
                         /* Completion Col   */
-                        $content .= html_writer::start_tag('td',array('class' => 'status'));
+                        $content .= html_writer::start_tag('td',array('class' => 'status','data-th' => $str_completion));
                             $content .= userdate($user->completed,'%d.%m.%Y', 99, false);
                         $content .= html_writer::end_tag('td');
                     $content .= html_writer::end_tag('tr');

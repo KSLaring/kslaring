@@ -210,7 +210,7 @@ var level_structure = {
             trans.abort();
         });
 
-        var iotrans = Y.io(M.cfg.wwwroot + '/report/manager/organization.php',
+        var iotrans = Y.io(M.cfg.wwwroot + '/report/manager/structure.php',
                            {
                             method: 'POST',
                             data: 'parent=' + parent + '&levelZero=' + levelZero + '&level' + '=' + level + '&sp=' + this.sp_user + '&sesskey=' + M.cfg.sesskey,

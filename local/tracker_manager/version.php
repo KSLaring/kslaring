@@ -6,13 +6,13 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 // requires certificate module 2008080904
-$plugin->version  = 2016030700;  // The current module version (Date: YYYYMMDDXX)
+$plugin->version  = 2017032100;  // The current module version (Date: YYYYMMDDXX)
 //$plugin->requires = 2007101506;  // Requires this Moodle version
 //$plugin->cron     = 0;           // Period for cron to check this module (secs)
 $plugin->component = 'local_tracker_manager';
 
 /* Dependencies */
-$plugin->dependencies = array('report_manager'          => 2016060602,
-                              'profilefield_competence' => 2016080900);
+$plugin->dependencies = array('report_manager'          => 2017032100,
+                              'profilefield_competence' => 2017032100);
 
 ?>

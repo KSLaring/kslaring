@@ -47,7 +47,6 @@ class Municipality  {
                      WHERE		uid.userid = :user_id ";
 
             /* Execute  */
-
             $rdo = $DB->get_record_sql($sql,$params);
             if ($rdo) {
                 $municipality = new stdClass();

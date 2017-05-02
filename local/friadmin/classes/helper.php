@@ -376,22 +376,32 @@ class local_friadmin_helper {
                     /* Get Template Category && Course Category */
                     $templateCatId = $pluginInfo->template_category;
 
-                    /* Get Courses category */
+                    // Get Courses category.
                     $sql = " SELECT c.id,
-                                    c.fullname,
-                                    c.format,
-                                    c.visible
-                             FROM   {course} c 
-                             WHERE  (c.format like '%classroom%' 
-                                     OR  
-                                     #c.format like '%elearning%'
-                                     #OR  
-                                     c.format like '%netcourse%')
-                                     AND 
-                                     (c.category = $templateCatId
-                                     OR
-                                     c.category =  $localtempcategory
-                                     )";
+                            c.fullname,
+                            c.format,
+                            c.visible
+                     FROM   {course} c 
+                     WHERE  (c.category = $templateCatId
+                             OR
+                             c.category =  $localtempcategory
+                             )";
+
+                    // Add the chosen course formats to the query if any.
+                    $selformats = $pluginInfo->template_list;
+
+                    if (!empty($selformats)) {
+                        $selformats = explode(',', $selformats);
+                        $formatsqlarray = array();
+                        foreach ($selformats as $formatname) {
+                            $formatsqlarray[] = 'c.format = \'' . $formatname . '\'';
+                        }
+                        $whereselformats = ' AND (';
+                        $whereselformats .= implode(' OR ', $formatsqlarray);
+                        $whereselformats .= ')';
+
+                        $sql .= $whereselformats;
+                    }
 
                     global $DB;
                     $templateCourses = $DB->get_records_sql($sql);
@@ -908,7 +918,7 @@ class local_friadmin_helper {
         $sqlWhere   = null;
         $sqlNew     = null;
         $params     = null;
-        
+
         try {
             // Search criteria
             $params = array();
@@ -983,7 +993,7 @@ class local_friadmin_helper {
             throw $ex;
         }//try_catch
     }//update_restored_instance
-    
+
     /**
      * Get the newest file in the file area.
      *

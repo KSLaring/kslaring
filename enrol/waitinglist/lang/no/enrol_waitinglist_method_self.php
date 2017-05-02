@@ -21,8 +21,8 @@
  * @copyright  2015 Justin Hunt  {@link http://poodll.com}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-$string['self_displayname'] = 'Egenpåmelding';
-$string['self_menutitle'] = 'Egenpåmelding';
+$string['self_displayname'] = 'Egenpåmelding til arrangement';
+$string['self_menutitle'] = 'Egenpåmelding til arrangement';
 $string['waitlistmessage_self'] = 'Lagt til venteliste for: {$a}';
 $string['waitlistmessagetitle_self'] = 'Lagt til venteliste for: {$a}';
 $string['waitlistmessagetext_self'] = 'Du er nå lagt til i ventelisten for kurset: {$a->coursename}!

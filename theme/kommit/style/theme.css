@@ -308,8 +308,9 @@ h6 {
 .navbar-inner {
   background-color: #1a1a1a !important;
   background-image: none;
-  border-top: 1px solid #000 !important;
-  border-bottom: 1px solid #000 !important;
+  border-top: 1px solid #1a1a1a !important;
+  border-bottom: 1px solid #1a1a1a !important;
+  border-color: #1a1a1a;
   line-height: 0;
   filter: none;
   -webkit-border-radius: 0;
@@ -382,6 +383,54 @@ h6 {
 .navbar-right .dropdown-menu > li > a {
   padding: 3px 35px;
 }
+.navbar .outer-wrapper {
+  background-color: #0e7b9e;
+  display: none;
+  float: right;
+  height: 34px;
+  margin: 3px 10px 0 0;
+  padding: 0;
+  position: relative;
+  width: 40px;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+}
+.navbar .outer-wrapper:hover {
+  background-color: #00aef0;
+}
+@media (max-width: 979px) {
+  .navbar .outer-wrapper {
+    display: block;
+  }
+}
+.navbar .bar-wrapper {
+  display: block;
+  height: 20px;
+  margin: 11px 0 0 10px;
+  padding: 0;
+  width: 22px;
+}
+.navbar .icon-bar {
+  background-color: #fff;
+  display: block;
+  height: 2px;
+  margin-bottom: 3px;
+  width: 20px;
+}
+.navbar .btn-navbar {
+  background: transparent !important;
+  top: 0;
+  left: 0;
+  margin: 0;
+  height: 40px;
+  padding: 0;
+  position: absolute;
+  width: 40px;
+}
+.navbar .btn-navbar:hover {
+  background: transparent !important;
+}
 .navbar-text {
   text-align: right;
 }
@@ -393,7 +442,7 @@ h6 {
 @media all and (max-width: 979px) {
   .navbar-text .logininfo {
     margin: 0;
-    right: 86px;
+    right: 66px;
     position: absolute;
     top: 1px;
   }
@@ -418,6 +467,16 @@ h6 {
 }
 .navbar-menues {
   position: relative;
+  *zoom: 1;
+}
+.navbar-menues:before,
+.navbar-menues:after {
+  display: table;
+  content: "";
+  line-height: 0;
+}
+.navbar-menues:after {
+  clear: both;
 }
 @media only screen and (min-width: 980px) {
   .navbar-menues {
@@ -1621,7 +1680,7 @@ td.submit input[disabled] {
   width: 97%;
 }
 p.active_tree_node a {
-  color: #00aef0 !important;
+  color: #00aef0;
 }
 .format-netcourse #region-main form,
 .format-classroom #region-main form {

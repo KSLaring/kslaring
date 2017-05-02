@@ -61,7 +61,7 @@ if ($week = optional_param('week', 0, PARAM_INT)) { // Weeks old section paramet
 $context = context_course::instance($course->id);
 
 if (($marker >= 0) && has_capability('moodle/course:setcurrentsection', $context) && confirm_sesskey()) {
-    $course->marker = $marker;
+    //$course->marker = $marker;
     course_set_marker($course->id, $marker);
 }
 
@@ -103,7 +103,8 @@ if ((!empty($displaysection)) && ($course->coursedisplay == COURSE_DISPLAY_MULTI
         $userpreference,
         $course->numsections,
         $defaulttogglepersistence,
-        $defaultuserpreference));
+        $defaultuserpreference,
+        $PAGE->user_is_editing()));
 
     $tcsettings = $courseformat->get_settings();
 

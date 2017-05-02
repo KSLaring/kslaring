@@ -37,8 +37,6 @@ $PAGE->set_pagelayout('login');
 try {
     $user = get_complete_user_data('id',$id);
     complete_user_login($user,true);
-
-
     
     /**
      * @updateDate  10/11/2014
@@ -79,7 +77,11 @@ try {
                  * Check if the redirect url has to be the course/activity
                  */
                 if ((isset($SESSION->modlnk)) && (isset($SESSION->modid))) {
-                    $redirect = new moodle_url($SESSION->modlnk,array('id' => $SESSION->modid));
+                    // Build url
+                    if (substr($SESSION->modlnk,0,1) != '/') {
+                        $SESSION->modlnk  = '/' . $SESSION->modlnk;
+                    }
+                    $redirect = new moodle_url($SESSION->modlnk . "?" . $SESSION->modid);
                 }
 
                 // test the session actually works by redirecting to self

@@ -21,7 +21,8 @@ $string['pluginname_help']      = 'Competence User Profile contains information 
 
 $string['competence_profile']   = 'Competence Profile';
 
-$string['profile_desc'] = 'Your information about your companies and job roles';
+$string['profile_desc']   = 'Your information about your companies and job roles';
+$string['comptence_desc'] = 'Your information about your companies and job roles';
 $string['lnk_update']   = 'Update';
 $string['lnk_edit']     = 'Edit';
 $string['lnk_delete']   = 'Delete';
@@ -85,3 +86,5 @@ $string['request_just_rejected'] = 'The request for the company <strong>{$a->com
 $string['request_just_approved'] = 'The request for the company <strong>{$a->company}</strong> and for the user <strong>{$a->user}</strong> has already been approved.';
 
 $string['alert_approve'] = 'Please be aware that you add yourself to the correct Company. The manager for this company can reject you  if your membership is wrong.';
+
+$string['comp_delete'] = 'This user has already been removed from this workplace.';

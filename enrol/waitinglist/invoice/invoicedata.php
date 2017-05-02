@@ -39,7 +39,7 @@ echo $OUTPUT->header();
 /* Get Data */
 $data       = array('invoice' => null);
 
-$infoInvoice = Invoices::GetInvoiceData($two,$three);
+$infoInvoice = Invoices::get_invoice_data($two,$three);
 
 if (!$infoInvoice) {
     $infoInvoice = new stdClass();

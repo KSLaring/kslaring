@@ -50,10 +50,6 @@ function local_participants_extend_settings_navigation($settingsnav, $context) {
                     $participantsNode->make_active();
                 }
                 $settingnode->add_node($participantsNode,'users');
-                
-                if ($reportNode = $settingsnav->find('courseadmin', navigation_node::TYPE_COURSE)) {
-                    
-                }
             }//if_courseadmin
         }//if_format
 

@@ -59,12 +59,15 @@ if ($show && $noslides) {
             <div id="kslCarousel-wrapper">
                 <div class="container-fluid">
                     <div id="kslCarousel" class="carousel slide">
-                        <ol class="carousel-indicators">
-                            <li data-target="#kslCarousel" data-slide-to="0"
-                                class="active"></li>
-                            <li data-target="#kslCarousel" data-slide-to="1"></li>
-                            <li data-target="#kslCarousel" data-slide-to="2"></li>
-                        </ol>
+                        <?php if ($noslides > 1) { ?>
+                            <ol class="carousel-indicators">
+                                <li data-target="#kslCarousel" data-slide-to="0"
+                                    class="active"></li>
+                                <?php for ($i = 2; $i <= $noslides; $i++) { ?>
+                                    <li data-target="#kslCarousel" data-slide-to="<?php echo $i ?>"></li>
+                                <?php } ?>
+                            </ol>
+                        <?php } ?>
                         <!-- Carousel items -->
                         <div class="carousel-inner">
                             <?php for ($i = 1; $i <= $noslides; $i++) {
@@ -93,10 +96,12 @@ if ($show && $noslides) {
                             <?php } ?>
                         </div>
                         <!-- Carousel nav -->
-                        <a class="carousel-control left" href="#kslCarousel"
-                           data-slide="prev">&lsaquo;</a>
-                        <a class="carousel-control right" href="#kslCarousel"
-                           data-slide="next">&rsaquo;</a>
+                        <?php if ($noslides > 1) { ?>
+                            <a class="carousel-control left" href="#kslCarousel"
+                               data-slide="prev">&lsaquo;</a>
+                            <a class="carousel-control right" href="#kslCarousel"
+                               data-slide="next">&rsaquo;</a>
+                        <?php } ?>
                     </div>
                 </div>
             </div>

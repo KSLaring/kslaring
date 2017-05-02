@@ -66,8 +66,8 @@ $string['waitinglist:manage'] = 'Administrere brukerpåmeldinger';
 $string['waitinglist:unenrol'] = 'Meld ut brukere fra kurset';
 $string['waitinglist:unenrolself'] = 'Meld meg ut av dette kurset';
 $string['messageprovider:expiry_notification'] = 'Din kurspåmelding er i ferd med å utløpe';
-$string['pluginname'] = 'Kurspåmelding';
-$string['pluginname_desc'] = 'Kurspåmeldingsmodulen har en venteliste for påmelding til et kurs.';
+$string['pluginname'] = 'Arrangement';
+$string['pluginname_desc'] = 'Arrangementspåmeldingsmodulen har en venteliste for påmelding til et kurs.';
 $string['status'] = 'Aktiver påmelding med venteliste';
 $string['status_desc'] = 'Tillat kurstilgang fra internt påmeldte brukere. Dette bør være aktivert i de fleste tilfeller.';
 $string['status_help'] = 'Denne innstillingen bestemmer hvorvidt brukere kan meldt på via påmelding med venteliste, via en link i kursadministrasjonsinnstillingene, og av en bruker med tillatelse til dette, f.eks. en lærer.';
@@ -299,18 +299,18 @@ $string['unenrol_body']    = 'Dette er en bekreftelse på at du er blitt utmeldt
 
 $string['rpt_workplace']   = 'Arbeidssted';
 
-$string['msg_teacher']      = '{$a->site}: Teacher in course {$a->course}';
-$string['body_teacher']     = '<p>We would like to inform you that you have just been assigned as a teacher for the course {$a->course}</p>
+$string['msg_teacher']      = '{$a->site}: Instruktør i kurset {$a->course}';
+$string['body_teacher']     = '<p>Vi ønsker å informere deg om at du har blitt satt opp som instruktør i kurset {$a->course}</p>
                                </br>
-                               <p>This is an automatic generated email from {$a->site} and you cannot answer this email.</p>';
-$string['body_unteacher']   = '<p>We would lik to inform you that you you have just been unassigned as a teacher for the course {$a->course}</p>
+                               <p>Dette er en automatisk generert epost fra {$a->site} og du kan ikke svare på denne eposten.</p>';
+$string['body_unteacher']   = '<p>Vi ønsker å informere deg om at du er fjernet som instruktør i kurset {$a->course}</p>
                                </br>
-                               <p>This is an automatic generated email from {$a->site} and you cannot answer this email.</p>';
+                               <p>Dette er en automatisk generert epost fra {$a->site} og du kan ikke svare på denne eposten.</p>';
 
-$string['msg_instructor']   = '{$a->site}: Course instructor in course {$a->course}';
-$string['body_instructor']  = '<p>We would like to inform you that you have just been assigned as a course instructor for the course {$a->course}</p>
+$string['msg_instructor']   = '{$a->site}: Kursansvarlig for kurset {$a->course}';
+$string['body_instructor']  = '<p>Vi ønsker å informere deg om at du er satt opp som kursansvarlig for kurset {$a->course}</p>
                                </br>
-                               <p>This is an automatic generated email from {$a->site} and you cannot answer this email.</p>';
-$string['body_uninstructor'] = '<p>We would like to inform you that you have just been unassigned as a course instructor for the course {$a->course}</p>
+                               <p>Dette er en automatisk generert epost fra {$a->site} og du kan ikke svare på denne eposten.</p>';
+$string['body_uninstructor'] = '<p>Vi ønsker å informere deg om at du er fjernet som kursansvarlig for kurset {$a->course}</p>
                                 </br>
-                                <p>This is an automatic generated email from {$a->site} and you cannot answer this email.</p>';
+                                <p>Dette er en automatisk generert epost fra {$a->site} og du kan ikke svare på denne eposten.</p>';

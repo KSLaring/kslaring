@@ -58,6 +58,20 @@
     margin-top: 10px;
 }
 
+.extra_lst_participants {
+    width: 100%;
+    display:block;
+    margin-bottom: 5px;
+    margin-top: 5px;
+}
+
+.paging {
+    width: 100%;
+    display:block;
+    margin-bottom: 5px;
+    margin-top: 5px;
+}
+
 .block_participants .lst_participants  table {
     width: 100%;
     border-collapse:collapse;
@@ -98,7 +112,15 @@
 
 .block_participants .lst_participants  th.info,
 .block_participants .lst_participants  td.info {
-    width: 17%;
+    width: 15%;
+    text-align: left;
+    text-justify:inter-word;
+    padding: 0px 10px 0px 0px;
+}
+
+.block_participants .lst_participants  th.muni,
+.block_participants .lst_participants  td.muni {
+    width: 20%;
     text-align: left;
     text-justify:inter-word;
     padding: 0px 10px 0px 0px;
@@ -106,7 +128,7 @@
 
 .block_participants .lst_participants  th.sector,
 .block_participants .lst_participants  td.sector {
-    width: 32%;
+    width: 25%;
     text-align: left;
     text-justify:inter-word;
     padding: 0px 10px 0px 0px;
@@ -163,20 +185,111 @@
     margin-right: 25px;
 }
 
+
 @media (max-width: 767px) {
     .block_participants,
     .block_participants .lst_participants,
+    .extra_lst_participants,
     .block_participants .course_info_two,
-    .block_participants .course_info_one {
+    .block_participants .course_info_one{
         float: none;
-        width: 100%;
+        width: 90%;
+        display: block;
+        text-justify: inter-word;
+        word-wrap: break-word;
+    }
+
+    .div_button_participants {
+        position: relative;
+        float: left;
+        /* Top, Right, Bottom, Left */
+        margin-top: 25px;
+        margin-bottom: 15px;
+    }
+    /* Force table to not be like tables anymore */
+    .block_participants .lst_participants  tbody, tr, th, td {
         display: block;
     }
+
+    .block_participants .lst_participants table {
+        display:block;
+        background-color: white !important;
+        width:100%;
+        margin-top:45px;
+    }
+
+    .block_participants .lst_participants table thead tr {
+        display:none;
+    }
+
+
+    .block_participants .lst_participants table tr {
+        width: 100%;
+        border: 1px solid darkgray;
+        background-color: white !important;
+        padding-bottom: 15px;
+    }
+
+    .block_participants .lst_participants table td {
+        width:100%;
+        border-top: 1px solid #f2f2f2;
+    }
+
+    .block_participants .lst_participants table td.user,
+    .block_participants .lst_participants table td.info,
+    .block_participants .lst_participants table td.muni,
+    .block_participants .lst_participants table td.sector,
+    .block_participants .lst_participants table td.attend {
+        /* Behave  like a "row" */
+        position: relative;
+        padding-left: 50%;
+        width: 40%;
+        white-space: normal;
+        text-align:left;
+        background-color: white !important;
+        display: inline-block;
+        text-justify:inter-word;
+        word-wrap: break-word;
+    }
+
+    .block_participants .lst_participants table td.user:before,
+    .block_participants .lst_participants table td.info:before,
+    .block_participants .lst_participants table td.muni:before,
+    .block_participants .lst_participants table td.sector:before,
+    .block_participants .lst_participants table td.attend:before {
+        /* Now like a table header */
+        position: absolute;
+        /* Top/left values mimic padding */
+        top: 6px;
+        left: 6px;
+        width: 45%;
+        padding-right: 5px;
+        text-align:left;
+        text-justify:inter-word;
+        word-wrap: break-word;
+        font-weight: bold;
+        background-color: white !important;
+    }
+
+    .block_participants .lst_participants table td.user:before,
+    .block_participants .lst_participants table td.info:before,
+    .block_participants .lst_participants table td.muni:before,
+    .block_participants .lst_participants table td.sector:before,
+    .block_participants .lst_participants table td.attend:before {
+        content:attr(data-th);
+        background-color: white !important;
+        text-justify:inter-word;
+        word-wrap: break-word;
+        color:  #000;
+        font:bold 12px Verdana,Verdana Pro,sans-serif;
+    }
+
 }
 
 @media (min-width: 850px) and (max-width: 978px) {
     .block_participants,
     .block_participants .lst_participants,
+    .block_participants .lst_participants  table,
     .block_participants .course_info_two,
     .block_participants .course_info_one {
         float: none;
@@ -188,6 +301,7 @@
 @media (min-width: 767px) and (max-width: 849px) {
     .block_participants,
     .block_participants .lst_participants,
+    .block_participants .lst_participants  table,
     .block_participants .course_info_two,
     .block_participants .course_info_one {
         float: none;

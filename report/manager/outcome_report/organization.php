@@ -33,9 +33,10 @@ $json           = array();
 $data           = array();
 $infoCompany    = null;
 
-$context        = CONTEXT_SYSTEM::instance();
+$context        = context_system::instance();
 $url            = new moodle_url('/report/manager/outcome_report/organization.php');
 
+global $PAGE,$USER;
 $PAGE->set_context($context);
 $PAGE->set_url($url);
 

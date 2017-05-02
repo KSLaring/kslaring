@@ -749,26 +749,26 @@ class CourseLocations {
             $params['location'] = $locationId;
 
             /* SQL Instruction  */
-            $sql = " SELECT		cl.id,
-                                levelzero.name 	as 'county',
-                                levelone.name 	as 'muni',
-                                cl.name,
-                                cl.description,
-                                cl.url          as 'url_desc',
-                                cl.floor,
-                                cl.room,
-                                cl.seats,
-                                cl.street,
-                                cl.postcode,
-                                cl.city,
-                                cl.urlmap       as 'url_map',
-                                cl.post         as 'post_address',
-                                cl.contact,
-                                cl.phone,
-                                cl.email        as 'mail',
-                                cl.comments,
-                                cl.activate,
-                                GROUP_CONCAT(DISTINCT clo.courseid ORDER BY clo.courseid) as 'courses'
+            $sql = " SELECT		    cl.id,
+                                    levelzero.name 	as 'county',
+                                    levelone.name 	as 'muni',
+                                    cl.name,
+                                    cl.description,
+                                    cl.url          as 'url_desc',
+                                    cl.floor,
+                                    cl.room,
+                                    cl.seats,
+                                    cl.street,
+                                    cl.postcode,
+                                    cl.city,
+                                    cl.urlmap       as 'url_map',
+                                    cl.post         as 'post_address',
+                                    cl.contact,
+                                    cl.phone,
+                                    cl.email        as 'mail',
+                                    cl.comments,
+                                    cl.activate,
+                                    GROUP_CONCAT(DISTINCT clo.courseid ORDER BY clo.courseid) as 'courses'
                      FROM		    {course_locations}		    cl
                         JOIN	    {report_gen_companydata}		levelzero	ON  levelzero.id    = cl.levelzero
                         JOIN	    {report_gen_companydata}		levelone	ON  levelone.id 	= cl.levelone
@@ -1020,8 +1020,11 @@ class CourseLocations {
                         $out_report .= get_string('no_data', 'local_friadmin');
                     $out_report .= '</h3>';
                 }else {
-                    /* Paging Bar  */
                     $out_report .= '</br>';
+                    /* Return To Selection Page */
+                    $out_report .= html_writer::link($urlReturn,get_string('return_to_selection','local_friadmin'),array('class' => 'link_return'));
+
+                    /* Paging Bar  */
                     $out_report .= $OUTPUT->paging_bar($totalLocations, $page, $perpage, $url);
 
                     /* Location List    */
@@ -1039,7 +1042,6 @@ class CourseLocations {
 
             /* Paging Bar  */
             $out_report .= $OUTPUT->paging_bar($totalLocations, $page, $perpage, $url);
-            $out_report .= '<hr class="line_rpt_lnk">';
 
             /* Return To Selection Page */
             $out_report .= html_writer::link($urlReturn,get_string('return_to_selection','local_friadmin'),array('class' => 'link_return'));
@@ -1248,43 +1250,45 @@ class CourseLocations {
             }//fieldSort
 
             /* Build Header */
-            $header .= html_writer::start_tag('tr',array('class' => 'head'));
-                /* Name         */
-                $header .= html_writer::start_tag('td',array('class' => 'head_detail'));
-                    $header .= '<button class="button_order" id="' . SORT_BY_LOCATION . '" value="' . $dirLocation . '" name="' . SORT_BY_LOCATION. '">';
-                        $header .= $strName;
-                        $header .= '<img id="' . SORT_BY_LOCATION . '_img'. '" src='. $sortImgLocation . '>';
-                    $header .= '</button>';
-                $header .= html_writer::end_tag('td');
+            $header .=  html_writer::start_tag('thead');
+                $header .= html_writer::start_tag('tr',array('class' => 'head'));
+                    /* Name         */
+                    $header .= html_writer::start_tag('th',array('class' => 'detail'));
+                        $header .= '<button class="button_order" id="' . SORT_BY_LOCATION . '" value="' . $dirLocation . '" name="' . SORT_BY_LOCATION. '">';
+                            $header .= $strName;
+                            $header .= '<img id="' . SORT_BY_LOCATION . '_img'. '" src='. $sortImgLocation . '>';
+                        $header .= '</button>';
+                    $header .= html_writer::end_tag('th');
 
-                /* Address      */
-                $header .= html_writer::start_tag('td',array('class' => 'head_detail'));
-                    $header .= '<button class="button_order" id="' . SORT_BY_ADDRESS . '" value="' . $dirAddress . '" name="' . SORT_BY_ADDRESS. '">';
-                        $header .= $strAddress;
-                        $header .= '<img id="' . SORT_BY_ADDRESS . '_img'. '" src='. $sortImgAddress . '>';
-                    $header .= '</button>';
-                $header .= html_writer::end_tag('td');
+                    /* Address      */
+                    $header .= html_writer::start_tag('th',array('class' => 'detail'));
+                        $header .= '<button class="button_order" id="' . SORT_BY_ADDRESS . '" value="' . $dirAddress . '" name="' . SORT_BY_ADDRESS. '">';
+                            $header .= $strAddress;
+                            $header .= '<img id="' . SORT_BY_ADDRESS . '_img'. '" src='. $sortImgAddress . '>';
+                        $header .= '</button>';
+                    $header .= html_writer::end_tag('th');
 
-                /* Municipality */
-                $header .= html_writer::start_tag('td',array('class' => 'head_detail'));
-                    $header .= '<button class="button_order" id="' . SORT_BY_MUNI . '" value="' . $dirMuni . '" name="' . SORT_BY_MUNI. '">';
-                        $header .= $strMuni;
-                        $header .= '<img id="' . SORT_BY_MUNI . '_img'. '" src='. $sortImgMuni . '>';
-                    $header .= '</button>';
-                $header .= html_writer::end_tag('td');
+                    /* Municipality */
+                    $header .= html_writer::start_tag('th',array('class' => 'detail'));
+                        $header .= '<button class="button_order" id="' . SORT_BY_MUNI . '" value="' . $dirMuni . '" name="' . SORT_BY_MUNI. '">';
+                            $header .= $strMuni;
+                            $header .= '<img id="' . SORT_BY_MUNI . '_img'. '" src='. $sortImgMuni . '>';
+                        $header .= '</button>';
+                    $header .= html_writer::end_tag('th');
 
-                /* Contact      */
-                $header .= html_writer::start_tag('td',array('class' => 'head_detail'));
-                    $header .= $strContact;
-                $header .= html_writer::end_tag('td');
-                /* Detail       */
-                $header .= html_writer::start_tag('td',array('class' => 'head_detail'));
-                    $header .= $strDetail;
-                $header .= html_writer::end_tag('td');
-                /* Actions      */
-                $header .= html_writer::start_tag('td',array('class' => 'head_action'));
-                $header .= html_writer::end_tag('td');
-            $header .= html_writer::end_tag('tr');
+                    /* Contact      */
+                    $header .= html_writer::start_tag('th',array('class' => 'detail'));
+                        $header .= $strContact;
+                    $header .= html_writer::end_tag('th');
+                    /* Detail       */
+                    $header .= html_writer::start_tag('th',array('class' => 'detail'));
+                        $header .= $strDetail;
+                    $header .= html_writer::end_tag('th');
+                    /* Actions      */
+                    $header .= html_writer::start_tag('th',array('class' => 'action'));
+                    $header .= html_writer::end_tag('th');
+                $header .= html_writer::end_tag('tr');
+            $header .= html_writer::end_tag('thead');
 
             return $header;
         }catch (Exception $ex) {
@@ -1310,32 +1314,37 @@ class CourseLocations {
         /* Variables    */
         $content    = '';
         $color      = 'r0';
+        $strName            = get_string('location_name','local_friadmin');
+        $strMuni            = get_string('location_muni','local_friadmin');
+        $strAddress         = get_string('location_address','local_friadmin');
+        $strDetail          = get_string('location_detail','local_friadmin');
+        $strContact         = get_string('location_contact_inf','local_friadmin');
 
         try {
             foreach ($locations as $location) {
                 $content .= html_writer::start_tag('tr',array('class' => $color));
                     /* Name         */
-                    $content .= html_writer::start_tag('td',array('class' => 'detail'));
+                    $content .= html_writer::start_tag('td',array('class' => 'detail','data-th'=>$strName));
                         $content .= $location->name;
                     $content .= html_writer::end_tag('td');
                     /* Address      */
-                    $content .= html_writer::start_tag('td',array('class' => 'detail'));
+                    $content .= html_writer::start_tag('td',array('class' => 'detail','data-th'=>$strAddress));
                         $content .= $location->address;
                     $content .= html_writer::end_tag('td');
                     /* Municipality */
-                    $content .= html_writer::start_tag('td',array('class' => 'detail'));
+                    $content .= html_writer::start_tag('td',array('class' => 'detail','data-th'=>$strMuni));
                         $content .= $location->municipality;
                     $content .= html_writer::end_tag('td');
                     /* Contact      */
-                    $content .= html_writer::start_tag('td',array('class' => 'detail'));
+                    $content .= html_writer::start_tag('td',array('class' => 'detail','data-th'=>$strContact));
                         $content .= $location->contact;
                     $content .= html_writer::end_tag('td');
                     /* Detail       */
-                    $content .= html_writer::start_tag('td',array('class' => 'detail'));
+                    $content .= html_writer::start_tag('td',array('class' => 'detail','data-th'=>$strDetail));
                         $content .= $location->detail;
                     $content .= html_writer::end_tag('td');
                     /* Actions      */
-                    $content .= html_writer::start_tag('td',array('class' => 'detail'));
+                    $content .= html_writer::start_tag('td',array('class' => 'action','data-th' =>' '));
                         /* View Details Link    */
                         $content .= self::ViewDetail_LinkAction($location->id,$page,$perpage,$sort);
                         /* Activate / Deactivate Link   */

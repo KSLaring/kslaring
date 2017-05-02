@@ -580,7 +580,7 @@ class format_classroom extends format_base {
          */
         $location = course_page::get_course_location($COURSE->id);
         if ($location) {
-            $lstSectors = course_page::get_course_locations_list($location);
+            $lstSectors = course_page::get_sectors_locations_list($location);
         }else {
             $lstSectors = array();
             $lstSectors[0] = get_string('sel_sector','local_friadmin');
@@ -660,6 +660,7 @@ class format_classroom extends format_base {
                 ),
                 'course_sector' => array(
                     'default' => 0,
+                    'type'    => PARAM_RAW,
                 ),
                 'time'      => array(
                     'type'      => PARAM_TEXT,
@@ -736,7 +737,7 @@ class format_classroom extends format_base {
                 'course_sector' => array(
                     'label' => get_string('home_sector', 'format_classroom'),
                     'element_type' => 'select',
-                    'element_attributes' => array($lstSectors,'1' => 'multiple')
+                    'element_attributes' => array($lstSectors,'multiple')
                 ),
                 'time'          => array(
                     'label'                 => get_string('home_time_from_to','format_classroom'),
@@ -759,6 +760,7 @@ class format_classroom extends format_base {
                         0 => 'style="width:95%;"'
                     )
                 )
+                
             );
             $courseformatoptions = array_merge_recursive($courseformatoptions,
                 $courseformatoptionsedit);
@@ -989,10 +991,10 @@ class format_classroom extends format_base {
                     break;
                 
                 case 'course_sector':
-                    if (isset($data['course_sector'])) {
-                        if (is_array($data['course_sector'])) {
-                            $data['course_sector'] = implode(',',$data['course_sector']);
-                        }
+                    if (isset($_COOKIE['sectors'])) {
+                        $data['course_sector'] = $_COOKIE['sectors'];
+                    }else {
+                        $data['course_sector'] = 0;
                     }
 
                     break;

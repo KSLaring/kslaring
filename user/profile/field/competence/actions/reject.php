@@ -47,7 +47,7 @@ if (count($args) != 2) {
 
     if (!$competenceRequest) {
         echo html_writer::start_tag('div',array('class' => 'loginerrors'));
-            echo $OUTPUT->error_text('<h4>' . get_string('err_link','profilefield_competence') . '</h4>');
+            echo $OUTPUT->error_text('<h4>' . get_string('comp_delete','profilefield_competence') . '</h4>');
         echo html_writer::end_tag('div');
     }else {
         /* User Info    */

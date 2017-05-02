@@ -131,7 +131,7 @@ class CompetenceProfile_Install {
             $info->name         = 'Competence';
             $info->datatype     = 'competence';
             $info->categoryid   = 1;
-            $info->required     = 1;
+            $info->required     = 0;
             $info->locked       = 0;
             $info->visible      = 1;
             $info->forceunique  = 0;

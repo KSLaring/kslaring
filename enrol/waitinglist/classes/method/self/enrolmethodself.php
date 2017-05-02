@@ -518,7 +518,7 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
              */
             if (enrol_get_plugin('invoice')) {
                 if ($waitinglist->{ENROL_WAITINGLIST_FIELD_INVOICE}) {
-                    \Invoices::Add_InvoiceInto($data,$USER->id,$waitinglist->courseid,$waitinglist->id);
+                    \Invoices::add_invoice_info($data,$USER->id,$waitinglist->courseid,$waitinglist->id);
                 }//if_invoice_info
             }
         }catch (\Exception $ex) {
@@ -691,14 +691,10 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
      * Selector company. Check managers.
      */
     public function enrol_page_hook(\stdClass $waitinglist, $flagged) {
-        global $CFG, $OUTPUT, $USER;
+        global $CFG, $OUTPUT, $USER,$SESSION;
         $isInvoice          = false;
-
-        /* Clean Cookies    */
-        setcookie('level_0',0);
-        setcookie('level_1',0);
-        setcookie('level_2',0);
-        setcookie('level_3',0);
+        $redirect           = null;
+        $ret                = null;
 
 		$queueman= \enrol_waitinglist\queuemanager::get_by_course($waitinglist->courseid);
 		$qdetails = $queueman->get_user_queue_details(static::METHODTYPE);
@@ -719,6 +715,7 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
             }
             $enrolstatus = $this->can_enrol($waitinglist,true);
         }
+
 
         // Don't show enrolment instance form, if user can't enrol using it.
         if (true === $enrolstatus) {
@@ -770,14 +767,15 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
                 $form = new enrolmethodself_enrolform(NULL, array($waitinglist,$this,$listtotal,false,$remainder));
 
                 if ($form->is_cancelled()) {
-                    setcookie('ansvar_selected',0);
+                    $redirect = $CFG->wwwroot . '/index.php';
                     
-                    redirect($CFG->wwwroot . '/index.php');
+                    redirect($redirect);
                 }else if ($form->is_submitted()) {
                     $this->myManagers   = \Approval::managers_connected($USER->id,$infoRequest->companyid);
                     \Approval::send_reminder($USER,$remainder,$waitinglist->id,$this->myManagers);
 
-                    redirect($CFG->wwwroot . '/index.php');
+                    $redirect = $CFG->wwwroot . '/index.php';
+                    redirect($redirect);
                 }
 
                 //begin the output
@@ -791,9 +789,8 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
                     $form = new enrolmethodself_enrolform(NULL, array($waitinglist,$this,$listtotal,true,null));
 
                     if ($form->is_cancelled()) {
-                        setcookie('ansvar_selected',0);
-
-                        redirect($CFG->wwwroot . '/index.php');
+                        $redirect = $CFG->wwwroot . '/index.php';
+                        redirect($redirect);
                     }else if ($form->is_submitted()) {
                         $form = new enrolmethodself_enrolform(NULL, array($waitinglist,$this,$listtotal,false,null));
                     }
@@ -808,9 +805,8 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
                     $form = new enrolmethodself_enrolform(NULL, array($waitinglist,$this,$listtotal,false,null));
 
                     if ($form->is_cancelled()) {
-                        setcookie('ansvar_selected',0);
-
-                        redirect($CFG->wwwroot . '/index.php');
+                        $redirect = $CFG->wwwroot . '/index.php';
+                        redirect($redirect);
                     }else if ($data = $form->get_data()) {
                         /**
                          * @updateDate  14/09/2016
@@ -883,15 +879,13 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
                         $company = \CompetenceManager::GetCompany_Name($data->level_3);
                         $ret = array(false,get_string('not_managers_company','enrol_waitinglist',$company));
                     }
-
                 }//if_toConfirm
             }//if_else
-
-
         } else {
             $message = $OUTPUT->box($enrolstatus);
 			$ret = array(false,$message);
         }
+
         return $ret;
     }
 }

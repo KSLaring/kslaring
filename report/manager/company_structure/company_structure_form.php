@@ -105,7 +105,7 @@ class manager_company_structure_form extends moodleform {
      */
     function AddLevel($level,&$form,$level_import,$myCompanies){
         /* Variables    */
-        global $SESSION;
+        global $USER;
         $header_ID      = 'header_level_' . $level;
         $header_Label   = get_string(REPORT_MANAGER_COMPANY_STRUCTURE_LEVEL, 'report_manager', $level);
 
@@ -124,7 +124,12 @@ class manager_company_structure_form extends moodleform {
 
         $form->addElement('html', '<div class="level-wrapper">');
             /* Add Company List */
-            $options = $this->getCompanyList($level,$myCompanies);
+            if (is_siteadmin($USER->id)) {
+                $options = $this->getCompanyList($level);
+            }else {
+                $options = $this->getCompanyList($level,$myCompanies);
+            }
+            
             $form->addElement('select',
                               COMPANY_STRUCTURE_LEVEL . $level,
                               get_string('level'.$level,'report_manager'),
@@ -137,7 +142,7 @@ class manager_company_structure_form extends moodleform {
             if (($level == 0) && $myCompanies) {
                 $unlink_btn = ' lnk_disabled';
             }
-
+        
             // Public or private
             $form->addElement('checkbox', 'public_' . $level,'',get_string('public', 'report_manager'),'disabled');
 
@@ -268,7 +273,7 @@ class manager_company_structure_form extends moodleform {
      * Description
      * Get the company List connected to the level and parent
      */
-    function getCompanyList($level,$myCompanies) {
+    function getCompanyList($level,$myCompanies = null) {
         /* Variables    */
         global $SESSION;
         $options        = array();

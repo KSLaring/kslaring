@@ -565,7 +565,7 @@ class CompetenceManager {
             /* Build my hierarchy   */
             $myHierarchy               = new stdClass();
             $myHierarchy->IsRepoter         = $IsReporterManager;
-            if (($IsReporterManager) && (!is_siteadmin($user_id))) {
+            if ($IsReporterManager) {
                 $myHierarchy->competence    = self::Get_MyReporterCompetence($user_id);
                 $myHierarchy->my_level      = $reportLevel;
             }else {
@@ -600,45 +600,63 @@ class CompetenceManager {
     public static function GetMyCompanies_By_Level($my_companies,$my_level) {
         /* Variables    */
         $levelThree = array();
+        $three      = null;
         $levelTwo   = array();
+        $two        = null;
         $levelOne   = array();
+        $one        = null;
         $levelZero  = array();
+        $zero       = null;
 
         try {
-            foreach ($my_companies as $company) {
-                $levelZero  = explode(',',$company->levelZero);
-                $levelOne   = explode(',',$company->levelOne);
-                $levelTwo   = explode(',',$company->levelTwo);
-                $levelThree[$company->levelThree]   = $company->levelThree;
-            }
 
-            switch ($my_level) {
-                case 0:
-                    $levelZero  = array();
-                    $levelOne   = array();
-                    $levelTwo   = array();
-                    $levelThree = array();
+            if ($my_companies) {
+                foreach ($my_companies as $company) {
+                    // Level zero
+                    if ($company->levelZero) {
+                        if ($zero) {
+                            $zero .= ',' . $company->levelZero;
+                        }else {
+                            $zero = $company->levelZero;
+                        }
+                    }//level_zero
 
-                   break;
-                case 1:
-                    $levelOne   = array();
-                    $levelTwo   = array();
-                    $levelThree = array();
+                    // Level one
+                    if ($company->levelOne) {
+                        if ($one) {
+                            $one .= ',' . $company->levelOne;
+                        }else {
+                            $one = $company->levelOne;
+                        }
+                    }//level_one
 
-                    break;
-                case 2:
-                    $levelTwo   = array();
-                    $levelThree = array();
+                    // Level two
+                    if ($company->levelTwo) {
+                        if ($two) {
+                            $two .= ',' . $company->levelTwo;
+                        }else {
+                            $two = $company->levelTwo;
+                        }
+                    }//level_two
 
-                    break;
-               case 3:
-                    $levelThree = array();
+                    // Level three
+                    if ($company->levelThree) {
+                        $levelThree[$company->levelThree]   = $company->levelThree;
+                    }//level_three
+                }//ofr_my_companies
 
-                    break;
-               case 4:
-                    break;
-               default:
-                    break;
+                if ($zero) {
+                    $levelZero = explode(',',$zero);
+                }
+
+                if ($one) {
+                    $levelOne = explode(',',$one);
+                }
+
+                if ($two) {
+                    $levelTwo = explode(',',$two);
+                }
+                
             }
 
             return array($levelZero,$levelOne,$levelTwo,$levelThree);
@@ -673,12 +691,11 @@ class CompetenceManager {
         $companies  = null;
 
         try {
-
-            /* Search Criteria  */
+            // Search criteria
             $params = array();
             $params['zero'] = $levelZero;
 
-            /* SQL Instruction  */
+            // SQL Isntruction - Get only companies with employees
             $sql = " SELECT		GROUP_CONCAT(DISTINCT uicd.companyid  	ORDER BY uicd.companyid SEPARATOR ',') 		as 'levelthree',
                                 GROUP_CONCAT(DISTINCT cr_two.parentid  	ORDER BY cr_two.parentid SEPARATOR ',') 	as 'leveltwo',
                                 GROUP_CONCAT(DISTINCT cr_one.parentid  	ORDER BY cr_one.parentid SEPARATOR ',') 	as 'levelone',
@@ -700,12 +717,12 @@ class CompetenceManager {
                                                                             AND co_zero.hierarchylevel 	= 0
                                                                             AND co_zero.id = :zero ";
 
-            /* Filter companies */
+            // Filter level three
             if ($levelThree) {
                 $sql .= " WHERE uicd.companyid IN ($levelThree) ";
             }//if_levelThree
 
-            /* EXecute  */
+            // Execute 
             $rdo = $DB->get_record_sql($sql,$params);
             if ($rdo) {
                 $companies = new stdClass();
@@ -1008,34 +1025,44 @@ class CompetenceManager {
     public static function GetJobRoles_Hierarchy(&$options,$level,$levelZero,$levelOne=null,$levelTwo=null, $levelThree=null) {
         /* Variables    */
         global $DB;
+        $sqlOne     = null;
+        $sqlTwo     = null;
+        $sqlThree   = null;
+
 
         try {
-            /* SQL Instruction  */
+            // SQL Instruction to get job roles
             $sql = " SELECT		DISTINCT      jr.id,
                                               jr.name,
                                               jr.industrycode
                      FROM		{report_gen_jobrole}				jr
-                        JOIN	{report_gen_jobrole_relation}		jr_rel	ON 	jr_rel.jobroleid = jr.id ";
+                        JOIN	{report_gen_jobrole_relation}		jr_rel	ON 	 jr_rel.jobroleid = jr.id ";
 
             switch ($level) {
                 case 0:
-                    $sql .= "  AND  jr_rel.levelzero    IN ($levelZero) ";
+                    $sql .= " AND  jr_rel.levelzero    IN ($levelZero) ";
 
                     break;
                 case 1:
-                    $sql .= "   AND  jr_rel.levelzero    IN ($levelZero)
-                                AND  jr_rel.levelone     IN ($levelOne)
-                            ";
+                    $sql .= " AND  jr_rel.levelzero    IN ($levelZero) ";
+                    if ($levelOne) {
+                        $sql .= " AND  jr_rel.levelone     IN ($levelOne) ";
+                    }//if_levelOne
 
                     break;
                 case 2:
-                    $sql .= "  AND  jr_rel.levelzero    IN ($levelZero)
-                               AND  jr_rel.levelone     IN ($levelOne)
-                               AND  jr_rel.leveltwo     IN ($levelTwo)
-                            ";
+                    $sql .= " AND  jr_rel.levelzero    IN ($levelZero) ";
+                    if ($levelOne) {
+                        $sql .= " AND  jr_rel.levelone     IN ($levelOne) ";
+                    }//if_levelOne
+                    if ($levelTwo) {
+                        $sql .= " AND  jr_rel.leveltwo     IN ($levelTwo) ";
+                    }//if_levelTwo
+
                     break;
                 case 3:
-                    $sql .= "  AND (
+                    if ($levelOne && $levelTwo && $levelThree) {
+                        $sql .= "  AND (
                                     (jr_rel.levelzero    IN ($levelZero)
                                      AND
                                      jr_rel.levelone     IN ($levelOne)
@@ -1072,6 +1099,59 @@ class CompetenceManager {
                                      jr_rel.levelthree   IS NULL
                                     )
                                ) ";
+                    }else if ($levelOne && $levelTwo && !$levelThree) {
+                        $sql .= "  AND (
+                                    (jr_rel.levelzero    IN ($levelZero)
+                                     AND
+                                     jr_rel.levelone     IN ($levelOne)
+                                     AND
+                                     jr_rel.leveltwo     IN ($levelTwo)
+                                     AND
+                                     jr_rel.levelthree   IS NULL
+                                    )
+                                    OR
+                                    (jr_rel.levelzero    IN ($levelZero)
+                                     AND
+                                     jr_rel.levelone     IN ($levelOne)
+                                     AND
+                                     jr_rel.leveltwo     IS NULL
+                                     AND
+                                     jr_rel.levelthree   IS NULL
+                                    )
+                                    OR
+                                    (jr_rel.levelzero    IN ($levelZero)
+                                     AND
+                                     jr_rel.levelone     IS NULL
+                                     AND
+                                     jr_rel.leveltwo     IS NULL
+                                     AND
+                                     jr_rel.levelthree   IS NULL
+                                    )
+                               ) ";
+                    }else if ($levelOne && !$levelTwo && !$levelThree) {
+                        $sql .= "  AND (
+                                    (jr_rel.levelzero    IN ($levelZero)
+                                     AND
+                                     jr_rel.levelone     IN ($levelOne)
+                                     AND
+                                     jr_rel.leveltwo     IS NULL
+                                     AND
+                                     jr_rel.levelthree   IS NULL
+                                    )
+                                    OR
+                                    (jr_rel.levelzero    IN ($levelZero)
+                                     AND
+                                     jr_rel.levelone     IS NULL
+                                     AND
+                                     jr_rel.leveltwo     IS NULL
+                                     AND
+                                     jr_rel.levelthree   IS NULL
+                                    )
+                               ) ";
+                    }else {
+                        $sql .= " AND  jr_rel.levelzero    IN ($levelZero) ";
+                    }
+
                     break;
             }//switch_level
 

@@ -49,10 +49,27 @@ M.core_coursepage.init_sectors = function (Y,location,sector) {
             /* Location Selector  */
             this.selLocation.on('change', this.ReloadSectors, this);
 
+            this.selSector.on('change', this.Sectors, this);
+
+        },
+
+        Sectors: function(e) {
+            var my_sector = 0;
+
+            this.selSector.all('option').each(function(option){
+                if (option.get('selected') && option.get('value') != 0) {
+                    if (my_sector != 0) {
+                        my_sector =  my_sector + ',' + option.get('value');
+                    }else {
+                        my_sector =  option.get('value');
+                    }
+                }
+            });
+
+            document.cookie = "sectors=" + my_sector;
         },
 
         ReloadSectors : function(e) {
-
             //  Trigger an ajax search after a delay.
             this.cancel_timeout();
             this.timeoutid  = Y.later(this.querydelay * 1000, e, function(obj){obj.send_query(true)}, this);
@@ -63,7 +80,6 @@ M.core_coursepage.init_sectors = function (Y,location,sector) {
          */
         send_query : function(forceresearch) {
             var location;
-
             // Cancel any pending timeout.
             this.cancel_timeout();
 
@@ -135,9 +151,11 @@ M.core_coursepage.init_sectors = function (Y,location,sector) {
                     }
                     option.remove();
                 });
+                document.cookie = "sectors=0";
 
                 /* Add the new sectors    */
                 lstSectors = dataSelector.items;
+
                 for (indexSector in lstSectors) {
                     infoSector = lstSectors[indexSector];
 
