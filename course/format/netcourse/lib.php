@@ -1113,9 +1113,19 @@ class format_netcourse extends format_base {
 
         if (!is_null($cm)) {
             if ($cm->modname === 'lesson') {
-                global $pageid, $USER, $lesson, $lessonoutput;
+                global $fullme, $pageid, $USER, $lesson, $lessonoutput;
 
-                // hack: page->cm is null in this state, add it here
+                // Don't need the following information for the lessonexport.
+                if (!empty($fullme) && strpos($fullme, 'lessonexport') !== false) {
+                    return $retval;
+                }
+
+                // If no lesson page is set we don't need the following information.
+                if (is_null($pageid)) {
+                    return $retval;
+                }
+
+                // Hack: page->cm is null in this state, add it here.
                 $PAGE->set_cm($cm);
 
                 // Get the lesson library with the lesson class and create a new instance
@@ -1151,7 +1161,7 @@ class format_netcourse extends format_base {
                 $showgrades = $PAGE->course->showgrades;
                 $actualpageid = null;
                 $nextpage = $lesson->get_next_page($pageid);
-                // Force the progress bar to 100%
+                // Force the progress bar to 100%.
                 if ($pageid === -9) {
                     if (!isset($USER->modattempts[$lesson->id])) {
                         $USER->modattempts[$lesson->id] = true;
@@ -1169,17 +1179,11 @@ class format_netcourse extends format_base {
                     $lastpage = self::LESSON_LASTPAGE_GRADINGOFF;
                 }
                 self::$lastlessonpage = $lastpage;
-                // Check the values in the browser with ChromePHP
-                //                ChromePhp::log('$showgrades: ' . $showgrades);
-                //                ChromePhp::log('$pageid: ' . $pageid);
-                //                ChromePhp::log('$nextpage: ' . $nextpage);
-                //                ChromePhp::log('$lastpage: ' . $lastpage);
 
                 $progressbar = $lessonoutput_local->progress_bar($lesson);
                 $lesson->properties()->progressbar = 0;
-                //                $lesson->progressbar = 0;
 
-                // Create the object for the course content header renderer
+                // Create the object for the course content header renderer.
                 $retval = new format_netcourse_specialnav($progressbar);
             }
         }
