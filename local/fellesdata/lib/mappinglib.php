@@ -1483,7 +1483,7 @@ class FS_MAPPING {
             $granpa = self::get_parent($parent,$granpalevel);
 
             if ($granpa) {
-                $name = $granpa->parentname;
+                $name = $granpa->name;
             }
 
             return $name;
