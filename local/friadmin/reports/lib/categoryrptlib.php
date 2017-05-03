@@ -294,13 +294,22 @@ class friadminrpt
         // Variables!
         global $DB;
         $rdo = null;
+        $extrasql = '';
+
+        if ($course) {
+            $extrasql .= " AND c.id = :course ";
+        }
+
+        if ($category) {
+            $extrasql .= " AND ca.id = :category ";
+        }
 
         if ($fullname) {
-            $extrasql = "AND ci.instr LIKE '%':fullname'%'";
-        } else {
-            $extrasql = '';
+            $extrasql .= " AND CONCAT(u.firstname, ' ', u.lastname) LIKE '%" . $fullname . "%' ";
         }
-        $query = "  SELECT 	CONCAT(u.id,c.id) 				as 'unique',
+
+
+        $query = "  SELECT 	CONCAT(u.id,c.id) 				    as 'unique',
                             CONCAT(u.firstname,' ', u.lastname) as 'instr',
                             c.fullname							as 'coursename',
                             ca.name								as 'category',
@@ -310,50 +319,57 @@ class friadminrpt
                             fo1.value							as 'fromto',
                             c.visible							as 'visibility'
                             
-                    FROM		mdl_user					u
-                        -- INSTRUCTORS
-                        JOIN 	mdl_role_assignments		ra 	ON ra.userid 	= u.id
-                        JOIN	mdl_context					ct	ON ct.id 	 	= ra.contextid
-                        JOIN  	mdl_role					r 	ON 	r.id 	 	= ra.roleid
-                                                                AND r.archetype = 'teacher'
+                    FROM		  {user}				  u
+                        -- Instructors
+                        JOIN 	  {role_assignments}	  ra  ON ra.userid 	= u.id
+                        JOIN	  {context}				  ct  ON ct.id 	 	= ra.contextid
+                        JOIN  	  {role}				  r   ON 	r.id 	 	= ra.roleid
+                                                              AND r.archetype = 'teacher'
                         -- Course
-                        JOIN 	mdl_course					c	ON c.id 		= ct.instanceid
-                        
+                        JOIN 	  {course}				  c	  ON c.id 		= ct.instanceid
                         -- Category
-                        JOIN	mdl_course_categories		ca	ON ca.id	= c.category
+                        JOIN	  {course_categories}     ca  ON ca.id	= c.category
                         -- Location
-                        LEFT JOIN	mdl_course_format_options fo ON fo.courseid = c.id
-                                                                 AND fo.name = 'course_location'
-                        LEFT JOIN	mdl_course_locations	  cl ON cl.name = fo.value
+                        LEFT JOIN {course_format_options} fo  ON fo.courseid = c.id
+                                                              AND fo.name = 'course_location'
+                        LEFT JOIN {course_locations}	  cl  ON cl.id = fo.value
                         -- Dates
-                        LEFT JOIN mdl_course_format_options fo1 ON fo1.courseid = c.id
-                                                                AND fo1.name = 'time'
+                        LEFT JOIN {course_format_options} fo1 ON fo1.courseid = c.id
+                                                              AND fo1.name = 'time'
                         -- Coordinator
                         LEFT JOIN (
                             SELECT 		ra.userid,
-                                        ct.instanceid 		as 'course',
+                                        ct.instanceid 		                 as 'course',
                                         concat(u.firstname, ' ', u.lastname) as 'cord'
-                            FROM		mdl_role_assignments		ra
-                                JOIN	mdl_context					ct	ON 	ct.id 		= ra.contextid
-                            JOIN  		mdl_role					r 	ON 	r.id 		= ra.roleid
-                                                                        AND r.archetype = 'editingteacher'
-                            JOIN		mdl_user u 						ON	u.id = ra.userid
+                            FROM		{role_assignments}		ra
+                                JOIN	{context}				ct	ON 	ct.id 		= ra.contextid
+                            JOIN  		{role}					r 	ON 	r.id 		= ra.roleid
+                                                                    AND r.archetype = 'editingteacher'
+                            JOIN		{user}                  u 	ON	u.id = ra.userid
                             GROUP BY course
-                        ) co  ON 		co.course = c.id
+                        ) co  ON co.course = c.id
                     WHERE 	u.deleted = 0
+                    $extrasql
                     ORDER BY u.id";
 
         try {
 
-            /*
             $params = array();
-            $params['courseid'] = $course;
-            $params['categoryid'] = $category;
-            $params['fullname'] = $fullname;
 
-            $rdo = $DB->get_records_sql($query, $params); */
+            if ($course) {
+                $params['course'] = $course;
+            }
 
-            $rdo = $DB->get_records_sql($query);
+            if ($category) {
+                $params['category'] = $category;
+            }
+
+
+            if ($fullname) {
+                $params['fullname'] = $fullname;
+            }
+
+            $rdo = $DB->get_records_sql($query, $params);
 
             if ($rdo) {
                 return $rdo;
@@ -365,16 +381,37 @@ class friadminrpt
         }  // end try_catch
     } // end get_categories
 
-    public static function get_course_coordinator_data($course, $category, $fullname) {
+    public static function get_course_coordinator_data($course, $category, $fullname, $userjobrole) {
         // Variables!
         global $DB;
         $rdo = null;
 
-        if ($fullname) {
-            $extrasql = "AND ci.instr LIKE '%':fullname'%'";
-        } else {
-            $extrasql = '';
+        $extrasql = '';
+
+        if ($course) {
+            $extrasql .= " AND c.id = :course";
         }
+
+        if ($category) {
+            $extrasql .= " AND ca.id = :category";
+        }
+
+        if ($fullname) {
+            $extrasql .= " AND CONCAT(u.firstname, ' ', u.lastname) LIKE '%" . $fullname . "%' ";
+        }
+
+        if ($userjobrole) {
+            $extraselect = " ,jr.name as 'jobrole' ";
+            $jobsql = " JOIN {report_gen_jobrole} jr
+                        -- Users conneced with
+	                    JOIN {user_info_competence_data} icd 	ON  icd.userid = u.id
+                                                                AND jr.id IN (icd.jobroles)
+                        AND jr.name LIKE '%" . $userjobrole . "%' ";
+        } else {
+            $extraselect = '';
+            $jobsql = '';
+        }
+
         $query = "  SELECT 	CONCAT(u.id,c.id) 					as 'unique',
                             CONCAT(u.firstname, ' ', u.lastname)as 'coursecoordinator',
                             c.fullname							as 'coursename',
@@ -384,46 +421,51 @@ class friadminrpt
                             fo1.value							as 'fromto',
                             c.visible							as 'visibility',
                             ca.path
+                            $extraselect
                             
-                    FROM		mdl_user					  u
+                            
+                    FROM		    {user}					u
                         -- Coordinator
-                        JOIN 	mdl_role_assignments		  ra 	ON ra.userid 	= u.id
-                        JOIN	mdl_context					  ct	ON ct.id 	 	= ra.contextid
-                        JOIN  	mdl_role					  r 	ON 	r.id 	 	= ra.roleid
+                        JOIN 	    {role_assignments}		ra 	    ON ra.userid 	= u.id
+                        JOIN	    {context}				ct	    ON ct.id 	 	= ra.contextid
+                        JOIN  	    {role}					r 	    ON 	r.id 	 	= ra.roleid
                                                                     AND r.archetype = 'editingteacher'
                         -- Course
-                        JOIN 	mdl_course					  c		ON c.id 		= ct.instanceid
+                        JOIN 	    {course}			    c		ON c.id 		= ct.instanceid
                         
                         -- Category
-                        JOIN	mdl_course_categories		  ca	ON ca.id	= c.category
+                        JOIN	    {course_categories}		ca	    ON ca.id	= c.category
                         -- Location
-                        LEFT JOIN	mdl_course_format_options fo 	ON fo.courseid = c.id
+                        LEFT JOIN   {course_format_options} fo 	    ON fo.courseid = c.id
                                                                     AND fo.name = 'course_location'
-                        LEFT JOIN	mdl_course_locations	  cl 	ON cl.name = fo.value
+                        LEFT JOIN	{course_locations}	    cl 	    ON cl.id = fo.value
                         -- Dates
-                        LEFT JOIN 	mdl_course_format_options fo1 	ON fo1.courseid = c.id
+                        LEFT JOIN 	{course_format_options} fo1 	ON fo1.courseid = c.id
                                                                     AND fo1.name = 'time'
+                        $jobsql
                     WHERE 	u.deleted = 0
-                    -- AND		ca.path LIKE '%2%'
-                    
+                    $extrasql
                     GROUP BY c.id
                     ORDER BY u.id";
 
         try {
 
-            /*
             $params = array();
-            $params['courseid'] = $course;
-            $params['categoryid'] = $category;
-            $params['fullname'] = $fullname;
 
-            $rdo = $DB->get_records_sql($query, $params); */
+            if ($course) {
+                $params['course'] = $course;
+            }
 
-            $rdo = $DB->get_records_sql($query);
+            if ($category) {
+                $params['category'] = $category;
+            }
+
+            $rdo = $DB->get_records_sql($query, $params);
 
             if ($rdo) {
                 return $rdo;
             } else {
+                // If RDO is NULL.
                 return null;
             }
         } catch (Exception $ex) {
@@ -1583,6 +1625,7 @@ class friadminrpt
                     }
                     $myxls->merge_cells($row, $col, $row, $col + 1);
                     $myxls->set_row($row,20);
+
 
                     $row ++;
                     $col = 0;

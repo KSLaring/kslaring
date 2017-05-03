@@ -323,3 +323,10 @@ $string['numberofdays'] = 'Number of days';
 
 $string['yes'] = 'Ja';
 $string['no'] = 'Nei';
+
+$string['instructorname'] = 'Instructor name';
+$string['coordinatorname'] = 'Coordinator name';
+$string['coursename'] = 'Course name';
+
+$string['userworkplace'] = 'Workplace';
+$string['userjobrole'] = 'Job Role';

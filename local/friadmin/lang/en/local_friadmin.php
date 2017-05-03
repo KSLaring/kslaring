@@ -334,3 +334,6 @@ $string['no'] = 'No';
 $string['instructorname'] = 'Instructor name';
 $string['coordinatorname'] = 'Coordinator name';
 $string['coursename'] = 'Course name';
+
+$string['userworkplace'] = 'Workplace';
+$string['userjobrole'] = 'Job Role';

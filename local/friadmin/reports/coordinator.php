@@ -55,12 +55,16 @@ $mform = new course_coordinator_form(null);
 if ($mform->is_cancelled()) {
 
 } else if ($fromform = $mform->get_data()) {
-    $coordinators = friadminrpt::get_course_coordinator_data($fromform->course, $fromform->category, $fromform->userfullname);
+    $coordinators = friadminrpt::get_course_coordinator_data($fromform->course, $fromform->category, $fromform->userfullname, $fromform->userjobrole);
 
-    ob_end_clean();
-    friadminrpt::download_participants_list_coordinator($coordinators);
+    if ($coordinators) {
+        ob_end_clean();
+        friadminrpt::download_participants_list_coordinator($coordinators);
 
-    die;
+        die;
+    } else {
+        echo "nothing found";
+    }
 }
 
 // Print Header!

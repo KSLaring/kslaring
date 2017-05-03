@@ -75,7 +75,6 @@ class course_instructor_form extends moodleform {
         $mform->addRule('category', null, 'required');
 
         $mform->addElement('select', 'course', get_string('course', 'local_friadmin'), $courses);
-        $mform->addRule('course', null, 'required');
 
         $mform->addElement('header', 'header_instructorsfilter', get_string('header_instructorsfilter', 'local_friadmin'));
         $mform->setExpanded('header_instructorsfilter',true);
@@ -89,8 +88,11 @@ class course_instructor_form extends moodleform {
         $mform->addElement('text', 'useremail', get_string('useremail', 'local_friadmin'));
         $mform->setType('useremail', PARAM_EMAIL);
 
-        $mform->addElement('text', 'usercompetance', get_string('usercompetance', 'local_friadmin'));
-        $mform->setType('usercompetance', PARAM_TEXT);
+        $mform->addElement('text', 'userworkplace', get_string('userworkplace', 'local_friadmin'));
+        $mform->setType('userworkplace', PARAM_TEXT);
+
+        $mform->addElement('text', 'userjobrole', get_string('userjobrole', 'local_friadmin'));
+        $mform->setType('userjobrole', PARAM_TEXT);
 
         $this->add_action_buttons(false, get_string('download', 'local_friadmin'));
 
@@ -120,7 +122,6 @@ class course_coordinator_form extends moodleform {
         $mform->addRule('category', null, 'required');
 
         $mform->addElement('select', 'course', get_string('course', 'local_friadmin'), $courses);
-        $mform->addRule('course', null, 'required');
 
         $mform->addElement('header', 'header_coordinatorfilter', get_string('header_coordinatorfilter', 'local_friadmin'));
         $mform->setExpanded('header_coordinatorfilter',true);
@@ -134,8 +135,11 @@ class course_coordinator_form extends moodleform {
         $mform->addElement('text', 'useremail', get_string('useremail', 'local_friadmin'));
         $mform->setType('useremail', PARAM_EMAIL);
 
-        $mform->addElement('text', 'usercompetance', get_string('usercompetance', 'local_friadmin'));
-        $mform->setType('usercompetance', PARAM_TEXT);
+        $mform->addElement('text', 'userworkplace', get_string('userworkplace', 'local_friadmin'));
+        $mform->setType('userworkplace', PARAM_TEXT);
+
+        $mform->addElement('text', 'userjobrole', get_string('userjobrole', 'local_friadmin'));
+        $mform->setType('userjobrole', PARAM_TEXT);
 
         $this->add_action_buttons(false, get_string('download', 'local_friadmin'));
 
