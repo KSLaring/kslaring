@@ -9,7 +9,8 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
             selcatpath = [],
             $categorySelectForm = $('#mform-mysettings-select'),
             $categorySelectSelect = $('#id_selcategory'),
-            $categorySelectList = $('#friadmin-category-select-list-container');
+            $categorySelectList = $('#friadmin-category-select-list-container'),
+            $categorySelectEditBtn = $('#friadmin-category-select-list-edit');
 
         var handleCategorySelectFormClick = function (e) {
             var $target = $(e.target),
@@ -22,6 +23,9 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                 $option = $categorySelectSelect.find('option');
                 $option.val($parentli.data('catid'));
                 $option.text($target.text());
+
+                $categorySelectList.find('.selected-item').removeClass('selected-item');
+                $parentli.addClass('selected-item');
             } else if ($target.hasClass('tree-icon')) {
                 // If sub categories are not loaded, then load and show.
                 if ($parentli.hasClass('not-loaded')) {
@@ -57,9 +61,16 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                             if (selcatpath.length) {
                                 var itemtoopen = selcatpath.shift(),
                                     $listitem = $categorySelectList
-                                    .find('[data-catid="' + itemtoopen + '"]');
+                                        .find('[data-catid="' + itemtoopen + '"]');
 
                                 $listitem.find('.tree-icon').trigger('click');
+                            } else {
+                                var catid = $categorySelectSelect.val(),
+                                    $catinlist = $categorySelectList.find('[data-catid="' + catid + '"]');
+
+                                if ($catinlist.length) {
+                                    $catinlist.addClass('selected-item');
+                                }
                             }
                         }
                     });
@@ -104,16 +115,39 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                 if (selcatpath.length) {
                     var itemtoopen = selcatpath.shift(),
                         $listitem = $categorySelectList
-                        .find('[data-catid="' + itemtoopen + '"]');
+                            .find('[data-catid="' + itemtoopen + '"]');
 
                     $listitem.find('.tree-icon').trigger('click');
                 }
             }
 
-            $target.trigger('blur');
-
             $categorySelectList
                 .trigger('focus')
+                .collapse('toggle');
+
+            $target.trigger('blur');
+            console.log('blur');
+        };
+
+        var handleCategorySelectBtn = function (e) {
+            e.preventDefault();
+
+            if (catlistfirstshown) {
+                catlistfirstshown = false;
+
+                selcatpath = $categorySelectSelect.find('option').data('selcatpath').substr(1).split('/');
+                $categorySelectSelect.find('option').removeData('selcatpath');
+                selcatpath.pop();
+
+                if (selcatpath.length) {
+                    var itemtoopen = selcatpath.shift(),
+                        $listitem = $categorySelectList.find('[data-catid="' + itemtoopen + '"]');
+
+                    $listitem.find('.tree-icon').trigger('click');
+                }
+            }
+
+            $categorySelectList
                 .collapse('toggle');
         };
 
@@ -122,7 +156,8 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                 log.debug('AMD module categoryselect init.');
 
                 $categorySelectForm.on('click', '.catname, .tree-icon.with-children', handleCategorySelectFormClick);
-                $categorySelectSelect.on('click select', handleCategorySelectSelection);
+                $categorySelectSelect.on('focus', handleCategorySelectSelection);
+                $categorySelectEditBtn.on('click', handleCategorySelectBtn);
             }
         };
     }

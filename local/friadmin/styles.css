@@ -123,3 +123,6 @@ body #region-main #mform-coursefilter:not(.unresponsive) .femptylabel .fitemtitl
   background-image: url([[pix:t/collapsed]]);
   cursor: pointer;
 }
+#mform-mysettings-select .friadmin-category-select-list .selected-item > .info > .catname {
+  font-weight: bold;
+}
