@@ -232,7 +232,6 @@ class manager_add_job_role_form extends moodleform {
     /**
      * @param           $level
      * @param           $form
-     * @return          mixed
      *
      * @creationDate    26/01/2015
      * @author          eFaktor     (fbv)
