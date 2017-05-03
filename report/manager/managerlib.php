@@ -1334,8 +1334,7 @@ class CompetenceManager {
                      FROM		{user}						u
                         JOIN	{user_info_competence_data}	uicd	ON 	uicd.userid = u.id
                                                                     AND uicd.companyid  IN ($my_companies)
-                     WHERE		u.id != :user
-                        AND		u.deleted = 0 ";
+                     WHERE		u.deleted = 0 ";
 
             /* Execute  */
             $rdo = $DB->get_records_sql($sql,$params);

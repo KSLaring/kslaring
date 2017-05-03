@@ -69,7 +69,7 @@ class manager_add_job_role_form extends moodleform {
         /* Level Two    */
         /* Companies connected with super user  */
         $myCompanies    = null;
-        $myCompanies = $this->Get_MyLevelAccess($myAccess,2);
+        $myCompanies    = $this->Get_MyLevelAccess($myAccess,2);
         $this->Add_CompanyLevel(2,$m_form,$myCompanies);
         /* Level Three  */
         /* Companies connected with super user  */
@@ -232,7 +232,6 @@ class manager_add_job_role_form extends moodleform {
     /**
      * @param           $level
      * @param           $form
-     * @return          mixed
      *
      * @creationDate    26/01/2015
      * @author          eFaktor     (fbv)
