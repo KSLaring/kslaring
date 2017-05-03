@@ -39,18 +39,27 @@ class local_friadmin_mysettings_select_form extends \moodleform {
 
         // Set up the varianbles.
         require_once($CFG->libdir . '/coursecatlib.php');
+
         $selectedcat = $customdata['localtempcategory'];
         $selectedcategory = null;
+        $selectedcatname = get_string('seltemplcategory', 'local_friadmin');
+        $selectedcatpath = '/';
+
+        // If a category had been selected set the infromation.
         if (!empty($selectedcat)) {
             $selectedcategory = coursecat::get($selectedcat);
+            $selectedcatname = $customdata['categories'][$selectedcat];
+            $selectedcatpath = $selectedcategory->path;
         }
+
         $categoryid = 0;
         $context = (object)array(
             'selectname' => '',
             'selectid' => '',
             'selcatid' => $selectedcat,
-            'selcatname' => $customdata['categories'][$selectedcat],
-            'selcatpath' => !is_null($selectedcategory) ? $selectedcategory->path : '/',
+            'selcatname' => $selectedcatname,
+            'selcatpath' => $selectedcatpath,
+            'selbtntext' => get_string('selbtntext', 'local_friadmin'),
             'catparent' => $categoryid,
             'catlistdepth' => 0,
             'categorylist' => array()
@@ -80,9 +89,9 @@ class local_friadmin_mysettings_select_form extends \moodleform {
         // Add the template data to the $attributes because Moodle seams not to be able to handle a fifth parameter.
         $mform->addElement('category_select', 'selcategory',
             get_string('seltemplcategorylabel', 'local_friadmin'),
-            array($selectedcat => $customdata['categories'][$selectedcat]), array('context' => $context));
+            array($selectedcat => $selectedcatname), array('context' => $context));
         $mform->addRule('selcategory', get_string('missingseltemplcategory', 'local_friadmin'),
-            'required', null, 'client');
+            'required', null,   'client');
         $mform->setDefault('selcategory', $customdata['localtempcategory']);
 
         $mform->addElement('static', 'seltemplcategorydesc', '',

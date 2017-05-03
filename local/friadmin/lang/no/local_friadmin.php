@@ -108,6 +108,7 @@ $string['selprefnetcoursetemplatelabel']    = 'Foretrukket nettkursmal';
 $string['selprefnetcoursetemplatedesc']     = 'Vennligst velg din foretrukne nettkursmal.';
 $string['selmysetingssave']                 = 'Lagre innstillinger';
 $string['missinglocaltempcategory']         = 'Din valgte kurskategori for kursmaler finnes ikke. Vennligst velg en annen kurskategori for dine kursmaler i <a href="{$a}">Mine innstillinger</a> i Kursveiviseren.';
+$string['selbtntext']                       = 'Endre';
 
 $string['locationline']         = 'Hvor: ';
 $string['fromto']               = 'Fra - til: ';

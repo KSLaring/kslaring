@@ -113,6 +113,7 @@ $string['selmysetingssave']                 = 'Save settings';
 $string['missinglocaltempcategory']         = 'Your selected course template forlder is missing. 
 Please select a new folder for your course templates in <a href="{$a}">My settings</a> 
 in the Course wizard.';
+$string['selbtntext']                       = 'Edit';
 
 $string['locationline']         = 'Location: ';
 $string['fromto']               = 'From - to: ';
