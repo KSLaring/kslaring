@@ -1187,19 +1187,22 @@ class STATUS {
             $DB->delete_records('user_info_competence_data');
             
             // Get content
-            $content = file($competence);
+            $content = file_get_contents($competence);
+            $content = json_decode($content);
 
+            echo implode(',',$content);
+            
+                // Each line file
+            //foreach($content as $key=>$instance) {
 
-            // Each line file
-            foreach($content as $key=>$instance) {
-                echo "Instance : " . "</br>";
-                echo $instance . "</br>";
+            //    echo "Instance : " . "</br>";
+            //    echo $instance . "</br>";
 
                 //$instance->timemodified = $time;
 
                 // Add record
                 //$DB->insert_record('user_info_competence_data',$instance);
-            }//for_line
+            //}//for_line
             
             // Commit
             $trans->allow_commit();
