@@ -569,8 +569,14 @@ class STATUS_CRON {
                     echo  "KEYS: " . implode(',',array_keys($content)) . "</br>";
                     // Split the process if it is too big
                     if ($total > MAX_IMP_FS) {
-
-                        //$data = array_slice($content,$i,$i+MAX_IMP_FS+1);
+                        $i = 0;
+                        $data = array_slice($content,$i,$i+MAX_IMP_FS);
+                        echo "KEYS 1 -->  " . implode(',',array_keys($data)) . "</br>";
+                        echo "DATA --> " . implode(',',$data) . "</br>";
+                        $i = $i+MAX_IMP_FS + 1;
+                        $data = array_slice($content,$i,$i+MAX_IMP_FS);
+                        echo "KEYS 1 -->  " . implode(',',array_keys($data)) . "</br>";
+                        echo "DATA --> " . implode(',',$data) . "</br>";
                     }else {
                         if (FS::save_temporary_fellesdata($content,IMP_COMPETENCE_JR,true)) {
                             FS::backup_temporary_fellesdata(IMP_COMPETENCE_JR);
