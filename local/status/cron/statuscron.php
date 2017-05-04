@@ -58,10 +58,12 @@ class STATUS_CRON {
 
         try {
             // Get industry code
-            //$industry = STATUS::get_industry_code($plugin->ks_muni);
+            $industry = STATUS::get_industry_code($plugin->ks_muni);
+
+            echo "Industry --> " . $industry . "</br>";
 
             // Get competence from KS
-            //self::competence_data($plugin,$industry);
+            self::competence_data($plugin,$industry);
 
             // Get managers reporters from KS
             //self::managers_reporters($plugin,$industry);

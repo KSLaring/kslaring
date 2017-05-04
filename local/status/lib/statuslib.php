@@ -1192,6 +1192,8 @@ class STATUS {
 
             // Each line file
             foreach($content as $key=>$instance) {
+                echo "Instance : " . "</br>";
+                echo $instance . "</br>";
                 $instance->timemodified = $time;
 
                 // Add record

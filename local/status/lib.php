@@ -20,7 +20,7 @@ function status_cron() {
     try {
         require_once('cron/statuscron.php');
         require_once('lib/statuslib.php');
-        require_once($CFG->dirroot . '/local/fellesdata/lib/fellesdatalib.php');
+        require_once('../../local/fellesdata/lib/fellesdatalib.php');
         
         $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' HOLA LOCAL STATUS . ' . "\n";
 
