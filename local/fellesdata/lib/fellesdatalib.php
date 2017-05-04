@@ -2541,6 +2541,8 @@ class FS {
 
             // Each line file
             foreach($data as $key=>$line) {
+                echo $data . "</br>--</br>";
+
                 $lineContent    = json_decode($line);
 
                 // Get New Entry
@@ -2622,7 +2624,7 @@ class FS {
 
                     case IMP_COMPETENCE_JR:
                         // Competence Job Role
-                        self::import_temporary_competence_jobrole($toSave,$status);
+                        //self::import_temporary_competence_jobrole($toSave,$status);
 
                         break;
                 }//type
