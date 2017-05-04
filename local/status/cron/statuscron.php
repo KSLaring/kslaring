@@ -66,7 +66,7 @@ class STATUS_CRON {
             self::competence_data($plugin,$industry);
 
             // Get managers reporters from KS
-            //self::managers_reporters($plugin,$industry);
+            self::managers_reporters($plugin,$industry);
 
             // Import last status from fellesdata
             //self::import_status($plugin);

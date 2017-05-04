@@ -1191,15 +1191,11 @@ class STATUS {
 
             // Each line file
             foreach($content as $key => $instance) {
-                echo $instance . "</br>";
                 $line = json_decode($instance);
-
                 $line->timemodified = $time;
 
-                echo "User: " . $line->userid . "</br>---</br>";
-
                 // Add record
-                //$DB->insert_record('user_info_competence_data',$instance);
+                $DB->insert_record('user_info_competence_data',$line);
             }//for_line
             
             // Commit
@@ -1242,8 +1238,7 @@ class STATUS {
             $time = time();
             
             // Get content
-            $content = file_get_contents($path);
-            $content = json_decode($content);
+            $content = file($path);
 
             // Select table
             switch ($type) {
@@ -1263,10 +1258,11 @@ class STATUS {
 
             // Each line file
             foreach($content as $key=>$instance) {
-                $instance->timemodified = $time;
+                $line = json_decode($instance);
+                $line->timemodified = $time;
 
                 // Add record
-                $DB->insert_record($table,$instance);
+                $DB->insert_record($table,$line);
             }//for_line
 
             // Commit
