@@ -560,9 +560,16 @@ class STATUS_CRON {
                     // Get last status
                     $content = file($path);
 
-                    if (FS::save_temporary_fellesdata($content,IMP_COMPETENCE_JR,true)) {
-                        FS::backup_temporary_fellesdata(IMP_COMPETENCE_JR);
-                    }//if_status
+                    $total = count($content);
+
+                    echo "Total : " . $total . "</br>";
+                    $first = array_slice($content,0,150);
+                    echo implode(',',$first) . "</br>";
+                    echo "Total First: " . $first . "</br>";
+
+                    //if (FS::save_temporary_fellesdata($content,IMP_COMPETENCE_JR,true)) {
+                    //    FS::backup_temporary_fellesdata(IMP_COMPETENCE_JR);
+                    //}//if_status
                 }//if_exists
             }else {
                 $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' ERROR Import STATUS USER COMPETENCE JR - NULL RESPONSE . ' . "\n";
