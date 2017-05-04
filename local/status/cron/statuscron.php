@@ -565,7 +565,7 @@ class STATUS_CRON {
                     echo "Total : " . $total . "</br>";
                     $first = array_slice($content,0,150);
                     echo implode(',',$first) . "</br>";
-                    echo "Total First: " . $first . "</br>";
+                    echo "Total First: " . count($first) . "</br>";
 
                     //if (FS::save_temporary_fellesdata($content,IMP_COMPETENCE_JR,true)) {
                     //    FS::backup_temporary_fellesdata(IMP_COMPETENCE_JR);
