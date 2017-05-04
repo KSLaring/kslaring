@@ -2517,7 +2517,6 @@ class FS {
     /**
      * @param            $data
      * @param            $type
-     * @param       bool $status
      *
      * @return           bool
      * @throws           Exception
@@ -2528,7 +2527,7 @@ class FS {
      * Description
      * Save in temporary tables. Step before synchronization
      */
-    public static function save_temporary_fellesdata($data,$type,$status = false) {
+    public static function save_temporary_fellesdata($data,$type) {
         /* Variables    */
         $action         = null;
         $newEntry       = null;
@@ -2581,52 +2580,52 @@ class FS {
                         }//action
                     }//if_status
 
-
                     // Add Record
-                    //if ($newEntry) {
+                    if ($newEntry) {
                         $newEntry->timeimport   = $time;
                         $newEntry->timemodified = $time;
-                    //    $toSave[$key] = $newEntry;
-                    //}
-
-                    switch ($type) {
-                        case IMP_USERS:
-                            // FS Users
-                            self::import_temporary_fs_users($newEntry,$status);
-
-                            // Fake eMails
-                            self::update_fake_mails();
-
-
-                            break;
-
-                        case IMP_COMPANIES:
-                            // FS Companies
-                            self::import_temporary_fs_company($newEntry,$status);
-
-                            break;
-
-                        case IMP_JOBROLES:
-                            // FS JOB ROLES
-                            self::import_temporary_fs_jobroles($newEntry,$status);
-
-                            break;
-
-                        case IMP_MANAGERS_REPORTERS:
-                            // Managers Reporters
-                            self::import_temporary_managers_reporters($newEntry,$status);
-
-                            break;
-
-                        case IMP_COMPETENCE_JR:
-                            // Competence Job Role
-                            self::import_temporary_competence_jobrole($newEntry,$status);
-
-                            break;
-                    }//type
+                        $toSave[$key] = $newEntry;
+                    }
                 }//ifLineContent
             }//for
 
+            if ($toSave) {
+                switch ($type) {
+                    case IMP_USERS:
+                        // FS Users
+                        self::import_temporary_fs_users($toSave);
+
+                        // Fake eMails
+                        self::update_fake_mails();
+
+
+                        break;
+
+                    case IMP_COMPANIES:
+                        // FS Companies
+                        self::import_temporary_fs_company($toSave);
+
+                        break;
+
+                    case IMP_JOBROLES:
+                        // FS JOB ROLES
+                        self::import_temporary_fs_jobroles($toSave);
+
+                        break;
+
+                    case IMP_MANAGERS_REPORTERS:
+                        // Managers Reporters
+                        self::import_temporary_managers_reporters($toSave);
+
+                        break;
+
+                    case IMP_COMPETENCE_JR:
+                        // Competence Job Role
+                        self::import_temporary_competence_jobrole($toSave);
+
+                        break;
+                }//type
+            }//if_toSave
 
             return true;
         }catch (Exception $ex) {
@@ -2643,14 +2642,13 @@ class FS {
      * Save FS users in temporary tables before the synchronization
      *
      * @param           $data
-     * @param           $status
      *
      * @throws          Exception
      *
      * @creationDate    02/02/2016
      * @author          eFaktor     (fbv)
      */
-    private static  function import_temporary_fs_users($data,$status = false) {
+    private static  function import_temporary_fs_users($data) {
         /* Variables    */
         global $DB;
         $infoUser   = null;
@@ -2662,27 +2660,12 @@ class FS {
         $trans = $DB->start_delegated_transaction();
 
         try {
-            // Search criteria
-            $params = array();
 
-            // Status criteria
-            if ($status) {
-                $params['action'] = STATUS;
-            }//if_status
+            // Clean table
+            $DB->delete_records('fs_imp_users');
 
-            //foreach ($data as $key => $infoUser) {
-                // Criteria
-                $params['FODSELSNR'] = $infoUser->FODSELSNR;
-
-                // Execute
-                $rdo = $DB->get_record('fs_imp_users',$params);
-                if (!$rdo) {
-                    $DB->insert_record('fs_imp_users',$data);
-                }else {
-                    $data->id       = $rdo->id;
-                    $DB->update_record('fs_imp_users',$data);
-                }//if_rdo
-            //}//ofr_each
+            // Execute
+            $DB->insert_records('fs_imp_users',$data);
 
             // Commit
             $trans->allow_commit();
@@ -2744,14 +2727,13 @@ class FS {
      * Save FS companies in temporary tables before the synchronization
      *
      * @param           $data
-     * @param           $status
      *
      * @throws          Exception
      *
      * @creationDate    02/02/2016
      * @author          eFaktor     (fbv)
      */
-    private static function import_temporary_fs_company($data,$status = false) {
+    private static function import_temporary_fs_company($data) {
         /* Variables    */
         global $DB;
         $infoFS     = null;
@@ -2763,28 +2745,11 @@ class FS {
         $trans = $DB->start_delegated_transaction();
 
         try {
-            // Search criteria
-            $params = array();
+            // Clean table
+            $DB->delete_records('fs_imp_company');
 
-            // Status criteria
-            if ($status) {
-                $params['action'] = STATUS;
-            }//if_status
-
-            // FS Company Info
-            //foreach($data as $key => $infoFS) {
-                // Criteria
-                $params['ORG_ENHET_ID'] = $infoFS->ORG_ENHET_ID;
-
-                // Execute
-                $rdo = $DB->get_record('fs_imp_company',$params);
-                if (!$rdo) {
-                    $DB->insert_record('fs_imp_company',$data);
-                }else {
-                    $data->id             = $rdo->id;
-                    $DB->update_record('fs_imp_company',$data);
-                }//if_rdo
-            //}//for_each
+            // Execute
+            $DB->insert_records('fs_imp_company',$data);
 
             // Commit
             $trans->allow_commit();
@@ -2801,14 +2766,13 @@ class FS {
      * Save FS Jobroles in temporary tables before the synchronization
      *
      * @param                $data
-     * @param           bool $status
      *
      * @throws                  Exception
      *
      * @creationDate    04/02/2016
      * @author          eFaktor     (fbv)
      */
-    private static function import_temporary_fs_jobroles($data,$status = false) {
+    private static function import_temporary_fs_jobroles($data) {
         /* Variables    */
         global $DB;
         $infoFS = null;
@@ -2820,28 +2784,11 @@ class FS {
         $trans = $DB->start_delegated_transaction();
 
         try {
-            // Search criteria
-            $params = array();
+            // Clean table
+            $DB->delete_records('fs_imp_jobroles');
 
-            // Status criteria
-            if ($status) {
-                $params['action'] = STATUS;
-            }//if_status
-
-            // FS jobrole info
-            //foreach($data as $key => $infoFS) {
-                // Criteria
-                $params['STILLINGSKODE'] = $infoFS->STILLINGSKODE;
-
-                // Execute
-                $rdo = $DB->get_record('fs_imp_jobroles',$params);
-                if (!$rdo) {
-                    $DB->insert_record('fs_imp_jobroles',$data);
-                }else {
-                    $data->id         = $rdo->id;
-                    $DB->update_record('fs_imp_jobroles',$data);
-                }//if_rdo
-            //}//for_each
+            // Execute
+            $DB->insert_records('fs_imp_jobroles',$data);
 
             // Commit
             $trans->allow_commit();
@@ -2858,14 +2805,13 @@ class FS {
      * Import Temporary ManagersReporters
      *
      * @param           $data
-     * @param           $status
      *
      * @throws          Exception
      *
      * @creationDate    13/06/2016
      * @author          eFaktor     (fbv)
      */
-    private static function import_temporary_managers_reporters($data,$status = false) {
+    private static function import_temporary_managers_reporters($data) {
         /* Variables */
         global $DB;
         $info   = null;
@@ -2876,30 +2822,11 @@ class FS {
         $trans = $DB->start_delegated_transaction();
 
         try {
-            // Search criteria
-            $params = array();
+            // Clean table
+            $DB->delete_records('fs_imp_managers_reporters');
 
-            // Status criteria
-            if ($status) {
-                $params['action'] = STATUS;
-            }//if_status
-
-            //foreach ($data as $key => $info) {
-                // Criteria
-                $params['ORG_ENHET_ID'] = $info->ORG_ENHET_ID;
-                $params['ORG_NIVAA']    = $info->ORG_NIVAA;
-                $params['FODSELSNR']    = $info->FODSELSNR;
-                $params['PRIORITET']    = $info->PRIORITET;
-
-                // Execute
-                $rdo = $DB->get_record('fs_imp_managers_reporters',$params);
-                if (!$rdo) {
-                    $DB->insert_record('fs_imp_managers_reporters',$data);
-                }else {
-                    $data->id       = $rdo->id;
-                    $DB->update_record('fs_imp_managers_reporters',$data);
-                }//if_rdo
-            //}//for_rdo
+            // Execute
+            $DB->insert_records('fs_imp_managers_reporters',$data);
 
             // Commit
             $trans->allow_commit();
@@ -2916,14 +2843,13 @@ class FS {
      * Save User Job Role (FS)  in temporary tables before the synchronization
      *
      * @param           $data
-     * @param           $status
      *
      * @throws          Exception
      *
      * @creationDate    02/02/2016
      * @author          eFaktor     (fbv)
      */
-    private static function import_temporary_competence_jobrole($data, $status = false) {
+    private static function import_temporary_competence_jobrole($data) {
         /* Variables    */
         global $DB;
         $infoCompetenceJR       = null;
@@ -2935,15 +2861,11 @@ class FS {
         $trans = $DB->start_delegated_transaction();
 
         try {
-            // Execute
-            if ($status) {
-                $DB->delete_records('fs_imp_users_jr',array('action' => STATUS));
-            }//status
+            // Clean table
+            $DB->delete_records('fs_imp_users_jr');
 
             // Execute
-            $DB->insert_record('fs_imp_users_jr',$data);
-            //$DB->insert_records('fs_imp_users_jr',$data);
-
+            $DB->insert_records('fs_imp_users_jr',$data);
 
             // Commit
             $trans->allow_commit();
