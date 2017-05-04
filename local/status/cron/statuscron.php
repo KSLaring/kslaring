@@ -540,10 +540,13 @@ class STATUS_CRON {
     private static function import_status_user_competence($plugin) {
         /* Variables    */
         global $CFG;
-        $path        = null;
-        $content     = null;
-        $response    = null;
-        $dblog       = null;
+        $path       = null;
+        $content    = null;
+        $response   = null;
+        $dblog      = null;
+        $total      = null;
+        $i          = null;
+        $data       = null;
 
         try {
             // Log
@@ -560,16 +563,22 @@ class STATUS_CRON {
                     // Get last status
                     $content = file($path);
 
+                    // Get total
                     $total = count($content);
 
-                    echo "Total : " . $total . "</br>";
-                    $first = array_slice($content,0,150);
-                    echo implode(',',$first) . "</br>";
-                    echo "Total First: " . count($first) . "</br>";
-
-                    //if (FS::save_temporary_fellesdata($content,IMP_COMPETENCE_JR,true)) {
-                    //    FS::backup_temporary_fellesdata(IMP_COMPETENCE_JR);
-                    //}//if_status
+                    // Split the process if it is too big
+                    if ($total > MAX_IMP_FS) {
+                        for($i=0;$i<=$total;$i=$i+MAX_IMP_FS) {
+                            $data = array_slice($content,$i,MAX_IMP_FS);
+                            if (FS::save_temporary_fellesdata($data,IMP_COMPETENCE_JR,true)) {
+                                FS::backup_temporary_fellesdata(IMP_COMPETENCE_JR);
+                            }//if_status
+                        }
+                    }else {
+                        if (FS::save_temporary_fellesdata($content,IMP_COMPETENCE_JR,true)) {
+                            FS::backup_temporary_fellesdata(IMP_COMPETENCE_JR);
+                        }//if_status
+                    }//if_max_imp
                 }//if_exists
             }else {
                 $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' ERROR Import STATUS USER COMPETENCE JR - NULL RESPONSE . ' . "\n";
