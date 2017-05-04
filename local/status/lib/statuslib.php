@@ -1190,7 +1190,7 @@ class STATUS {
             $data = file_get_contents($competence);
             $content = json_decode($data);
 
-            echo "Data: " . $data . "</br>";
+            echo "Data: " . $content . "</br>";
 
             
             // Commit
