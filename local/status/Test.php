@@ -9,6 +9,7 @@
 
 require( '../../config.php' );
 require_once('../../local/fellesdata/lib/fellesdatalib.php');
+require_once('cron/statuscron.php');
 require_once('lib/statuslib.php');
 
 require_login();
