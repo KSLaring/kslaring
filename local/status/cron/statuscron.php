@@ -560,8 +560,6 @@ class STATUS_CRON {
                     // Get last status
                     $content = file($path);
 
-                    echo "1 --> </br>" . $content  . "</br>";
-
                     if (FS::save_temporary_fellesdata($content,IMP_COMPETENCE_JR,true)) {
                         FS::backup_temporary_fellesdata(IMP_COMPETENCE_JR);
                     }//if_status
