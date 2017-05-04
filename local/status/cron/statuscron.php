@@ -287,10 +287,10 @@ class STATUS_CRON {
             //self::import_status_jobroles($plugin);
 
             // Import FS User Competence
-            self::import_status_managers_reporters($plugin);
+            //self::import_status_managers_reporters($plugin);
 
             // Import FS User Competence JR
-            //self::import_status_user_competence($plugin);
+            self::import_status_user_competence($plugin);
 
             // Log
             $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Import Fellesdata STATUS. ' . "\n";
@@ -559,6 +559,8 @@ class STATUS_CRON {
                 if (file_exists($path)) {
                     // Get last status
                     $content = file($path);
+
+                    echo "1 --> </br>" . $content  . "</br>";
 
                     if (FS::save_temporary_fellesdata($content,IMP_COMPETENCE_JR,true)) {
                         FS::backup_temporary_fellesdata(IMP_COMPETENCE_JR);
