@@ -557,6 +557,9 @@ class FELLESDATA_CRON {
 
             // Import data into temporary tables
             if ($fsResponse) {
+                // Clean temporary table
+                FS::clean_temporary_fellesdata(IMP_USERS);
+
                 // Open file
                 $pathFile = $CFG->dataroot . '/fellesdata/' . TRADIS_FS_USERS . '.txt';
                 if (file_exists($pathFile)) {
@@ -633,6 +636,9 @@ class FELLESDATA_CRON {
 
             // Import data into temporary tables
             if ($fsResponse) {
+                // Clean temporary table
+                FS::clean_temporary_fellesdata(IMP_COMPANIES);
+
                 // Open file
                 $pathFile = $CFG->dataroot . '/fellesdata/' . TRADIS_FS_COMPANIES . '.txt';
                 if (file_exists($pathFile)) {
@@ -714,6 +720,9 @@ class FELLESDATA_CRON {
 
             // Import data into temporary tables
             if ($fsResponse) {
+                // Clean temporary table
+                FS::clean_temporary_fellesdata(IMP_JOBROLES);
+
                 // Open file
                 $pathFile = $CFG->dataroot . '/fellesdata/' . TRADIS_FS_JOBROLES . '.txt';
                 if (file_exists($pathFile)) {
@@ -795,6 +804,9 @@ class FELLESDATA_CRON {
 
             // Import data into temporary tables
             if ($fsManagersReporters) {
+                // Clean temporary table
+                FS::clean_temporary_fellesdata(IMP_MANAGERS_REPORTERS);
+
                 // Open file
                 $pathFile = $CFG->dataroot . '/fellesdata/' . TRADIS_FS_MANAGERS_REPORTERS . '.txt';
                 if (file_exists($pathFile)) {
@@ -877,6 +889,9 @@ class FELLESDATA_CRON {
 
             // Import data into temporary tables
             if ($usersCompetenceJR) {
+                // Clean temporary table
+                FS::clean_temporary_fellesdata(IMP_COMPETENCE_JR);
+
                 // Open file
                 $pathFile = $CFG->dataroot . '/fellesdata/' . TRADIS_FS_USERS_JOBROLES . '.txt';
                 if (file_exists($pathFile)) {
@@ -1024,13 +1039,6 @@ class FELLESDATA_CRON {
                 $content = str_replace('\r',chr(13),$content);
                 $content = str_replace('\n',chr(13),$content);
                 $content = str_replace('\r\n',chr(13),$content);
-                // Remove "
-                if (substr($content,0,1) == '"') {
-                    $content = substr($content,1);
-                }
-                if (substr($content,strlen($content)-1,1) == '"') {
-                    $content = substr($content,0,strlen($content)-1);
-                }
 
                 fwrite($responseFile,$content);
                 fclose($responseFile);
