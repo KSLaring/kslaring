@@ -1190,8 +1190,9 @@ class STATUS {
             $content = file_get_contents($competence);
             $content = json_decode($content);
 
-            echo implode(',',$content);
-            
+            //echo implode(',',$content);
+
+            echo $content;
                 // Each line file
             //foreach($content as $key=>$instance) {
 
