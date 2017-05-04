@@ -2527,7 +2527,7 @@ class FS {
      * Description
      * Save in temporary tables. Step before synchronization
      */
-    public static function save_temporary_fellesdata($data,$type) {
+    public static function save_temporary_fellesdata($data,$type,$status = false) {
         /* Variables    */
         $action         = null;
         $newEntry       = null;

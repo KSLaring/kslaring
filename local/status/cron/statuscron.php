@@ -341,7 +341,7 @@ class STATUS_CRON {
                     // Get last status
                     $content = file($path);
 
-                    if (FS::save_temporary_fellesdata($content,IMP_USERS)) {
+                    if (FS::save_temporary_fellesdata($content,IMP_USERS,true)) {
                         FS::backup_temporary_fellesdata(IMP_USERS);
                     }
                 }//if_exists
@@ -395,7 +395,7 @@ class STATUS_CRON {
                     // Get last status
                     $content = file($path);
 
-                    if (FS::save_temporary_fellesdata($content,IMP_COMPANIES)) {
+                    if (FS::save_temporary_fellesdata($content,IMP_COMPANIES,true)) {
                         FS::backup_temporary_fellesdata(IMP_COMPANIES);
                     }//if_save_temporary
                 }//if_exists
@@ -450,7 +450,7 @@ class STATUS_CRON {
                     // Get last status
                     $content = file($path);
 
-                    if (FS::save_temporary_fellesdata($content,IMP_JOBROLES)) {
+                    if (FS::save_temporary_fellesdata($content,IMP_JOBROLES,true)) {
                         FS::backup_temporary_fellesdata(IMP_JOBROLES);
                     }//if_save_temporay
                 }//if_exists
@@ -505,7 +505,7 @@ class STATUS_CRON {
                     // Get last status
                     $content = file($path);
 
-                    if (FS::save_temporary_fellesdata($content,IMP_MANAGERS_REPORTERS)) {
+                    if (FS::save_temporary_fellesdata($content,IMP_MANAGERS_REPORTERS,true)) {
                         FS::backup_temporary_fellesdata(IMP_MANAGERS_REPORTERS);
                     }//if_save_temporary
                 }//if_exists
@@ -570,12 +570,12 @@ class STATUS_CRON {
                     if ($total > MAX_IMP_FS) {
                         for($i=0;$i<=$total;$i=$i+MAX_IMP_FS) {
                             $data = array_slice($content,$i,MAX_IMP_FS);
-                            if (FS::save_temporary_fellesdata($data,IMP_COMPETENCE_JR)) {
+                            if (FS::save_temporary_fellesdata($data,IMP_COMPETENCE_JR,true)) {
                                 FS::backup_temporary_fellesdata(IMP_COMPETENCE_JR);
                             }//if_status
                         }
                     }else {
-                        if (FS::save_temporary_fellesdata($content,IMP_COMPETENCE_JR)) {
+                        if (FS::save_temporary_fellesdata($content,IMP_COMPETENCE_JR,true)) {
                             FS::backup_temporary_fellesdata(IMP_COMPETENCE_JR);
                         }//if_status
                     }//if_max_imp
