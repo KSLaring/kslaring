@@ -2937,10 +2937,14 @@ class FS {
         try {
             // Execute
             if ($status) {
-                $DB->delete_records('fs_imp_users_jr',array('action' => STATUS));
+                ///$DB->delete_records('fs_imp_users_jr',array('action' => STATUS));
             }//status
+
+            foreach ($data as $key => $info) {
+              echo $info . "</br>";
+            }
             // Execute
-            $DB->insert_records('fs_imp_users_jr',$data);
+            //$DB->insert_records('fs_imp_users_jr',$data);
 
 
             // Commit
