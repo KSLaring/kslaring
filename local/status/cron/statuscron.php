@@ -566,15 +566,15 @@ class STATUS_CRON {
                     // Get total
                     $total = count($content);
                     echo "Total: " . $total . "</br>";
-                    echo  "KEYS: " . implode(',',array_keys($content)) . "</br>";
                     // Split the process if it is too big
                     if ($total > MAX_IMP_FS) {
                         $i = 0;
                         $data = array_slice($content,$i,$i+MAX_IMP_FS);
                         echo "KEYS  -->  " . implode(',',array_keys($data)) . "</br></br>";
                         echo "DATA --> " . implode(',',$data) . "</br>";
-                        $i = $i+MAX_IMP_FS + 1;
-                        echo "I : " . $i . "</br>";
+                        $i = $i+MAX_IMP_FS;
+                        echo "I : " . $i . " Total : " . count($content) . "</br>";
+
                         $data = array_slice($content,$i,$i+MAX_IMP_FS);
                         echo "KEYS 1 -->  " . implode(',',array_keys($data)) . "</br>";
                         echo "DATA 1 --> " . implode(',',$data) . "</br>";
