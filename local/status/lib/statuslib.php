@@ -1187,15 +1187,16 @@ class STATUS {
             $DB->delete_records('user_info_competence_data');
             
             // Get content
-            $content = file($competence);
-            $content = json_decode($content);
+            $data = file_get_contents($competence);
+            $content = json_decode($data);
 
             // Each line file
-            foreach($content as $key=>$instance) {
-                $instance->timemodified = $time;
+            foreach($content as $instance) {
+                echo $instance . "</br>";
+                //$instance->timemodified = $time;
 
                 // Add record
-                $DB->insert_record('user_info_competence_data',$instance);
+                //$DB->insert_record('user_info_competence_data',$instance);
             }//for_line
             
             // Commit
