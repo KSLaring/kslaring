@@ -114,8 +114,7 @@ class STATUS_CRON {
 
             if ($response) {
                 if ($response['error'] == '200') {
-                    $compentence =  (String)$response['competence'];
-                    STATUS::save_competence($compentence);
+                    STATUS::save_competence($response['competence']);
                 }else {
                     // Log
                     $dblog .= "Error WS: " . $response['message'] . "\n" ."\n";
