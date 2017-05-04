@@ -565,10 +565,12 @@ class STATUS_CRON {
 
                     // Get total
                     $total = count($content);
+                    echo "Total: " . $content . "</br>";
 
                     // Split the process if it is too big
                     if ($total > MAX_IMP_FS) {
                         for($i=0;$i<=$total;$i=$i+MAX_IMP_FS) {
+                            echo " I --> " . $i . "</br>";
                             $data = array_slice($content,$i,MAX_IMP_FS);
                             if (FS::save_temporary_fellesdata($data,IMP_COMPETENCE_JR,true)) {
                                 FS::backup_temporary_fellesdata(IMP_COMPETENCE_JR);
