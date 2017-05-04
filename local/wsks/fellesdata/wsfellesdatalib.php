@@ -1060,7 +1060,10 @@ class WS_FELLESDATA {
             // Execute
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
-                $data = json_encode($rdo);
+                foreach ($rdo as $instance) {
+                    $data .= json_encode($instance) . "\n";
+                }
+
             }//if_Rdo
 
             return $data;
