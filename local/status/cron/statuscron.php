@@ -63,13 +63,13 @@ class STATUS_CRON {
             echo "Industry --> " . $industry . "</br>";
 
             // Get competence from KS
-            self::competence_data($plugin,$industry);
+            //self::competence_data($plugin,$industry);
 
             // Get managers reporters from KS
             //self::managers_reporters($plugin,$industry);
 
             // Import last status from fellesdata
-            //self::import_status($plugin);
+            self::import_status($plugin);
 
             // Syncronization
             //self::synchronization($plugin,$industry);
@@ -281,16 +281,16 @@ class STATUS_CRON {
             self::import_status_users($plugin);
 
             // Import FS Companies
-            self::import_status_orgstructure($plugin);
+            //self::import_status_orgstructure($plugin);
 
             // Import FS Job roles
-            self::import_status_jobroles($plugin);
+            //self::import_status_jobroles($plugin);
 
             // Import FS User Competence
-            self::import_status_managers_reporters($plugin);
+            //self::import_status_managers_reporters($plugin);
 
             // Import FS User Competence JR
-            self::import_status_user_competence($plugin);
+            //self::import_status_user_competence($plugin);
 
             // Log
             $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Import Fellesdata STATUS. ' . "\n";

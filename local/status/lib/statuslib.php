@@ -1185,13 +1185,18 @@ class STATUS {
             
             // First delete all old records
             $DB->delete_records('user_info_competence_data');
-
+            
             // Get content
-            $data = file_get_contents($competence);
-            $content = json_decode($data);
+            $content = file($competence);
 
-            echo "Data: " . $content . "</br>";
+            // Each line file
+            foreach($content as $key => $instance) {
+                $line = json_decode($instance);
+                $line->timemodified = $time;
 
+                // Add record
+                $DB->insert_record('user_info_competence_data',$line);
+            }//for_line
             
             // Commit
             $trans->allow_commit();
@@ -1233,8 +1238,7 @@ class STATUS {
             $time = time();
             
             // Get content
-            $content = file_get_contents($path);
-            $content = json_decode($content);
+            $content = file($path);
 
             // Select table
             switch ($type) {
@@ -1254,10 +1258,11 @@ class STATUS {
 
             // Each line file
             foreach($content as $key=>$instance) {
-                $instance->timemodified = $time;
+                $line = json_decode($instance);
+                $line->timemodified = $time;
 
                 // Add record
-                $DB->insert_record($table,$instance);
+                $DB->insert_record($table,$line);
             }//for_line
 
             // Commit
