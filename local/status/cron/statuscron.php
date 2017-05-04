@@ -586,7 +586,6 @@ class STATUS_CRON {
                         for($i=0;$i<=$total;$i=$i+MAX_IMP_FS) {
                             echo " I --> " . $i . "</br>";
                             $data = array_slice($content,$i,MAX_IMP_FS,true);
-                            //echo implode(',',array_keys($data)) . "</br></br>";
                             FS::save_temporary_fellesdata($data,IMP_COMPETENCE_JR,true);
                         }
                         FS::backup_temporary_fellesdata(IMP_COMPETENCE_JR);
