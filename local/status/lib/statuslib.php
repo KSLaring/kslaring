@@ -1190,18 +1190,16 @@ class STATUS {
             $data = file_get_contents($competence);
             $content = json_decode($data);
 
+            echo "Content: " . $content . "</br>";
+            
             // Each line file
-            foreach($content as $instance) {
-                echo $instance . "</br>";
+            foreach($content as $line) {
+                echo $line . "</br>";
                 //$instance->timemodified = $time;
 
                 // Add record
                 //$DB->insert_record('user_info_competence_data',$instance);
             }//for_line
-
-            // Get content
-            $content = file_get_contents($competence);
-            $content = json_decode($content);
             
             // Commit
             $trans->allow_commit();
