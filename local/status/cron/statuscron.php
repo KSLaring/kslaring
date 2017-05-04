@@ -284,10 +284,10 @@ class STATUS_CRON {
             //self::import_status_orgstructure($plugin);
 
             // Import FS Job roles
-            self::import_status_jobroles($plugin);
+            //self::import_status_jobroles($plugin);
 
             // Import FS User Competence
-            //self::import_status_managers_reporters($plugin);
+            self::import_status_managers_reporters($plugin);
 
             // Import FS User Competence JR
             //self::import_status_user_competence($plugin);
