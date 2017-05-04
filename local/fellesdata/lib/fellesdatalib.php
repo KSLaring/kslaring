@@ -2633,6 +2633,52 @@ class FS {
         }//try_catch
     }//save_temporary_fellesdata
 
+    /**
+     * Description
+     * Clean temporary table
+     *
+     * @param           string $type
+     *
+     * @creationDate    04/05/2017
+     * @author          eFaktor     (fbv)
+     */
+    public static function clean_temporary_fellesdata($type) {
+        /* Variables */
+        global $DB;
+
+        switch ($type) {
+            case IMP_USERS:
+                // FS Users
+                $DB->delete_records('fs_imp_users');
+
+                break;
+
+            case IMP_COMPANIES:
+                // FS Companies
+                $DB->delete_records('fs_imp_company');
+
+                break;
+
+            case IMP_JOBROLES:
+                // FS JOB ROLES
+                $DB->delete_records('fs_imp_jobroles');
+
+                break;
+
+            case IMP_MANAGERS_REPORTERS:
+                // Managers Reporters
+                $DB->delete_records('fs_imp_managers_reporters');
+
+                break;
+
+            case IMP_COMPETENCE_JR:
+                // Competence Job Role
+                $DB->delete_records('fs_imp_users_jr');
+
+                break;
+        }//type
+    }//clean_temporary_fellesdata
+
     /***********/
     /* PRIVATE */
     /***********/
@@ -2660,10 +2706,6 @@ class FS {
         $trans = $DB->start_delegated_transaction();
 
         try {
-
-            // Clean table
-            $DB->delete_records('fs_imp_users');
-
             // Execute
             $DB->insert_records('fs_imp_users',$data);
 
@@ -2745,9 +2787,6 @@ class FS {
         $trans = $DB->start_delegated_transaction();
 
         try {
-            // Clean table
-            $DB->delete_records('fs_imp_company');
-
             // Execute
             $DB->insert_records('fs_imp_company',$data);
 
@@ -2784,9 +2823,6 @@ class FS {
         $trans = $DB->start_delegated_transaction();
 
         try {
-            // Clean table
-            $DB->delete_records('fs_imp_jobroles');
-
             // Execute
             $DB->insert_records('fs_imp_jobroles',$data);
 
@@ -2822,9 +2858,6 @@ class FS {
         $trans = $DB->start_delegated_transaction();
 
         try {
-            // Clean table
-            $DB->delete_records('fs_imp_managers_reporters');
-
             // Execute
             $DB->insert_records('fs_imp_managers_reporters',$data);
 
@@ -2861,9 +2894,6 @@ class FS {
         $trans = $DB->start_delegated_transaction();
 
         try {
-            // Clean table
-            $DB->delete_records('fs_imp_users_jr');
-
             // Execute
             $DB->insert_records('fs_imp_users_jr',$data);
 

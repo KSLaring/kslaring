@@ -335,6 +335,9 @@ class STATUS_CRON {
 
             // Import data into temporary tables
             if ($response) {
+                // Clean temporary table
+                FS::clean_temporary_fellesdata(IMP_USERS);
+
                 // Open file
                 $path = $CFG->dataroot . '/fellesdata/' . TRADIS_FS_USERS . '.txt';
                 if (file_exists($path)) {
@@ -389,6 +392,9 @@ class STATUS_CRON {
 
             // Import data into temporary tables
             if ($response) {
+                // Clean temporary table
+                FS::clean_temporary_fellesdata(IMP_COMPANIES);
+
                 // Open file
                 $path = $CFG->dataroot . '/fellesdata/' . TRADIS_FS_COMPANIES . '.txt';
                 if (file_exists($path)) {
@@ -444,6 +450,9 @@ class STATUS_CRON {
 
             // Import data into temporary tables
             if ($response) {
+                // Clean temporary table
+                FS::clean_temporary_fellesdata(IMP_JOBROLES);
+
                 // Open file
                 $path = $CFG->dataroot . '/fellesdata/' . TRADIS_FS_JOBROLES . '.txt';
                 if (file_exists($path)) {
@@ -499,6 +508,9 @@ class STATUS_CRON {
 
             // Import data into temporary tables
             if ($response) {
+                // Clean temporary table
+                FS::clean_temporary_fellesdata(IMP_MANAGERS_REPORTERS);
+
                 // Open file
                 $path = $CFG->dataroot . '/fellesdata/' . TRADIS_FS_MANAGERS_REPORTERS . '.txt';
                 if (file_exists($path)) {
@@ -557,6 +569,9 @@ class STATUS_CRON {
 
             // Import data into temporary tables
             if ($response) {
+                // Clean temporary table
+                FS::clean_temporary_fellesdata(IMP_COMPETENCE_JR);
+
                 // Open file
                 $path = $CFG->dataroot . '/fellesdata/' . TRADIS_FS_USERS_JOBROLES . '.txt';
                 if (file_exists($path)) {
