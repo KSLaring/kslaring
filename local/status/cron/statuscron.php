@@ -571,12 +571,13 @@ class STATUS_CRON {
                     if ($total > MAX_IMP_FS) {
                         $i = 0;
                         $data = array_slice($content,$i,$i+MAX_IMP_FS);
-                        echo "KEYS 1 -->  " . implode(',',array_keys($data)) . "</br>";
+                        echo "KEYS  -->  " . implode(',',array_keys($data)) . "</br></br>";
                         echo "DATA --> " . implode(',',$data) . "</br>";
                         $i = $i+MAX_IMP_FS + 1;
+                        echo "I : " . $i . "</br>";
                         $data = array_slice($content,$i,$i+MAX_IMP_FS);
                         echo "KEYS 1 -->  " . implode(',',array_keys($data)) . "</br>";
-                        echo "DATA --> " . implode(',',$data) . "</br>";
+                        echo "DATA 1 --> " . implode(',',$data) . "</br>";
                     }else {
                         if (FS::save_temporary_fellesdata($content,IMP_COMPETENCE_JR,true)) {
                             FS::backup_temporary_fellesdata(IMP_COMPETENCE_JR);
