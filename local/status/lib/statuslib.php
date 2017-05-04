@@ -1187,7 +1187,7 @@ class STATUS {
             $DB->delete_records('user_info_competence_data');
             
             // Get content
-            $content = file($competence);
+            $content = file_get_contents($competence);
             $content = json_decode($content);
 
             // Each line file
