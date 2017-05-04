@@ -69,7 +69,7 @@ class STATUS_CRON {
             //self::managers_reporters($plugin,$industry);
 
             // Import last status from fellesdata
-            //self::import_status($plugin);
+            self::import_status($plugin);
 
             // Syncronization
             //self::synchronization($plugin,$industry);
@@ -325,6 +325,9 @@ class STATUS_CRON {
         $content    = null;
         $response   = null;
         $dblog      = null;
+        $data       = null;
+        $total      = null;
+        $i          = null;
 
         try {
             // Log
@@ -335,15 +338,29 @@ class STATUS_CRON {
 
             // Import data into temporary tables
             if ($response) {
+                // Clean temporary table
+                FS::clean_temporary_fellesdata(IMP_USERS);
+
                 // Open file
                 $path = $CFG->dataroot . '/fellesdata/' . TRADIS_FS_USERS . '.txt';
                 if (file_exists($path)) {
                     // Get last status
                     $content = file($path);
 
-                    if (FS::save_temporary_fellesdata($content,IMP_USERS,true)) {
+                    // Get total
+                    $total = count($content);
+                    // Split the process if it is too big
+                    if ($total > MAX_IMP_FS) {
+                        for($i=0;$i<=$total;$i=$i+MAX_IMP_FS) {
+                            $data = array_slice($content,$i,MAX_IMP_FS,true);
+                            FS::save_temporary_fellesdata($data,IMP_USERS,true);
+                        }
                         FS::backup_temporary_fellesdata(IMP_USERS);
-                    }
+                    }else {
+                        if (FS::save_temporary_fellesdata($content,IMP_USERS,true)) {
+                            FS::backup_temporary_fellesdata(IMP_USERS);
+                        }//if_status
+                    }//if_max_imp
                 }//if_exists
             }//if_fsResponse
 
@@ -379,6 +396,9 @@ class STATUS_CRON {
         $content    = null;
         $response   = null;
         $dblog      = null;
+        $data       = null;
+        $total      = null;
+        $i          = null;
 
         try {
             // Log
@@ -389,15 +409,29 @@ class STATUS_CRON {
 
             // Import data into temporary tables
             if ($response) {
+                // Clean temporary table
+                FS::clean_temporary_fellesdata(IMP_COMPANIES);
+
                 // Open file
                 $path = $CFG->dataroot . '/fellesdata/' . TRADIS_FS_COMPANIES . '.txt';
                 if (file_exists($path)) {
                     // Get last status
                     $content = file($path);
 
-                    if (FS::save_temporary_fellesdata($content,IMP_COMPANIES,true)) {
+                    // Get total
+                    $total = count($content);
+                    // Split the process if it is too big
+                    if ($total > MAX_IMP_FS) {
+                        for($i=0;$i<=$total;$i=$i+MAX_IMP_FS) {
+                            $data = array_slice($content,$i,MAX_IMP_FS,true);
+                            FS::save_temporary_fellesdata($data,IMP_COMPANIES,true);
+                        }
                         FS::backup_temporary_fellesdata(IMP_COMPANIES);
-                    }//if_save_temporary
+                    }else {
+                        if (FS::save_temporary_fellesdata($content,IMP_COMPANIES,true)) {
+                            FS::backup_temporary_fellesdata(IMP_COMPANIES);
+                        }//if_status
+                    }//if_max_imp
                 }//if_exists
             }else {
                 $dblog .= ' ERROR Import STATUS ORG Structure - RESPONSE NULL. ' . "\n";
@@ -434,6 +468,9 @@ class STATUS_CRON {
         $content    = null;
         $response   = null;
         $dblog      = null;
+        $data       = null;
+        $total      = null;
+        $i          = null;
 
         try {
             // Log
@@ -444,15 +481,29 @@ class STATUS_CRON {
 
             // Import data into temporary tables
             if ($response) {
+                // Clean temporary table
+                FS::clean_temporary_fellesdata(IMP_JOBROLES);
+
                 // Open file
                 $path = $CFG->dataroot . '/fellesdata/' . TRADIS_FS_JOBROLES . '.txt';
                 if (file_exists($path)) {
                     // Get last status
                     $content = file($path);
 
-                    if (FS::save_temporary_fellesdata($content,IMP_JOBROLES,true)) {
+                    // Get total
+                    $total = count($content);
+                    // Split the process if it is too big
+                    if ($total > MAX_IMP_FS) {
+                        for($i=0;$i<=$total;$i=$i+MAX_IMP_FS) {
+                            $data = array_slice($content,$i,MAX_IMP_FS,true);
+                            FS::save_temporary_fellesdata($data,IMP_JOBROLES,true);
+                        }
                         FS::backup_temporary_fellesdata(IMP_JOBROLES);
-                    }//if_save_temporay
+                    }else {
+                        if (FS::save_temporary_fellesdata($content,IMP_JOBROLES,true)) {
+                            FS::backup_temporary_fellesdata(IMP_JOBROLES);
+                        }//if_status
+                    }//if_max_imp
                 }//if_exists
             }else {
                 $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' ERROR Import STATUS JOB ROLES - Response null . ' . "\n";
@@ -485,10 +536,13 @@ class STATUS_CRON {
     private static function import_status_managers_reporters($plugin) {
         /* Variables    */
         global $CFG;
-        $path      = null;
-        $content   = null;
-        $response  = null;
-        $dblog     = null;
+        $path       = null;
+        $content    = null;
+        $response   = null;
+        $dblog      = null;
+        $data       = null;
+        $i          = null;
+        $total      = null;
 
         try {
             // Log
@@ -499,15 +553,29 @@ class STATUS_CRON {
 
             // Import data into temporary tables
             if ($response) {
+                // Clean temporary table
+                FS::clean_temporary_fellesdata(IMP_MANAGERS_REPORTERS);
+
                 // Open file
                 $path = $CFG->dataroot . '/fellesdata/' . TRADIS_FS_MANAGERS_REPORTERS . '.txt';
                 if (file_exists($path)) {
                     // Get last status
                     $content = file($path);
 
-                    if (FS::save_temporary_fellesdata($content,IMP_MANAGERS_REPORTERS,true)) {
+                    // Get total
+                    $total = count($content);
+                    // Split the process if it is too big
+                    if ($total > MAX_IMP_FS) {
+                        for($i=0;$i<=$total;$i=$i+MAX_IMP_FS) {
+                            $data = array_slice($content,$i,MAX_IMP_FS,true);
+                            FS::save_temporary_fellesdata($data,IMP_MANAGERS_REPORTERS,true);
+                        }
                         FS::backup_temporary_fellesdata(IMP_MANAGERS_REPORTERS);
-                    }//if_save_temporary
+                    }else {
+                        if (FS::save_temporary_fellesdata($content,IMP_MANAGERS_REPORTERS,true)) {
+                            FS::backup_temporary_fellesdata(IMP_MANAGERS_REPORTERS);
+                        }//if_status
+                    }//if_max_imp
                 }//if_exists
             }else {
                 $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' ERROR Import STATUS MANAGERRS REPORTERS - Response null. ' . "\n";
@@ -540,10 +608,13 @@ class STATUS_CRON {
     private static function import_status_user_competence($plugin) {
         /* Variables    */
         global $CFG;
-        $path        = null;
-        $content     = null;
-        $response    = null;
-        $dblog       = null;
+        $path       = null;
+        $content    = null;
+        $response   = null;
+        $dblog      = null;
+        $total      = null;
+        $i          = null;
+        $data       = null;
 
         try {
             // Log
@@ -554,15 +625,29 @@ class STATUS_CRON {
 
             // Import data into temporary tables
             if ($response) {
+                // Clean temporary table
+                FS::clean_temporary_fellesdata(IMP_COMPETENCE_JR);
+
                 // Open file
                 $path = $CFG->dataroot . '/fellesdata/' . TRADIS_FS_USERS_JOBROLES . '.txt';
                 if (file_exists($path)) {
                     // Get last status
                     $content = file($path);
 
-                    if (FS::save_temporary_fellesdata($content,IMP_COMPETENCE_JR,true)) {
+                    // Get total
+                    $total = count($content);
+                    // Split the process if it is too big
+                    if ($total > MAX_IMP_FS) {
+                        for($i=0;$i<=$total;$i=$i+MAX_IMP_FS) {
+                            $data = array_slice($content,$i,MAX_IMP_FS,true);
+                            FS::save_temporary_fellesdata($data,IMP_COMPETENCE_JR,true);
+                        }
                         FS::backup_temporary_fellesdata(IMP_COMPETENCE_JR);
-                    }//if_status
+                    }else {
+                        if (FS::save_temporary_fellesdata($content,IMP_COMPETENCE_JR,true)) {
+                            FS::backup_temporary_fellesdata(IMP_COMPETENCE_JR);
+                        }//if_status
+                    }//if_max_imp
                 }//if_exists
             }else {
                 $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' ERROR Import STATUS USER COMPETENCE JR - NULL RESPONSE . ' . "\n";
