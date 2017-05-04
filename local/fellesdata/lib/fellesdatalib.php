@@ -2541,8 +2541,6 @@ class FS {
 
             // Each line file
             foreach($data as $key=>$line) {
-                echo $data . "</br>--</br>";
-
                 $lineContent    = json_decode($line);
 
                 // Get New Entry
@@ -2584,52 +2582,51 @@ class FS {
 
 
                     // Add Record
-                    if ($newEntry) {
+                    //if ($newEntry) {
                         $newEntry->timeimport   = $time;
                         $newEntry->timemodified = $time;
-                        $toSave[$key] = $newEntry;
-                    }
+                    //    $toSave[$key] = $newEntry;
+                    //}
+
+                    switch ($type) {
+                        case IMP_USERS:
+                            // FS Users
+                            self::import_temporary_fs_users($newEntry,$status);
+
+                            // Fake eMails
+                            self::update_fake_mails();
+
+
+                            break;
+
+                        case IMP_COMPANIES:
+                            // FS Companies
+                            self::import_temporary_fs_company($newEntry,$status);
+
+                            break;
+
+                        case IMP_JOBROLES:
+                            // FS JOB ROLES
+                            self::import_temporary_fs_jobroles($newEntry,$status);
+
+                            break;
+
+                        case IMP_MANAGERS_REPORTERS:
+                            // Managers Reporters
+                            self::import_temporary_managers_reporters($newEntry,$status);
+
+                            break;
+
+                        case IMP_COMPETENCE_JR:
+                            // Competence Job Role
+                            self::import_temporary_competence_jobrole($newEntry,$status);
+
+                            break;
+                    }//type
                 }//ifLineContent
-            }
+            }//for
 
-            if ($toSave) {
-                switch ($type) {
-                    case IMP_USERS:
-                        // FS Users
-                        self::import_temporary_fs_users($toSave,$status);
 
-                        // Fake eMails
-                        self::update_fake_mails();
-                        
-                        
-                        break;
-
-                    case IMP_COMPANIES:
-                        // FS Companies
-                        self::import_temporary_fs_company($toSave,$status);
-
-                        break;
-
-                    case IMP_JOBROLES:
-                        // FS JOB ROLES
-                        self::import_temporary_fs_jobroles($toSave,$status);
-
-                        break;
-
-                    case IMP_MANAGERS_REPORTERS:
-                        // Managers Reporters
-                        self::import_temporary_managers_reporters($toSave,$status);
-
-                        break;
-
-                    case IMP_COMPETENCE_JR:
-                        // Competence Job Role
-                        //self::import_temporary_competence_jobrole($toSave,$status);
-
-                        break;
-                }//type
-            }//if_toSave
-            
             return true;
         }catch (Exception $ex) {
             throw $ex;
@@ -2672,19 +2669,19 @@ class FS {
                 $params['action'] = STATUS;
             }//if_status
 
-            foreach ($data as $key => $infoUser) {
+            //foreach ($data as $key => $infoUser) {
                 // Criteria
                 $params['FODSELSNR'] = $infoUser->FODSELSNR;
 
                 // Execute
                 $rdo = $DB->get_record('fs_imp_users',$params);
                 if (!$rdo) {
-                    $DB->insert_record('fs_imp_users',$infoUser);
+                    $DB->insert_record('fs_imp_users',$data);
                 }else {
-                    $infoUser->id       = $rdo->id;
-                    $DB->update_record('fs_imp_users',$infoUser);
+                    $data->id       = $rdo->id;
+                    $DB->update_record('fs_imp_users',$data);
                 }//if_rdo
-            }//ofr_each
+            //}//ofr_each
 
             // Commit
             $trans->allow_commit();
@@ -2774,19 +2771,19 @@ class FS {
             }//if_status
 
             // FS Company Info
-            foreach($data as $key => $infoFS) {
+            //foreach($data as $key => $infoFS) {
                 // Criteria
                 $params['ORG_ENHET_ID'] = $infoFS->ORG_ENHET_ID;
 
                 // Execute
                 $rdo = $DB->get_record('fs_imp_company',$params);
                 if (!$rdo) {
-                    $DB->insert_record('fs_imp_company',$infoFS);
+                    $DB->insert_record('fs_imp_company',$data);
                 }else {
-                    $infoFS->id             = $rdo->id;
-                    $DB->update_record('fs_imp_company',$infoFS);
+                    $data->id             = $rdo->id;
+                    $DB->update_record('fs_imp_company',$data);
                 }//if_rdo
-            }//for_each
+            //}//for_each
 
             // Commit
             $trans->allow_commit();
@@ -2831,19 +2828,19 @@ class FS {
             }//if_status
 
             // FS jobrole info
-            foreach($data as $key => $infoFS) {
+            //foreach($data as $key => $infoFS) {
                 // Criteria
                 $params['STILLINGSKODE'] = $infoFS->STILLINGSKODE;
 
                 // Execute
                 $rdo = $DB->get_record('fs_imp_jobroles',$params);
                 if (!$rdo) {
-                    $DB->insert_record('fs_imp_jobroles',$infoFS);
+                    $DB->insert_record('fs_imp_jobroles',$data);
                 }else {
-                    $infoFS->id         = $rdo->id;
-                    $DB->update_record('fs_imp_jobroles',$infoFS);
+                    $data->id         = $rdo->id;
+                    $DB->update_record('fs_imp_jobroles',$data);
                 }//if_rdo
-            }//for_each
+            //}//for_each
 
             // Commit
             $trans->allow_commit();
@@ -2886,7 +2883,7 @@ class FS {
                 $params['action'] = STATUS;
             }//if_status
 
-            foreach ($data as $key => $info) {
+            //foreach ($data as $key => $info) {
                 // Criteria
                 $params['ORG_ENHET_ID'] = $info->ORG_ENHET_ID;
                 $params['ORG_NIVAA']    = $info->ORG_NIVAA;
@@ -2896,12 +2893,12 @@ class FS {
                 // Execute
                 $rdo = $DB->get_record('fs_imp_managers_reporters',$params);
                 if (!$rdo) {
-                    $DB->insert_record('fs_imp_managers_reporters',$info);
+                    $DB->insert_record('fs_imp_managers_reporters',$data);
                 }else {
-                    $info->id       = $rdo->id;
-                    $DB->update_record('fs_imp_managers_reporters',$info);
+                    $data->id       = $rdo->id;
+                    $DB->update_record('fs_imp_managers_reporters',$data);
                 }//if_rdo
-            }//for_rdo
+            //}//for_rdo
 
             // Commit
             $trans->allow_commit();
@@ -2939,13 +2936,11 @@ class FS {
         try {
             // Execute
             if ($status) {
-                ///$DB->delete_records('fs_imp_users_jr',array('action' => STATUS));
+                $DB->delete_records('fs_imp_users_jr',array('action' => STATUS));
             }//status
 
-            foreach ($data as $key => $info) {
-              echo $info . "</br>";
-            }
             // Execute
+            $DB->insert_record('fs_imp_users_jr',$data);
             //$DB->insert_records('fs_imp_users_jr',$data);
 
 
