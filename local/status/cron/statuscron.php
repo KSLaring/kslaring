@@ -278,10 +278,10 @@ class STATUS_CRON {
             $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START Import Fellesdata STATUS. ' . "\n";
 
             // Import FS Users
-            self::import_status_users($plugin);
+            //self::import_status_users($plugin);
 
             // Import FS Companies
-            //self::import_status_orgstructure($plugin);
+            self::import_status_orgstructure($plugin);
 
             // Import FS Job roles
             //self::import_status_jobroles($plugin);
