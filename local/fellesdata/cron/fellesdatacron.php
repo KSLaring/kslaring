@@ -484,6 +484,40 @@ class FELLESDATA_CRON {
 
     /**
      * Description
+     * Save temporary data. Split the process in n-steps
+     * @param           $content
+     * @param           $type
+     *
+     * @throws          Exception
+     *
+     * @creationDate    05/05/2017
+     * @author          eFaktor     (fbv)
+     */
+    private static function save_temporary_fs($content,$type) {
+        /* Variables */
+        $data       = null;
+        $total      = null;
+        $i          = null;
+
+        try {
+            // Get total
+            $total = count($content);
+            // Split the process if it is too big
+            if ($total > MAX_IMP_FS) {
+                for($i=0;$i<=$total;$i=$i+MAX_IMP_FS) {
+                    $data = array_slice($content,$i,MAX_IMP_FS,true);
+                    FS::save_temporary_fellesdata($data,$type,true);
+                }
+            }else {
+                FS::save_temporary_fellesdata($data,$type,true);
+            }//if_max_imp
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//save_temporary_fs
+
+    /**
+     * Description
      * Import data from fellesdata
      *
      * @param           $pluginInfo
@@ -575,7 +609,7 @@ class FELLESDATA_CRON {
                                 $content = file($pathFile);
                             }
 
-                            FS::save_temporary_fellesdata($content,IMP_USERS);
+                            self::save_temporary_fs($content,IMP_USERS);
                         }else {
                             // Mark file as suspicious
                             $suspiciousPath = suspicious::mark_suspicious_file(TRADIS_FS_USERS,$plugin);
@@ -593,7 +627,7 @@ class FELLESDATA_CRON {
                             $content = file($pathFile);
                         }
 
-                        FS::save_temporary_fellesdata($content,IMP_USERS);
+                        self::save_temporary_fs($content,IMP_USERS);
                     }
                 }//if_exists
             }//if_fsResponse
@@ -654,7 +688,7 @@ class FELLESDATA_CRON {
                                 $content = file($pathFile);
                             }
 
-                            FS::save_temporary_fellesdata($content,IMP_COMPANIES);
+                            self::save_temporary_fs($content,IMP_COMPANIES);
                         }else {
                             // Mark file as suspicious
                             $suspiciousPath = suspicious::mark_suspicious_file(TRADIS_FS_COMPANIES,$plugin);
@@ -672,7 +706,7 @@ class FELLESDATA_CRON {
                             $content = file($pathFile);
                         }
 
-                        FS::save_temporary_fellesdata($content,IMP_COMPANIES);
+                        self::save_temporary_fs($content,IMP_COMPANIES);
                     }///if_suspicous_path
                 }//if_exists
             }else {
@@ -738,7 +772,7 @@ class FELLESDATA_CRON {
                                 $content = file($pathFile);
                             }
 
-                            FS::save_temporary_fellesdata($content,IMP_JOBROLES);
+                            self::save_temporary_fs($content,IMP_JOBROLES);
                         }else {
                             // Mark file as suspicious
                             $suspiciousPath = suspicious::mark_suspicious_file(TRADIS_FS_JOBROLES,$plugin);
@@ -756,7 +790,7 @@ class FELLESDATA_CRON {
                             $content = file($pathFile);
                         }
 
-                        FS::save_temporary_fellesdata($content,IMP_JOBROLES);
+                        self::save_temporary_fs($content,IMP_JOBROLES);
                     }//if_suspicious_path
                 }//if_exists
             }else {
@@ -822,7 +856,7 @@ class FELLESDATA_CRON {
                                 $content = file($pathFile);
                             }
 
-                            FS::save_temporary_fellesdata($content,IMP_MANAGERS_REPORTERS);
+                            self::save_temporary_fs($content,IMP_MANAGERS_REPORTERS);
                         }else {
                             // Mark file as suspicious
                             $suspiciousPath = suspicious::mark_suspicious_file(TRADIS_FS_MANAGERS_REPORTERS,$plugin);
@@ -840,7 +874,7 @@ class FELLESDATA_CRON {
                             $content = file($pathFile);
                         }
 
-                        FS::save_temporary_fellesdata($content,IMP_MANAGERS_REPORTERS);
+                        self::save_temporary_fs($content,IMP_MANAGERS_REPORTERS);
                     }//if_suspicious_path
                 }//if_exists
             }else {
@@ -907,7 +941,7 @@ class FELLESDATA_CRON {
                                 $content = file($pathFile);
                             }
 
-                            FS::save_temporary_fellesdata($content,IMP_COMPETENCE_JR);
+                            self::save_temporary_fs($content,IMP_COMPETENCE_JR);
                         }else {
                             // Mark file as suspicious
                             $suspiciousPath = suspicious::mark_suspicious_file(TRADIS_FS_USERS_JOBROLES,$plugin);
@@ -925,7 +959,7 @@ class FELLESDATA_CRON {
                             $content = file($pathFile);
                         }
 
-                        FS::save_temporary_fellesdata($content,IMP_COMPETENCE_JR);
+                        self::save_temporary_fs($content,IMP_COMPETENCE_JR);
                     }//if_suspicious_path
                 }//if_exists
             }else {
