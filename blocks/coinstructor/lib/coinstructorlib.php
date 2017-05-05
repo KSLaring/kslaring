@@ -152,7 +152,7 @@ class coinstructor
 
                 // Loops the object.
                 foreach ($mycourses as $coursevalue) {
-                    $url = new moodle_url('/grade/report/grader/index.php?id=' . $coursevalue->courseid);
+                    $url = new moodle_url('/course/view.php?id=' . $coursevalue->courseid);
                     $out .= "<div><a href=$url> $coursevalue->coursename </a> </div>";
                 }
 
@@ -328,7 +328,7 @@ class coinstructor
             // Course!
             $body .= html_writer::start_tag('td', array('class' => 'course', 'data-label' => $strcourse));
 
-            $url = new moodle_url('/grade/report/grader/index.php?id=' . $course->courseid);
+            $url = new moodle_url('/course/view.php?id=' . $course->courseid);
             $body .= "<a href=$url> " . $course->coursename;
             $body .= html_writer::end_tag('td');
             $body .= html_writer::end_tag('tr');
