@@ -106,7 +106,7 @@ class format_netcourse_renderer extends format_section_renderer_base {
 
         $controls = array();
         if (has_capability('moodle/course:setcurrentsection', $coursecontext)) {
-            if ($course->marker == $section->section) { // Show the "light globe" on/off.
+            if ($course->marker == $section->section) {  // Show the "light globe" on/off.
                 $url->param('marker', 0);
                 $controls[] = html_writer::link($url,
                     html_writer::empty_tag('img', array('src' => $this->output->pix_url('i/marked'),
