@@ -52,13 +52,16 @@ if ($mform->is_cancelled()) {
 
 } else if ($fromform = $mform->get_data()) {
     $category = $fromform->category;
-    $coursesdata = friadminrpt::get_course_summary_data($category);
+    $coursesdata = friadminrpt::get_course_summary_data($category, $fromform->selsummaryfrom, $fromform->selsummaryto);
 
+    if ($coursesdata) {
+        ob_end_clean();
+        friadminrpt::download_participants_list($coursesdata, $fromform->selsummaryfrom, $fromform->selsummaryto);
 
-    ob_end_clean();
-    friadminrpt::download_participants_list($coursesdata);
-
-    die;
+        die;
+    } else {
+        // No results.
+    }
 }
 
 // Print Header!

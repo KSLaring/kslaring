@@ -153,7 +153,7 @@ class coteacher
 
                 // Loops the object.
                 foreach ($mycourses as $coursevalue) {
-                    $url = new moodle_url('/grade/report/grader/index.php?id=' . $coursevalue->courseid);
+                    $url = new moodle_url('/course/view.php?id=' . $coursevalue->courseid);
                     $out .= "<div><a href=$url> $coursevalue->coursename </a> </div>";
                 }
 

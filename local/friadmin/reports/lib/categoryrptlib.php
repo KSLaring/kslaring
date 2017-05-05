@@ -175,7 +175,7 @@ class friadminrpt
         );
     }
 
-    public static function get_course_summary_data($category) {
+    public static function get_course_summary_data($category, $from, $to) {
         // Variables!
         global $DB;
         $rdo = null;     // Used to query the database.
@@ -272,11 +272,15 @@ class friadminrpt
                         ORDER BY 	ue.id, courseid
                     ) cord ON 		cord.courseid = c.id
                 WHERE ca.id = :categoryid
+                AND   c.startdate >= :from
+                AND   c.startdate <= :to
                 GROUP BY c.id";
 
         try {
             $params = array();
             $params['categoryid'] = $category;
+            $params['from'] = $from;
+            $params['to'] = $to;
 
             $rdo = $DB->get_records_sql($query, $params);
 
@@ -290,7 +294,7 @@ class friadminrpt
         }  // end try_catch
     } // end get_course_summarydata
 
-    public static function get_course_instructor_data($course, $category, $fullname) {
+    public static function get_course_instructor_data($course, $category, $fullname, $username, $email) {
         // Variables!
         global $DB;
         $rdo = null;
@@ -306,6 +310,14 @@ class friadminrpt
 
         if ($fullname) {
             $extrasql .= " AND CONCAT(u.firstname, ' ', u.lastname) LIKE '%" . $fullname . "%' ";
+        }
+
+        if ($username) {
+            $extrasql .= " AND u.username LIKE '%" . $username . "%' ";
+        }
+
+        if ($email) {
+            $extrasql .= " AND u.email LIKE '%" . $email . "%' ";
         }
 
 
@@ -364,11 +376,6 @@ class friadminrpt
                 $params['category'] = $category;
             }
 
-
-            if ($fullname) {
-                $params['fullname'] = $fullname;
-            }
-
             $rdo = $DB->get_records_sql($query, $params);
 
             if ($rdo) {
@@ -381,7 +388,7 @@ class friadminrpt
         }  // end try_catch
     } // end get_categories
 
-    public static function get_course_coordinator_data($course, $category, $fullname, $userjobrole) {
+    public static function get_course_coordinator_data($course, $category, $fullname, $userjobrole, $username) {
         // Variables!
         global $DB;
         $rdo = null;
@@ -400,6 +407,7 @@ class friadminrpt
             $extrasql .= " AND CONCAT(u.firstname, ' ', u.lastname) LIKE '%" . $fullname . "%' ";
         }
 
+        /*
         if ($userjobrole) {
             $extraselect = " ,jr.name as 'jobrole' ";
             $jobsql = " JOIN {report_gen_jobrole} jr
@@ -410,6 +418,10 @@ class friadminrpt
         } else {
             $extraselect = '';
             $jobsql = '';
+        } */
+
+        if ($username) {
+            $extrasql .= " AND u.username LIKE '%" . $username . "%' ";
         }
 
         $query = "  SELECT 	CONCAT(u.id,c.id) 					as 'unique',
@@ -421,7 +433,6 @@ class friadminrpt
                             fo1.value							as 'fromto',
                             c.visible							as 'visibility',
                             ca.path
-                            $extraselect
                             
                             
                     FROM		    {user}					u
@@ -442,7 +453,6 @@ class friadminrpt
                         -- Dates
                         LEFT JOIN 	{course_format_options} fo1 	ON fo1.courseid = c.id
                                                                     AND fo1.name = 'time'
-                        $jobsql
                     WHERE 	u.deleted = 0
                     $extrasql
                     GROUP BY c.id
@@ -473,7 +483,7 @@ class friadminrpt
         }  // end try_catch
     } // end get_categories
 
-    public static function download_participants_list($coursesdata) {
+    public static function download_participants_list($coursesdata, $from, $to) {
         // Variables.
         global $CFG;
         $row = 0;
@@ -490,11 +500,11 @@ class friadminrpt
             // Creating a workbook.
             $export = new MoodleExcelWorkbook($name);
 
-            // Filtered.
+            /*
             $myxls = $export->add_worksheet(get_string('pluginname', 'local_friadmin'));
             foreach ($coursesdata as $coursevalue) {
                 self::add_info_course_excel($coursevalue, $myxls, $row);
-            }
+            } */
 
             // Raw.
             $myxls = $export->add_worksheet('secondtab');
@@ -502,7 +512,7 @@ class friadminrpt
                 // Headers.
                 self::add_participants_header_excel($myxls, $row, $coursesdata);
                 // Content.
-                self::add_participants_content_excel($coursesdata, $myxls, $row);
+                self::add_participants_content_excel($coursesdata, $myxls, $row, $from, $to);
 
 
             $export->close();
@@ -981,7 +991,7 @@ class friadminrpt
      * @param $row
      * @throws Exception
      */
-    private static function add_participants_content_excel($coursedata,&$myxls,&$row) {
+    private static function add_participants_content_excel($coursedata,&$myxls,&$row, $from, $to) {
 
         GLOBAL $SESSION;
         // Variables.
@@ -1059,9 +1069,47 @@ class friadminrpt
                     // Dates.
                     if ($fromtodates) {
                         $i = null;
+                        $lowdateunix = null;
+                        $highdateunix = null;
+                        $lowdateformated = null;
+                        $highdateformated = null;
+                        $a = '';
+
+
                         foreach ($fromtodates as $date) {
+                            // If the date is not empty.
                             if ($date != '') {
-                                $myxls->write($row, $col, $date, array('size' => 12, 'name' => 'Arial', 'text_wrap' => true, 'v_align' => 'left'));
+
+                                /*
+                                // Sets the dates to first value.
+                                if ($lowdateunix == null) {
+                                    $lowdateunix = strtotime($date);
+                                }
+
+                                if ($highdateunix == null) {
+                                    $highdateunix = strtotime($date);
+                                }
+
+                                // Checks if the value is lower or bigger.
+                                if ($lowdateunix > strtotime($date)) {
+                                    $lowdateunix = strtotime($date);
+                                }
+
+                                if ($highdateunix < strtotime($date)) {
+                                    $highdateunix = strtotime($date);
+                                }
+
+                                // Checks if the lowdateunix and highdateunix is approved criteria.
+                                if ($lowdateunix < $from) {
+                                    $a .= ' The course has lower date than the search ';
+                                }
+
+                                if ($highdateunix > $to) {
+                                    $a .= ' The course has bigger date than the search ';
+                                } */
+
+                                // $myxls->write($row, $col, 'courselowdate: ' . $lowdateunix . ' decided from: ' . $from . ' coursehighdate: ' . $highdateunix . ' decided to: ' . $to , array('size' => 12, 'name' => 'Arial', 'text_wrap' => true, 'v_align' => 'left'));
+                                $myxls->write($row, $col, $date, array('size' => 12, 'name' => 'Arial', 'text_wrap' => true,'v_align' => 'left'));
                                 $myxls->merge_cells($row, $col, $row, $col + 1);
                                 $myxls->set_row($row, 20);
                                 $col += 2;
@@ -1074,6 +1122,7 @@ class friadminrpt
                                     $i++;
                                 }
                             }
+                            $a = null;
                         }
                     }
 
@@ -1085,7 +1134,7 @@ class friadminrpt
 
                     // Expiration.
                     $col += 2;
-                    $myxls->write($row, $col, $today = date("d.m.Y", $coursevalue->expiration), array('size' => 12, 'name' => 'Arial', 'text_wrap' => true,'v_align' => 'left'));
+                    $myxls->write($row, $col, $expiration = date("d.m.Y", $coursevalue->expiration), array('size' => 12, 'name' => 'Arial', 'text_wrap' => true,'v_align' => 'left'));
                     $myxls->merge_cells($row, $col, $row, $col + 1);
                     $myxls->set_row($row,20);
 

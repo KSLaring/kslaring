@@ -55,7 +55,7 @@ friadminrpt::get_javascript_values('course', 'category', null);
 if ($mform->is_cancelled()) {
 
 } else if ($fromform = $mform->get_data()) {
-    $instructors = friadminrpt::get_course_instructor_data($fromform->course, $fromform->category, $fromform->userfullname);
+    $instructors = friadminrpt::get_course_instructor_data($fromform->course, $fromform->category, $fromform->userfullname, $fromform->username);
 
     ob_end_clean();
     friadminrpt::download_participants_list_instructor($instructors);

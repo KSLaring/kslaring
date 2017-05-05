@@ -48,12 +48,13 @@ class summary_form extends moodleform {
             $errors['selsummaryto'] = get_string('smallerthanfrom', 'local_friadmin)');
         } else if ($data['selsummaryfrom'] > $date) {
             $errors['selsummaryfrom'] = get_string('biggerthannow', 'local_friadmin');
-        } else if ($data['selsummaryto'] > $date) {
-            $errors['selsummaryto'] = get_string('biggerthannow', 'local_friadmin');
         } else if ($data['selsummaryto'] - $data['selsummaryfrom'] > 60 * 60 * 24 * 365 * 2) {
             $errors['selsummaryfrom'] = get_string('morethantwoyears', 'local_friadmin');
         }
 
+        if ($data['category'] == '0') {
+            $errors['category'] = 'You need to select a category';
+        }
         return $errors;
     }
 }
