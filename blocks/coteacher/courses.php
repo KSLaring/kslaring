@@ -31,7 +31,7 @@ $PAGE->set_pagelayout('admin');
 $PAGE->set_context($contextsystem);
 
 // Breadcrumb!
-$navbar = $PAGE->navbar->add(get_string('pluginname', 'block_coteacher'), new moodle_url('/block/coteacher/courses.php'), null);
+$navbar = $PAGE->navbar->add(get_string('pluginname', 'block_coteacher'), new moodle_url('/blocks/coteacher/courses.php'), null);
 $navbar->make_active();
 
 // Capabilities!
