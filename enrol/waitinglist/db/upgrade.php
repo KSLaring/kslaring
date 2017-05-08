@@ -229,7 +229,7 @@ function xmldb_enrol_waitinglist_upgrade($oldversion) {
         }//if_odlVersion
 
         // Create enrol_approval_approvers
-        if ($oldversion < 2017050800) {
+        if ($oldversion < 2017050802) {
             $table       = new xmldb_table('enrol_approval_approvers');
 
             if (!$dbman->table_exists('enrol_approval_approvers')) {
@@ -267,7 +267,9 @@ function xmldb_enrol_waitinglist_upgrade($oldversion) {
                               ea.courseid,
                               ea.companyid,
                               ea.waitinglistid
-                     FROM	{enrol_approval}  ea
+                     FROM	  {enrol_approval}  ea
+                     	JOIN  {user}			u 	ON  u.id 		= ea.userid
+											        AND u.deleted 	= 0
                      WHERE	ea.approved = 0
                         AND	ea.rejected = 0 ";
 
@@ -286,7 +288,7 @@ function xmldb_enrol_waitinglist_upgrade($oldversion) {
                     \Approval::send_reminder($user,$remainder,$instance->waitinglistid,$managers);
                 }
             }//if_rdo
-        }//if_odl_version_2017050800
+        }//if_odl_version_2017050802
 
         return true;
     }catch (Exception $ex) {
