@@ -34,7 +34,7 @@ defined('MOODLE_INTERNAL') || die();
 
 function xmldb_enrol_waitinglist_upgrade($oldversion) {
     /* Variables    */
-    global $DB;
+    global $DB,$CFG;
     $sql                = null;
     $rdo                = null;
     $managers           = null;
@@ -229,7 +229,7 @@ function xmldb_enrol_waitinglist_upgrade($oldversion) {
         }//if_odlVersion
 
         // Create enrol_approval_approvers
-        if ($oldversion < 2017050500) {
+        if ($oldversion < 2017050800) {
             $table       = new xmldb_table('enrol_approval_approvers');
 
             if (!$dbman->table_exists('enrol_approval_approvers')) {
@@ -258,7 +258,7 @@ function xmldb_enrol_waitinglist_upgrade($oldversion) {
             }//if_table_exists
 
             // Add entries for old version
-            require_once('../approval/approvallib.php');
+            require_once($CFG->dirroot . '/enrol/waitinglist/approval/approvallib.php');
 
             // Get all entries from old version
             $sql = " SELECT	DISTINCT 
@@ -286,7 +286,7 @@ function xmldb_enrol_waitinglist_upgrade($oldversion) {
                     \Approval::send_reminder($user,$remainder,$instance->waitinglistid,$managers);
                 }
             }//if_rdo
-        }//if_odl_version_2017050500
+        }//if_odl_version_2017050800
 
         return true;
     }catch (Exception $ex) {
