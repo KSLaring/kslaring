@@ -306,3 +306,5 @@ $string['unenrol_body']    = 'We would like to inform you, that you have been un
 
 $string['rpt_workplace']   = 'Workplace';
 
+$string['rpt_by']           = 'By';
+$string['rpt_when']         = 'When';

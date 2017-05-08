@@ -2240,11 +2240,16 @@ Class Approval {
                                   ea.rejected,
                                   ea.companyid,
                                   co.industrycode,
-                                  co.name         as 'company'
-                     FROM		  {enrol_approval}	        ea
-                        JOIN 	  {user}			        u	ON u.id 		= ea.userid
-                                                                AND u.deleted 	= 0
-                        LEFT JOIN {report_gen_companydata}  co	ON	co.id	= 	ea.companyid
+                                  co.name         as 'company',
+                                  CONCAT(um.firstname,' ',um.lastname) as 'manager',
+                                  eam.timeupdated
+                     FROM		  {enrol_approval}	          ea
+                        JOIN 	  {user}			          u	  ON  u.id 		     = ea.userid
+                                                                  AND u.deleted      = 0
+                        LEFT JOIN {report_gen_companydata}    co  ON  co.id	         = ea.companyid
+                        -- Info Manager
+                        LEFT JOIN {enrol_approval_approvers}  eam ON  eam.approvalid = ea.id
+                        LEFT JOIN {user}					  um  ON  um.id			 = eam.managerid
                      WHERE	      ea.courseid 		= :course
                         AND       ea.waitinglistid 	= :waiting
                         AND       ea.unenrol        = 0
@@ -2263,6 +2268,9 @@ Class Approval {
                     $infoRequest->seats     = $instance->seats;
                     $infoRequest->approved  = $instance->approved;
                     $infoRequest->rejected  = $instance->rejected;
+                    $infoRequest->manager   = ($instance->timeupdated ? $instance->manager : null);
+                    $infoRequest->done      = ($instance->timeupdated ?
+                                                    userdate($instance->timeupdated,'%d.%m.%Y', 99, false) : null);
                     if ($isCompanyDemanded) {
                         $infoRequest->arbeidssted      = $instance->industrycode . ' - ' . $instance->company;
                     }else {
@@ -2597,6 +2605,8 @@ Class Approval {
         $strMail        = null;
         $strArguments   = null;
         $strAction      = null;
+        $strManager     = null;
+        $strWhen        = null;
 
         try {
             // Headers
@@ -2605,6 +2615,8 @@ Class Approval {
             $strPlace       = get_string('rpt_workplace','enrol_waitinglist');
             $strArguments   = get_string('rpt_arguments','enrol_waitinglist');
             $strAction      = get_string('rpt_action','enrol_waitinglist');
+            $strManager     = get_string('rpt_by','enrol_waitinglist');
+            $strWhen        = get_string('rpt_when','enrol_waitinglist');
 
             $header .=  html_writer::start_tag('thead');
                 $header .=  html_writer::start_tag('tr',array('class' => 'header_approval'));
@@ -2613,7 +2625,7 @@ Class Approval {
                         $header .= $strName;
                     $header .= html_writer::end_tag('th');
                     // Workplace
-                    $header .= html_writer::start_tag('th',array('class' => 'user'));
+                    $header .= html_writer::start_tag('th',array('class' => 'info'));
                         $header .= $strPlace;
                     $header .= html_writer::end_tag('th');
                     // Mail
@@ -2627,6 +2639,14 @@ Class Approval {
                     // Action
                     $header .= html_writer::start_tag('th',array('class' => 'action'));
                         $header .= $strAction;
+                    $header .= html_writer::end_tag('th');
+                    // Done by
+                    $header .= html_writer::start_tag('th',array('class' => 'info'));
+                        $header .= $strManager;
+                    $header .= html_writer::end_tag('th');
+                    // When
+                    $header .= html_writer::start_tag('th',array('class' => 'date'));
+                        $header .= $strWhen;
                     $header .= html_writer::end_tag('th');
                 $header .= html_writer::end_tag('tr');
             $header .= html_writer::end_tag('thead');
@@ -2666,6 +2686,8 @@ Class Approval {
             $strPlace       = get_string('rpt_workplace','enrol_waitinglist');
             $strArguments   = get_string('rpt_arguments','enrol_waitinglist');
             $strAction      = get_string('rpt_action','enrol_waitinglist');
+            $strManager     = get_string('rpt_by','enrol_waitinglist');
+            $strWhen        = get_string('rpt_when','enrol_waitinglist');
 
             // Params Link Action
             $params = array();
@@ -2683,7 +2705,7 @@ Class Approval {
                         $content .= '<a href="' . $lnkUser . '">' . $request->name . '</a>';;
                     $content .= html_writer::end_tag('td');
                     // Workplace
-                    $content .= html_writer::start_tag('td',array('class' => 'user','data-th' => $strPlace));
+                    $content .= html_writer::start_tag('td',array('class' => 'info','data-th' => $strPlace));
                         $content .= $request->arbeidssted;
                     $content .= html_writer::end_tag('td');
                     // Mail
@@ -2708,7 +2730,7 @@ Class Approval {
                         $content .= html_writer::link($lnkAction,
                                                       get_string('act_approve','enrol_waitinglist'),
                                                       array('class'=>$classAction));
-                        $content .= '&nbsp;&nbsp;';
+                        $content .= '</br>';
 
                         // Reject Action
                         $params['act'] = REJECTED_ACTION;
@@ -2721,6 +2743,14 @@ Class Approval {
                         $content .= html_writer::link($lnkAction,
                                                       get_string('act_reject','enrol_waitinglist'),
                                                       array('class'=>$classAction));
+                    $content .= html_writer::end_tag('td');
+                    // Done
+                    $content .= html_writer::start_tag('td',array('class' => 'info','data-th' => $strManager));
+                        $content .= $request->manager;
+                    $content .= html_writer::end_tag('td');
+                    // When
+                    $content .= html_writer::start_tag('td',array('class' => 'date','data-th' => $strWhen));
+                        $content .= $request->done;
                     $content .= html_writer::end_tag('td');
                 $content .= html_writer::end_tag('tr');
             }//for_requests

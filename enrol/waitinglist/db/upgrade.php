@@ -262,16 +262,18 @@ function xmldb_enrol_waitinglist_upgrade($oldversion) {
 
             // Get all entries from old version
             $sql = " SELECT	DISTINCT 
-                              ea.id,
-                              ea.userid,
-                              ea.courseid,
-                              ea.companyid,
-                              ea.waitinglistid
-                     FROM	  {enrol_approval}  ea
-                     	JOIN  {user}			u 	ON  u.id 		= ea.userid
-											        AND u.deleted 	= 0
+                                  ea.id,
+                                  ea.userid,
+                                  ea.courseid,
+                                  ea.companyid,
+                                  ea.waitinglistid
+                     FROM	      {enrol_approval}            ea
+                     	JOIN      {user}			          u 	ON  u.id 		  = ea.userid
+											                        AND u.deleted 	  = 0
+						LEFT JOIN {enrol_approval_approvers}  eam   ON eam.approvalid = ea.id
                      WHERE	ea.approved = 0
-                        AND	ea.rejected = 0 ";
+                        AND	ea.rejected = 0 
+                        AND eam.id IS NULL ";
 
             // Execute
             $rdo = $DB->get_records_sql($sql);
