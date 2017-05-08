@@ -155,6 +155,23 @@
               <KEY NAME="fk_user"     TYPE="foreign" FIELDS="userid"     REFTABLE="user"   REFFIELDS="id"/>
           </KEYS>
       </TABLE>
+
+      <!-- enrol_approval_approvers -->
+      <TABLE NAME="enrol_approval_approvers" COMMENT="enrol_approval_approvers table">
+          <FIELDS>
+              <FIELD NAME="id"          SEQUENCE="true"  TYPE="int"     LENGTH="10"     NOTNULL="true"/>
+              <FIELD NAME="approvalid"  SEQUENCE="false" TYPE="int"     LENGTH="10"     NOTNULL="true"/>
+              <FIELD NAME="managerid"   SEQUENCE="false" TYPE="int"     LENGTH="10"     NOTNULL="true"/>
+              <FIELD NAME="action"      SEQUENCE="false" TYPE="int"     LENGTH="2"      NOTNULL="true"/>
+              <FIELD NAME="token"       SEQUENCE="false" TYPE="char"    LENGTH="100"    NOTNULL="true"/>
+              <FIELD NAME="timecreated" SEQUENCE="false" TYPE="int"     LENGTH="10"     NOTNULL="true"/>
+              <FIELD NAME="timeupdated" SEQUENCE="false" TYPE="int"     LENGTH="10"     NOTNULL="false"/>
+          </FIELDS>
+          <KEYS>
+              <KEY NAME="primary"     TYPE="primary" FIELDS="id"/>
+              <KEY NAME="fk_approval" TYPE="foreign" FIELDS="approvalid"  REFTABLE="enrol_approval"  REFFIELDS="id"/>
+          </KEYS>
+      </TABLE>
   </TABLES>
     
 </XMLDB>

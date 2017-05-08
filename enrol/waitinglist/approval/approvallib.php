@@ -107,14 +107,21 @@ Class Approval {
             // Search criteria
             $params = array();
             $params['user']     = $userId;
-            $params['company']  = $three;
 
             // First level three
             $sql = self::get_sql_managers_company_user_by_level(3);
+            if ($three) {
+                $sql .= " AND uicd.companyid = :company ";
+                $params['company']  = $three;
+            }//if_three
             $rdo = $DB->get_records_sql($sql,$params);
             if (!$rdo) {
                 // Get level two
                 $sql = self::get_sql_managers_company_user_by_level(2);
+                if ($three) {
+                    $sql .= " AND uicd.companyid = :company ";
+                    $params['company']  = $three;
+                }//if_three
                 $rdo = $DB->get_records_sql($sql,$params);
             }
 
@@ -294,6 +301,119 @@ Class Approval {
         }//try_catch
     }//add_approval_entry
 
+    /**
+     * Description
+     * Add approval entry manager
+     *
+     * @param       $managers
+     * @param       $approval
+     * @param       $course
+     *
+     * @return      array
+     * @throws      Exception
+     *
+     * @creationDate    05/05/2017
+     * @author          eFaktor     (fbv)
+     */
+    public static function add_approval_entry_manager($managers,$approval,$course) {
+        /* Variables */
+        global $DB;
+        $lstTokens  = array();
+        $approver   = null;
+        $rdo        = null;
+        $time       = null;
+        $params     = null;
+
+        try {
+            // Local time
+            $time = time();
+
+            // Search criteria
+            $params = array();
+            $params['approvalid'] = $approval;
+
+            foreach ($managers as $manager) {
+                //Approval_approvers entry
+                $approver = new stdClass();
+                $approver->approvalid   = $approval;
+                $approver->managerid    = $manager->id;
+                $approver->action       = 0;
+                //Generate token
+                $approver->token        = self::generate_token($manager->id,$course);;
+                $approver->timecreated  = $time;
+
+                // Check if the entry already exist
+                $params['managerid'] = $manager->id;
+                $rdo = $DB->get_record('enrol_approval_approvers',$params,'id');
+                if ($rdo) {
+                    // Update
+                    $approver->id           = $rdo->id;
+                    $approver->timeupdated  = $time;
+
+                    // Execute
+                    $DB->update_record('enrol_approval_approvers',$approver);
+                }else {
+                    // Insert
+                    $DB->insert_record('enrol_approval_approvers',$approver);
+                }
+
+                // Add token
+                $lstTokens[$manager->id] = $approver->token;
+            }//for_managers
+
+            return $lstTokens;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_Catch
+    }//add_approval_entry_manager
+
+    /**
+     * Description
+     * Add a special entry form admin
+     *
+     * @param           $approval
+     * @param           $user
+     *
+     * @return          mixed|null|stdClass
+     * @throws          Exception
+     *
+     * @creationDate    08/05/2017
+     * @author          eFaktor     (fbv)
+     */
+    public static function add_approval_entry_admin($approval,$user) {
+        /* Variables */
+        global $DB;
+        $rdo        = null;
+        $instance   = null;
+        $params     = null;
+
+        try {
+            // Check if already exist
+            $params = array();
+            $params['managerid']    = $user;
+            $params['approvalid']   = $approval;
+            $params['token']        = 0;
+
+            // Execute
+            $instance = $DB->get_record('enrol_approval_approvers',$params,'id,managerid,timeupdated,action');
+            if (!$instance) {
+                // Create a new entry
+                $instance = new stdClass();
+                $instance->managerid    = $user;
+                $instance->approvalid   = $approval;
+                $instance->token        = 0;
+                $instance->action       = 0;
+                $instance->timecreated  = time();
+
+                // Execute
+                $instance->id = $DB->insert_record('enrol_approval_approvers',$instance);
+            }//if_Rdo
+
+            return $instance;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//add_approval_entry_admin
 
     /**
      * Description
@@ -408,6 +528,7 @@ Class Approval {
                 $infoNotification->timesent     = userdate($rdo->timesent,'%d.%m.%Y', 99, false);
                 $infoNotification->approve      = $CFG->wwwroot . '/enrol/waitinglist/approval/action.php/' . $rdo->token;
                 $infoNotification->reject       = $CFG->wwwroot . '/enrol/waitinglist/approval/action.php/' . $rdo->token;
+                $infoNotification->managers     = self::get_manager_entries($rdo->id);
 
                 return $infoNotification;
             }else {
@@ -417,6 +538,7 @@ Class Approval {
             throw $ex;
         }//try_catch
     }//get_notification_sent
+
 
     /**
      * Description
@@ -514,21 +636,21 @@ Class Approval {
             $params['action']   = $args[1];
 
             // SQL Instruction
-            $sql = " SELECT 	ea.id,
-                                ea.userid,
-                                ea.companyid,
-                                ea.courseid,
-                                ea.userenrolid,
-                                ea.waitinglistid,
-                                ea.methodtype,
-                                ea.seats,
-                                eact.action,
-                                ea.approved,
-                                ea.rejected
-                     FROM		{enrol_approval}		  ea
-                        JOIN	{enrol_approval_action}	  eact	ON 	eact.approvalid = ea.id
+            $sql = " SELECT   ea.id,
+                              ea.userid,
+                              ea.companyid,
+                              ea.courseid,
+                              ea.userenrolid,
+                              ea.waitinglistid,
+                              ea.methodtype,
+                              ea.seats,
+                              eact.action,
+                              ea.approved,
+                              ea.rejected
+                     FROM	  {enrol_approval}	  		  ea
+                        JOIN  {enrol_approval_action}	  eact	ON 	eact.approvalid = ea.id
                                                                 AND eact.token		= :action
-                     WHERE	ea.token    = :request
+                    WHERE	ea.token    = :request
                         AND	ea.approved = :approve
                         AND	ea.rejected = :reject
                         AND ea.unenrol  = :unenrol
@@ -546,6 +668,60 @@ Class Approval {
             throw $ex;
         }//try_catch
     }//get_notification_request
+
+    /**
+     * Description
+     * Get info about the manager connected with the request
+     *
+     * @param           null $token
+     * @param           null $manager
+     *
+     * @return          mixed|null
+     * @throws          Exception
+     *
+     * @creationDate    08/05/2017
+     * @author          eFaktor     (fbv)
+     */
+    public static function get_request_manager($token = null, $manager = null) {
+        /* Variables */
+        global $DB;
+        $sql    = null;
+        $rdo    = null;
+        $params = null;
+        $info   = null;
+
+        try {
+            // Search criteria
+            $params = array();
+            $params['action']   = 0;
+
+            // SQL Instruction
+            $sql = " SELECT eam.id,
+                            eam.managerid,
+                            eam.action,
+                            eam.timeupdated
+                     FROM	{enrol_approval_approvers}	eam
+                     WHERE	eam.action 	= :action ";
+
+            // Extra criteria
+            if ($token) {
+                $params['to']       = $token;
+                $sql .= " AND eam.token = :to ";
+            }//if_token
+
+            if ($manager) {
+                $params['manager']      = $manager;
+                $sql .= " AND eam.mangerid = :manager ";
+            }//if_manager
+
+            // Execute
+            $rdo = $DB->get_record_sql($sql,$params);
+
+            return $rdo;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//get_request_manager
 
     /**
      * Description
@@ -614,7 +790,8 @@ Class Approval {
      * Description
      * Apply the action selected by the manager
      *
-     * @param           Object $infoRequest     Request detail
+     * @param           Object  $infoRequest     Request detail
+     * @param           Object  $infoManager
      *
      * @return          bool
      * @throws          Exception
@@ -622,7 +799,7 @@ Class Approval {
      * @creationDate    29/12/2015
      * @author          eFaktor     (fbv)
      */
-    public static function apply_action_from_manager($infoRequest) {
+    public static function apply_action_from_manager($infoRequest,$infoManager) {
         /* Variables */
         $instanceWaiting    = null;
         $exit               = true;
@@ -631,11 +808,11 @@ Class Approval {
             // Check Action
             switch ($infoRequest->action) {
                 case APPROVED_ACTION:
-                    $exit =  self::approve_action($infoRequest);
+                    $exit =  self::approve_action($infoRequest,$infoManager);
 
                     break;
                 case REJECTED_ACTION:
-                    $exit =  self::reject_action($infoRequest);
+                    $exit =  self::reject_action($infoRequest,$infoManager);
 
                     break;
             }//switch_action
@@ -645,6 +822,13 @@ Class Approval {
             throw $ex;
         }//try_catch
     }//apply_action_from_manager
+
+    public static function apply_action_manager_myself($infoRequest) {
+        /* Variables */
+        global $DB;
+
+    }//apply_action_manager_myself
+
 
     /**
      * Description
@@ -935,6 +1119,45 @@ Class Approval {
 
     /**
      * Description
+     * Get manager entries connected
+     *
+     * @param           $approval
+     *
+     * @return          array
+     * @throws          Exception
+     *
+     * @creationDate    05/08/2017
+     * @author          eFaktor     (fbv)
+     */
+    private static function get_manager_entries($approval) {
+        /* Variables */
+        global $DB;
+        $sql        = null;
+        $rdo        = null;
+        $params     = null;
+        $managers   = array();
+
+        try {
+            // Search criteria
+            $params = array();
+            $params['approvalid'] = $approval;
+
+            // Execute
+            $rdo = $DB->get_records('enrol_approval_approvers',$params,'id,managerid,token');
+            if ($rdo) {
+                foreach ($rdo as $instance){
+                    $managers[$instance->managerid] = $instance->token;
+                }
+            }//if_rdo
+
+            return $managers;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//get_manager_entries
+
+    /**
+     * Description
      * It builds sql to get all managers connected with a specific user and company
      * for a given level
      *
@@ -953,56 +1176,41 @@ Class Approval {
         try {
             switch ($level) {
                 case 2:
-                    $sql = " SELECT   DISTINCT 
-                                          rm.managerid,
-                                          CONCAT(co_two.name,'/',co.name) as 'company',
-                                          u.lang
-                             FROM		  {user_info_competence_data} 		uicd                       
-                                JOIN	  {report_gen_companydata}			co 		ON  co.id 					= uicd.companyid
-                                -- LEVEL TWO
-                                JOIN	  {report_gen_company_relation}  	cr_two	ON 	cr_two.companyid 		= co.id
-                                JOIN	  {report_gen_companydata}			co_two	ON 	co_two.id 				= cr_two.parentid
-                                                                                    AND co_two.hierarchylevel 	= 2
-                                -- CHECK MANAGER LEVEL THREE
-                                JOIN	  {report_gen_company_manager}  	rm		ON 	rm.leveltwo 			= co_two.id
-                                                                                    AND (rm.levelthree 			IS NULL
-                                                                                         OR 
-                                                                                         rm.levelthree 			= 0)
-                                LEFT JOIN {report_gen_company_manager}      rmo		ON  rmo.managerid 			= rm.managerid 	
-                                                                                    AND rmo.levelone 			= rm.levelone
-                                                                                    AND (rmo.leveltwo			IS NULL
-                                                                                         OR 
-                                                                                         rmo.leveltwo 			= 0)
-                                JOIN      {user}                          	u   	ON  u.id  					= rm.managerid
-                             WHERE		  uicd.userid 	  = :user
-                                  AND	  uicd.companyid  = :company
-                                  AND 	  rmo.id IS NULL ";
+                    $sql = " SELECT	DISTINCT 
+                                      ma.managerid,
+                                      u.lang,
+                                      CONCAT(co_two.name,'/',co.name) as 'company'
+                             FROM	  {user_info_competence_data} 	uicd 
+                                -- Level Two
+                                JOIN  {report_gen_companydata}		co		ON	co.id 		 			= uicd.companyid
+                                JOIN  {report_gen_company_relation} cr_two	ON 	cr_two.companyid 		= co.id
+                                JOIN  {report_gen_companydata}		co_two	ON 	co_two.id 				= cr_two.parentid
+                                                                            AND co_two.hierarchylevel 	= 2
+                                -- Managers Level Two
+                                JOIN  {report_gen_company_manager} 	ma		ON	ma.leveltwo = co_two.id
+                                                                            AND (ma.levelthree IS NULL
+                                                                                 OR 
+                                                                                 ma.levelthree = 0)
+                                JOIN  {user}						u		ON 	u.id = ma.managerid
+                             WHERE	  uicd.userid 	= :user ";
+
                     break;
 
                 case 3:
-                    $sql = " SELECT  DISTINCT
-                                          rm.managerid,
-                                          CONCAT(co_two.name,'/',co.name) as 'company',
-                                          u.lang,
-                                          rm.leveltwo,
-                                          rm.levelthree
-                             FROM		  {user_info_competence_data} 	  uicd                       
-                                JOIN	  {report_gen_companydata}		  co 		ON  co.id 					= uicd.companyid
-                                -- LEVEL TWO
-                                JOIN	  {report_gen_company_relation}   cr_two	ON 	cr_two.companyid 		= co.id
-                                JOIN	  {report_gen_companydata}		  co_two	ON 	co_two.id 				= cr_two.parentid
-                                                                                    AND co_two.hierarchylevel 	= 2
-                                -- CHECK MANAGER LEVEL THREE
-                                JOIN	  {report_gen_company_manager}    rm		ON 	rm.levelthree 			= uicd.companyid 
-                                LEFT JOIN {report_gen_company_manager}    rmo		ON  rmo.managerid 			= rm.managerid 	
-                                                                                    AND rmo.leveltwo 			= co_two.id
-                                                                                    AND (rmo.levelthree 		IS NULL
-                                                                                         OR 
-                                                                                         rmo.levelthree 		= 0)
-                                JOIN      {user}                        u   	    ON  u.id  					= rm.managerid 
-                              WHERE		  uicd.userid 	  = :user
-                                  AND	  uicd.companyid  = :company
-                                  AND  	  rmo.id IS NULL ";
+                    $sql = " SELECT	DISTINCT
+                                      ma.managerid,
+                                      u.lang,
+                                      CONCAT(co_two.name,'/',co.name) as 'company'
+                             FROM	  {user_info_competence_data} 	uicd 
+                                -- Managers of this companies level three
+                                JOIN  {report_gen_company_manager}  ma  	ON ma.levelthree = uicd.companyid
+                                JOIN  {user} 						u 		ON u.id 		 = ma.managerid 
+                                -- Info company level three
+                                JOIN  {report_gen_companydata}		co		ON co.id 		 = ma.levelthree
+                                -- Info company level two
+                                JOIN  {report_gen_companydata}		co_two	ON co_two.id 	 = ma.leveltwo
+                                
+                             WHERE	uicd.userid = :user ";
 
                     break;
                 default:
@@ -1431,9 +1639,11 @@ Class Approval {
             $lnkApprove = $infoMail->approve;
             $lnkReject  = $infoMail->reject;
             foreach ($toManagers as $managerId => $info) {
-                // Approve and Reject links 
+                // Approve and Reject links
+                $lnkApprove .= '/' . $infoMail->managers[$managerId];
                 $infoMail->approve = '<a href="' . $lnkApprove. '">' .
                                      (string)new lang_string('approve_lnk','enrol_waitinglist',null,$info->lang) . '</br>';
+                $lnkReject .= '/' . $infoMail->managers[$managerId];
                 $infoMail->reject = '<a href="' . $lnkReject . '">' .
                                      (string)new lang_string('reject_lnk','enrol_waitinglist',null,$info->lang) . '</br>';
 
@@ -1489,6 +1699,7 @@ Class Approval {
      * Reject action
      *
      * @param           Object $infoRequest     Request to reject
+     * @param           Object $infoManager
      *
      * @return          bool
      * @throws          Exception
@@ -1496,19 +1707,23 @@ Class Approval {
      * @creationDate    29/12/2015
      * @author          eFaktor     (fbv)
      */
-    private static function reject_action($infoRequest) {
+    private static function reject_action($infoRequest,&$infoManager) {
         /* Variables */
         global $DB,$SITE;
-        $rdo            = null;
-        $instanceReject = null;
-        $infoMail       = null;
-        $strBody        = null;
-        $strSubject     = null;
-        $bodyText       = null;
-        $bodyHtml       = null;
-        $user           = null;
-        $course         = null;
-        $time           = null;
+        $trans              = null;
+        $rdo                = null;
+        $instanceReject     = null;
+        $infoMail           = null;
+        $strBody            = null;
+        $strSubject         = null;
+        $bodyText           = null;
+        $bodyHtml           = null;
+        $user               = null;
+        $course             = null;
+        $time               = null;
+
+        // Start transaction
+        $trans = $DB->start_delegated_transaction();
 
         try {
             // Local Time
@@ -1527,6 +1742,12 @@ Class Approval {
 
             // Execute
             $DB->update_record('enrol_approval',$instanceReject);
+
+            //Approval manager - update action 2
+            $infoManager->action        = 2;
+            $infoManager->timeupdated   = $time;
+            // Execute
+            $DB->update_record('enrol_approval_approvers',$infoManager);
 
             // Send mail to the user
             $user   = get_complete_user_data('id',$infoRequest->userid);
@@ -1572,8 +1793,14 @@ Class Approval {
             // Send Mail
             email_to_user($user, $SITE->shortname, $strSubject, $bodyText,$bodyHtml);
 
+            // Allow commit
+            $trans->allow_commit();
+
             return true;
         }catch (Exception $ex) {
+            // Rollback
+            $trans->rollback($ex);
+
             throw $ex;
         }//try_catch
     }//reject_action
@@ -1583,6 +1810,7 @@ Class Approval {
      * Approve Action
      *
      * @param           Object $infoRequest     Request to approve
+     * @param           Object $infoManager
      *
      * @return          bool
      * @throws          Exception
@@ -1590,9 +1818,10 @@ Class Approval {
      * @creationDate    29/12/2015
      * @author          eFaktor     (fbv)
      */
-    private static function approve_action($infoRequest) {
+    private static function approve_action($infoRequest,&$infoManager) {
         /* Variables */
         global $CFG,$SITE,$DB;
+        $trans              = null;
         $instanceWaiting    = null;
         $queueEntry         = null;
         $instanceApprove    = null;
@@ -1605,6 +1834,10 @@ Class Approval {
         $course             = null;
         $urlCourse          = null;
         $time               = null;
+        $bool               = false;
+
+        // Start transaction
+        $trans = $DB->start_delegated_transaction();
 
         try {
             // Include library to create queue entry and update waitinglist
@@ -1650,6 +1883,12 @@ Class Approval {
                 // Execute
                 $DB->update_record('enrol_approval',$instanceApprove);
 
+                //Approval manager - update action 1
+                $infoManager->action        = 1;
+                $infoManager->timeupdated   = $time;
+                // Execute
+                $DB->update_record('enrol_approval_approvers',$infoManager);
+
                 //Send mail to the user
                 $user   = get_complete_user_data('id',$infoRequest->userid);
 
@@ -1680,12 +1919,19 @@ Class Approval {
                 // Send Mail
                 email_to_user($user, $SITE->shortname, $strSubject, $bodyText,$bodyHtml);
 
-                return true;
+                $bool = true;
             }else {
-                return false;
+                $bool = false;
             }//if_else
 
+            // Commit
+            $trans->allow_commit();
+
+            return $bool;
         }catch (Exception $ex) {
+            // Rollback
+            $trans->rollback($ex);
+
             throw $ex;
         }//try_catch
     }//approve_action
