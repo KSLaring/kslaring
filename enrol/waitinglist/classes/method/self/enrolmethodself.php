@@ -779,7 +779,6 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
                     redirect($redirect);
                 }else if ($form->is_submitted()) {
                     $this->myManagers   = \Approval::managers_connected($USER->id,$infoRequest->companyid);
-
                     \Approval::send_reminder($USER,$remainder,$waitinglist->id,$this->myManagers);
 
                     $redirect = $CFG->wwwroot . '/index.php';
