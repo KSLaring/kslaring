@@ -115,16 +115,21 @@ class enrolmethodunnamedbulk_enrolform extends \moodleform {
                  * Description
                  * Company selector if it is demanded
                  */
-                $bulkClass      = new enrolmethodunnamedbulk();
-                $myCompetence   = $bulkClass->GetCompetenceData($USER->id);
-                $mform->addElement('header', 'levels_connected', get_string('company_sel', 'enrol_waitinglist'));
-                /* Add Levels   */
-                for ($i = 0; $i <= 3; $i++) {
-                    $this->Add_CompanyLevel($i,$this->_form,$myCompetence,$waitinglist->{ENROL_WAITINGLIST_FIELD_APPROVAL});
-                }//for_levels
-                if ($queuestatus->companyid) {
-                    $mform->setDefault('level_3',$queuestatus->companyid);
+                if (($waitinglist->{ENROL_WAITINGLIST_FIELD_APPROVAL} != COMPANY_NO_DEMANDED)
+                    ||
+                    ($waitinglist->{ENROL_WAITINGLIST_FIELD_INVOICE})) {
+                    $bulkClass      = new enrolmethodunnamedbulk();
+                    $myCompetence   = $bulkClass->GetCompetenceData($USER->id);
+                    $mform->addElement('header', 'levels_connected', get_string('company_sel', 'enrol_waitinglist'));
+                    /* Add Levels   */
+                    for ($i = 0; $i <= 3; $i++) {
+                        $this->Add_CompanyLevel($i,$this->_form,$myCompetence,$waitinglist->{ENROL_WAITINGLIST_FIELD_APPROVAL});
+                    }//for_levels
+                    if ($queuestatus->companyid) {
+                        $mform->setDefault('level_3',$queuestatus->companyid);
+                    }
                 }
+
 
                 //add form input elements
                 $mform->addElement('text','seats',  get_string('reserveseatcount', 'enrol_waitinglist'), array('size' => '8'));

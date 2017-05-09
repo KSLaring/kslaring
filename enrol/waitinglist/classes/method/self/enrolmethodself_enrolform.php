@@ -101,13 +101,17 @@ class enrolmethodself_enrolform extends \moodleform {
                  * Description
                  * Add selectors company depends on option from method
                  */
-                $selfClass      = new enrolmethodself();
-                $myCompetence   = $selfClass->GetCompetenceData($USER->id);
-                $mform->addElement('header', 'levels_connected', get_string('company_sel', 'enrol_waitinglist'));
-                /* Add Levels   */
-                for ($i = 0; $i <= 3; $i++) {
-                    $this->Add_CompanyLevel($i,$this->_form,$myCompetence,$waitinglist->{ENROL_WAITINGLIST_FIELD_APPROVAL});
-                }//for_levels
+                if (($waitinglist->{ENROL_WAITINGLIST_FIELD_APPROVAL} != COMPANY_NO_DEMANDED)
+                    ||
+                    ($waitinglist->{ENROL_WAITINGLIST_FIELD_INVOICE})) {
+                    $selfClass      = new enrolmethodself();
+                    $myCompetence   = $selfClass->GetCompetenceData($USER->id);
+                    $mform->addElement('header', 'levels_connected', get_string('company_sel', 'enrol_waitinglist'));
+                    /* Add Levels   */
+                    for ($i = 0; $i <= 3; $i++) {
+                        $this->Add_CompanyLevel($i,$this->_form,$myCompetence,$waitinglist->{ENROL_WAITINGLIST_FIELD_APPROVAL});
+                    }//for_levels
+                }
 
 
                 /**
