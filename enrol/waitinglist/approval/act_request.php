@@ -15,6 +15,7 @@ require('../../../config.php');
 require_once('approvallib.php');
 
 /* PARAMS */
+global $USER,$PAGE,$OUTPUT;
 $courseId       = required_param('co',PARAM_INT);
 $userId         = required_param('id',PARAM_INT);
 $action         = required_param('act',PARAM_INT);
@@ -51,10 +52,17 @@ echo $OUTPUT->header();
 /* Get Request */
 $infoRequest = Approval::get_request($userId,$courseId,$waitingId);
 $infoRequest->action = $action;
+// Get manager connection
+if (is_siteadmin($USER->id)) {
+    // Create a special entry for the admin
+    $infoManager = Approval::add_approval_entry_admin($infoRequest->id,$USER->id);
+}else {
+    $infoManager  = Approval::get_request_manager(null,$USER->id);
+}//if_else
+
 
 $strTitle = null;
-
-if (Approval::apply_action_from_manager($infoRequest)) {
+if (Approval::apply_action_from_manager($infoRequest,$infoManager)) {
     $user = get_complete_user_data('id',$userId);
     $infoNotification = new stdClass();
     $infoNotification->user = fullname($user);

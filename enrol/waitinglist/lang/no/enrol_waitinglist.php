@@ -314,3 +314,5 @@ $string['body_instructor']  = '<p>Vi ønsker å informere deg om at du er satt o
 $string['body_uninstructor'] = '<p>Vi ønsker å informere deg om at du er fjernet som kursansvarlig for kurset {$a->course}</p>
                                 </br>
                                 <p>Dette er en automatisk generert epost fra {$a->site} og du kan ikke svare på denne eposten.</p>';
+$string['rpt_by']           = 'By';
+$string['rpt_when']         = 'When';

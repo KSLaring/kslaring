@@ -457,12 +457,13 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
         global $USER;
         $queue_entry    = null;
         $infoApproval   = null;
+        $infoManager    = null;
         $infoMail       = null;
 
         try {
             // Don't enrol user if password is not passed when required.
             if ($this->password && !isset($data->enrolpassword)) {
-                return;
+                return false;
             }
 
             /**
@@ -495,13 +496,16 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
                 $queueid = $this->add_to_waitinglist($waitinglist, $queue_entry);
             }else {
                 list($infoApproval,$infoMail) = \Approval::add_approval_entry($data,$USER->id,$waitinglist->courseid,static::METHODTYPE,1,$waitinglist->id);
+                // Generate entry for the managers and their tokens
+                $infoMail->managers = \Approval::add_approval_entry_manager($this->myManagers,$infoApproval->id,$waitinglist->courseid);
                 /* Check Vancancies */
                 $wl         = enrol_get_plugin('waitinglist');
                 $vacancies  = $wl->get_vacancy_count($waitinglist);
                 if ($vacancies) {
                     if (array_key_exists($USER->id,$this->myManagers)) {
                         $infoApproval->action = APPROVED_ACTION;
-                        \Approval::apply_action_from_manager($infoApproval);
+                        $infoManager  = \Approval::get_request_manager($infoMail->managers[$USER->id],$USER->id);
+                        \Approval::apply_action_from_manager($infoApproval,$infoManager);
                     }else {
                         /* Send Mails   */
                         \Approval::send_notifications($USER,$infoMail,$this->myManagers);
@@ -521,6 +525,8 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
                     \Invoices::add_invoice_info($data,$USER->id,$waitinglist->courseid,$waitinglist->id);
                 }//if_invoice_info
             }
+
+            return true;
         }catch (\Exception $ex) {
             throw $ex;
         }//try_catch
@@ -695,6 +701,7 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
         $isInvoice          = false;
         $redirect           = null;
         $ret                = null;
+        $infoRequest        = null;
 
 		$queueman= \enrol_waitinglist\queuemanager::get_by_course($waitinglist->courseid);
 		$qdetails = $queueman->get_user_queue_details(static::METHODTYPE);

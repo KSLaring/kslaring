@@ -34,7 +34,10 @@ defined('MOODLE_INTERNAL') || die();
 
 function xmldb_enrol_waitinglist_upgrade($oldversion) {
     /* Variables    */
-    global $DB;
+    global $DB,$CFG;
+    $sql                = null;
+    $rdo                = null;
+    $managers           = null;
     $dbman = $DB->get_manager();
     $tblWaitingLst = null;
     $tblApproval        = null;
@@ -225,10 +228,76 @@ function xmldb_enrol_waitinglist_upgrade($oldversion) {
             }
         }//if_odlVersion
 
+        // Create enrol_approval_approvers
+        if ($oldversion < 2017050802) {
+            $table       = new xmldb_table('enrol_approval_approvers');
+
+            if (!$dbman->table_exists('enrol_approval_approvers')) {
+                // Fields
+                // Primary Key
+                $table->add_field('id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
+                // Foreign key to enrol_approval table
+                $table->add_field('approvalid',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
+                // Manager id
+                $table->add_field('managerid',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
+                // Action. 0 --> None action. 1 --> Approve action. 2 --> Reject action
+                $table->add_field('action',XMLDB_TYPE_INTEGER,'2',null, XMLDB_NOTNULL, null,null);
+                // token
+                $table->add_field('token',XMLDB_TYPE_CHAR,'100',null, XMLDB_NOTNULL, null,null);
+                // timecreated
+                $table->add_field('timecreated',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
+                // timeupdate
+                $table->add_field('timeupdated',XMLDB_TYPE_INTEGER,'10',null, null, null,null);
+
+                // Keys
+                $table->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+                // Adding indexes
+                $table->add_key('approvalid',XMLDB_KEY_FOREIGN,array('approvalid'),'enrol_approval', array('id'));
+
+                $dbman->create_table($table);
+            }//if_table_exists
+
+            // Add entries for old version
+            require_once($CFG->dirroot . '/enrol/waitinglist/approval/approvallib.php');
+
+            // Get all entries from old version
+            $sql = " SELECT	DISTINCT 
+                                  ea.id,
+                                  ea.userid,
+                                  ea.courseid,
+                                  ea.companyid,
+                                  ea.waitinglistid
+                     FROM	      {enrol_approval}            ea
+                     	JOIN      {user}			          u 	ON  u.id 		  = ea.userid
+											                        AND u.deleted 	  = 0
+						LEFT JOIN {enrol_approval_approvers}  eam   ON eam.approvalid = ea.id
+                     WHERE	ea.approved = 0
+                        AND	ea.rejected = 0 
+                        AND eam.id IS NULL ";
+
+            // Execute
+            $rdo = $DB->get_records_sql($sql);
+            if ($rdo) {
+                // Create entries - Sen reminders
+                foreach ($rdo as $instance) {
+                    $managers = Approval::managers_connected($instance->userid,$instance->companyid);
+                    // Create entries
+                    $entries = Approval::add_approval_entry_manager($managers,$instance->id,$instance->courseid);
+
+                    // Send reminders
+                    $user = get_complete_user_data('id',$instance->userid);
+                    $remainder          = \Approval::get_notification_sent($instance->userid,$instance->courseid);
+                    \Approval::send_reminder($user,$remainder,$instance->waitinglistid,$managers);
+                }
+            }//if_rdo
+        }//if_odl_version_2017050802
+
         return true;
     }catch (Exception $ex) {
         throw $ex;
     }//try_catch
 }
+
+
 
 
