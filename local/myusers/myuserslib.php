@@ -259,12 +259,26 @@ class MyUsers {
         $urlFirst       = null;
         $urlLast        = null;
         $urlAccess      = null;
+        $sort           = null;
 
         try {
+            switch ($dir) {
+                case 'ASC':
+                    $sort = "DESC";
+                    break;
+
+                case 'DESC':
+                    $sort = 'ASC';
+                    break;
+
+                default:
+                    $sort = 'ASC';
+                    break;
+            }
             // Set order
             switch ($field) {
                 case 'firstname':
-                    $urlFirst   = "<a href=\"myusers.php?id=$cat&amp;sort=$field&amp;dir=$dir;&amp;order='1'\">".$strFirst."</a>";
+                    $urlFirst   = "<a href=\"myusers.php?id=$cat&amp;sort=$field&amp;dir=$sort;&amp;order='1'\">".$strFirst."</a>";
                     $urlLast    = "<a href=\"myusers.php?id=$cat&amp;sort='lastname'&amp;dir='ASC'\">".$strLast."</a>";
                     $urlAccess  = "<a href=\"myusers.php?id=$cat&amp;sort='lastaccess'&amp;dir='ASC'\">".$strAccess."</a>";
 
@@ -272,7 +286,7 @@ class MyUsers {
 
                 case 'lastname':
                     $urlFirst   = "<a href=\"myusers.php?id=$cat&amp;sort='firstname'&amp;dir='ASC'\">".$strFirst."</a>";
-                    $urlLast    = "<a href=\"myusers.php?id=$cat&amp;sort=$field&amp;dir=$dir\">".$strLast."</a>";
+                    $urlLast    = "<a href=\"myusers.php?id=$cat&amp;sort=$field&amp;dir=$sort\">".$strLast."</a>";
                     $urlAccess  = "<a href=\"myusers.php?id=$cat&amp;sort='lastaccess'&amp;dir='ASC'\">".$strAccess."</a>";
 
                     break;
@@ -280,7 +294,7 @@ class MyUsers {
                 case 'lastaccess':
                     $urlFirst   = "<a href=\"myusers.php?id=$cat&amp;sort='firstname'&amp;dir='ASC'\">".$strFirst."</a>";
                     $urlLast    = "<a href=\"myusers.php?id=$cat&amp;sort='lastname'&amp;dir='ASC'\">".$strLast."</a>";
-                    $urlAccess  = "<a href=\"myusers.php?id=$cat&amp;sort=$field&amp;dir=$dir\">".$strAccess."</a>";
+                    $urlAccess  = "<a href=\"myusers.php?id=$cat&amp;sort=$field&amp;dir=$sort\">".$strAccess."</a>";
 
                     break;
 
