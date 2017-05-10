@@ -337,3 +337,5 @@ $string['coursename'] = 'Course name';
 
 $string['userworkplace'] = 'Workplace';
 $string['userjobrole'] = 'Job Role';
+
+$string['noresults'] = 'No results';

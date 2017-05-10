@@ -47,6 +47,7 @@ require_capability('local/friadmin:course_locations_manage', $contextsystem);
 
 // Form!
 $mform = new summary_form(null);
+$noresults = null;
 
 if ($mform->is_cancelled()) {
 
@@ -61,6 +62,7 @@ if ($mform->is_cancelled()) {
         die;
     } else {
         // No results.
+        $noresults = get_string('noresults', 'local_friadmin');
     }
 }
 
@@ -69,6 +71,7 @@ echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('summaryheading', 'local_friadmin'));
 
 $mform->display();
+echo $noresults;
 
 // Print Footer!
 echo $OUTPUT->footer();
