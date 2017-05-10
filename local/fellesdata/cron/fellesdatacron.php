@@ -1067,6 +1067,11 @@ class FELLESDATA_CRON {
                     unlink($pathFile);
                 }
 
+                $pathPaqui = $dir . '/' . $service . '_Paqui.txt';
+                $responseFile = fopen($pathPaqui,'w');
+                fwrite($responseFile,$response);
+                fclose($responseFile);
+
                 // Create a new response file
                 $responseFile = fopen($pathFile,'w');
                 // Remove bad characters
