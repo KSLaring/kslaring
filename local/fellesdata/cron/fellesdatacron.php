@@ -769,9 +769,11 @@ class FELLESDATA_CRON {
                             if (strpos(chr(13),$content)) {
                                 $content = explode(chr(13),$content);
                             }else {
-                                $content = file($pathFile);
+                                //$content = file($pathFile);
                             }
-
+                            foreach ($content as $info) {
+                                echo "Info --> " . $info . "</br>";
+                            }
                             self::save_temporary_fs($content,IMP_JOBROLES);
                         }else {
                             // Mark file as suspicious
