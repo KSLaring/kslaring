@@ -682,13 +682,17 @@ class FELLESDATA_CRON {
                         if (!suspicious::check_for_suspicious_data(TRADIS_FS_COMPANIES,$pathFile)) {
                             // Get content
                             $content = file_get_contents($pathFile);
+                            foreach ($content as $info) {
+                                echo "Info --> " . $info . "</br>";
+                            }
+
                             if (strpos(chr(13),$content)) {
                                 $content = explode(chr(13),$content);
                             }else {
                                 $content = file($pathFile);
                             }
 
-                            self::save_temporary_fs($content,IMP_COMPANIES);
+                            //self::save_temporary_fs($content,IMP_COMPANIES);
                         }else {
                             // Mark file as suspicious
                             $suspiciousPath = suspicious::mark_suspicious_file(TRADIS_FS_COMPANIES,$plugin);
@@ -769,10 +773,7 @@ class FELLESDATA_CRON {
                             if (strpos(chr(13),$content)) {
                                 $content = explode(chr(13),$content);
                             }else {
-                                //$content = file($pathFile);
-                            }
-                            foreach ($content as $info) {
-                                echo "Info --> " . $info . "</br>";
+                                $content = file($pathFile);
                             }
                             self::save_temporary_fs($content,IMP_JOBROLES);
                         }else {
