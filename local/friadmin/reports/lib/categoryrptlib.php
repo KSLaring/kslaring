@@ -294,7 +294,7 @@ class friadminrpt
         }  // end try_catch
     } // end get_course_summarydata
 
-    public static function get_course_instructor_data($course, $category, $fullname, $username, $email) {
+    public static function get_course_instructors($course, $category, $fullname, $username, $email, $workplace, $jobrole) {
         // Variables!
         global $DB;
         $rdo = null;
@@ -320,49 +320,41 @@ class friadminrpt
             $extrasql .= " AND u.email LIKE '%" . $email . "%' ";
         }
 
+        //TODO
+        // Worplace in the companyid in mdl_user_info_competence_data and it has to be
+        // matched with mdl_report_gen_companydata
+        if ($workplace) {
+            $workplacesql = " AND u.";
+        } else {
+            $workplacesql = " ";
+        }
 
-        $query = "  SELECT 	CONCAT(u.id,c.id) 				    as 'unique',
-                            CONCAT(u.firstname,' ', u.lastname) as 'instr',
-                            c.fullname							as 'coursename',
-                            ca.name								as 'category',
-                            c.format							as 'courseformat',
-                            co.cord								as 'coursecoordinator',
-                            cl.city								as 'levelone',
-                            fo1.value							as 'fromto',
-                            c.visible							as 'visibility'
-                            
-                    FROM		  {user}				  u
-                        -- Instructors
-                        JOIN 	  {role_assignments}	  ra  ON ra.userid 	= u.id
-                        JOIN	  {context}				  ct  ON ct.id 	 	= ra.contextid
-                        JOIN  	  {role}				  r   ON 	r.id 	 	= ra.roleid
-                                                              AND r.archetype = 'teacher'
-                        -- Course
-                        JOIN 	  {course}				  c	  ON c.id 		= ct.instanceid
-                        -- Category
-                        JOIN	  {course_categories}     ca  ON ca.id	= c.category
-                        -- Location
-                        LEFT JOIN {course_format_options} fo  ON fo.courseid = c.id
-                                                              AND fo.name = 'course_location'
-                        LEFT JOIN {course_locations}	  cl  ON cl.id = fo.value
-                        -- Dates
-                        LEFT JOIN {course_format_options} fo1 ON fo1.courseid = c.id
-                                                              AND fo1.name = 'time'
-                        -- Coordinator
-                        LEFT JOIN (
-                            SELECT 		ra.userid,
-                                        ct.instanceid 		                 as 'course',
-                                        concat(u.firstname, ' ', u.lastname) as 'cord'
-                            FROM		{role_assignments}		ra
-                                JOIN	{context}				ct	ON 	ct.id 		= ra.contextid
-                            JOIN  		{role}					r 	ON 	r.id 		= ra.roleid
-                                                                    AND r.archetype = 'editingteacher'
-                            JOIN		{user}                  u 	ON	u.id = ra.userid
-                            GROUP BY course
-                        ) co  ON co.course = c.id
-                    WHERE 	u.deleted = 0
-                    $extrasql
-                    ORDER BY u.id";
+        if ($jobrole) {
+            $jobrolesql = " JOIN mdl_user_info_competence_data  uic ON uic.userid = u.id
+                            JOIN mdl_report_gen_jobrole         gjr ON gjr.id IN (uic.jobroles)
+                                                                  AND gjr.name LIKE '%" . $jobrole . "%' ";
+        } else {
+            $jobrolesql = " ";
+        }
+
+        $query = "SELECT DISTINCT u.id
+                  FROM            mdl_user u
+                  -- INSTRUCTORS    
+                  JOIN  mdl_role_assignments        ra  ON  ra.userid = u.id
+                  JOIN  mdl_context                 ct  ON  ct.id = ra.contextid
+                  JOIN  mdl_role                    r   ON  r.id = ra.roleid
+                                                        AND r.archetype = 'teacher'
+                  -- Course
+                  JOIN 	mdl_course					c	ON c.id     = ct.instanceid
+                
+                  -- Category
+                  JOIN	mdl_course_categories		ca	ON ca.id	= c.category
+    
+                  -- Jobroles
+                  $jobrolesql
+                  
+                  WHERE u.deleted = 0
+                  $extrasql";
 
         try {
 
@@ -386,7 +378,65 @@ class friadminrpt
         } catch (Exception $ex) {
             Throw $ex;
         }  // end try_catch
-    } // end get_categories
+    } // end get_course_instructors
+
+    public static function get_course_instructor_data($instructors) {
+        // Variables!
+        global $DB;
+        $rdo = null;
+
+        $query = "  SELECT  CONCAT(u.id,c.id) as 'unique',
+                            CONCAT(u.firstname,' ', u.lastname) as 'instr',
+                            c.fullname as 'coursename',
+                            ca.name as 'category',
+                            c.format as 'courseformat',
+                            cord.cord as 'coordinator',
+                            co.name as 'levelone',
+                            cl.name as 'location',
+                            fo1.value as 'fromto',
+                            c.visible as 'visibility'
+                    FROM          mdl_user u
+                    -- Course
+                        JOIN      mdl_course                    c   ON  c.id = ct.instanceid
+                        
+                        -- Category
+                        JOIN      mdl_course_categories         ca  ON  ca.id = c.category
+                        -- Location
+                        LEFT JOIN mdl_course_format_options     fo  ON  fo.courseid = c.id
+                                                                    AND fo.name = 'course_location'
+                    LEFT JOIN mdl_course_locations              cl  ON  cl.id = fo.value
+                        LEFT JOIN   mdl_report_gen_companydata  co  ON  co.id = cl.levelone
+                        -- Dates
+                        LEFT JOIN mdl_course_format_options     fo1 ON  fo1.courseid = c.id
+                    AND fo1.name = 'time'
+                    	-- Coordinator
+                    LEFT JOIN (
+                        SELECT 		ra.userid,
+                                    ct.instanceid 		as 'course',
+                                    concat(u.firstname, ' ', u.lastname) as 'cord'
+                        FROM		mdl_role_assignments		ra
+                            JOIN	mdl_context					ct	ON 	ct.id 		= ra.contextid
+                        JOIN  		mdl_role					r 	ON 	r.id 		= ra.roleid
+                                                                    AND r.archetype = 'editingteacher'
+                        JOIN		mdl_user u 						ON	u.id = ra.userid
+                        GROUP BY course
+                    ) cord  ON 		cord.course = c.id
+                    WHERE u.deleted = 0
+                    AND u.id IN ($instructors) ";
+
+        try {
+
+            $rdo = $DB->get_records_sql($query);
+
+            if ($rdo) {
+                return $rdo;
+            } else {
+                return null;
+            }
+        } catch (Exception $ex) {
+            Throw $ex;
+        }  // end try_catch
+    } // end get_course_instructor_date
 
     public static function get_course_coordinator_data($course, $category, $fullname, $userjobrole, $username) {
         // Variables!

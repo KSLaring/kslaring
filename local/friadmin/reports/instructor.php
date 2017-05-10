@@ -55,10 +55,20 @@ friadminrpt::get_javascript_values('course', 'category', null);
 if ($mform->is_cancelled()) {
 
 } else if ($fromform = $mform->get_data()) {
-    $instructors = friadminrpt::get_course_instructor_data($fromform->course, $fromform->category, $fromform->userfullname, $fromform->username);
+    $instructors = friadminrpt::get_course_instructors(
+        $fromform->course,
+        $fromform->category,
+        $fromform->userfullname,
+        $fromform->username,
+        $fromform->useremail,
+        $fromform->userworkplace,
+        $fromform->userjobrole);
+
+    echo $instructors;
+    $instructorsinfo = friadminrpt::get_course_instructor_data($instructors);
 
     ob_end_clean();
-    friadminrpt::download_participants_list_instructor($instructors);
+    friadminrpt::download_participants_list_instructor($instructorsinfo);
 
     die;
 }
