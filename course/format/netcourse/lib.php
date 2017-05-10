@@ -207,7 +207,18 @@ class format_netcourse extends format_base {
      * @return array
      */
     public function extend_course_navigation($navigation, navigation_node $node) {
-        global $PAGE, $DB;
+        global $PAGE, $SCRIPT, $DB;
+
+        // Exclude the navigation changes and the fake navigation block on report pages
+        // because some code on report page expect navigation nodes we exclude.
+        if ($SCRIPT === '/report/log/user.php' ||
+            $SCRIPT === '/report/outline/user.php' ||
+            $SCRIPT === '/course/user.php'
+        ) {
+            $this->extend_course_navigation_unmodified($navigation, $node);
+
+            return array();
+        }
 
         // Exclude the SCORM report page - it has issues with
         // the netcourse navigation block.
@@ -258,6 +269,41 @@ class format_netcourse extends format_base {
         }
 
         return array();
+    }
+
+    /**
+     * Loads all of the course sections into the navigation
+     *
+     * @param global_navigation $navigation
+     * @param navigation_node   $node The course node within the navigation
+     */
+    public function extend_course_navigation_unmodified($navigation, navigation_node $node) {
+        global $PAGE;
+        // If section is specified in course/view.php, make sure it is expanded in navigation.
+        if ($navigation->includesectionnum === false) {
+            $selectedsection = optional_param('section', null, PARAM_INT);
+            if ($selectedsection !== null && (!defined('AJAX_SCRIPT') || AJAX_SCRIPT == '0') &&
+                $PAGE->url->compare(new moodle_url('/course/view.php'), URL_MATCH_BASE)
+            ) {
+                $navigation->includesectionnum = $selectedsection;
+            }
+        }
+
+        // Check if there are callbacks to extend course navigation.
+        parent::extend_course_navigation($navigation, $node);
+
+        // We want to remove the general section if it is empty.
+        $modinfo = get_fast_modinfo($this->get_course());
+        $sections = $modinfo->get_sections();
+        if (!isset($sections[0])) {
+            // The general section is empty to find the navigation node for it we need to get its ID.
+            $section = $modinfo->get_section_info(0);
+            $generalsection = $node->get($section->id, navigation_node::TYPE_SECTION);
+            if ($generalsection) {
+                // We found the node - now remove it.
+                $generalsection->remove();
+            }
+        }
     }
 
     /**
@@ -327,7 +373,7 @@ class format_netcourse extends format_base {
                     if ($completion == COMPLETION_TRACKING_MANUAL) {
                         $imgtitle = get_string('completion-title-' . $completionicon, 'completion', $formattedname);
                         $newstate = $completiondata->completionstate ==
-                            COMPLETION_COMPLETE ? COMPLETION_INCOMPLETE : COMPLETION_COMPLETE;
+                        COMPLETION_COMPLETE ? COMPLETION_INCOMPLETE : COMPLETION_COMPLETE;
                         // In manual mode the icon is a toggle form...
 
                         // If this completion state is used by the
@@ -855,7 +901,7 @@ class format_netcourse extends format_base {
                     break;
                 case 'pagegraphics':
                     if (isset($data['pagegraphics']) && isset($data['pagegraphics_filemanager'])) {
-                        $graphic_id = course_page::postupdate_homegraphics_manager($this->courseid,'pagegraphics','pagegraphics_filemanager',$data['pagegraphics_filemanager']);
+                        $graphic_id = course_page::postupdate_homegraphics_manager($this->courseid, 'pagegraphics', 'pagegraphics_filemanager', $data['pagegraphics_filemanager']);
                         $data[$key] = $graphic_id;
                     }
 
@@ -1376,6 +1422,15 @@ EOT;
     public function add_fake_nav_block_later($page) {
         global $CFG, $COURSE, $SCRIPT;
 
+        // Exclude the navigation changes and the fake navigation block on report pages
+        // because some code on report pages expects navigation nodes we exclude.
+        if ($SCRIPT === '/report/log/user.php' ||
+            $SCRIPT === '/report/outline/user.php' ||
+            $SCRIPT === '/course/user.php'
+        ) {
+            return null;
+        }
+
         $blockid = 'cnav';
 
         $this->page = $page;
@@ -1416,7 +1471,7 @@ EOT;
         // Get the current course nodes and extract the course node collection
         // The current course has only one collection, can be fetched with "last"
         /* @var $thiscourse_navigation navigation_node */
-        $thiscourse_navigation = $course_navigation->get("currentcourse");
+        $thiscourse_navigation = clone($course_navigation->get("currentcourse"));
 
         // return null if the currentcourse has no navigation items.
         if (empty($thiscourse_navigation->children)) {
