@@ -6,7 +6,7 @@ M.core_user.get_courses_by_category = function (name) {
     return this.courses[name] || null;
 };
 
-M.core_user.init_courses = function (Y, course, category, prevcourse) {
+M.core_user.init_courses = function (Y, course, category) {
 
     var lst_courses = {
         querydelay: 0.5,
@@ -19,7 +19,6 @@ M.core_user.init_courses = function (Y, course, category, prevcourse) {
         timeoutid : null,
 
         iotransactions : {},
-
 
         init : function() {
             var cat = this.category.get('value');

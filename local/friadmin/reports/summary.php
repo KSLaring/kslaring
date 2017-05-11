@@ -50,7 +50,7 @@ $mform = new summary_form(null);
 $noresults = null;
 
 if ($mform->is_cancelled()) {
-
+    redirect($CFG->wwwroot);
 } else if ($fromform = $mform->get_data()) {
     $category = $fromform->category;
     $coursesdata = friadminrpt::get_course_summary_data($category, $fromform->selsummaryfrom, $fromform->selsummaryto);

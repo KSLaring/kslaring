@@ -1,5 +1,5 @@
 <?php
-// This file is part of friadmin
+// This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -8,41 +8,49 @@
 //
 // Moodle is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle. If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+defined('MOODLE_INTERNAL') || die();
 
 require_once("$CFG->libdir/formslib.php");
 
 class summary_form extends moodleform {
     public function definition() {
-        global $CFG;
-        global $SESSION;
-
         $mform = $this->_form;
 
         // Calls a function that gets all the categories from the database.
         $categorylist = friadminrpt::get_categories();
 
+        // Category.
         $mform->addElement('select', 'category', get_string('category', 'local_friadmin'), $categorylist);
         $mform->addRule('category', null, 'required');
         $mform->setDefault('cateogry', $categorylist[0]);
+
+        // From.
         $mform->addElement('date_selector', 'selsummaryfrom', get_string('summaryfrom', 'local_friadmin'),
             array('optional' => false));
         $mform->addRule('selsummaryfrom', null, 'required');
+
+        // To.
         $mform->addElement('date_selector', 'selsummaryto', get_string('summaryto', 'local_friadmin'),
             array('optional' => false));
         $mform->addRule('selsummaryto', null, 'required');
-        $this->add_action_buttons(false, get_string('download', 'local_friadmin'));
 
+        // Download.
+        $this->add_action_buttons(false, get_string('download', 'local_friadmin'));
     }
 
     public function validation($data, $files) {
         $errors = parent::validation($data, $files);
 
+        // Variables.
         $date = time();
+
+        // Checks.
         if ($data['selsummaryfrom'] > $data['selsummaryto']) {
             $errors['selsummaryfrom'] = get_string('biggerthanto', 'local_friadmin');
             $errors['selsummaryto'] = get_string('smallerthanfrom', 'local_friadmin)');
@@ -57,13 +65,10 @@ class summary_form extends moodleform {
         }
         return $errors;
     }
-}
+} // end summary_form
 
 class course_instructor_form extends moodleform {
     public function definition() {
-        global $CFG;
-        global $SESSION;
-
         $mform = $this->_form;
 
         // Calls a function that gets all the categories from the database.
@@ -72,31 +77,39 @@ class course_instructor_form extends moodleform {
         // Calls a function that gets all the courses from the database.
         $courses = friadminrpt::get_courses();
 
+        // Category.
         $mform->addElement('select', 'category', get_string('category', 'local_friadmin'), $categorylist);
         $mform->addRule('category', null, 'required');
 
+        // Course.
         $mform->addElement('select', 'course', get_string('course', 'local_friadmin'), $courses);
 
+        // Header.
         $mform->addElement('header', 'header_instructorsfilter', get_string('header_instructorsfilter', 'local_friadmin'));
-        $mform->setExpanded('header_instructorsfilter',true);
+        $mform->setExpanded('header_instructorsfilter', true);
 
+        // Users full name.
         $mform->addElement('text', 'userfullname', get_string('userfullname', 'local_friadmin'));
         $mform->setType('userfullname', PARAM_TEXT);
 
+        // Username.
         $mform->addElement('text', 'username', get_string('username', 'local_friadmin'));
         $mform->setType('username', PARAM_TEXT);
 
+        // Users email.
         $mform->addElement('text', 'useremail', get_string('useremail', 'local_friadmin'));
         $mform->setType('useremail', PARAM_EMAIL);
 
+        // Users workplace.
         $mform->addElement('text', 'userworkplace', get_string('userworkplace', 'local_friadmin'));
         $mform->setType('userworkplace', PARAM_TEXT);
 
+        // Users jobrole.
         $mform->addElement('text', 'userjobrole', get_string('userjobrole', 'local_friadmin'));
         $mform->setType('userjobrole', PARAM_TEXT);
 
+        // Download button.
         $this->add_action_buttons(false, get_string('download', 'local_friadmin'));
-
     }
 
     public function validation($data, $files) {
@@ -104,7 +117,7 @@ class course_instructor_form extends moodleform {
 
         return $errors;
     }
-}
+} // end course_instructor_form
 
 class course_coordinator_form extends moodleform {
     public function definition() {
@@ -119,31 +132,39 @@ class course_coordinator_form extends moodleform {
         // Calls a function that gets all the courses from the database.
         $courses = friadminrpt::get_courses();
 
+        // Category.
         $mform->addElement('select', 'category', get_string('category', 'local_friadmin'), $categorylist);
         $mform->addRule('category', null, 'required');
 
+        // Course.
         $mform->addElement('select', 'course', get_string('course', 'local_friadmin'), $courses);
 
+        // Header.
         $mform->addElement('header', 'header_coordinatorfilter', get_string('header_coordinatorfilter', 'local_friadmin'));
-        $mform->setExpanded('header_coordinatorfilter',true);
+        $mform->setExpanded('header_coordinatorfilter', true);
 
+        // Users full name.
         $mform->addElement('text', 'userfullname', get_string('userfullname', 'local_friadmin'));
         $mform->setType('userfullname', PARAM_TEXT);
 
+        // Username.
         $mform->addElement('text', 'username', get_string('username', 'local_friadmin'));
         $mform->setType('username', PARAM_TEXT);
 
+        // Users email.
         $mform->addElement('text', 'useremail', get_string('useremail', 'local_friadmin'));
         $mform->setType('useremail', PARAM_EMAIL);
 
+        // Users workplace.
         $mform->addElement('text', 'userworkplace', get_string('userworkplace', 'local_friadmin'));
         $mform->setType('userworkplace', PARAM_TEXT);
 
+        // Users jobrole.
         $mform->addElement('text', 'userjobrole', get_string('userjobrole', 'local_friadmin'));
         $mform->setType('userjobrole', PARAM_TEXT);
 
+        // Download button.
         $this->add_action_buttons(false, get_string('download', 'local_friadmin'));
-
     }
 
     public function validation($data, $files) {
@@ -151,4 +172,4 @@ class course_coordinator_form extends moodleform {
 
         return $errors;
     }
-}
+} // end course_coordinator_form

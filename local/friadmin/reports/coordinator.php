@@ -53,18 +53,24 @@ friadminrpt::get_javascript_values('course', 'category', null);
 $mform = new course_coordinator_form(null);
 
 if ($mform->is_cancelled()) {
-
+    redirect($CFG->wwwroot);
 } else if ($fromform = $mform->get_data()) {
-    $coordinators = friadminrpt::get_course_coordinator_data($fromform->course, $fromform->category, $fromform->userfullname, $fromform->userjobrole, $fromform->username, $fromform->useremail);
+    $coordinators = friadminrpt::get_course_coordinators(
+        $fromform->course,
+        $fromform->category,
+        $fromform->userfullname,
+        $fromform->username,
+        $fromform->useremail,
+        $fromform->userworkplace,
+        $fromform->userjobrole);
 
-    if ($coordinators) {
-        ob_end_clean();
-        friadminrpt::download_participants_list_coordinator($coordinators);
+    echo $instructors;
+    $coordinatorsinfo = friadminrpt::get_course_instructor_data($coordinators, $fromform->course, $fromform->category);
 
-        die;
-    } else {
-        echo "nothing found";
-    }
+    ob_end_clean();
+    friadminrpt::download_participants_list_coordinator($coordinatorsinfo);
+
+    die;
 }
 
 // Print Header!

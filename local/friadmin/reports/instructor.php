@@ -53,7 +53,7 @@ $mform = new course_instructor_form(null);
 friadminrpt::get_javascript_values('course', 'category', null);
 
 if ($mform->is_cancelled()) {
-
+    redirect($CFG->wwwroot);
 } else if ($fromform = $mform->get_data()) {
     $instructors = friadminrpt::get_course_instructors(
         $fromform->course,
@@ -65,7 +65,7 @@ if ($mform->is_cancelled()) {
         $fromform->userjobrole);
 
     echo $instructors;
-    $instructorsinfo = friadminrpt::get_course_instructor_data($instructors);
+    $instructorsinfo = friadminrpt::get_course_instructor_data($instructors, $fromform->course, $fromform->category);
 
     ob_end_clean();
     friadminrpt::download_participants_list_instructor($instructorsinfo);
