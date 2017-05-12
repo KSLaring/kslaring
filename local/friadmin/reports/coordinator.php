@@ -74,6 +74,7 @@ echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('coordinatorheading', 'local_friadmin'));
 
 $mform->display();
+echo $noresults;
 
 // Print Footer!
 echo $OUTPUT->footer();
