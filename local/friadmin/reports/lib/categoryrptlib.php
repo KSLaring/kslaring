@@ -359,8 +359,8 @@ class friadminrpt
         }
 
         if ($jobrole) {
-            $jobrolesql = " JOIN {user_info_competence_data}  uic ON uic.userid = u.id
-                            JOIN {report_gen_jobrole}         gjr ON gjr.id IN (uic.jobroles)
+            $jobrolesql = " JOIN {user_info_competence_data}  uic2 ON uic2.userid = u.id
+                            JOIN {report_gen_jobrole}         gjr ON gjr.id IN (uic2.jobroles)
                                                                   AND gjr.name LIKE '%" . $jobrole . "%' ";
         } else {
             $jobrolesql = " ";
