@@ -229,7 +229,7 @@ class friadminrpt
                         -- Only users with contextlevel = 50 (Course)
                         JOIN {context} ct  ON  ct.id = ra.contextid
                         AND ct.contextlevel = 50
-                                                           --  AND ct.instanceid   = 1080
+                        --  AND ct.instanceid   = 1080
                         -- Students
                         LEFT JOIN  {role} rs ON rs.id   = ra.roleid
                         AND rs.archetype  = 'student'
@@ -350,12 +350,11 @@ class friadminrpt
         }
 
         if ($workplace) {
-            $workplacesql = " JOIN {user_info_competence_data} 	uic ON uic.userid = u.id
-                              JOIN {report_gen_companydata} 	    rgc ON rgc.id = uic.competenceid ";
-            $workplacewhere = " AND rgc.name LIKE '%" . $workplace . "'%' ";
+            $workplacesql = " JOIN {user_info_competence_data} 	    uic ON uic.userid = u.id
+                              JOIN {report_gen_companydata} 	    rgc ON rgc.id = uic.competenceid
+                                                                        AND rgc.name LIKE '%" . $workplace . "'%' ";
         } else {
             $workplacesql = " ";
-            $workplacewhere = " ";
         }
 
         if ($jobrole) {
@@ -386,8 +385,7 @@ class friadminrpt
                   $workplacesql
 
                   WHERE u.deleted = 0
-                  $extrasql
-                  $workplacewhere ";
+                  $extrasql ";
 
         try {
             $params = array();
@@ -495,7 +493,6 @@ class friadminrpt
     } // end get_course_instructor_date
 
     /**
-     * @param array     $coordinators    All the coordinators ID's from get_course_coordinators
      * @param integer   $course         The course selected by the user in the form (optional)
      * @param integer   $category       The category selected by the user in the form (required)
      * @return array|null Returns all the data used in the coordinator excel
@@ -528,17 +525,17 @@ class friadminrpt
                             c.format                            as 'courseformat',
                             co.name                             as 'levelone'
                             
-                    FROM		{user}					u              
-                    JOIN 	    {role_assignments}		ra 	    ON  ra.userid 	  = u.id
-                    JOIN	    {context}					ct	    ON  ct.id 	 	  = ra.contextid
-                    JOIN  	    {role}					r 	    ON 	r.id 	 	  = ra.roleid
-                    JOIN 	    {course}			    	c		ON  c.id 		  = ct.instanceid
-                    JOIN	    {course_categories}		ca	    ON  ca.id	      = c.category
-                    LEFT JOIN   {course_format_options}   fo      ON  fo.courseid = c.id
-                                                                    AND fo.name = 'course_location'
-                    LEFT JOIN   {course_locations}        cl      ON  cl.id = fo.value
-                    LEFT JOIN   {report_gen_companydata}  co      ON  co.id = cl.levelone
-                    LEFT JOIN 	{course_format_options} 	fo1 	ON  fo1.courseid  = c.id
+                    FROM		{user}					  u              
+                    JOIN 	    {role_assignments}		  ra 	    ON  ra.userid 	  = u.id
+                    JOIN	    {context}				  ct	    ON  ct.id 	 	  = ra.contextid
+                    JOIN  	    {role}					  r 	    ON 	r.id 	 	  = ra.roleid
+                    JOIN 	    {course}			      c		    ON  c.id 		  = ct.instanceid
+                    JOIN	    {course_categories}		  ca	    ON  ca.id	      = c.category
+                    LEFT JOIN   {course_format_options}   fo        ON  fo.courseid   = c.id
+                                                                    AND fo.name       = 'course_location'
+                    LEFT JOIN   {course_locations}        cl        ON  cl.id         = fo.value
+                    LEFT JOIN   {report_gen_companydata}  co        ON  co.id         = cl.levelone
+                    LEFT JOIN 	{course_format_options}   fo1 	    ON  fo1.courseid  = c.id
                                                                     AND fo1.name      = 'time'
                     WHERE u.deleted = 0								
                     GROUP BY c.id

@@ -138,6 +138,10 @@ class course_instructor_form extends moodleform {
     public function validation($data, $files) {
         $errors = parent::validation($data, $files);
 
+        if ($data['category'] == '0') {
+            $errors['category'] = 'You need to select a category';
+        }
+
         return $errors;
     }
 } // end course_instructor_form
@@ -192,6 +196,10 @@ class course_coordinator_form extends moodleform {
 
     public function validation($data, $files) {
         $errors = parent::validation($data, $files);
+
+        if ($data['category'] == '0') {
+            $errors['category'] = 'You need to select a category';
+        }
 
         return $errors;
     }
