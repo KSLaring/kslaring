@@ -332,3 +332,9 @@ $string['userworkplace'] = 'Workplace';
 $string['userjobrole'] = 'Job Role';
 
 $string['noresults'] = 'Ingen resultater';
+
+$string['summaryrptexcel'] = 'Summary Report';
+$string['categoryexcel'] = 'Category';
+$string['courseexcel'] = 'Course';
+$string['fromexcel'] = 'From';
+$string['toexcel'] = 'To';

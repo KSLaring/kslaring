@@ -57,7 +57,7 @@ if ($mform->is_cancelled()) {
 
     if ($coursesdata) {
         ob_end_clean();
-        friadminrpt::download_participants_list($coursesdata, $fromform->selsummaryfrom, $fromform->selsummaryto);
+        friadminrpt::download_participants_list($coursesdata, $fromform->selsummaryfrom, $fromform->selsummaryto, $category);
 
         die;
     } else {

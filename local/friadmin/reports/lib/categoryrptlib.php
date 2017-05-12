@@ -693,7 +693,7 @@ class friadminrpt
      * @updateDate    11/05/2017
      * @author          eFaktor     (nas)
      */
-    public static function download_participants_list($coursesdata, $from, $to) {
+    public static function download_participants_list($coursesdata, $from, $to, $category) {
         // Variables.
         global $CFG;
         $row = 0;
@@ -713,7 +713,7 @@ class friadminrpt
             // Search criterias.
             $myxls = $export->add_worksheet('Filter');
 
-            $export->close();
+                self::add_participants_excel_filter($myxls, $row, $from, $to, $category);
 
             // Raw.
             $myxls = $export->add_worksheet('Content');
@@ -724,6 +724,7 @@ class friadminrpt
                 self::add_participants_content_excel($coursesdata, $myxls, $row, $from, $to);
 
             $export->close();
+
             exit;
         } catch (Exception $ex) {
             throw $ex;
@@ -814,6 +815,108 @@ class friadminrpt
         }
     }//download_participants_list
 
+    private static function add_participants_excel_filter(&$myxls, $row, $from, $to, $category) {
+        // Variables.
+        $col        = 0;
+        $row        = 0;
+        $strsummary = get_string('summaryrptexcel', 'local_friadmin');
+        $strcategory = get_string('categoryexcel', 'local_friadmin');
+        $strcourse = get_string('courseexcel', 'local_friadmin');
+        $strfrom = get_string('fromexcel', 'local_friadmin');
+        $strto = get_string('toexcel', 'local_friadmin');
+
+        try {
+
+            // Summary Report Header.
+            $myxls->write($row, $col, $strsummary, array(
+                'size' => 22,
+                'name' => 'Arial',
+                'bold' => '1',
+                'bg_color' => '#d4d4d4',
+                'text_wrap' => true,
+                'v_align' => 'left'));
+            $myxls->merge_cells($row, $col, $row, $col + 4);
+            $myxls->set_row($row, 20);
+
+            // Category Header.
+            $row += 1;
+            $myxls->write($row, $col, $strcategory, array(
+                'size' => 16,
+                'name' => 'Arial',
+                'bold' => '0',
+                'bg_color' => '#e9e9e9',
+                'text_wrap' => true,
+                'v_align' => 'left',
+                'h_align' => 'right'));
+            $myxls->merge_cells($row, $col, $row, $col + 1);
+            $myxls->set_row($row, 20);
+
+            // Category Content.
+            $col += 2;
+            $myxls->write($row, $col, $category, array(
+                'size' => 12,
+                'name' => 'Arial',
+                'bold' => '0',
+                'text_wrap' => true,
+                'v_align' => 'left'));
+            $myxls->merge_cells($row, $col, $row, $col + 2);
+            $myxls->set_row($row, 20);
+
+            // From Header.
+            $col = 0;
+            $row += 1;
+            $myxls->write($row, $col, $strfrom, array(
+                'size' => 16,
+                'name' => 'Arial',
+                'bold' => '0',
+                'bg_color' => '#e9e9e9',
+                'text_wrap' => true,
+                'v_align' => 'left',
+                'h_align' => 'right'));
+            $myxls->merge_cells($row, $col, $row, $col + 1);
+            $myxls->set_row($row, 20);
+
+            // From Content.
+            $col += 2;
+            $myxls->write($row, $col, $from, array(
+                'size' => 12,
+                'name' => 'Arial',
+                'bold' => '0',
+                'text_wrap' => true,
+                'v_align' => 'left'));
+            $myxls->merge_cells($row, $col, $row, $col + 2);
+            $myxls->set_row($row, 20);
+
+            // To Header.
+            $col = 0;
+            $row += 1;
+            $myxls->write($row, $col, $strto, array(
+                'size' => 16,
+                'name' => 'Arial',
+                'bold' => '0',
+                'bg_color' => '#e9e9e9',
+                'text_wrap' => true,
+                'v_align' => 'left',
+                'h_align' => 'right'));
+            $myxls->merge_cells($row, $col, $row, $col + 1);
+            $myxls->set_row($row, 20);
+
+            // To Content.
+            $col += 2;
+            $myxls->write($row, $col, $to, array(
+                'size' => 12,
+                'name' => 'Arial',
+                'bold' => '0',
+                'text_wrap' => true,
+                'v_align' => 'left'));
+            $myxls->merge_cells($row, $col, $row, $col + 2);
+            $myxls->set_row($row, 20);
+
+        } catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    } // end add_participants_excel_filter
+
     /**
      * @param array     $sector     All the sectors in an array
      * @return null|sectors         Returns the sectors in text format
@@ -859,7 +962,7 @@ class friadminrpt
      */
     private static function add_participants_header_excel(&$myxls, $row, $coursesdata) {
         GLOBAL $SESSION;
-        /* Variables */
+        // Variables.
         $col                = 0;
         $row                = 0;
         $strcoursefull      = null;
