@@ -64,13 +64,17 @@ if ($mform->is_cancelled()) {
         $fromform->userworkplace,
         $fromform->userjobrole);
 
-    echo $instructors;
     $instructorsinfo = friadminrpt::get_course_instructor_data($instructors, $fromform->course, $fromform->category);
 
-    ob_end_clean();
-    friadminrpt::download_participants_list_instructor($instructorsinfo);
+    if ($instructorsinfo) {
+        ob_end_clean();
+        friadminrpt::download_participants_list_instructor($instructorsinfo);
 
-    die;
+        die;
+    } else {
+        // No results.
+        $noresults = get_string('noresults', 'local_friadmin');
+    }
 }
 
 // Print Header!

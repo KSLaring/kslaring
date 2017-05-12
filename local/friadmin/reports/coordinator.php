@@ -58,10 +58,15 @@ if ($mform->is_cancelled()) {
 
     $coordinatorsinfo = friadminrpt::get_course_coordinator_data($fromform->course, $fromform->category);
 
-    ob_end_clean();
-    friadminrpt::download_participants_list_coordinator($coordinatorsinfo);
+    if ($coordinatorsinfo) {
+        ob_end_clean();
+        friadminrpt::download_participants_list_coordinator($coordinatorsinfo);
 
-    die;
+        die;
+    } else {
+        // No results.
+        $noresults = get_string('noresults', 'local_friadmin');
+    }
 }
 
 // Print Header!
