@@ -14,13 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 //
-// * Historical(local) - Historicallib
+// * friadmin(local) - categoryrptlib
 // *
 // * @package         local                                                 !
-// * @subpackage      historical/reports                                    !
+// * @subpackage      friadmin/reports                                      !
 // * @copyright       2017        eFaktor {@link http://www.efaktor.no}     !
 // *                                                                        !
-// * @updateDate      20/01/2017                                            !
+// * @updateDate      12/05/2017                                            !
 // * @author          eFaktor     (nas)                                     !
 
 defined('MOODLE_INTERNAL') || die();
@@ -37,7 +37,7 @@ class friadminrpt
      * @return          array   All the course-categories
      * @throws          Exception
      *
-     * @updateDate    11/05/2017
+     * @updateDate    12/05/2017
      * @author          eFaktor     (nas)
      *
      */
@@ -77,7 +77,7 @@ class friadminrpt
      * @return          array   All the course-categories
      * @throws          Exception
      *
-     * @updateDate    11/05/2017
+     * @updateDate    12/05/2017
      * @author          eFaktor     (nas)
      *
      */
@@ -114,7 +114,7 @@ class friadminrpt
      * @return          array|null  All the courses for javascript purposes
      * @throws          Exception
      *
-     * @updateDate    11/05/2017
+     * @updateDate    12/05/2017
      * @author          eFaktor     (nas)
      *
      */
@@ -149,7 +149,7 @@ class friadminrpt
      * @param           $category
      * @param           $prevcourse
      *
-     * @updateDate    11/05/2017
+     * @updateDate    12/05/2017
      * @author          eFaktor     (nas)
      *
      */
@@ -188,7 +188,7 @@ class friadminrpt
      * @return array|null
      * @throws Exception
      *
-     * @updateDate 11/05/2017
+     * @updateDate 12/05/2017
      * @author      eFaktor     (nas)
      */
     public static function get_course_summary_data($category, $from, $to) {
@@ -319,7 +319,7 @@ class friadminrpt
      * @return array|null Returns the ID of all the instructors
      * @throws Exception
      *
-     * @updateDate    11/05/2017
+     * @updateDate    12/05/2017
      * @author          eFaktor     (nas)
      *
      */
@@ -417,7 +417,7 @@ class friadminrpt
      * @return array|null Returns all the data used in the instructor excel
      * @throws Exception
      *
-     * @updateDate    11/05/2017
+     * @updateDate    12/05/2017
      * @author          eFaktor     (nas)
      *
      */
@@ -498,7 +498,7 @@ class friadminrpt
      * @return array|null Returns all the data used in the coordinator excel
      * @throws Exception
      *
-     * @updateDate    11/05/2017
+     * @updateDate    12/05/2017
      * @author          eFaktor     (nas)
      *
      */
@@ -568,7 +568,7 @@ class friadminrpt
      * @param unix   $to            The to unix timestamp selected by the user in the form
      * @throws Exception
      *
-     * @updateDate    11/05/2017
+     * @updateDate    12/05/2017
      * @author          eFaktor     (nas)
      */
     public static function download_participants_list($coursesdata, $from, $to, $category) {
@@ -616,7 +616,7 @@ class friadminrpt
      * @param object $coursesdata   The data from the get_course_instructor_data
      * @throws Exception
      *
-     * @updateDate    11/05/2017
+     * @updateDate    12/05/2017
      * @author          eFaktor     (nas)
      */
     public static function download_participants_list_instructor($coursesdata) {
@@ -658,7 +658,7 @@ class friadminrpt
      * @param object $coursesdata   The data from the get_course_coordinator_report
      * @throws Exception
      *
-     * @updateDate    11/05/2017
+     * @updateDate    12/05/2017
      * @author          eFaktor     (nas)
      */
     public static function download_participants_list_coordinator($coursesdata) {
@@ -804,7 +804,7 @@ class friadminrpt
      * @return null|sectors         Returns the sectors in text format
      * @throws Exception
      *
-     * @updateDate    11/05/2017
+     * @updateDate    12/05/2017
      * @author          eFaktor     (nas)
      */
     private static function get_sectors($sector) {
@@ -839,7 +839,7 @@ class friadminrpt
      *
      * @throws          Exception
      *
-     * @creationDate    11/05/2017
+     * @creationDate    12/05/2017
      * @author          eFaktor     (nas)
      */
     private static function add_participants_header_excel(&$myxls, $row, $coursesdata) {
@@ -1161,7 +1161,7 @@ class friadminrpt
      * @param           $row
      * @throws Exception
      *
-     * @creationDate    11/05/2017
+     * @creationDate    12/05/2017
      * @author          eFaktor     (nas)
      */
     private static function add_participants_content_excel($coursedata, &$myxls, &$row, $from, $to) {
@@ -1521,7 +1521,7 @@ class friadminrpt
      *
      * @throws          Exception
      *
-     * @creationDate    11/05/2017
+     * @creationDate    12/05/2017
      * @author          eFaktor     (nas)
      */
     private static function add_participants_header_excel_instructor(&$myxls, $row, $coursesdata) {
@@ -1690,7 +1690,7 @@ class friadminrpt
      * @param           $row
      * @throws Exception
      *
-     * @creationDate    11/05/2017
+     * @creationDate    12/05/2017
      * @author          eFaktor     (nas)
      */
     private static function add_participants_content_excel_instructor($coursedata, &$myxls, &$row) {
@@ -1850,7 +1850,7 @@ class friadminrpt
      *
      * @throws          Exception
      *
-     * @creationDate    11/05/2017
+     * @creationDate    12/05/2017
      * @author          eFaktor     (nas)
      */
     private static function add_participants_header_excel_coordinator(&$myxls, $row, $coursesdata) {
@@ -2006,7 +2006,7 @@ class friadminrpt
      * @param           $row
      * @throws Exception
      *
-     * @creationDate    11/05/2017
+     * @creationDate    12/05/2017
      * @author          eFaktor     (nas)
      */
     private static function add_participants_content_excel_coordinator($coursedata, &$myxls, &$row) {
