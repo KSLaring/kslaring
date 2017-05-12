@@ -310,15 +310,15 @@ $string['expiration'] = 'Expiration';
 
 $string['courselong'] = 'Course fullname';
 $string['courseshort'] = 'Course shortname';
-$string['courseformat'] = 'Course format';
-$string['internalprice'] = 'Internalprice';
-$string['externalprice'] = 'Externalprice';
+$string['courseformat'] = 'Format';
+$string['internalprice'] = 'Internal price';
+$string['externalprice'] = 'External price';
 $string['nexttab'] = 'Click the next tab to see all the raw data';
 $string['from'] = 'From';
 $string['to'] = 'To';
 $string['fromto'] = 'From - To';
 $string['dates'] = 'Dates';
-$string['coursecoordinator'] = 'Course Coordinator';
+$string['coursecoordinator'] = 'Coordinator';
 $string['numberofdays'] = 'Number of days';
 
 $string['yes'] = 'Ja';

@@ -46,17 +46,40 @@ class summary_form extends moodleform {
 
     public function validation($data, $files) {
         $errors = parent::validation($data, $files);
+        $date = getdate();
 
-        // Variables.
-        $date = time();
+        // The selected dates.
+        $fromdate = $data['selsummaryfrom'];
+        $todate   = $data['selsummaryto'];
 
-        // Checks.
+        // The selected dates rounded.
+        $fromdaterounded = $fromdate + ($fromdate % 86400);
+        $todaterounded = $todate + ($todate % 86400);
+
+        // Variables for the years (0 for normal year and 1 for leap year).
+        $yearbetween = $fromdate + (60 * 60 * 24 * 365);
+        $firstyear = date('L', $fromdate);
+        $secondyear = date('L', $yearbetween);
+        $lastyear = date('L', $todate);
+
+        // Checking for leap years.
+        if ($firstyear == 1 || $secondyear == 1 || $lastyear == 1) {
+            // If leap year.
+            $twoyears = (60 * 60 * 24 * 365 * 2) + (60 * 60 * 24);
+            $twoyearsrounded = $twoyears + ($twoyears % 86400);
+        } else {
+            // If no leap year.
+            $twoyears = (60 * 60 * 24 * 365 * 2);
+            $twoyearsrounded = $twoyears + ($twoyears % 86400);
+        }
+
+        // Checks the data.
         if ($data['selsummaryfrom'] > $data['selsummaryto']) {
             $errors['selsummaryfrom'] = get_string('biggerthanto', 'local_friadmin');
             $errors['selsummaryto'] = get_string('smallerthanfrom', 'local_friadmin)');
         } else if ($data['selsummaryfrom'] > $date) {
             $errors['selsummaryfrom'] = get_string('biggerthannow', 'local_friadmin');
-        } else if ($data['selsummaryto'] - $data['selsummaryfrom'] > 60 * 60 * 24 * 365 * 2) {
+        } else if ($todaterounded - $fromdaterounded > $twoyearsrounded) {
             $errors['selsummaryfrom'] = get_string('morethantwoyears', 'local_friadmin');
         }
 

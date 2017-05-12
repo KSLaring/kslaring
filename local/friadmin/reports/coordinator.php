@@ -55,17 +55,8 @@ $mform = new course_coordinator_form(null);
 if ($mform->is_cancelled()) {
     redirect($CFG->wwwroot);
 } else if ($fromform = $mform->get_data()) {
-    $coordinators = friadminrpt::get_course_coordinators(
-        $fromform->course,
-        $fromform->category,
-        $fromform->userfullname,
-        $fromform->username,
-        $fromform->useremail,
-        $fromform->userworkplace,
-        $fromform->userjobrole);
 
-    echo $instructors;
-    $coordinatorsinfo = friadminrpt::get_course_instructor_data($coordinators, $fromform->course, $fromform->category);
+    $coordinatorsinfo = friadminrpt::get_course_coordinator_data($fromform->course, $fromform->category);
 
     ob_end_clean();
     friadminrpt::download_participants_list_coordinator($coordinatorsinfo);

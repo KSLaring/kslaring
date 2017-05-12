@@ -201,7 +201,7 @@ class friadminrpt
                                     c.shortname 	    as 'courseshort', 		-- Course short name
                                     c.format 		    as 'courseformat', 	    -- Course format
                                     fo4.value		    as 'producer',			-- Produced by
-                                    l1.city			    as 'levelone',		    -- Municipality (level one) / Course location
+                                    cl.name		        as 'levelone',		    -- Municipality (level one) / Course location
                                     fo2.value		    as 'sector',			-- Course Sector
                                     ca.name 		    as 'category', 		    -- Category Name
                                     cord.cord 		    as 'coursecoordinator', -- Coordinator
@@ -209,8 +209,8 @@ class friadminrpt
                                     e.customint2	    as 'spots',			    -- Number of places
                                     e.customtext3	    as 'internalprice',	    -- Internal price
                                     e.customtext4	    as 'externalprice',     -- external price
-                                    ci.count		    as 'instructors',       -- Amount of instructors
-                                    cs.count		    as 'students',		    -- Amount of students
+                                    cs.instructors		as 'instructors',       -- Amount of instructors
+                                    cs.students		    as 'students',		    -- Amount of students
                                     wa.count 		    as 'waiting',		    -- Amount in waitinglist
                                     cm.count		    as 'completed',		    -- Amount of completions
                                     c.visible		    as 'visibility',	    -- Course visibility
@@ -220,27 +220,23 @@ class friadminrpt
                     JOIN 			{course_categories} 		ca 	ON ca.id 		  = c.category
                     JOIN			{enrol}					    e 	ON e.courseid 	  = c.id
                     JOIN 			{user_enrolments}			ue 	ON ue.enrolid 	  = e.id
-                    -- Format Options
-                    JOIN			{course_format_options} 	fo 	ON fo.courseid 	  = c.id
                     -- Total Instructors
                     LEFT JOIN (
-                        SELECT 		count(ra.userid) 	as 'count',
-                                    ct.instanceid 		as 'course'
-                        FROM		{role_assignments}		    ra
-                            JOIN	{context}					ct	ON 	ct.id 		  = ra.contextid
-                        JOIN  		{role}					    r 	ON 	r.id 		  = ra.roleid
-                                                                    AND r.archetype   = 'teacher'
-                        GROUP BY 	course
-                    ) ci  ON 		ci.course = c.id
-                    -- Total Students
-                        LEFT JOIN (
-                        SELECT 		count(ra.userid) 	as 'count',
-                                    ct.instanceid 		as 'course'
-                        FROM		{role_assignments}		    ra
-                            JOIN	{context}					ct	ON 	ct.id 		  = ra.contextid
-                        JOIN  		{role}					    r 	ON 	r.id 		  = ra.roleid
-                                                                    AND r.archetype   = 'student'
-                        GROUP BY 	course
+                        SELECT ct.instanceid as 'course',
+                        count(rs.id) as 'students',
+                        count(ri.id) as 'instructors'
+                        FROM mdl_role_assignments ra
+                        -- Only users with contextlevel = 50 (Course)
+                        JOIN mdl_context ct  ON  ct.id = ra.contextid
+                        AND ct.contextlevel = 50
+                                                           --  AND ct.instanceid   = 1080
+                        -- Students
+                        LEFT JOIN  mdl_role rs ON rs.id   = ra.roleid
+                        AND rs.archetype  = 'student'
+                        -- Intructors
+                        LEFT JOIN  mdl_role ri ON ri.id   = ra.roleid
+                        AND ri.archetype  = 'teacher'
+                        GROUP BY ct.instanceid
                     ) cs  ON 		cs.course = c.id
                     -- Total Waiting
                         LEFT JOIN (
@@ -259,9 +255,10 @@ class friadminrpt
                         WHERE		cc.timecompleted IS NOT NULL
                         GROUP BY	course
                     ) cm  ON 		cm.course = c.id
-                   -- Municipality
-                    LEFT JOIN		{course_locations} 		    l1  ON 	l1.id 	      = fo.value
-                                                                    AND fo.name       = 'course_location'
+                   -- Location
+                    LEFT JOIN       {course_format_options}     fo  ON  fo.courseid = c.id
+                                                                    AND fo.name = 'course_location'
+                    LEFT JOIN       {course_locations}          cl  ON  cl.id = fo.value
                    -- Sector
                     LEFT JOIN		{course_format_options}	    fo2	ON 	fo2.courseid  = c.id
                                                                     AND fo2.name 	  = 'course_sector'
@@ -451,21 +448,21 @@ class friadminrpt
                             cl.name as 'location',
                             fo1.value as 'fromto',
                             c.visible as 'visibility'
-                    FROM          mdl_user u
+                    FROM            mdl_user u
                     -- Course
                         JOIN 		mdl_role_assignments		ra 	ON ra.userid  = u.id
 						JOIN		mdl_context					ct	ON ct.id 	  = ra.contextid
                         JOIN        mdl_course                  c   ON  c.id      = ct.instanceid
 
                         -- Category
-                        JOIN      mdl_course_categories         ca  ON  ca.id = c.category
+                        JOIN        mdl_course_categories       ca  ON  ca.id = c.category
                         -- Location
-                        LEFT JOIN mdl_course_format_options     fo  ON  fo.courseid = c.id
+                        LEFT JOIN   mdl_course_format_options   fo  ON  fo.courseid = c.id
                                                                     AND fo.name = 'course_location'
-                    LEFT JOIN mdl_course_locations              cl  ON  cl.id = fo.value
+                        LEFT JOIN   mdl_course_locations        cl  ON  cl.id = fo.value
                         LEFT JOIN   mdl_report_gen_companydata  co  ON  co.id = cl.levelone
                         -- Dates
-                        LEFT JOIN mdl_course_format_options     fo1 ON  fo1.courseid = c.id
+                        LEFT JOIN   mdl_course_format_options   fo1 ON  fo1.courseid = c.id
                     AND fo1.name = 'time'
                     	-- Coordinator
                     LEFT JOIN (
@@ -501,114 +498,6 @@ class friadminrpt
     } // end get_course_instructor_date
 
     /**
-     * Description
-     * A function that gets all the information from the database that will be used to create the coordinator excel
-     *
-     * @param integer   $course     Selected by the user in the form (optional)
-     * @param integer   $category   Selected by the user in the form (required)
-     * @param string    $fullname   Written by the user in the form (optional)
-     * @param string    $username   Written by the user in the form (optional)
-     * @param string    $email      Written by the user in the form (optional)
-     * @param string    $workplace  Written by the user in the form (optional)
-     * @param string    $jobrole    Written by the user in the form (optional)
-     * @return array|null Returns the ID of all the coordinators
-     * @throws Exception
-     *
-     * @updateDate    11/05/2017
-     * @author          eFaktor     (nas)
-     *
-     */
-    public static function get_course_coordinators($course, $category, $fullname, $username, $email, $workplace, $jobrole) {
-        // Variables!
-        global $DB;
-        $rdo = null;
-        $extrasql = '';
-
-        if ($course) {
-            $extrasql .= " AND c.id = :course ";
-        }
-
-        if ($category) {
-            $extrasql .= " AND ca.id = :category ";
-        }
-
-        if ($fullname) {
-            $extrasql .= " AND CONCAT(u.firstname, ' ', u.lastname) LIKE '%" . $fullname . "%' ";
-        }
-
-        if ($username) {
-            $extrasql .= " AND u.username LIKE '%" . $username . "%' ";
-        }
-
-        if ($email) {
-            $extrasql .= " AND u.email LIKE '%" . $email . "%' ";
-        }
-
-        if ($workplace) {
-            $workplacesql = " JOIN mdl_user_info_competence_data 	uic ON uic.userid = u.id
-                              JOIN mdl_report_gen_companydata 	    rgc ON rgc.id = uic.competenceid ";
-            $workplacewhere = " AND rgc.name LIKE '%" . $workplace . "'%' ";
-        } else {
-            $workplacesql = " ";
-            $workplacewhere = " ";
-        }
-
-        if ($jobrole) {
-            $jobrolesql = " JOIN mdl_user_info_competence_data  uic ON uic.userid = u.id
-                            JOIN mdl_report_gen_jobrole         gjr ON gjr.id IN (uic.jobroles)
-                                                                  AND gjr.name LIKE '%" . $jobrole . "%' ";
-        } else {
-            $jobrolesql = " ";
-        }
-
-        $query = "SELECT DISTINCT u.id
-                  FROM            mdl_user u
-                  -- INSTRUCTORS
-                  JOIN  mdl_role_assignments        ra  ON  ra.userid = u.id
-                  JOIN  mdl_context                 ct  ON  ct.id = ra.contextid
-                  JOIN  mdl_role                    r   ON  r.id = ra.roleid
-                                                        AND r.archetype = 'editingteacher'
-                  -- Course
-                  JOIN 	mdl_course					c	ON c.id     = ct.instanceid
-
-                  -- Category
-                  JOIN	mdl_course_categories		ca	ON ca.id	= c.category
-
-                  -- Jobroles
-                  $jobrolesql
-
-                  -- Workplace
-                  $workplacesql
-
-                  WHERE u.deleted = 0
-                  $extrasql
-                  $workplacewhere ";
-
-        try {
-
-            $params = array();
-
-            if ($course) {
-                $params['course'] = $course;
-            }
-
-            if ($category) {
-                $params['category'] = $category;
-            }
-
-            $rdo = $DB->get_records_sql($query, $params);
-
-            if ($rdo) {
-                return $rdo;
-            } else {
-                return null;
-            }
-        } catch (Exception $ex) {
-            Throw $ex;
-        }  // end try_catch
-    } // end get_course_coordinators
-
-    /**
      * @param array     $coordinators    All the coordinators ID's from get_course_coordinators
      * @param integer   $course         The course selected by the user in the form (optional)
      * @param integer   $category       The category selected by the user in the form (required)
@@ -619,11 +508,10 @@ class friadminrpt
      * @author          eFaktor     (nas)
      *
      */
-    public static function get_course_coordinator_data($coordinators, $course, $category) {
+    public static function get_course_coordinator_data($course, $category) {
         // Variables!
         global $DB;
         $rdo = null;
-        $myarray = implode(',', array_keys($coordinators));
         $extrasql = ' ';
 
         if ($course) {
@@ -634,34 +522,30 @@ class friadminrpt
             $extrasql .= " AND ca.id = :category ";
         }
 
-        $query = "  SELECT  CONCAT(u.id,c.id) as 'unique',
-                            CONCAT(u.firstname,' ', u.lastname) as 'coord',
-                            c.fullname as 'coursename',
-                            ca.name as 'category',
-                            c.format as 'courseformat',
-                            cord.cord as 'coursecoordinator',
-                            co.name as 'levelone',
-                            cl.name as 'location',
-                            fo1.value as 'fromto',
-                            c.visible as 'visibility'
-                    FROM          mdl_user u
-                    -- Course
-                        JOIN 		mdl_role_assignments		ra 	ON ra.userid  = u.id
-						JOIN		mdl_context					ct	ON ct.id 	  = ra.contextid
-                        JOIN        mdl_course                  c   ON  c.id      = ct.instanceid
-
-                        -- Category
-                        JOIN      mdl_course_categories         ca  ON  ca.id = c.category
-                        -- Location
-                        LEFT JOIN mdl_course_format_options     fo  ON  fo.courseid = c.id
+        $query = "  SELECT 	CONCAT(u.id, c.id) 					as 'unique',
+                            CONCAT(u.firstname, ' ', u.lastname)as 'coursecoordinator',
+                            c.fullname							as 'coursename',
+                            fo1.value							as 'fromto',
+                            c.visible							as 'visibility',
+                            ca.name                             as 'category',
+                            c.format                            as 'courseformat',
+                            co.name                             as 'levelone'
+                            
+                    FROM		mdl_user					u              
+                    JOIN 	    mdl_role_assignments		ra 	    ON  ra.userid 	  = u.id
+                    JOIN	    mdl_context					ct	    ON  ct.id 	 	  = ra.contextid
+                    JOIN  	    mdl_role					r 	    ON 	r.id 	 	  = ra.roleid
+                    JOIN 	    mdl_course			    	c		ON  c.id 		  = ct.instanceid
+                    JOIN	    mdl_course_categories		ca	    ON  ca.id	      = c.category
+                    LEFT JOIN   mdl_course_format_options   fo      ON  fo.courseid = c.id
                                                                     AND fo.name = 'course_location'
-                    LEFT JOIN mdl_course_locations              cl  ON  cl.id = fo.value
-                        LEFT JOIN   mdl_report_gen_companydata  co  ON  co.id = cl.levelone
-                        -- Dates
-                        LEFT JOIN mdl_course_format_options     fo1 ON  fo1.courseid = c.id
-                    AND fo1.name = 'time'
-                    WHERE u.deleted = 0
-                    AND u.id IN ($myarray)
+                    LEFT JOIN   mdl_course_locations        cl      ON  cl.id = fo.value
+                    LEFT JOIN   mdl_report_gen_companydata  co      ON  co.id = cl.levelone
+                    LEFT JOIN 	mdl_course_format_options 	fo1 	ON  fo1.courseid  = c.id
+                                                                    AND fo1.name      = 'time'
+                    WHERE u.deleted = 0								
+                    GROUP BY c.id
+                    ORDER BY u.id
                     $extrasql ";
 
         try {
@@ -821,11 +705,15 @@ class friadminrpt
         $row        = 0;
         $strsummary = get_string('summaryrptexcel', 'local_friadmin');
         $strcategory = get_string('categoryexcel', 'local_friadmin');
-        $strcourse = get_string('courseexcel', 'local_friadmin');
         $strfrom = get_string('fromexcel', 'local_friadmin');
         $strto = get_string('toexcel', 'local_friadmin');
 
+        $myfrom = date("d-m-Y", $from);
+        $myto = date("d-m-Y", $to);
+
         try {
+
+            $mycategory = self::get_category_name($category);
 
             // Summary Report Header.
             $myxls->write($row, $col, $strsummary, array(
@@ -853,7 +741,7 @@ class friadminrpt
 
             // Category Content.
             $col += 2;
-            $myxls->write($row, $col, $category, array(
+            $myxls->write($row, $col, $mycategory, array(
                 'size' => 12,
                 'name' => 'Arial',
                 'bold' => '0',
@@ -878,7 +766,7 @@ class friadminrpt
 
             // From Content.
             $col += 2;
-            $myxls->write($row, $col, $from, array(
+            $myxls->write($row, $col, $myfrom, array(
                 'size' => 12,
                 'name' => 'Arial',
                 'bold' => '0',
@@ -903,7 +791,7 @@ class friadminrpt
 
             // To Content.
             $col += 2;
-            $myxls->write($row, $col, $to, array(
+            $myxls->write($row, $col, $myto, array(
                 'size' => 12,
                 'name' => 'Arial',
                 'bold' => '0',
@@ -1052,11 +940,11 @@ class friadminrpt
                 'bg_color' => '#efefef',
                 'text_wrap' => true,
                 'v_align' => 'left'));
-            $myxls->merge_cells($row, $col, $row, $col + 3);
+            $myxls->merge_cells($row, $col, $row, $col + 1);
             $myxls->set_row($row, 20);
 
             // Category.
-            $col += 4;
+            $col += 2;
             $myxls->write($row, $col, $strcategory, array(
                 'size' => 12,
                 'name' => 'Arial',
@@ -1334,11 +1222,11 @@ class friadminrpt
                         'name' => 'Arial',
                         'text_wrap' => true,
                         'v_align' => 'left'));
-                    $myxls->merge_cells($row, $col, $row, $col + 3);
+                    $myxls->merge_cells($row, $col, $row, $col + 1);
                     $myxls->set_row($row, 20);
 
                     // Category.
-                    $col += 4;
+                    $col += 2;
                     $myxls->write($row, $col, $coursevalue->category, array(
                         'size' => 12,
                         'name' => 'Arial',
@@ -1438,11 +1326,19 @@ class friadminrpt
 
                     // Expiration.
                     $col += 2;
-                    $myxls->write($row, $col, $expiration = date("d.m.Y", $coursevalue->expiration), array(
-                        'size' => 12,
-                        'name' => 'Arial',
-                        'text_wrap' => true,
-                        'v_align' => 'left'));
+                    if ($coursevalue->expiration == 0) {
+                        $myxls->write($row, $col, "-", $coursevalue->expiration, array(
+                            'size' => 12,
+                            'name' => 'Arial',
+                            'text_wrap' => true,
+                            'v_align' => 'left'));
+                    } else {
+                        $myxls->write($row, $col, $expiration = date("d.m.Y", $coursevalue->expiration), array(
+                            'size' => 12,
+                            'name' => 'Arial',
+                            'text_wrap' => true,
+                            'v_align' => 'left'));
+                    }
                     $myxls->merge_cells($row, $col, $row, $col + 1);
                     $myxls->set_row($row, 20);
 
@@ -2120,7 +2016,6 @@ class friadminrpt
      * @author          eFaktor     (nas)
      */
     private static function add_participants_content_excel_coordinator($coursedata, &$myxls, &$row) {
-
         GLOBAL $SESSION;
         // Variables.
         $col            = 0;
@@ -2257,4 +2152,42 @@ class friadminrpt
             throw $ex;
         }//try_catch
     }//add_participants_content_excel
+
+    /**
+    * Description
+    * Gets the categoryname from the category id selected by the user in the form
+    *
+    * @param   integer $category    The category integer selected by the user in the form
+    *
+    * @return  string  $rdo         The category name
+    * @throws          Exception
+    *
+    * @updateDate    12/05/2017
+    * @author          eFaktor     (nas)
+    */
+    public static function get_category_name($category) {
+        // Variables!
+        global $DB;
+        $rdo = null;
+
+        $query = "SELECT  ca.name
+                  FROM    {course_categories} ca
+                  WHERE   ca.id = :category";
+
+        try {
+            $params = array();
+            $params['category'] = $category;
+
+            $rdo = $DB->get_record_sql($query, $params);
+
+            // Gets the category.
+            if ($rdo) {
+                return $rdo->name;
+            } else {
+                return null;
+            }
+        } catch (Exception $ex) {
+            Throw $ex;
+        }  // end try_catch
+    } // end get_categories
 }
