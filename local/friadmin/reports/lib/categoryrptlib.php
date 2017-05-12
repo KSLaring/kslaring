@@ -225,16 +225,16 @@ class friadminrpt
                         SELECT ct.instanceid as 'course',
                         count(rs.id) as 'students',
                         count(ri.id) as 'instructors'
-                        FROM mdl_role_assignments ra
+                        FROM {role_assignments} ra
                         -- Only users with contextlevel = 50 (Course)
-                        JOIN mdl_context ct  ON  ct.id = ra.contextid
+                        JOIN {context} ct  ON  ct.id = ra.contextid
                         AND ct.contextlevel = 50
                                                            --  AND ct.instanceid   = 1080
                         -- Students
-                        LEFT JOIN  mdl_role rs ON rs.id   = ra.roleid
+                        LEFT JOIN  {role} rs ON rs.id   = ra.roleid
                         AND rs.archetype  = 'student'
                         -- Intructors
-                        LEFT JOIN  mdl_role ri ON ri.id   = ra.roleid
+                        LEFT JOIN  {role} ri ON ri.id   = ra.roleid
                         AND ri.archetype  = 'teacher'
                         GROUP BY ct.instanceid
                     ) cs  ON 		cs.course = c.id
@@ -350,8 +350,8 @@ class friadminrpt
         }
 
         if ($workplace) {
-            $workplacesql = " JOIN mdl_user_info_competence_data 	uic ON uic.userid = u.id
-                              JOIN mdl_report_gen_companydata 	    rgc ON rgc.id = uic.competenceid ";
+            $workplacesql = " JOIN {user_info_competence_data} 	uic ON uic.userid = u.id
+                              JOIN {report_gen_companydata} 	    rgc ON rgc.id = uic.competenceid ";
             $workplacewhere = " AND rgc.name LIKE '%" . $workplace . "'%' ";
         } else {
             $workplacesql = " ";
@@ -359,25 +359,25 @@ class friadminrpt
         }
 
         if ($jobrole) {
-            $jobrolesql = " JOIN mdl_user_info_competence_data  uic ON uic.userid = u.id
-                            JOIN mdl_report_gen_jobrole         gjr ON gjr.id IN (uic.jobroles)
+            $jobrolesql = " JOIN {user_info_competence_data}  uic ON uic.userid = u.id
+                            JOIN {report_gen_jobrole}         gjr ON gjr.id IN (uic.jobroles)
                                                                   AND gjr.name LIKE '%" . $jobrole . "%' ";
         } else {
             $jobrolesql = " ";
         }
 
         $query = "SELECT DISTINCT u.id
-                  FROM            mdl_user u
+                  FROM            {user} u
                   -- INSTRUCTORS
-                  JOIN  mdl_role_assignments        ra  ON  ra.userid = u.id
-                  JOIN  mdl_context                 ct  ON  ct.id = ra.contextid
-                  JOIN  mdl_role                    r   ON  r.id = ra.roleid
+                  JOIN  {role_assignments}        ra  ON  ra.userid = u.id
+                  JOIN  {context}                 ct  ON  ct.id = ra.contextid
+                  JOIN  {role}                    r   ON  r.id = ra.roleid
                                                         AND r.archetype = 'teacher'
                   -- Course
-                  JOIN 	mdl_course					c	ON c.id     = ct.instanceid
+                  JOIN 	{course}					c	ON c.id     = ct.instanceid
 
                   -- Category
-                  JOIN	mdl_course_categories		ca	ON ca.id	= c.category
+                  JOIN	{course_categories}		ca	ON ca.id	= c.category
 
                   -- Jobroles
                   $jobrolesql
@@ -434,10 +434,6 @@ class friadminrpt
             $extrasql .= " AND c.id = :course ";
         }
 
-        if ($category) {
-            $extrasql .= " AND ca.id = :category ";
-        }
-
         $query = "  SELECT  CONCAT(u.id,c.id) as 'unique',
                             CONCAT(u.firstname,' ', u.lastname) as 'instr',
                             c.fullname as 'coursename',
@@ -448,35 +444,36 @@ class friadminrpt
                             cl.name as 'location',
                             fo1.value as 'fromto',
                             c.visible as 'visibility'
-                    FROM            mdl_user u
+                    FROM            {user} u
                     -- Course
-                        JOIN 		mdl_role_assignments		ra 	ON ra.userid  = u.id
-						JOIN		mdl_context					ct	ON ct.id 	  = ra.contextid
-                        JOIN        mdl_course                  c   ON  c.id      = ct.instanceid
+                        JOIN 		{role_assignments}		ra 	ON ra.userid  = u.id
+						JOIN		{context}					ct	ON ct.id 	  = ra.contextid
+                        JOIN        {course}                  c   ON  c.id      = ct.instanceid
 
                         -- Category
-                        JOIN        mdl_course_categories       ca  ON  ca.id = c.category
+                        JOIN        {course_categories}       ca  ON  ca.id = c.category
                         -- Location
-                        LEFT JOIN   mdl_course_format_options   fo  ON  fo.courseid = c.id
+                        LEFT JOIN   {course_format_options}   fo  ON  fo.courseid = c.id
                                                                     AND fo.name = 'course_location'
-                        LEFT JOIN   mdl_course_locations        cl  ON  cl.id = fo.value
-                        LEFT JOIN   mdl_report_gen_companydata  co  ON  co.id = cl.levelone
+                        LEFT JOIN   {course_locations}        cl  ON  cl.id = fo.value
+                        LEFT JOIN   {report_gen_companydata}  co  ON  co.id = cl.levelone
                         -- Dates
-                        LEFT JOIN   mdl_course_format_options   fo1 ON  fo1.courseid = c.id
+                        LEFT JOIN   {course_format_options}   fo1 ON  fo1.courseid = c.id
                     AND fo1.name = 'time'
                     	-- Coordinator
                     LEFT JOIN (
                         SELECT 		ra.userid,
                                     ct.instanceid 		as 'course',
                                     concat(u.firstname, ' ', u.lastname) as 'cord'
-                        FROM		mdl_role_assignments		ra
-                            JOIN	mdl_context					ct	ON 	ct.id 		= ra.contextid
-                        JOIN  		mdl_role					r 	ON 	r.id 		= ra.roleid
+                        FROM		{role_assignments}		ra
+                            JOIN	{context}					ct	ON 	ct.id 		= ra.contextid
+                        JOIN  		{role}					r 	ON 	r.id 		= ra.roleid
                                                                     AND r.archetype = 'editingteacher'
-                        JOIN		mdl_user u 						ON	u.id = ra.userid
+                        JOIN		{user} u 						ON	u.id = ra.userid
                         GROUP BY course
                     ) cord  ON 		cord.course = c.id
                     WHERE u.deleted = 0
+                    AND ca.id = :category
                     AND u.id IN ($myarray)
                     $extrasql ";
 
@@ -531,17 +528,17 @@ class friadminrpt
                             c.format                            as 'courseformat',
                             co.name                             as 'levelone'
                             
-                    FROM		mdl_user					u              
-                    JOIN 	    mdl_role_assignments		ra 	    ON  ra.userid 	  = u.id
-                    JOIN	    mdl_context					ct	    ON  ct.id 	 	  = ra.contextid
-                    JOIN  	    mdl_role					r 	    ON 	r.id 	 	  = ra.roleid
-                    JOIN 	    mdl_course			    	c		ON  c.id 		  = ct.instanceid
-                    JOIN	    mdl_course_categories		ca	    ON  ca.id	      = c.category
-                    LEFT JOIN   mdl_course_format_options   fo      ON  fo.courseid = c.id
+                    FROM		{user}					u              
+                    JOIN 	    {role_assignments}		ra 	    ON  ra.userid 	  = u.id
+                    JOIN	    {context}					ct	    ON  ct.id 	 	  = ra.contextid
+                    JOIN  	    {role}					r 	    ON 	r.id 	 	  = ra.roleid
+                    JOIN 	    {course}			    	c		ON  c.id 		  = ct.instanceid
+                    JOIN	    {course_categories}		ca	    ON  ca.id	      = c.category
+                    LEFT JOIN   {course_format_options}   fo      ON  fo.courseid = c.id
                                                                     AND fo.name = 'course_location'
-                    LEFT JOIN   mdl_course_locations        cl      ON  cl.id = fo.value
-                    LEFT JOIN   mdl_report_gen_companydata  co      ON  co.id = cl.levelone
-                    LEFT JOIN 	mdl_course_format_options 	fo1 	ON  fo1.courseid  = c.id
+                    LEFT JOIN   {course_locations}        cl      ON  cl.id = fo.value
+                    LEFT JOIN   {report_gen_companydata}  co      ON  co.id = cl.levelone
+                    LEFT JOIN 	{course_format_options} 	fo1 	ON  fo1.courseid  = c.id
                                                                     AND fo1.name      = 'time'
                     WHERE u.deleted = 0								
                     GROUP BY c.id
