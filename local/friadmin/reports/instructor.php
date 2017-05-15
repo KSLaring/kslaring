@@ -34,6 +34,7 @@ require_login();
 // Variables!
 $contextsystem  = context_system::instance();
 $CFG->wwwroot;
+$noresults = null;
 
 // Startpage!
 $url = new moodle_url('/local/friadmin/reports/instructor.php');

@@ -524,8 +524,7 @@ class friadminrpt
                             ca.name                             as 'category',
                             c.format                            as 'courseformat',
                             co.name                             as 'levelone'
-                            
-                    FROM		{user}					  u              
+                    FROM		{user}					  u
                     JOIN 	    {role_assignments}		  ra 	    ON  ra.userid 	  = u.id
                     JOIN	    {context}				  ct	    ON  ct.id 	 	  = ra.contextid
                     JOIN  	    {role}					  r 	    ON 	r.id 	 	  = ra.roleid
@@ -537,7 +536,7 @@ class friadminrpt
                     LEFT JOIN   {report_gen_companydata}  co        ON  co.id         = cl.levelone
                     LEFT JOIN 	{course_format_options}   fo1 	    ON  fo1.courseid  = c.id
                                                                     AND fo1.name      = 'time'
-                    WHERE u.deleted = 0								
+                    WHERE u.deleted = 0
                     GROUP BY c.id
                     ORDER BY u.id
                     $extrasql ";
@@ -2148,17 +2147,17 @@ class friadminrpt
     }//add_participants_content_excel
 
     /**
-    * Description
-    * Gets the categoryname from the category id selected by the user in the form
-    *
-    * @param   integer $category    The category integer selected by the user in the form
-    *
-    * @return  string  $rdo         The category name
-    * @throws          Exception
-    *
-    * @updateDate    12/05/2017
-    * @author          eFaktor     (nas)
-    */
+     * Description
+     * Gets the categoryname from the category id selected by the user in the form
+     *
+     * @param   integer $category    The category integer selected by the user in the form
+     *
+     * @return  string  $rdo         The category name
+     * @throws          Exception
+     *
+     * @updateDate    12/05/2017
+     * @author          eFaktor     (nas)
+     */
     public static function get_category_name($category) {
         // Variables!
         global $DB;
