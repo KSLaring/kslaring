@@ -69,7 +69,15 @@ if ($mform->is_cancelled()) {
 
     if ($instructorsinfo) {
         ob_end_clean();
-        friadminrpt::download_participants_list_instructor($instructorsinfo);
+        friadminrpt::download_participants_list_instructor(
+            $instructorsinfo,
+            $fromform->category,
+            $fromform->course,
+            $fromform->userfullname,
+            $fromform->username,
+            $fromform->useremail,
+            $fromform->userworkplace,
+            $fromform->userjobrole);
 
         die;
     } else {

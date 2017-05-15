@@ -615,10 +615,12 @@ class friadminrpt
      * @param object $coursesdata   The data from the get_course_instructor_data
      * @throws Exception
      *
-     * @updateDate    12/05/2017
+     * @updateDate    13/05/2017
      * @author          eFaktor     (nas)
      */
-    public static function download_participants_list_instructor($coursesdata) {
+    public static function download_participants_list_instructor(
+        $coursesdata, $category, $course, $userfullname, $username, $useremail, $userworkplace, $userjobrole) {
+
         // Variables.
         global $CFG;
         $row = 0;
@@ -635,13 +637,19 @@ class friadminrpt
             // Creating a workbook.
             $export = new MoodleExcelWorkbook($name);
 
+            // Search criterias.
+            $myxls = $export->add_worksheet('Filter');
+
+                self::add_participants_excel_filter_instructor(
+                    $myxls, $row, $category, $course, $userfullname, $username, $useremail, $userworkplace, $userjobrole);
+
             // Raw.
             $myxls = $export->add_worksheet('Content');
 
-            // Headers.
-            self::add_participants_header_excel_instructor($myxls, $row, $coursesdata);
-            // Content.
-            self::add_participants_content_excel_instructor($coursesdata, $myxls, $row);
+                // Headers.
+                self::add_participants_header_excel_instructor($myxls, $row, $coursesdata);
+                // Content.
+                self::add_participants_content_excel_instructor($coursesdata, $myxls, $row);
 
             $export->close();
             exit;
@@ -660,7 +668,9 @@ class friadminrpt
      * @updateDate    12/05/2017
      * @author          eFaktor     (nas)
      */
-    public static function download_participants_list_coordinator($coursesdata) {
+    public static function download_participants_list_coordinator(
+        $coursesdata, $category, $course, $userfullname, $username, $useremail, $userworkplace, $userjobrole) {
+
         // Variables.
         global $CFG;
         $row = 0;
@@ -677,6 +687,12 @@ class friadminrpt
             // Creating a workbook.
             $export = new MoodleExcelWorkbook($name);
 
+            // Search criterias.
+            $myxls = $export->add_worksheet('Filter');
+
+            self::add_participants_excel_filter_coordinator(
+                $myxls, $row, $category, $course, $userfullname, $username, $useremail, $userworkplace, $userjobrole);
+
             // Raw.
             $myxls = $export->add_worksheet('Content');
 
@@ -692,6 +708,20 @@ class friadminrpt
         }
     }//download_participants_list
 
+    /**
+     * Description
+     * Adds the first page to the summary excel and writes all the search criterias to it
+     *
+     * @param $myxls
+     * @param $row
+     * @param $from
+     * @param $to
+     * @param $category
+     * @throws Exception
+     *
+     * @updateDate    12/05/2017
+     * @author          eFaktor     (nas)
+     */
     private static function add_participants_excel_filter(&$myxls, $row, $from, $to, $category) {
         // Variables.
         $col        = 0;
@@ -797,6 +827,451 @@ class friadminrpt
             throw $ex;
         }//try_catch
     } // end add_participants_excel_filter
+
+    /**
+     * Description
+     * Adds the first page in the excel for the instructors and writes all the search criterias to it
+     *
+     * @param $myxls
+     * @param $row
+     * @param $category
+     * @param $course
+     * @param $userfullname
+     * @param $username
+     * @param $useremail
+     * @param $userworkplace
+     * @param $userjobrole
+     * @throws Exception
+     *
+     * @updateDate    12/05/2017
+     * @author          eFaktor     (nas)
+     */
+    private static function add_participants_excel_filter_instructor(
+        &$myxls, $row, $category, $course, $userfullname, $username, $useremail, $userworkplace, $userjobrole) {
+
+        // Variables.
+        $col        = 0;
+        $row        = 0;
+        $strsummary = get_string('summaryrptexcel', 'local_friadmin');
+        $strcategory = get_string('categoryexcel', 'local_friadmin');
+
+        try {
+
+            $mycategory = self::get_category_name($category);
+            $mycourse = self::get_course_name($course);
+
+            // Summary Report Header.
+            $myxls->write($row, $col, $strsummary, array(
+                'size' => 22,
+                'name' => 'Arial',
+                'bold' => '1',
+                'bg_color' => '#d4d4d4',
+                'text_wrap' => true,
+                'v_align' => 'left'));
+            $myxls->merge_cells($row, $col, $row, $col + 4);
+            $myxls->set_row($row, 20);
+
+            // Category Header.
+            $row += 1;
+            $myxls->write($row, $col, $strcategory, array(
+                'size' => 16,
+                'name' => 'Arial',
+                'bold' => '0',
+                'bg_color' => '#e9e9e9',
+                'text_wrap' => true,
+                'v_align' => 'left',
+                'h_align' => 'right'));
+            $myxls->merge_cells($row, $col, $row, $col + 1);
+            $myxls->set_row($row, 20);
+
+            // Category Content.
+            $col += 2;
+            $myxls->write($row, $col, $mycategory, array(
+                'size' => 12,
+                'name' => 'Arial',
+                'bold' => '0',
+                'text_wrap' => true,
+                'v_align' => 'left'));
+            $myxls->merge_cells($row, $col, $row, $col + 2);
+            $myxls->set_row($row, 20);
+
+            // Course Header.
+            $row += 1;
+            $col -= 2;
+            $myxls->write($row, $col, 'aa', array(
+                'size' => 16,
+                'name' => 'Arial',
+                'bold' => '0',
+                'bg_color' => '#e9e9e9',
+                'text_wrap' => true,
+                'v_align' => 'left',
+                'h_align' => 'right'));
+            $myxls->merge_cells($row, $col, $row, $col + 1);
+            $myxls->set_row($row, 20);
+
+            // Course Content.
+            $col += 2;
+            $myxls->write($row, $col, $mycourse, array(
+                'size' => 12,
+                'name' => 'Arial',
+                'bold' => '0',
+                'text_wrap' => true,
+                'v_align' => 'left'));
+            $myxls->merge_cells($row, $col, $row, $col + 2);
+            $myxls->set_row($row, 20);
+
+            // Userfullname Header.
+            $row += 1;
+            $col -= 2;
+            $myxls->write($row, $col, 'aa', array(
+                'size' => 16,
+                'name' => 'Arial',
+                'bold' => '0',
+                'bg_color' => '#e9e9e9',
+                'text_wrap' => true,
+                'v_align' => 'left',
+                'h_align' => 'right'));
+            $myxls->merge_cells($row, $col, $row, $col + 1);
+            $myxls->set_row($row, 20);
+
+            // Userfullname Content.
+            $col += 2;
+            $myxls->write($row, $col, $userfullname, array(
+                'size' => 12,
+                'name' => 'Arial',
+                'bold' => '0',
+                'text_wrap' => true,
+                'v_align' => 'left'));
+            $myxls->merge_cells($row, $col, $row, $col + 2);
+            $myxls->set_row($row, 20);
+
+            // Username Header.
+            $row += 1;
+            $col -= 2;
+            $myxls->write($row, $col, 'aa', array(
+                'size' => 16,
+                'name' => 'Arial',
+                'bold' => '0',
+                'bg_color' => '#e9e9e9',
+                'text_wrap' => true,
+                'v_align' => 'left',
+                'h_align' => 'right'));
+            $myxls->merge_cells($row, $col, $row, $col + 1);
+            $myxls->set_row($row, 20);
+
+            // Username Content.
+            $col += 2;
+            $myxls->write($row, $col, $username, array(
+                'size' => 12,
+                'name' => 'Arial',
+                'bold' => '0',
+                'text_wrap' => true,
+                'v_align' => 'left'));
+            $myxls->merge_cells($row, $col, $row, $col + 2);
+            $myxls->set_row($row, 20);
+
+            // User email Header.
+            $row += 1;
+            $col -= 2;
+            $myxls->write($row, $col, 'aa', array(
+                'size' => 16,
+                'name' => 'Arial',
+                'bold' => '0',
+                'bg_color' => '#e9e9e9',
+                'text_wrap' => true,
+                'v_align' => 'left',
+                'h_align' => 'right'));
+            $myxls->merge_cells($row, $col, $row, $col + 1);
+            $myxls->set_row($row, 20);
+
+            // User email Content.
+            $col += 2;
+            $myxls->write($row, $col, $useremail, array(
+                'size' => 12,
+                'name' => 'Arial',
+                'bold' => '0',
+                'text_wrap' => true,
+                'v_align' => 'left'));
+            $myxls->merge_cells($row, $col, $row, $col + 2);
+            $myxls->set_row($row, 20);
+
+            // Userworkplace Header.
+            $row += 1;
+            $col -= 2;
+            $myxls->write($row, $col, 'aa', array(
+                'size' => 16,
+                'name' => 'Arial',
+                'bold' => '0',
+                'bg_color' => '#e9e9e9',
+                'text_wrap' => true,
+                'v_align' => 'left',
+                'h_align' => 'right'));
+            $myxls->merge_cells($row, $col, $row, $col + 1);
+            $myxls->set_row($row, 20);
+
+            // Userworkplace Content.
+            $col += 2;
+            $myxls->write($row, $col, $userworkplace, array(
+                'size' => 12,
+                'name' => 'Arial',
+                'bold' => '0',
+                'text_wrap' => true,
+                'v_align' => 'left'));
+            $myxls->merge_cells($row, $col, $row, $col + 2);
+            $myxls->set_row($row, 20);
+
+            // Userjobrole Header.
+            $row += 1;
+            $col -= 2;
+            $myxls->write($row, $col, 'aa', array(
+                'size' => 16,
+                'name' => 'Arial',
+                'bold' => '0',
+                'bg_color' => '#e9e9e9',
+                'text_wrap' => true,
+                'v_align' => 'left',
+                'h_align' => 'right'));
+            $myxls->merge_cells($row, $col, $row, $col + 1);
+            $myxls->set_row($row, 20);
+
+            // Userjobrole Content.
+            $col += 2;
+            $myxls->write($row, $col, $userjobrole, array(
+                'size' => 12,
+                'name' => 'Arial',
+                'bold' => '0',
+                'text_wrap' => true,
+                'v_align' => 'left'));
+            $myxls->merge_cells($row, $col, $row, $col + 2);
+            $myxls->set_row($row, 20);
+
+        } catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    } // end add_participants_excel_filter_instructor
+
+    /**
+     * Description
+     * Adds the first page to the coordinator excel and write all the search criterias to it
+     *
+     * @param $myxls
+     * @param $row
+     * @param $category
+     * @param $course
+     * @param $userfullname
+     * @param $username
+     * @param $useremail
+     * @param $userworkplace
+     * @param $userjobrole
+     * @throws Exception
+     *
+     *
+     * @updateDate    12/05/2017
+     * @author          eFaktor     (nas)
+     */
+    private static function add_participants_excel_filter_coordinator(
+        &$myxls, $row, $category, $course, $userfullname, $username, $useremail, $userworkplace, $userjobrole) {
+
+        // Variables.
+        $col        = 0;
+        $row        = 0;
+        $strsummary = get_string('summaryrptexcel', 'local_friadmin');
+        $strcategory = get_string('categoryexcel', 'local_friadmin');
+
+        try {
+
+            $mycategory = self::get_category_name($category);
+            $mycourse = self::get_course_name($course);
+
+            // Summary Report Header.
+            $myxls->write($row, $col, $strsummary, array(
+                'size' => 22,
+                'name' => 'Arial',
+                'bold' => '1',
+                'bg_color' => '#d4d4d4',
+                'text_wrap' => true,
+                'v_align' => 'left'));
+            $myxls->merge_cells($row, $col, $row, $col + 4);
+            $myxls->set_row($row, 20);
+
+            // Category Header.
+            $row += 1;
+            $myxls->write($row, $col, $strcategory, array(
+                'size' => 16,
+                'name' => 'Arial',
+                'bold' => '0',
+                'bg_color' => '#e9e9e9',
+                'text_wrap' => true,
+                'v_align' => 'left',
+                'h_align' => 'right'));
+            $myxls->merge_cells($row, $col, $row, $col + 1);
+            $myxls->set_row($row, 20);
+
+            // Category Content.
+            $col += 2;
+            $myxls->write($row, $col, $mycategory, array(
+                'size' => 12,
+                'name' => 'Arial',
+                'bold' => '0',
+                'text_wrap' => true,
+                'v_align' => 'left'));
+            $myxls->merge_cells($row, $col, $row, $col + 2);
+            $myxls->set_row($row, 20);
+
+            // Course Header.
+            $row += 1;
+            $col -= 2;
+            $myxls->write($row, $col, 'aa', array(
+                'size' => 16,
+                'name' => 'Arial',
+                'bold' => '0',
+                'bg_color' => '#e9e9e9',
+                'text_wrap' => true,
+                'v_align' => 'left',
+                'h_align' => 'right'));
+            $myxls->merge_cells($row, $col, $row, $col + 1);
+            $myxls->set_row($row, 20);
+
+            // Course Content.
+            $col += 2;
+            $myxls->write($row, $col, $mycourse, array(
+                'size' => 12,
+                'name' => 'Arial',
+                'bold' => '0',
+                'text_wrap' => true,
+                'v_align' => 'left'));
+            $myxls->merge_cells($row, $col, $row, $col + 2);
+            $myxls->set_row($row, 20);
+
+            // Userfullname Header.
+            $row += 1;
+            $col -= 2;
+            $myxls->write($row, $col, 'aa', array(
+                'size' => 16,
+                'name' => 'Arial',
+                'bold' => '0',
+                'bg_color' => '#e9e9e9',
+                'text_wrap' => true,
+                'v_align' => 'left',
+                'h_align' => 'right'));
+            $myxls->merge_cells($row, $col, $row, $col + 1);
+            $myxls->set_row($row, 20);
+
+            // Userfullname Content.
+            $col += 2;
+            $myxls->write($row, $col, $userfullname, array(
+                'size' => 12,
+                'name' => 'Arial',
+                'bold' => '0',
+                'text_wrap' => true,
+                'v_align' => 'left'));
+            $myxls->merge_cells($row, $col, $row, $col + 2);
+            $myxls->set_row($row, 20);
+
+            // Username Header.
+            $row += 1;
+            $col -= 2;
+            $myxls->write($row, $col, 'aa', array(
+                'size' => 16,
+                'name' => 'Arial',
+                'bold' => '0',
+                'bg_color' => '#e9e9e9',
+                'text_wrap' => true,
+                'v_align' => 'left',
+                'h_align' => 'right'));
+            $myxls->merge_cells($row, $col, $row, $col + 1);
+            $myxls->set_row($row, 20);
+
+            // Username Content.
+            $col += 2;
+            $myxls->write($row, $col, $username, array(
+                'size' => 12,
+                'name' => 'Arial',
+                'bold' => '0',
+                'text_wrap' => true,
+                'v_align' => 'left'));
+            $myxls->merge_cells($row, $col, $row, $col + 2);
+            $myxls->set_row($row, 20);
+
+            // User email Header.
+            $row += 1;
+            $col -= 2;
+            $myxls->write($row, $col, 'aa', array(
+                'size' => 16,
+                'name' => 'Arial',
+                'bold' => '0',
+                'bg_color' => '#e9e9e9',
+                'text_wrap' => true,
+                'v_align' => 'left',
+                'h_align' => 'right'));
+            $myxls->merge_cells($row, $col, $row, $col + 1);
+            $myxls->set_row($row, 20);
+
+            // User email Content.
+            $col += 2;
+            $myxls->write($row, $col, $useremail, array(
+                'size' => 12,
+                'name' => 'Arial',
+                'bold' => '0',
+                'text_wrap' => true,
+                'v_align' => 'left'));
+            $myxls->merge_cells($row, $col, $row, $col + 2);
+            $myxls->set_row($row, 20);
+
+            // Userworkplace Header.
+            $row += 1;
+            $col -= 2;
+            $myxls->write($row, $col, 'aa', array(
+                'size' => 16,
+                'name' => 'Arial',
+                'bold' => '0',
+                'bg_color' => '#e9e9e9',
+                'text_wrap' => true,
+                'v_align' => 'left',
+                'h_align' => 'right'));
+            $myxls->merge_cells($row, $col, $row, $col + 1);
+            $myxls->set_row($row, 20);
+
+            // Userworkplace Content.
+            $col += 2;
+            $myxls->write($row, $col, $userworkplace, array(
+                'size' => 12,
+                'name' => 'Arial',
+                'bold' => '0',
+                'text_wrap' => true,
+                'v_align' => 'left'));
+            $myxls->merge_cells($row, $col, $row, $col + 2);
+            $myxls->set_row($row, 20);
+
+            // Userjobrole Header.
+            $row += 1;
+            $col -= 2;
+            $myxls->write($row, $col, 'aa', array(
+                'size' => 16,
+                'name' => 'Arial',
+                'bold' => '0',
+                'bg_color' => '#e9e9e9',
+                'text_wrap' => true,
+                'v_align' => 'left',
+                'h_align' => 'right'));
+            $myxls->merge_cells($row, $col, $row, $col + 1);
+            $myxls->set_row($row, 20);
+
+            // Userjobrole Content.
+            $col += 2;
+            $myxls->write($row, $col, $userjobrole, array(
+                'size' => 12,
+                'name' => 'Arial',
+                'bold' => '0',
+                'text_wrap' => true,
+                'v_align' => 'left'));
+            $myxls->merge_cells($row, $col, $row, $col + 2);
+            $myxls->set_row($row, 20);
+
+        } catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    } // end add_participants_excel_filter_coordinator
 
     /**
      * @param array     $sector     All the sectors in an array
@@ -2176,6 +2651,44 @@ class friadminrpt
             // Gets the category.
             if ($rdo) {
                 return $rdo->name;
+            } else {
+                return null;
+            }
+        } catch (Exception $ex) {
+            Throw $ex;
+        }  // end try_catch
+    } // end get_categories
+
+    /**
+     * Description
+     * Gets the coursename from the category id selected by the user in the form
+     *
+     * @param   integer $course    The course integer selected by the user in the form
+     *
+     * @return  string  $rdo       The coursename
+     * @throws          Exception
+     *
+     * @updateDate    12/05/2017
+     * @author          eFaktor     (nas)
+     */
+    public static function get_course_name($course) {
+        // Variables!
+        global $DB;
+        $rdo = null;
+
+        $query = "SELECT  c.fullname
+                  FROM    {course} c
+                  WHERE   c.id = :course";
+
+        try {
+            $params = array();
+            $params['course'] = $course;
+
+            $rdo = $DB->get_record_sql($query, $params);
+
+            // Gets the category.
+            if ($rdo) {
+                return $rdo->fullname;
             } else {
                 return null;
             }

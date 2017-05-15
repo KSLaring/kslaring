@@ -47,11 +47,11 @@ $PAGE->requires->js('/local/friadmin/reports/js/report.js');
 // Capabilities!
 require_capability('local/friadmin:course_locations_manage', $contextsystem);
 
-// Calls a function to get the javascript values to fill into the form based on the previous search criteria.
-friadminrpt::get_javascript_values('course', 'category', null);
-
 // Form!
 $mform = new course_coordinator_form(null);
+
+// Calls a function to get the javascript values to fill into the form based on the previous search criteria.
+friadminrpt::get_javascript_values('course', 'category', null);
 
 if ($mform->is_cancelled()) {
     redirect($CFG->wwwroot);
@@ -61,7 +61,15 @@ if ($mform->is_cancelled()) {
 
     if ($coordinatorsinfo) {
         ob_end_clean();
-        friadminrpt::download_participants_list_coordinator($coordinatorsinfo);
+        friadminrpt::download_participants_list_coordinator(
+            $coordinatorsinfo,
+            $fromform->category,
+            $fromform->course,
+            $fromform->userfullname,
+            $fromform->username,
+            $fromform->useremail,
+            $fromform->userworkplace,
+            $fromform->userjobrole);
 
         die;
     } else {
