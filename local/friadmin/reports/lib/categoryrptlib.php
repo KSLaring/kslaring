@@ -612,7 +612,7 @@ class friadminrpt
      * Description
      * Creates the excel for the instructor report
      *
-     * @param object $coursesdata   The data from the get_course_instructor_data
+     * @param array $coursesdata   The data from the get_course_instructor_data (array of objects)
      * @throws Exception
      *
      * @updateDate    13/05/2017
@@ -662,7 +662,7 @@ class friadminrpt
      * Description
      * Creates the excel for the coordinator report
      *
-     * @param object $coursesdata   The data from the get_course_coordinator_report
+     * @param array $coursesdata   The data from the get_course_coordinator_report (array of objects)
      * @throws Exception
      *
      * @updateDate    12/05/2017
@@ -852,16 +852,22 @@ class friadminrpt
         // Variables.
         $col        = 0;
         $row        = 0;
-        $strsummary = get_string('summaryrptexcel', 'local_friadmin');
-        $strcategory = get_string('categoryexcel', 'local_friadmin');
+        $strinsructor   = get_string('instructorexcel', 'local_friadmin');
+        $strcategory    = get_string('categoryexcel', 'local_friadmin');
+        $strcourse      = get_string('courseexcel', 'local_friadmin');
+        $strfullname    = get_string('fullnameexcel', 'local_friadmin');
+        $strusername    = get_string('usernameexcel', 'local_friadmin');
+        $stremail       = get_string('emailexcel', 'local_friadmin');
+        $strworkplace   = get_string('workplaceexcel', 'local_friadmin');
+        $strjobrole     = get_string('jobroleexcel', 'local_friadmin');
 
         try {
 
             $mycategory = self::get_category_name($category);
             $mycourse = self::get_course_name($course);
 
-            // Summary Report Header.
-            $myxls->write($row, $col, $strsummary, array(
+            // Instructor Report Header.
+            $myxls->write($row, $col, $strinsructor, array(
                 'size' => 22,
                 'name' => 'Arial',
                 'bold' => '1',
@@ -898,7 +904,7 @@ class friadminrpt
             // Course Header.
             $row += 1;
             $col -= 2;
-            $myxls->write($row, $col, 'aa', array(
+            $myxls->write($row, $col, $strcourse, array(
                 'size' => 16,
                 'name' => 'Arial',
                 'bold' => '0',
@@ -923,7 +929,7 @@ class friadminrpt
             // Userfullname Header.
             $row += 1;
             $col -= 2;
-            $myxls->write($row, $col, 'aa', array(
+            $myxls->write($row, $col, $strfullname, array(
                 'size' => 16,
                 'name' => 'Arial',
                 'bold' => '0',
@@ -948,7 +954,7 @@ class friadminrpt
             // Username Header.
             $row += 1;
             $col -= 2;
-            $myxls->write($row, $col, 'aa', array(
+            $myxls->write($row, $col, $strusername, array(
                 'size' => 16,
                 'name' => 'Arial',
                 'bold' => '0',
@@ -973,7 +979,7 @@ class friadminrpt
             // User email Header.
             $row += 1;
             $col -= 2;
-            $myxls->write($row, $col, 'aa', array(
+            $myxls->write($row, $col, $stremail, array(
                 'size' => 16,
                 'name' => 'Arial',
                 'bold' => '0',
@@ -998,7 +1004,7 @@ class friadminrpt
             // Userworkplace Header.
             $row += 1;
             $col -= 2;
-            $myxls->write($row, $col, 'aa', array(
+            $myxls->write($row, $col, $strworkplace, array(
                 'size' => 16,
                 'name' => 'Arial',
                 'bold' => '0',
@@ -1023,7 +1029,7 @@ class friadminrpt
             // Userjobrole Header.
             $row += 1;
             $col -= 2;
-            $myxls->write($row, $col, 'aa', array(
+            $myxls->write($row, $col, $strjobrole, array(
                 'size' => 16,
                 'name' => 'Arial',
                 'bold' => '0',
@@ -1075,16 +1081,22 @@ class friadminrpt
         // Variables.
         $col        = 0;
         $row        = 0;
-        $strsummary = get_string('summaryrptexcel', 'local_friadmin');
-        $strcategory = get_string('categoryexcel', 'local_friadmin');
+        $strcoordinator = get_string('coordinatorexcel', 'local_friadmin');
+        $strcategory    = get_string('categoryexcel', 'local_friadmin');
+        $strcourse      = get_string('courseexcel', 'local_friadmin');
+        $strfullname    = get_string('fullnameexcel', 'local_friadmin');
+        $strusername    = get_string('usernameexcel', 'local_friadmin');
+        $stremail       = get_string('emailexcel', 'local_friadmin');
+        $strworkplace   = get_string('workplaceexcel', 'local_friadmin');
+        $strjobrole     = get_string('jobroleexcel', 'local_friadmin');
 
         try {
 
             $mycategory = self::get_category_name($category);
             $mycourse = self::get_course_name($course);
 
-            // Summary Report Header.
-            $myxls->write($row, $col, $strsummary, array(
+            // Coordinator Report Header.
+            $myxls->write($row, $col, $strcoordinator, array(
                 'size' => 22,
                 'name' => 'Arial',
                 'bold' => '1',
@@ -1121,7 +1133,7 @@ class friadminrpt
             // Course Header.
             $row += 1;
             $col -= 2;
-            $myxls->write($row, $col, 'aa', array(
+            $myxls->write($row, $col, $strcourse, array(
                 'size' => 16,
                 'name' => 'Arial',
                 'bold' => '0',
@@ -1146,7 +1158,7 @@ class friadminrpt
             // Userfullname Header.
             $row += 1;
             $col -= 2;
-            $myxls->write($row, $col, 'aa', array(
+            $myxls->write($row, $col, $strfullname, array(
                 'size' => 16,
                 'name' => 'Arial',
                 'bold' => '0',
@@ -1171,7 +1183,7 @@ class friadminrpt
             // Username Header.
             $row += 1;
             $col -= 2;
-            $myxls->write($row, $col, 'aa', array(
+            $myxls->write($row, $col, $strusername, array(
                 'size' => 16,
                 'name' => 'Arial',
                 'bold' => '0',
@@ -1196,7 +1208,7 @@ class friadminrpt
             // User email Header.
             $row += 1;
             $col -= 2;
-            $myxls->write($row, $col, 'aa', array(
+            $myxls->write($row, $col, $stremail, array(
                 'size' => 16,
                 'name' => 'Arial',
                 'bold' => '0',
@@ -1221,7 +1233,7 @@ class friadminrpt
             // Userworkplace Header.
             $row += 1;
             $col -= 2;
-            $myxls->write($row, $col, 'aa', array(
+            $myxls->write($row, $col, $strworkplace, array(
                 'size' => 16,
                 'name' => 'Arial',
                 'bold' => '0',
@@ -1246,7 +1258,7 @@ class friadminrpt
             // Userjobrole Header.
             $row += 1;
             $col -= 2;
-            $myxls->write($row, $col, 'aa', array(
+            $myxls->write($row, $col, $strjobrole, array(
                 'size' => 16,
                 'name' => 'Arial',
                 'bold' => '0',
@@ -2159,7 +2171,7 @@ class friadminrpt
      * Description
      * Adds the contect for the excel report about instructors
      *
-     * @param object    $coursedata     The information from the database
+     * @param array    $coursedata     The information from the database (an array of objects)
      * @param           $myxls
      * @param           $row
      * @throws Exception
@@ -2475,7 +2487,7 @@ class friadminrpt
      * Description
      * Adds the content to the coordinators excel document
      *
-     * @param object    $coursedata     The information from the database
+     * @param array    $coursedata     The information from the database (an array of objects)
      * @param           $myxls
      * @param           $row
      * @throws Exception

@@ -341,7 +341,15 @@ $string['userjobrole'] = 'Job Role';
 $string['noresults'] = 'No results';
 
 $string['summaryrptexcel'] = 'Summary Report';
+$string['coordinatorexcel'] = 'Coordinator Report';
+$string['instructorexcel'] = 'Instructor Report';
 $string['categoryexcel'] = 'Category';
 $string['courseexcel'] = 'Course';
 $string['fromexcel'] = 'From';
 $string['toexcel'] = 'To';
+$string['courseexcel'] = 'Course';
+$string['fullnameexcel'] = 'Users Fullname';
+$string['usernameexcel'] = 'Username';
+$string['emailexcel'] = 'Email';
+$string['workplaceexcel'] = 'Workplace';
+$string['jobroleexcel'] = 'Jobrole';
