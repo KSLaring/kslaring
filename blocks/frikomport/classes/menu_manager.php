@@ -79,6 +79,34 @@ class block_frikomport_menu_manager {
         $subnode = new navigation_node($item);
         $this->nodes->add_node($subnode);
 
+        // Excel Downloads
+        $item = array(
+            'text' => get_string('summaryrpt', 'block_frikomport'),
+            'icon' => $settingsicon,
+            'type' => navigation_node::NODETYPE_LEAF,
+            'action' => '/local/friadmin/reports/summary.php'
+        );
+        $subnode = new navigation_node($item);
+        $this->nodes->add_node($subnode);
+        $item = array(
+            'text' => get_string('instructorrpt', 'block_frikomport'),
+            'icon' => $settingsicon,
+            'type' => navigation_node::NODETYPE_LEAF,
+            'action' => '/local/friadmin/reports/instructor.php'
+        );
+        $subnode = new navigation_node($item);
+        $this->nodes->add_node($subnode);
+        $item = array(
+            'text' => get_string('coordinatorrpt', 'block_frikomport'),
+            'icon' => $settingsicon,
+            'type' => navigation_node::NODETYPE_LEAF,
+            'action' => '/local/friadmin/reports/coordinator.php'
+        );
+        $subnode = new navigation_node($item);
+        $this->nodes->add_node($subnode);
+
+        // End Excel Downloads
+
         $item = array(
             'text' => get_string('naddfromnectcoursetemplate', 'block_frikomport'),
             'icon' => $settingsicon,
