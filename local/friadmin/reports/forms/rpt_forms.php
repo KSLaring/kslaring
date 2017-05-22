@@ -148,8 +148,6 @@ class course_instructor_form extends moodleform {
 
 class course_coordinator_form extends moodleform {
     public function definition() {
-        global $CFG;
-        global $SESSION;
 
         $mform = $this->_form;
 

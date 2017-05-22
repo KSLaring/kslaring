@@ -154,7 +154,7 @@ class friadminrpt
      *
      */
     public static function get_javascript_values($course, $category, $prevcourse) {
-
+        // Variables!
         global $PAGE;
 
         /* Initialise variables */
@@ -220,16 +220,14 @@ class friadminrpt
                     JOIN 			{course_categories} 		ca 	ON ca.id 		  = c.category
                     JOIN			{enrol}					    e 	ON e.courseid 	  = c.id
                     JOIN 			{user_enrolments}			ue 	ON ue.enrolid 	  = e.id
-                    -- Total Instructors
+                    -- Counting students and instructors
                     LEFT JOIN (
                         SELECT ct.instanceid as 'course',
                         count(rs.id) as 'students',
                         count(ri.id) as 'instructors'
                         FROM {role_assignments} ra
-                        -- Only users with contextlevel = 50 (Course)
                         JOIN {context} ct  ON  ct.id = ra.contextid
                         AND ct.contextlevel = 50
-                        --  AND ct.instanceid   = 1080
                         -- Students
                         LEFT JOIN  {role} rs ON rs.id   = ra.roleid
                         AND rs.archetype  = 'student'
@@ -411,6 +409,9 @@ class friadminrpt
     } // end get_course_instructors
 
     /**
+     * Description
+     * Gets all the neccessary data from the database for course instructors
+     *
      * @param array     $instructors    All the instructor ID's from get_course_instructors
      * @param integer   $course         The course selected by the user in the form (optional)
      * @param integer   $category       The category selected by the user in the form (required)
@@ -442,32 +443,32 @@ class friadminrpt
                             cl.name as 'location',
                             fo1.value as 'fromto',
                             c.visible as 'visibility'
-                    FROM            {user} u
+                    FROM            {user}                     u
                     -- Course
-                        JOIN 		{role_assignments}		ra 	ON ra.userid  = u.id
-						JOIN		{context}					ct	ON ct.id 	  = ra.contextid
-                        JOIN        {course}                  c   ON  c.id      = ct.instanceid
+                        JOIN 		{role_assignments}		  ra 	ON ra.userid  = u.id
+						JOIN		{context}				  ct	ON ct.id 	  = ra.contextid
+                        JOIN        {course}                  c     ON  c.id      = ct.instanceid
 
                         -- Category
-                        JOIN        {course_categories}       ca  ON  ca.id = c.category
+                        JOIN        {course_categories}       ca    ON  ca.id = c.category
                         -- Location
-                        LEFT JOIN   {course_format_options}   fo  ON  fo.courseid = c.id
+                        LEFT JOIN   {course_format_options}   fo    ON  fo.courseid = c.id
                                                                     AND fo.name = 'course_location'
-                        LEFT JOIN   {course_locations}        cl  ON  cl.id = fo.value
-                        LEFT JOIN   {report_gen_companydata}  co  ON  co.id = cl.levelone
+                        LEFT JOIN   {course_locations}        cl    ON  cl.id = fo.value
+                        LEFT JOIN   {report_gen_companydata}  co    ON  co.id = cl.levelone
                         -- Dates
-                        LEFT JOIN   {course_format_options}   fo1 ON  fo1.courseid = c.id
+                        LEFT JOIN   {course_format_options}   fo1   ON  fo1.courseid = c.id
                     AND fo1.name = 'time'
                     	-- Coordinator
                     LEFT JOIN (
                         SELECT 		ra.userid,
                                     ct.instanceid 		as 'course',
                                     concat(u.firstname, ' ', u.lastname) as 'cord'
-                        FROM		{role_assignments}		ra
+                        FROM		{role_assignments}		    ra
                             JOIN	{context}					ct	ON 	ct.id 		= ra.contextid
-                        JOIN  		{role}					r 	ON 	r.id 		= ra.roleid
+                        JOIN  		{role}					    r 	ON 	r.id 		= ra.roleid
                                                                     AND r.archetype = 'editingteacher'
-                        JOIN		{user} u 						ON	u.id = ra.userid
+                        JOIN		{user}                      u 	ON	u.id = ra.userid
                         GROUP BY course
                     ) cord  ON 		cord.course = c.id
                     WHERE u.deleted = 0
@@ -493,6 +494,9 @@ class friadminrpt
     } // end get_course_instructor_date
 
     /**
+     * Description
+     * Gets all the neccessary information from the database for the coordinators
+     *
      * @param integer   $course         The course selected by the user in the form (optional)
      * @param integer   $category       The category selected by the user in the form (required)
      * @return array|null Returns all the data used in the coordinator excel
@@ -516,14 +520,14 @@ class friadminrpt
             $extrasql .= " AND ca.id = :category ";
         }
 
-        $query = "  SELECT 	CONCAT(u.id, c.id) 					as 'unique',
-                            CONCAT(u.firstname, ' ', u.lastname)as 'coursecoordinator',
-                            c.fullname							as 'coursename',
-                            fo1.value							as 'fromto',
-                            c.visible							as 'visibility',
-                            ca.name                             as 'category',
-                            c.format                            as 'courseformat',
-                            co.name                             as 'levelone'
+        $query = "  SELECT 	    CONCAT(u.id, c.id) 					as 'unique',
+                                CONCAT(u.firstname, ' ', u.lastname)as 'coursecoordinator',
+                                c.fullname							as 'coursename',
+                                fo1.value							as 'fromto',
+                                c.visible							as 'visibility',
+                                ca.name                             as 'category',
+                                c.format                            as 'courseformat',
+                                co.name                             as 'levelone'
                     FROM		{user}					  u
                     JOIN 	    {role_assignments}		  ra 	    ON  ra.userid 	  = u.id
                     JOIN	    {context}				  ct	    ON  ct.id 	 	  = ra.contextid
@@ -562,7 +566,7 @@ class friadminrpt
      * Description
      * Creates the excel for the summary report
      *
-     * @param object $coursesdata   The data from the get_course_summary_data
+     * @param array $coursesdata   The data from the get_course_summary_data
      * @param unix   $from          The from unix timestamp selected by the user in the form
      * @param unix   $to            The to unix timestamp selected by the user in the form
      * @throws Exception
@@ -1642,7 +1646,7 @@ class friadminrpt
      * Description
      * Adds content to the course summary excel document
      *
-     * @param object    $coursedata     The information from the database
+     * @param array    $coursedata     The information from the database
      * @param           $myxls
      * @param           $row
      * @throws Exception
@@ -2171,7 +2175,7 @@ class friadminrpt
      * Description
      * Adds the contect for the excel report about instructors
      *
-     * @param array    $coursedata     The information from the database (an array of objects)
+     * @param array     $coursedata     The information from the database (an array of objects)
      * @param           $myxls
      * @param           $row
      * @throws Exception
@@ -2180,8 +2184,8 @@ class friadminrpt
      * @author          eFaktor     (nas)
      */
     private static function add_participants_content_excel_instructor($coursedata, &$myxls, &$row) {
+        // Variables!
         GLOBAL $SESSION;
-        // Variables.
         $col            = 0;
         $row            = 1;
         $last           = null;
@@ -2496,8 +2500,8 @@ class friadminrpt
      * @author          eFaktor     (nas)
      */
     private static function add_participants_content_excel_coordinator($coursedata, &$myxls, &$row) {
+        // Variables!
         GLOBAL $SESSION;
-        // Variables.
         $col            = 0;
         $row            = 1;
         $last           = null;
