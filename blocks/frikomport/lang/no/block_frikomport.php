@@ -63,3 +63,5 @@ $string['nstatistics']      = 'Statistikk';
 $string['summaryrpt']       = 'Summary Download';
 $string['instructorrpt']    = 'Instructor Download';
 $string['coordinatorrpt']   = 'Coordinator Download';
+
+$string['exceldl'] = 'Excel Downloads';
