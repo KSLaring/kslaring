@@ -690,6 +690,7 @@ class FELLESDATA_CRON {
 
                             echo "</br>";
                             foreach($content as $key=>$line) {
+                                echo $key . "</br>-----</br>";
                                 echo $line . "</br>";
                             }
                             //self::save_temporary_fs($content,IMP_COMPANIES);
