@@ -496,8 +496,6 @@ class friadminrpt
             $extrasql .= " AND c.id = :course ";
         }
 
-        $extrasql .= " AND ca.id = :category ";
-
         $query = "  SELECT 	    DISTINCT CONCAT(u.id, c.id) 		as 'unique',
                                 CONCAT(u.firstname, ' ', u.lastname)as 'coursecoordinator',
                                 c.fullname							as 'coursename',
@@ -519,6 +517,7 @@ class friadminrpt
                     LEFT JOIN 	{course_format_options}   fo1 	    ON  fo1.courseid  = c.id
                                                                     AND fo1.name      = 'time'
                     WHERE u.deleted = 0
+                    AND ca.id = :category
                     $extrasql
                     GROUP BY c.id
                     ORDER BY u.id";
@@ -538,7 +537,7 @@ class friadminrpt
         } catch (Exception $ex) {
             Throw $ex;
         }  // end try_catch
-    } // end get_course_coordinators_data
+    } // end get_course_coordinator_data
 
     /**
      * Description
