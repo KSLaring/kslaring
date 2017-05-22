@@ -1079,6 +1079,14 @@ class FELLESDATA_CRON {
                 $content = str_replace('\n',chr(13),$content);
                 $content = str_replace('\r\n',chr(13),$content);
 
+                $length = strlen($content);
+                if (substr($content,0,1) == '"') {
+                    //$content = substr($content,1);
+                    echo "START:  " . substr($content,0,1);
+                }else if (substr($content,1)) {
+                    echo "FINISH: " . substr($content,$length-1,$length);
+                }
+
                 fwrite($responseFile,$content);
                 fclose($responseFile);
 
