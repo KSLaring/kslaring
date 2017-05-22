@@ -296,7 +296,7 @@ $string['useremail'] = 'e-post';
 $string['usercompetance'] = 'Kompetanse';
 
 $string['producer'] = 'Producer';
-$string['levelone'] = 'City';
+$string['levelone'] = 'Level one';
 $string['sector'] = 'Sector';
 $string['coordinator'] = 'Coordinator';
 $string['spots'] = 'Available seats';

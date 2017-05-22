@@ -303,7 +303,7 @@ $string['useremail'] = 'eMail';
 $string['usercompetance'] = 'Competance';
 
 $string['producer'] = 'Producer';
-$string['levelone'] = 'City';
+$string['levelone'] = 'Level one';
 $string['sector'] = 'Sector';
 $string['coordinator'] = 'Coordinator';
 $string['spots'] = 'Available seats';

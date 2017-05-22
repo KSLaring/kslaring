@@ -204,8 +204,7 @@ class friadminrpt
                                     cl.name		        as 'levelone',		    -- Municipality (level one) / Course location
                                     fo2.value		    as 'sector',			-- Course Sector
                                     ca.name 		    as 'category', 		    -- Category Name
-                                    cord.cord 		    as 'coursecoordinator', -- Coordinator
-                                    ue.timeend		    as 'expiration', 	    -- Deadline for enrolments
+                                    dl.customint1		as 'expiration', 	    -- Deadline for enrolments
                                     e.customint2	    as 'spots',			    -- Number of places
                                     e.customtext3	    as 'internalprice',	    -- Internal price
                                     e.customtext4	    as 'externalprice',     -- external price
@@ -266,20 +265,15 @@ class friadminrpt
                     -- Produced By
                     LEFT JOIN		{course_format_options}	    fo4	ON 	fo4.courseid  = c.id
                                                                     AND fo4.name 	  = 'producedby'
-                    -- Course Coordinator / first teacher
-                        LEFT JOIN (
-                        SELECT 		ue.id,
-                                    e.courseid,
-                                    u.firstname 		as 'cord',
-                                    u.lastname
-                        FROM 		{enrol} 					e
-                            JOIN	{user_enrolments} 		    ue 	ON 	ue.enrolid 	  = e.id
-                            JOIN	{user}					    u	ON 	u.id 		  = ue.userid
-                            JOIN 	{role_assignments}		    ra	ON 	ra.userid 	  = u.id
-                            JOIN 	{role}					    r	ON 	r.id 		  = ra.roleid
-                                                                    AND r.archetype   = 'editingteacher'
-                        ORDER BY 	ue.id, courseid
-                    ) cord ON 		cord.courseid = c.id
+                    -- Deadline
+                    LEFT JOIN (
+                        SELECT 		customint1,
+                                    courseid
+                        FROM		mdl_enrol
+                        WHERE 		enrol = 'waitinglist'
+                        AND 		customint1 IS NOT NULL
+                        AND 		customint1 != 0
+                    ) dl ON dl.courseid = c.id
                 WHERE ca.id = :categoryid
                 AND   c.startdate >= :from
                 AND   c.startdate <= :to
@@ -331,9 +325,7 @@ class friadminrpt
             $extrasql .= " AND c.id = :course ";
         }
 
-        if ($category) {
-            $extrasql .= " AND ca.id = :category ";
-        }
+        $extrasql .= " AND ca.id = :category ";
 
         if ($fullname) {
             $extrasql .= " AND CONCAT(u.firstname, ' ', u.lastname) LIKE '%" . $fullname . "%' ";
@@ -369,7 +361,7 @@ class friadminrpt
                   JOIN  {role_assignments}        ra  ON  ra.userid = u.id
                   JOIN  {context}                 ct  ON  ct.id = ra.contextid
                   JOIN  {role}                    r   ON  r.id = ra.roleid
-                                                        AND r.archetype = 'teacher'
+                                                      AND r.archetype = 'teacher'
                   -- Course
                   JOIN 	{course}					c	ON c.id     = ct.instanceid
 
@@ -392,9 +384,8 @@ class friadminrpt
                 $params['course'] = $course;
             }
 
-            if ($category) {
-                $params['category'] = $category;
-            }
+            $params['category'] = $category;
+
 
             $rdo = $DB->get_records_sql($query, $params);
 
@@ -433,7 +424,8 @@ class friadminrpt
             $extrasql .= " AND c.id = :course ";
         }
 
-        $query = "  SELECT  CONCAT(u.id,c.id) as 'unique',
+        $query = "  SELECT  DISTINCT CONCAT(u.id,c.id) as 'unique',
+                            c.id as 'courseid',
                             CONCAT(u.firstname,' ', u.lastname) as 'instr',
                             c.fullname as 'coursename',
                             ca.name as 'category',
@@ -516,9 +508,7 @@ class friadminrpt
             $extrasql .= " AND c.id = :course ";
         }
 
-        if ($category) {
-            $extrasql .= " AND ca.id = :category ";
-        }
+        $extrasql .= " AND ca.id = :category ";
 
         $query = "  SELECT 	    CONCAT(u.id, c.id) 					as 'unique',
                                 CONCAT(u.firstname, ' ', u.lastname)as 'coursecoordinator',
@@ -541,9 +531,9 @@ class friadminrpt
                     LEFT JOIN 	{course_format_options}   fo1 	    ON  fo1.courseid  = c.id
                                                                     AND fo1.name      = 'time'
                     WHERE u.deleted = 0
+                    $extrasql
                     GROUP BY c.id
-                    ORDER BY u.id
-                    $extrasql ";
+                    ORDER BY u.id";
 
         try {
             $params = array();
@@ -566,7 +556,7 @@ class friadminrpt
      * Description
      * Creates the excel for the summary report
      *
-     * @param array $coursesdata   The data from the get_course_summary_data
+     * @param array  $coursesdata   The data from the get_course_summary_data
      * @param unix   $from          The from unix timestamp selected by the user in the form
      * @param unix   $to            The to unix timestamp selected by the user in the form
      * @throws Exception
@@ -1320,6 +1310,40 @@ class friadminrpt
         }  // end try_catch
     } // end get_categories
 
+    public static function get_coordinator($courseid) {
+        // Variables!
+        global $DB;
+        $rdo = null;
+        $empty = '';
+
+        $query = "  SELECT 		ue.id,
+                                e.courseid,
+                                concat(u.firstname, ' ', u.lastname)		as 'cord'
+                    FROM 		mdl_enrol 					e
+                        JOIN	mdl_user_enrolments 		ue 	ON 	ue.enrolid 	= e.id
+                        JOIN	mdl_user					u	ON 	u.id 		= ue.userid
+                        JOIN 	mdl_role_assignments		ra	ON 	ra.userid 	= u.id
+                        JOIN 	mdl_role					r	ON 	r.id 		= ra.roleid
+                                                                AND r.archetype = 'editingteacher'
+                                                                
+                    WHERE courseid = :courseid
+                    ORDER BY ue.id
+                    LIMIT 0,1";
+        try {
+
+            $params = array();
+            $params['courseid'] = $courseid;
+            $rdo = $DB->get_record_sql($query, $params);
+
+            if ($rdo) {
+                return $rdo->cord;
+            } else {
+                return $empty;
+            }
+        } catch (Exception $ex) {
+            Throw $ex;
+        }
+    }
     /**
      * Description
      * Add the header of the table to the excel report for the summary
@@ -1655,9 +1679,8 @@ class friadminrpt
      * @author          eFaktor     (nas)
      */
     private static function add_participants_content_excel($coursedata, &$myxls, &$row, $from, $to) {
-
+        // Variables!
         GLOBAL $SESSION;
-        // Variables.
         $col            = 0;
         $row            = 1;
         $last           = null;
@@ -1679,6 +1702,12 @@ class friadminrpt
                     } else {
                         $mysectors = '';
                     }
+
+                    $coordinator = self::get_coordinator($coursevalue->courseid);
+
+                    // if ($coordinator == NULL || '') {
+                    //     $coordinator = $coursevalue->coordinator;
+                    // }
 
                     // Course fullname.
                     $myxls->write($row, $col, $coursevalue->coursefull, array(
@@ -1751,7 +1780,7 @@ class friadminrpt
 
                     // Course coordinator.
                     $col += 5;
-                    $myxls->write($row, $col, $coursevalue->coursecoordinator, array(
+                    $myxls->write($row, $col, $coordinator, array(
                         'size' => 12,
                         'name' => 'Arial',
                         'text_wrap' => true,
@@ -2202,6 +2231,8 @@ class friadminrpt
 
                     $fromtodates = explode(",", $coursevalue->fromto);
 
+                    $coordinator = self::get_coordinator($coursevalue->courseid);
+
                     // Instructor name.
                     $myxls->write($row, $col, $coursevalue->instr, array(
                         'size' => 12,
@@ -2253,7 +2284,7 @@ class friadminrpt
 
                     // Course coordinator.
                     $col += 3;
-                    $myxls->write($row, $col, $coursevalue->coursecoordinator, array(
+                    $myxls->write($row, $col, $coordinator, array(
                         'size' => 12,
                         'name' => 'Arial',
                         'text_wrap' => true,
