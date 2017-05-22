@@ -688,12 +688,7 @@ class FELLESDATA_CRON {
                                 $content = file($pathFile);
                             }
 
-                            echo "</br>";
-                            foreach($content as $key=>$line) {
-                                echo $key . "</br>-----</br>";
-                                echo $line . "</br>";
-                            }
-                            //self::save_temporary_fs($content,IMP_COMPANIES);
+                            self::save_temporary_fs($content,IMP_COMPANIES);
                         }else {
                             // Mark file as suspicious
                             $suspiciousPath = suspicious::mark_suspicious_file(TRADIS_FS_COMPANIES,$plugin);
@@ -711,7 +706,7 @@ class FELLESDATA_CRON {
                             $content = file($pathFile);
                         }
 
-                        //self::save_temporary_fs($content,IMP_COMPANIES);
+                        self::save_temporary_fs($content,IMP_COMPANIES);
                     }///if_suspicous_path
                 }//if_exists
             }else {
@@ -1079,19 +1074,9 @@ class FELLESDATA_CRON {
                 // Remove bad characters
                 $content = str_replace('\"','"',$response);
                 // CR - LF && EOL
+                $content = str_replace('\r\n',chr(13),$content);
                 $content = str_replace('\r',chr(13),$content);
                 $content = str_replace('\n',chr(13),$content);
-                $content = str_replace('\r\n',chr(13),$content);
-
-                $length = strlen($content);
-                if (substr($content,0,1) == '"') {
-                    echo "START:  " . substr($content,0,1);
-                    $content = substr($content,1);
-                }else if (substr($content,$length-1,1) == '"') {
-                    echo "FINISH: " . substr($content,$length-1,1);
-                    $content = substr($content,0,$length-1);
-                }
-
                 fwrite($responseFile,$content);
                 fclose($responseFile);
 
