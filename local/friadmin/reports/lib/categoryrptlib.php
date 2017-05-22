@@ -430,7 +430,6 @@ class friadminrpt
                             c.fullname as 'coursename',
                             ca.name as 'category',
                             c.format as 'courseformat',
-                            cord.cord as 'coursecoordinator',
                             co.name as 'levelone',
                             cl.name as 'location',
                             fo1.value as 'fromto',
@@ -450,19 +449,8 @@ class friadminrpt
                         LEFT JOIN   {report_gen_companydata}  co    ON  co.id = cl.levelone
                         -- Dates
                         LEFT JOIN   {course_format_options}   fo1   ON  fo1.courseid = c.id
-                    AND fo1.name = 'time'
-                    	-- Coordinator
-                    LEFT JOIN (
-                        SELECT 		ra.userid,
-                                    ct.instanceid 		as 'course',
-                                    concat(u.firstname, ' ', u.lastname) as 'cord'
-                        FROM		{role_assignments}		    ra
-                            JOIN	{context}					ct	ON 	ct.id 		= ra.contextid
-                        JOIN  		{role}					    r 	ON 	r.id 		= ra.roleid
-                                                                    AND r.archetype = 'editingteacher'
-                        JOIN		{user}                      u 	ON	u.id = ra.userid
-                        GROUP BY course
-                    ) cord  ON 		cord.course = c.id
+                                                                    AND fo1.name = 'time'
+                    	
                     WHERE u.deleted = 0
                     AND ca.id = :category
                     AND u.id IN ($myarray)
@@ -483,7 +471,7 @@ class friadminrpt
         } catch (Exception $ex) {
             Throw $ex;
         }  // end try_catch
-    } // end get_course_instructor_date
+    } // end get_course_instructor_data
 
     /**
      * Description
@@ -510,7 +498,7 @@ class friadminrpt
 
         $extrasql .= " AND ca.id = :category ";
 
-        $query = "  SELECT 	    CONCAT(u.id, c.id) 					as 'unique',
+        $query = "  SELECT 	    DISTINCT CONCAT(u.id, c.id) 		as 'unique',
                                 CONCAT(u.firstname, ' ', u.lastname)as 'coursecoordinator',
                                 c.fullname							as 'coursename',
                                 fo1.value							as 'fromto',
