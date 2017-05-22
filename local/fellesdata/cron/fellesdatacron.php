@@ -1087,7 +1087,7 @@ class FELLESDATA_CRON {
                 if (substr($content,0,1) == '"') {
                     echo "START:  " . substr($content,0,1);
                     $content = substr($content,1);
-                }else if (substr($content,1) == '"') {
+                }else if (substr($content,$length-1,$length) == '"') {
                     echo "FINISH: " . substr($content,$length-1,$length);
                     $content = substr($content,0,$length-1);
                 }
