@@ -675,7 +675,7 @@ class FELLESDATA_CRON {
                 FS::clean_temporary_fellesdata(IMP_COMPANIES);
 
                 // Open file
-                $pathFile = $CFG->dataroot . '/fellesdata/webservicequeryresult.txt' ; //. TRADIS_FS_COMPANIES . '.txt';
+                $pathFile = $CFG->dataroot . '/fellesdata/' . TRADIS_FS_COMPANIES . '.txt';
                 if (file_exists($pathFile)) {
                     // Get last changes
                     // First check if is a suspicious file
@@ -1064,11 +1064,6 @@ class FELLESDATA_CRON {
 
                     unlink($pathFile);
                 }
-
-                $pathPaqui = $dir . '/' . $service . '_Paqui.txt';
-                $responseFile = fopen($pathPaqui,'w');
-                fwrite($responseFile,$response);
-                fclose($responseFile);
 
                 // Create a new response file
                 $responseFile = fopen($pathFile,'w');
