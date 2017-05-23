@@ -502,14 +502,15 @@ class FELLESDATA_CRON {
         try {
             // Get total
             $total = count($content);
+
             // Split the process if it is too big
             if ($total > MAX_IMP_FS) {
                 for($i=0;$i<=$total;$i=$i+MAX_IMP_FS) {
                     $data = array_slice($content,$i,MAX_IMP_FS,true);
-                    FS::save_temporary_fellesdata($data,$type,true);
+                    FS::save_temporary_fellesdata($data,$type);
                 }
             }else {
-                FS::save_temporary_fellesdata($data,$type,true);
+                FS::save_temporary_fellesdata($content,$type);
             }//if_max_imp
         }catch (Exception $ex) {
             throw $ex;
@@ -771,7 +772,6 @@ class FELLESDATA_CRON {
                             }else {
                                 $content = file($pathFile);
                             }
-
                             self::save_temporary_fs($content,IMP_JOBROLES);
                         }else {
                             // Mark file as suspicious
@@ -1070,10 +1070,9 @@ class FELLESDATA_CRON {
                 // Remove bad characters
                 $content = str_replace('\"','"',$response);
                 // CR - LF && EOL
+                $content = str_replace('\r\n',chr(13),$content);
                 $content = str_replace('\r',chr(13),$content);
                 $content = str_replace('\n',chr(13),$content);
-                $content = str_replace('\r\n',chr(13),$content);
-
                 fwrite($responseFile,$content);
                 fclose($responseFile);
 
