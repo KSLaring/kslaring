@@ -502,14 +502,15 @@ class FELLESDATA_CRON {
         try {
             // Get total
             $total = count($content);
+
             // Split the process if it is too big
             if ($total > MAX_IMP_FS) {
                 for($i=0;$i<=$total;$i=$i+MAX_IMP_FS) {
                     $data = array_slice($content,$i,MAX_IMP_FS,true);
-                    FS::save_temporary_fellesdata($data,$type,true);
+                    FS::save_temporary_fellesdata($data,$type);
                 }
             }else {
-                FS::save_temporary_fellesdata($data,$type,true);
+                FS::save_temporary_fellesdata($content,$type);
             }//if_max_imp
         }catch (Exception $ex) {
             throw $ex;
@@ -674,7 +675,7 @@ class FELLESDATA_CRON {
                 FS::clean_temporary_fellesdata(IMP_COMPANIES);
 
                 // Open file
-                $pathFile = $CFG->dataroot . '/fellesdata/' . TRADIS_FS_COMPANIES . '.txt';
+                $pathFile = $CFG->dataroot . '/fellesdata/webservicequeryresult.txt' ; //. TRADIS_FS_COMPANIES . '.txt';
                 if (file_exists($pathFile)) {
                     // Get last changes
                     // First check if is a suspicious file
