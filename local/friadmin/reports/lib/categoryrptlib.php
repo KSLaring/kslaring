@@ -20,7 +20,7 @@
 // * @subpackage      friadmin/reports                                      !
 // * @copyright       2017        eFaktor {@link http://www.efaktor.no}     !
 // *                                                                        !
-// * @updateDate      12/05/2017                                            !
+// * @updateDate      23/05/2017                                            !
 // * @author          eFaktor     (nas)                                     !
 
 defined('MOODLE_INTERNAL') || die();
@@ -37,7 +37,7 @@ class friadminrpt
      * @return          array   All the course-categories
      * @throws          Exception
      *
-     * @updateDate    12/05/2017
+     * @updateDate    23/05/2017
      * @author          eFaktor     (nas)
      *
      */
@@ -47,6 +47,7 @@ class friadminrpt
         $categories = array();
         $rdo = null;
 
+        // Query gets the course category names.
         $query = "SELECT  ca.id,
 		                  ca.name
                   FROM    {course_categories} ca";
@@ -67,7 +68,6 @@ class friadminrpt
         }  // end try_catch
     } // end get_categories
 
-
     /**
      * Description
      * Gets all the course-categories with courses connected to them and returns them in a single array
@@ -77,7 +77,7 @@ class friadminrpt
      * @return          array   All the course-categories
      * @throws          Exception
      *
-     * @updateDate    12/05/2017
+     * @updateDate    23/05/2017
      * @author          eFaktor     (nas)
      *
      */
@@ -87,6 +87,7 @@ class friadminrpt
         $courses = array();
         $rdo = null;
 
+        // Query gets the course fullnames.
         $query = "SELECT  c.id,
 		                  c.fullname
                   FROM    {course} c";
@@ -114,7 +115,7 @@ class friadminrpt
      * @return          array|null  All the courses for javascript purposes
      * @throws          Exception
      *
-     * @updateDate    12/05/2017
+     * @updateDate    23/05/2017
      * @author          eFaktor     (nas)
      *
      */
@@ -149,22 +150,20 @@ class friadminrpt
      * @param           $category
      * @param           $prevcourse
      *
-     * @updateDate    12/05/2017
+     * @updateDate    23/05/2017
      * @author          eFaktor     (nas)
      *
      */
     public static function get_javascript_values($course, $category, $prevcourse) {
         // Variables!
         global $PAGE;
-
-        /* Initialise variables */
         $name = 'lst_courses';
         $path = '/local/friadmin/reports/js/report.js';
         $requires = array('node', 'event-custom', 'datasource', 'json', 'moodle-core-notification');
         $grpthree = array('none', 'moodle');
         $strings = array($grpthree);
 
-        /* Initialise js module */
+        // Initialise js module.
         $jsmodule = array('name' => $name,
             'fullpath' => $path,
             'requires' => $requires,
@@ -182,14 +181,15 @@ class friadminrpt
      * Description
      * A function used to get all the information from the databse that is used to create the summary excel
      *
-     * @param   integer     $category   The category selected by the user in the form (required)
-     * @param   unix        $from       The unix timestamp for from date, selected by the user in the form (required)
-     * @param   unix        $to         The unix timestamp for to date, selected by the user in the form (required)
+     * @param   integer         $category   The category selected by the user in the form (required)
+     * @param   integer         $from       The unix timestamp for from date, selected by the user in the form (required)
+     * @param   integer         $to         The unix timestamp for to date, selected by the user in the form (required)
      * @return array|null
      * @throws Exception
      *
-     * @updateDate 12/05/2017
+     * @updateDate 23/05/2017
      * @author      eFaktor     (nas)
+     *
      */
     public static function get_course_summary_data($category, $from, $to) {
         // Variables!
@@ -311,62 +311,64 @@ class friadminrpt
      * @return array|null Returns the ID of all the instructors
      * @throws Exception
      *
-     * @updateDate    12/05/2017
+     * @updateDate    23/05/2017
      * @author          eFaktor     (nas)
      *
      */
     public static function get_course_instructors($course, $category, $fullname, $username, $email, $workplace, $jobrole) {
         // Variables!
         global $DB;
-        $rdo = null;
-        $extrasql = '';
+        $rdo            = null;
+        $extrasql       = '';
+        $workplacesql   = '';
+        $jobrolesql     = '';
 
+        // Course.
         if ($course) {
             $extrasql .= " AND c.id = :course ";
         }
 
-        $extrasql .= " AND ca.id = :category ";
-
+        // Users fullname.
         if ($fullname) {
             $extrasql .= " AND CONCAT(u.firstname, ' ', u.lastname) LIKE '%" . $fullname . "%' ";
         }
 
+        // Username.
         if ($username) {
             $extrasql .= " AND u.username LIKE '%" . $username . "%' ";
         }
 
+        // Email.
         if ($email) {
             $extrasql .= " AND u.email LIKE '%" . $email . "%' ";
         }
 
+        // Workplace.
         if ($workplace) {
             $workplacesql = " JOIN {user_info_competence_data} 	    uic ON uic.userid = u.id
                               JOIN {report_gen_companydata} 	    rgc ON rgc.id = uic.competenceid
                                                                         AND rgc.name LIKE '%" . $workplace . "'%' ";
-        } else {
-            $workplacesql = " ";
         }
 
+        // Jobrole.
         if ($jobrole) {
             $jobrolesql = " JOIN {user_info_competence_data}  uic2 ON uic2.userid = u.id
                             JOIN {report_gen_jobrole}         gjr ON gjr.id IN (uic2.jobroles)
                                                                   AND gjr.name LIKE '%" . $jobrole . "%' ";
-        } else {
-            $jobrolesql = " ";
         }
 
         $query = "SELECT DISTINCT u.id
-                  FROM            {user} u
+                  FROM  {user}                    u
                   -- INSTRUCTORS
                   JOIN  {role_assignments}        ra  ON  ra.userid = u.id
                   JOIN  {context}                 ct  ON  ct.id = ra.contextid
                   JOIN  {role}                    r   ON  r.id = ra.roleid
                                                       AND r.archetype = 'teacher'
                   -- Course
-                  JOIN 	{course}					c	ON c.id     = ct.instanceid
+                  JOIN 	{course}				  c	  ON c.id = ct.instanceid
 
                   -- Category
-                  JOIN	{course_categories}		ca	ON ca.id	= c.category
+                  JOIN	{course_categories}		  ca  ON ca.id = c.category
 
                   -- Jobroles
                   $jobrolesql
@@ -375,17 +377,13 @@ class friadminrpt
                   $workplacesql
 
                   WHERE u.deleted = 0
+                  AND ca.id = :category
                   $extrasql ";
 
         try {
             $params = array();
-
-            if ($course) {
-                $params['course'] = $course;
-            }
-
+            $params['course'] = $course;
             $params['category'] = $category;
-
 
             $rdo = $DB->get_records_sql($query, $params);
 
@@ -406,10 +404,10 @@ class friadminrpt
      * @param array     $instructors    All the instructor ID's from get_course_instructors
      * @param integer   $course         The course selected by the user in the form (optional)
      * @param integer   $category       The category selected by the user in the form (required)
-     * @return array|null Returns all the data used in the instructor excel
+     * @return array|null               Returns all the data used in the instructor excel
      * @throws Exception
      *
-     * @updateDate    12/05/2017
+     * @updateDate    23/05/2017
      * @author          eFaktor     (nas)
      *
      */
@@ -424,17 +422,17 @@ class friadminrpt
             $extrasql .= " AND c.id = :course ";
         }
 
-        $query = "  SELECT  DISTINCT CONCAT(u.id,c.id) as 'unique',
-                            c.id as 'courseid',
+        $query = "  SELECT  DISTINCT CONCAT(u.id,c.id)          as 'unique',
+                            c.id                                as 'courseid',
                             CONCAT(u.firstname,' ', u.lastname) as 'instr',
-                            c.fullname as 'coursename',
-                            ca.name as 'category',
-                            c.format as 'courseformat',
-                            co.name as 'levelone',
-                            cl.name as 'location',
-                            fo1.value as 'fromto',
-                            c.visible as 'visibility'
-                    FROM            {user}                     u
+                            c.fullname                          as 'coursename',
+                            ca.name                             as 'category',
+                            c.format                            as 'courseformat',
+                            co.name                             as 'levelone',
+                            cl.name                             as 'location',
+                            fo1.value                           as 'fromto',
+                            c.visible                           as 'visibility'
+                    FROM            {user}                    u
                     -- Course
                         JOIN 		{role_assignments}		  ra 	ON ra.userid  = u.id
 						JOIN		{context}				  ct	ON ct.id 	  = ra.contextid
@@ -450,7 +448,6 @@ class friadminrpt
                         -- Dates
                         LEFT JOIN   {course_format_options}   fo1   ON  fo1.courseid = c.id
                                                                     AND fo1.name = 'time'
-                    	
                     WHERE u.deleted = 0
                     AND ca.id = :category
                     AND u.id IN ($myarray)
@@ -482,7 +479,7 @@ class friadminrpt
      * @return array|null Returns all the data used in the coordinator excel
      * @throws Exception
      *
-     * @updateDate    12/05/2017
+     * @updateDate    23/05/2017
      * @author          eFaktor     (nas)
      *
      */
@@ -520,7 +517,7 @@ class friadminrpt
                     AND ca.id = :category
                     $extrasql
                     GROUP BY c.id
-                    ORDER BY u.id";
+                    ORDER BY ra.id";
 
         try {
             $params = array();
@@ -543,13 +540,14 @@ class friadminrpt
      * Description
      * Creates the excel for the summary report
      *
-     * @param array  $coursesdata   The data from the get_course_summary_data
-     * @param unix   $from          The from unix timestamp selected by the user in the form
-     * @param unix   $to            The to unix timestamp selected by the user in the form
+     * @param array     $coursesdata   The data from the get_course_summary_data
+     * @param integer   $from          The from unix timestamp selected by the user in the form
+     * @param integer   $to            The to unix timestamp selected by the user in the form
      * @throws Exception
      *
-     * @updateDate    12/05/2017
+     * @updateDate    23/05/2017
      * @author          eFaktor     (nas)
+     *
      */
     public static function download_participants_list($coursesdata, $from, $to, $category) {
         // Variables.
@@ -596,8 +594,9 @@ class friadminrpt
      * @param array $coursesdata   The data from the get_course_instructor_data (array of objects)
      * @throws Exception
      *
-     * @updateDate    13/05/2017
+     * @updateDate    23/05/2017
      * @author          eFaktor     (nas)
+     *
      */
     public static function download_participants_list_instructor(
         $coursesdata, $category, $course, $userfullname, $username, $useremail, $userworkplace, $userjobrole) {
@@ -636,8 +635,8 @@ class friadminrpt
             exit;
         } catch (Exception $ex) {
             throw $ex;
-        }
-    }
+        } //try_catch
+    } //download_participants_list_instructor
 
     /**
      * Description
@@ -646,8 +645,9 @@ class friadminrpt
      * @param array $coursesdata   The data from the get_course_coordinator_report (array of objects)
      * @throws Exception
      *
-     * @updateDate    12/05/2017
+     * @updateDate    23/05/2017
      * @author          eFaktor     (nas)
+     *
      */
     public static function download_participants_list_coordinator(
         $coursesdata, $category, $course, $userfullname, $username, $useremail, $userworkplace, $userjobrole) {
@@ -687,7 +687,7 @@ class friadminrpt
         } catch (Exception $ex) {
             throw $ex;
         }
-    }//download_participants_list
+    }//download_participants_list_coordinator
 
     /**
      * Description
@@ -700,8 +700,9 @@ class friadminrpt
      * @param $category
      * @throws Exception
      *
-     * @updateDate    12/05/2017
+     * @updateDate    23/05/2017
      * @author          eFaktor     (nas)
+     *
      */
     private static function add_participants_excel_filter(&$myxls, $row, $from, $to, $category) {
         // Variables.
@@ -824,8 +825,9 @@ class friadminrpt
      * @param $userjobrole
      * @throws Exception
      *
-     * @updateDate    12/05/2017
+     * @updateDate    23/05/2017
      * @author          eFaktor     (nas)
+     *
      */
     private static function add_participants_excel_filter_instructor(
         &$myxls, $row, $category, $course, $userfullname, $username, $useremail, $userworkplace, $userjobrole) {
@@ -1052,9 +1054,9 @@ class friadminrpt
      * @param $userjobrole
      * @throws Exception
      *
-     *
-     * @updateDate    12/05/2017
+     * @updateDate    23/05/2017
      * @author          eFaktor     (nas)
+     *
      */
     private static function add_participants_excel_filter_coordinator(
         &$myxls, $row, $category, $course, $userfullname, $username, $useremail, $userworkplace, $userjobrole) {
@@ -1267,12 +1269,13 @@ class friadminrpt
     } // end add_participants_excel_filter_coordinator
 
     /**
-     * @param array     $sector     All the sectors in an array
-     * @return null|sectors         Returns the sectors in text format
-     * @throws Exception
+     * @param   array     $sector     All the sectors in an array
+     * @return  null      Returns the sectors in text format or null
+     * @throws  Exception
      *
-     * @updateDate    12/05/2017
+     * @updateDate    23/05/2017
      * @author          eFaktor     (nas)
+     *
      */
     private static function get_sectors($sector) {
         // Variables!
@@ -1297,6 +1300,18 @@ class friadminrpt
         }  // end try_catch
     } // end get_categories
 
+    /**
+     * Description
+     * Used to get the coordinators during the excel download call
+     *
+     * @param       integer     $courseid from the database
+     * @return      string      The coordinators firstname and lastname
+     * @throws      Exception
+     *
+     * @creationDate    23/05/2017
+     * @author          eFaktor     (nas)
+     *
+     */
     public static function get_coordinator($courseid) {
         // Variables!
         global $DB;
@@ -1312,7 +1327,6 @@ class friadminrpt
                         JOIN 	mdl_role_assignments		ra	ON 	ra.userid 	= u.id
                         JOIN 	mdl_role					r	ON 	r.id 		= ra.roleid
                                                                 AND r.archetype = 'editingteacher'
-                                                                
                     WHERE courseid = :courseid
                     ORDER BY ue.id
                     LIMIT 0,1";
@@ -1330,7 +1344,8 @@ class friadminrpt
         } catch (Exception $ex) {
             Throw $ex;
         }
-    }
+    } // end get_coordinator
+
     /**
      * Description
      * Add the header of the table to the excel report for the summary
@@ -1340,12 +1355,13 @@ class friadminrpt
      *
      * @throws          Exception
      *
-     * @creationDate    12/05/2017
+     * @creationDate    23/05/2017
      * @author          eFaktor     (nas)
+     *
      */
     private static function add_participants_header_excel(&$myxls, $row, $coursesdata) {
-        GLOBAL $SESSION;
         // Variables.
+        GLOBAL $SESSION;
         $col                = 0;
         $row                = 0;
         $strcoursefull      = null;
@@ -1651,7 +1667,7 @@ class friadminrpt
         } catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//add_participants_header_excel
+    } //add_participants_header_excel
 
     /**
      * Description
@@ -1662,8 +1678,9 @@ class friadminrpt
      * @param           $row
      * @throws Exception
      *
-     * @creationDate    12/05/2017
+     * @creationDate    23/05/2017
      * @author          eFaktor     (nas)
+     *
      */
     private static function add_participants_content_excel($coursedata, &$myxls, &$row, $from, $to) {
         // Variables!
@@ -1691,10 +1708,6 @@ class friadminrpt
                     }
 
                     $coordinator = self::get_coordinator($coursevalue->courseid);
-
-                    // if ($coordinator == NULL || '') {
-                    //     $coordinator = $coursevalue->coordinator;
-                    // }
 
                     // Course fullname.
                     $myxls->write($row, $col, $coursevalue->coursefull, array(
@@ -1901,6 +1914,7 @@ class friadminrpt
                         $myxls->merge_cells($row, $col, $row, $col + 1);
                         $myxls->set_row($row, 20);
                     }
+
                     // Instructors.
                     $col += 2;
                     if ($coursevalue->instructors != '') {
@@ -1920,6 +1934,7 @@ class friadminrpt
                         $myxls->merge_cells($row, $col, $row, $col + 1);
                         $myxls->set_row($row, 20);
                     }
+
                     // Students.
                     $col += 2;
                     if ($coursevalue->students != '') {
@@ -1939,6 +1954,7 @@ class friadminrpt
                         $myxls->merge_cells($row, $col, $row, $col + 1);
                         $myxls->set_row($row, 20);
                     }
+
                     // Waiting.
                     $col += 2;
                     if ($coursevalue->waiting != '') {
@@ -1958,6 +1974,7 @@ class friadminrpt
                         $myxls->merge_cells($row, $col, $row, $col + 1);
                         $myxls->set_row($row, 20);
                     }
+
                     // Completed.
                     $col += 2;
                     if ($coursevalue->completed != '') {
@@ -1977,6 +1994,7 @@ class friadminrpt
                         $myxls->merge_cells($row, $col, $row, $col + 1);
                         $myxls->set_row($row, 20);
                     }
+
                     // Visibility.
                     $col += 2;
                     if ($coursevalue->visibility = 0) {
@@ -2027,8 +2045,9 @@ class friadminrpt
      *
      * @throws          Exception
      *
-     * @creationDate    12/05/2017
+     * @creationDate    23/05/2017
      * @author          eFaktor     (nas)
+     *
      */
     private static function add_participants_header_excel_instructor(&$myxls, $row, $coursesdata) {
         GLOBAL $SESSION;
@@ -2196,8 +2215,9 @@ class friadminrpt
      * @param           $row
      * @throws Exception
      *
-     * @creationDate    12/05/2017
+     * @creationDate    23/05/2017
      * @author          eFaktor     (nas)
+     *
      */
     private static function add_participants_content_excel_instructor($coursedata, &$myxls, &$row) {
         // Variables!
@@ -2358,12 +2378,12 @@ class friadminrpt
      *
      * @throws          Exception
      *
-     * @creationDate    12/05/2017
+     * @creationDate    23/05/2017
      * @author          eFaktor     (nas)
      */
     private static function add_participants_header_excel_coordinator(&$myxls, $row, $coursesdata) {
-        GLOBAL $SESSION;
         // Variables!
+        GLOBAL $SESSION;
         $col                = 0;
         $row                = 0;
         $strinstructorname  = null;
@@ -2514,7 +2534,7 @@ class friadminrpt
      * @param           $row
      * @throws Exception
      *
-     * @creationDate    12/05/2017
+     * @creationDate    23/05/2017
      * @author          eFaktor     (nas)
      */
     private static function add_participants_content_excel_coordinator($coursedata, &$myxls, &$row) {
@@ -2664,8 +2684,9 @@ class friadminrpt
      * @return  string  $rdo         The category name
      * @throws          Exception
      *
-     * @updateDate    12/05/2017
+     * @updateDate    23/05/2017
      * @author          eFaktor     (nas)
+     *
      */
     public static function get_category_name($category) {
         // Variables!
@@ -2702,8 +2723,9 @@ class friadminrpt
      * @return  string  $rdo       The coursename
      * @throws          Exception
      *
-     * @updateDate    12/05/2017
+     * @updateDate    23/05/2017
      * @author          eFaktor     (nas)
+     *
      */
     public static function get_course_name($course) {
         // Variables!
