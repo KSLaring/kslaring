@@ -76,7 +76,7 @@ class summary_form extends moodleform {
         // Checks the data.
         if ($data['selsummaryfrom'] > $data['selsummaryto']) {
             $errors['selsummaryfrom'] = get_string('biggerthanto', 'local_friadmin');
-            $errors['selsummaryto'] = get_string('smallerthanfrom', 'local_friadmin)');
+            $errors['selsummaryto'] = get_string('smallerthanfrom', 'local_friadmin');
         } else if ($data['selsummaryfrom'] > $date) {
             $errors['selsummaryfrom'] = get_string('biggerthannow', 'local_friadmin');
         } else if ($todaterounded - $fromdaterounded > $twoyearsrounded) {

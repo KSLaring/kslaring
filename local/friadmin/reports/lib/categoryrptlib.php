@@ -269,7 +269,7 @@ class friadminrpt
                     LEFT JOIN (
                         SELECT 		customint1,
                                     courseid
-                        FROM		mdl_enrol
+                        FROM		{enrol}
                         WHERE 		enrol = 'waitinglist'
                         AND 		customint1 IS NOT NULL
                         AND 		customint1 != 0
@@ -1321,12 +1321,12 @@ class friadminrpt
         $query = "  SELECT 		ue.id,
                                 e.courseid,
                                 concat(u.firstname, ' ', u.lastname)		as 'cord'
-                    FROM 		mdl_enrol 					e
-                        JOIN	mdl_user_enrolments 		ue 	ON 	ue.enrolid 	= e.id
-                        JOIN	mdl_user					u	ON 	u.id 		= ue.userid
-                        JOIN 	mdl_role_assignments		ra	ON 	ra.userid 	= u.id
-                        JOIN 	mdl_role					r	ON 	r.id 		= ra.roleid
-                                                                AND r.archetype = 'editingteacher'
+                    FROM 		{enrol} 			    e
+                        JOIN	{user_enrolments} 		ue 	ON 	ue.enrolid 	= e.id
+                        JOIN	{user}					u	ON 	u.id 		= ue.userid
+                        JOIN 	{role_assignments}		ra	ON 	ra.userid 	= u.id
+                        JOIN 	{role}					r	ON 	r.id 		= ra.roleid
+                                                            AND r.archetype = 'editingteacher'
                     WHERE courseid = :courseid
                     ORDER BY ue.id
                     LIMIT 0,1";
