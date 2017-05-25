@@ -70,6 +70,7 @@ require('tabs.php');
 echo $OUTPUT->heading(get_string('reports_manager', 'report_manager'));
 
 /* Reports  */
+$urlUser        = new moodle_url('/report/manager/user_report/user_report.php');
 $urlCompany     = new moodle_url('/report/manager/company_report/company_report.php');
 $urlEmployee    = new moodle_url('/report/manager/employee_report/employee_report.php');
 $courseReport   = new moodle_url('/report/manager/course_report/course_report.php');
@@ -79,23 +80,28 @@ $outcomeReport  = new moodle_url('/report/manager/outcome_report/outcome_report.
 echo '<p class="note">' . get_string('company_report_note', 'report_manager') . '</p>';
 
 echo '<ul class="unlist report-selection">' . "\n";
-    /* Employee Report  */
+    // User report
+    echo '<li class="first last">' . "\n";
+        echo '<a href="' . $urlUser . '">' . get_string('user_report_link', 'report_manager') . '</a>';
+    echo '</li>' . "\n";
+
+    // Employee Report
     echo '<li class="first last">' . "\n";
         echo '<a href="' . $urlEmployee . '">' . get_string('employee_report_link', 'report_manager') . '</a>';
     echo '</li>' . "\n";
-    /* Company Report  */
+    // Company Report
     echo '<li class="first last">' . "\n";
         echo '<a href="' . $urlCompany . '">' . get_string('company_report_link', 'report_manager') . '</a>';
     echo '</li>' . "\n";
 
     echo "</br>";
 
-    /* Course Report    */
+    // Course Report
     if (($IsReporter) || (has_capability('report/manager:viewlevel3', $site_context))) {
     echo '<li class="first last">' . "\n";
             echo '<a href="' . $courseReport . '">' . get_string('course_report', 'report_manager') . '</a>';
     echo '</li>' . "\n";
-        /* Outcome Report   */
+    // Outcome Report
     echo '<li class="first last">' . "\n";
             echo '<a href="' . $outcomeReport . '">' . get_string('outcome_report', 'report_manager') . '</a>';
         echo '</li>' . "\n";

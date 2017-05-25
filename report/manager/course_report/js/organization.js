@@ -29,23 +29,23 @@ var level_structure = {
     /** Number of seconds to delay before submitting a query request */
     querydelay : 0.5,
 
-    /* Level Zero Selector   */
+    // Level zero selector
     levelZero   : Y.one('#id_' + name + '0') || null,
-    hZero   : Y.one('#id_h0') || null,
-    /* Level One Selector   */
+    hZero       : Y.one('#id_h0') || null,
+    // Level one selector
     levelOne    : Y.one('#id_' + name + '1') || null,
-    hOne   : Y.one('#id_h1') || null,
-    /* Level Two Selector   */
+    hOne        : Y.one('#id_h1') || null,
+    // Level two selector
     levelTwo    : Y.one('#id_' + name + '2') || null,
-    hTwo   : Y.one('#id_h2') || null,
-    /* Level Three Selector */
+    hTwo        : Y.one('#id_h2') || null,
+    // Level three selector
     levelThree  : Y.one('#id_' + name + '3') || null,
-    hThree   : Y.one('#id_h3') || null,
+    hThree      : Y.one('#id_h3') || null,
 
-    /* Job Roles - Sel  */
+    // Job roles selector
     jobRoleLst : Y.one('#id_' + jr_selector),
 
-    /* Report Level */
+    // Report level
     report_level : rptLevel,
 
     /** Used to hold the timeout id of the timeout that waits before doing a search. */

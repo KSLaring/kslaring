@@ -17,8 +17,6 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once('../../../config.php');
-require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->libdir.'/formslib.php');
 
 /* Course Report Level - Form  */

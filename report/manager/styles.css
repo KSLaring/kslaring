@@ -400,12 +400,64 @@
     width:100%;
 }
 
+.user_rpt_div  {
+    margin-top: 0px;
+    margin-bottom: 1.5em;
+    clear: both;
+    display: block;
+    width:100%;
+}
+
+
 .outcome_rpt_div .outcome_content,
-.company_rpt_div .company_content {
+.company_rpt_div .company_content,
+.user_rpt_div .user_content {
     height: auto;
     margin-bottom: 15px;
     margin-top: 15px;
     width:100%;
+}
+
+.user_rpt_div .user_content  table {
+    width: 100%;
+    border-collapse:collapse;
+    margin-bottom: 0;
+    display: table;
+}
+
+.user_rpt_div .user_content tr.header {
+    background-color:  #c4ccd9;
+    color:  #000;
+    padding: 0;
+    margin-bottom: 0;
+    font:bold 12px Verdana,Verdana Pro,sans-serif;
+    border-bottom: 2px solid #d8d8d8;
+    vertical-align: middle;
+    height: 30px;
+}
+
+.user_rpt_div .user_content  th.company,
+.user_rpt_div .user_content  td.company {
+    width: 25%;
+    text-align: left;
+    text-justify:inter-word;
+    padding: 0px 10px 0px 0px;
+}
+
+.user_rpt_div .user_content  th.info,
+.user_rpt_div .user_content  td.info {
+    width: 20%;
+    text-align: left;
+    text-justify:inter-word;
+    padding: 0px 10px 0px 0px;
+}
+
+.user_rpt_div .user_content  th.status,
+.user_rpt_div .user_content  td.status {
+    width: 12%;
+    text-align: center;
+    text-justify:inter-word;
+    padding: 0px 10px 0px 0px;
 }
 
 .company_rpt_div .col_one {
@@ -795,6 +847,10 @@
     background-color: #f2f2f2;
 }
 
+.rcolor {
+    background-color: #e1e8ef;
+}
+
 .job_roles_selector {
     width: 100%;
     margin-bottom: 20px;
@@ -1056,7 +1112,9 @@ a.lnk_disabled {
     .outcome_rpt_div .outcome_content,
     .outcome_rpt_div .outcome_content .company_level,
     .outcome_rpt_div .outcome_content .course_list,
-    .outcome_rpt_div .outcome_content .course_list .user_list {
+    .outcome_rpt_div .outcome_content .course_list .user_list,
+    .user_rpt_div,
+    .user_rpt_div .user_content {
         float: none;
         width: 100%;
         display: block;
@@ -1069,14 +1127,16 @@ a.lnk_disabled {
     .tracker_list .course_list  tbody, tr, th, td,
     .outcome_rpt_div .outcome_content tbody, tr, th, td,
     .outcome_rpt_div .outcome_content .company_level tbody, tr, th, td,
-    .outcome_rpt_div .outcome_content .course_list .user_list tbody, tr, th, td {
+    .outcome_rpt_div .outcome_content .course_list .user_list tbody, tr, th, td,
+    .user_rpt_div .user_content tbody, tr, th, td {
         display: block;
     }
 
     .tracker_list .course_list table,
     .outcome_rpt_div .outcome_content table,
     .outcome_rpt_div .outcome_content .company_level table,
-    .outcome_rpt_div .outcome_content .course_list .user_list table {
+    .outcome_rpt_div .outcome_content .course_list .user_list table,
+    .user_rpt_div .user_content table {
         display:block;
         background-color: white !important;
         width:100%;
@@ -1086,21 +1146,24 @@ a.lnk_disabled {
     .tracker_list .course_list table thead tr,
     .outcome_rpt_div .outcome_content table thead tr,
     .outcome_rpt_div .outcome_content .company_level table thead tr,
-    .outcome_rpt_div .outcome_content .course_list .user_list table thead tr {
+    .outcome_rpt_div .outcome_content .course_list .user_list table thead tr,
+    .user_rpt_div .user_content table thead tr {
         display:none;
     }
 
     .tracker_list .course_list table th,
     .outcome_rpt_div .outcome_content table th,
     .outcome_rpt_div .outcome_content .company_level table th,
-    .outcome_rpt_div .outcome_content .course_list .user_list table th {
+    .outcome_rpt_div .outcome_content .course_list .user_list table th,
+    .user_rpt_div .user_content table th {
         display:none;
     }
 
     .tracker_list .course_list table tr,
     .outcome_rpt_div .outcome_content table tr,
     .outcome_rpt_div .outcome_content .company_level table tr,
-    .outcome_rpt_div .outcome_content .course_list .user_list table tr {
+    .outcome_rpt_div .outcome_content .course_list .user_list table tr,
+    .user_rpt_div .user_content table tr {
         width: 100%;
         border: 1px solid darkgray;
         padding-bottom: 15px;
@@ -1110,7 +1173,8 @@ a.lnk_disabled {
     .tracker_list .course_list table td,
     .outcome_rpt_div .outcome_content table td,
     .outcome_rpt_div .outcome_content .company_level table td,
-    .outcome_rpt_div .outcome_content .course_list .user_list table td {
+    .outcome_rpt_div .outcome_content .course_list .user_list table td,
+    .user_rpt_div .user_content table td {
         width:100%;
         border-top: 1px solid #f2f2f2;
         padding-bottom: 15px;
@@ -1131,7 +1195,10 @@ a.lnk_disabled {
     .outcome_rpt_div .outcome_content .company_level table td.company,
     .outcome_rpt_div .outcome_content .company_level table td.status,
     .outcome_rpt_div .outcome_content .course_list .user_list table td.course,
-    .outcome_rpt_div .outcome_content .course_list .user_list table td.status {
+    .outcome_rpt_div .outcome_content .course_list .user_list table td.status,
+    .user_rpt_div .user_content td.company,
+    .user_rpt_div .user_content td.info,
+    .user_rpt_div .user_content  td.status {
         /* Behave  like a "row" */
         position: relative;
         padding-left: 50%;
@@ -1151,7 +1218,10 @@ a.lnk_disabled {
     .outcome_rpt_div .outcome_content .company_level table td.company:before,
     .outcome_rpt_div .outcome_content .company_level table td.status:before,
     .outcome_rpt_div .outcome_content .course_list .user_list table td.course:before,
-    .outcome_rpt_div .outcome_content .course_list .user_list table td.status:before {
+    .outcome_rpt_div .outcome_content .course_list .user_list table td.status:before,
+    .user_rpt_div .user_content td.company:before,
+    .user_rpt_div .user_content td.info:before,
+    .user_rpt_div .user_content td.status:before {
         /* Now like a table header */
         position: absolute;
         /* Top/left values mimic padding */
@@ -1173,7 +1243,10 @@ a.lnk_disabled {
     .outcome_rpt_div .outcome_content .company_level table td.company:before,
     .outcome_rpt_div .outcome_content .company_level table td.status:before,
     .outcome_rpt_div .outcome_content .course_list .user_list table td.course:before,
-    .outcome_rpt_div .outcome_content .course_list .user_list table td.status:before {
+    .outcome_rpt_div .outcome_content .course_list .user_list table td.status:before,
+    .user_rpt_div .user_content td.company:before,
+    .user_rpt_div .user_content td.info:before,
+    .user_rpt_div .user_content td.status:before {
         content:attr(data-th);
         text-justify:inter-word;
         word-wrap: break-word;

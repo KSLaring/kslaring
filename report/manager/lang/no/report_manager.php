@@ -490,3 +490,15 @@ $string['unwaitconfirm']        = 'Ønsker du virkelig å fjerne deg fra venteli
 $string['exit_unwait']          = 'Ventelisteoppføringen dn har blitt slettet';
 
 $string['mapped_with']          = 'Mappet med TARDIS';
+
+$string['crontask']             = 'Report manager cron task';
+
+$string['user_report']              = 'User report';
+$string['user_report_link']         = 'User overview report';
+$string['user_return_to_selection'] = 'Return to user report selection page';
+$string['rpt_gender']               = 'Gender';
+$string['rpt_female']               = 'Woman';
+$string['rpt_male']                 = 'Man';
+$string['rpt_produce']              = 'Produced by';
+$string['rpt_enrolled']             = 'Enrolled date';
+$string['rpt_days']                 = 'Number of days';
