@@ -482,3 +482,15 @@ $string['unwaitconfirm']        = 'Do you really want to cancel the user enrol r
 $string['exit_unwait']          = 'Your enrol request has been canceled';
 
 $string['mapped_with']          = 'Mapped with TARDIS';
+
+$string['crontask']             = 'Report manager cron task';
+
+$string['user_report']              = 'User report';
+$string['user_report_link']         = 'User overview report';
+$string['user_return_to_selection'] = 'Return to user report selection page';
+$string['rpt_gender']               = 'Gender';
+$string['rpt_female']               = 'Woman';
+$string['rpt_male']                 = 'Man';
+$string['rpt_produce']              = 'Produced by';
+$string['rpt_enrolled']             = 'Enrolled date';
+$string['rpt_days']                 = 'Number of days';
