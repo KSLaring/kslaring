@@ -21,15 +21,21 @@ class Manager_Cron {
 
     public static function cron() {
         /* Variables */
+        global $CFG;
         $gender = null;
         $total  = null;
+        $dbLog  = null;
 
         try {
+            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START User report view. ' . "\n";
+
             // Get gender filed id
             $gender = self::get_gender_fieldid();
 
             // Create view profile
             self::view_profile($gender);
+
+            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' User profile view. ' . "\n";
 
             // User course view
             // Get if there are courses where extract data connected with the report
@@ -37,8 +43,16 @@ class Manager_Cron {
             if ($total) {
                 // Get content of the view
                 self::set_content_users_course_view();
+                $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' User course view. ' . "\n";
             }//if_total
+
+            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH User report view. ' . "\n";
+            error_log($dbLog, 3, $CFG->dataroot . "/rpt_manager.log");
         }catch (Exception $ex) {
+            $dbLog .= " FINISH ERROR " . "\n";
+            $dbLog .= " ERROR : " . $ex->getTraceAsString() . "\n";
+            error_log($dbLog, 3, $CFG->dataroot . "/rpt_manager.log");
+            
             throw $ex;
         }//try_catch
     }//CRON
