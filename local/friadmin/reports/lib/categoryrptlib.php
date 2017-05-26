@@ -220,7 +220,6 @@ class friadminrpt
                     LEFT JOIN {enrol}                           e   ON e.courseid  = c.id
                                                                     AND e.enrol    = 'waitinglist'
                                                                     AND e.status   = 0
-                    JOIN 	  {user_enrolments}			        ue 	ON ue.enrolid 	  = e.id
                     -- Counting students and instructors
                     LEFT JOIN (
                         SELECT ct.instanceid as 'course',
@@ -267,15 +266,6 @@ class friadminrpt
                     -- Produced By
                     LEFT JOIN		{course_format_options}	    fo4	ON 	fo4.courseid  = c.id
                                                                     AND fo4.name 	  = 'producedby'
-                    -- Deadline
-                    -- LEFT JOIN (
-                    --     SELECT 		customint1,
-                    --                 courseid
-                    --     FROM		{enrol}
-                    --     WHERE 		enrol = 'waitinglist'
-                    --    AND 		customint1 IS NOT NULL
-                    --    AND 		customint1 != 0
-                    -- ) dl ON dl.courseid = c.id
                 WHERE ca.id = :categoryid
                 AND   c.startdate >= :from
                 AND   c.startdate <= :to
