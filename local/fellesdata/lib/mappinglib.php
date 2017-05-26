@@ -1518,6 +1518,9 @@ class FS_MAPPING {
             $params = array();
             $params['parent'] = $parent;
 
+            echo "PARENT :      " . $parent         . "</br>";
+            echo "PARENTLEVEL:  " . $parentlevel    . "</br>";
+
             // SQL Instruction
             $sql = " SELECT       fs_imp.ORG_NIVAA 			as 'level',
                                   fs_imp.ORG_NAVN			as 'name',
@@ -1528,6 +1531,8 @@ class FS_MAPPING {
             // Execute
             $rdo = $DB->get_record_sql($sql,$params);
             if ($rdo) {
+                echo "LEVEL RDO: " . $rdo->level        . "</br>";
+                echo "FS PARENT: " . $rdo->fs_parent    . "</br>";
                 if ($parentlevel != $rdo->level) {
                     self::get_parent($rdo->fs_parent,$parentlevel);
                 }
