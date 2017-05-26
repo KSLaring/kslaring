@@ -711,7 +711,7 @@ Class Approval {
 
             if ($manager) {
                 $params['manager']      = $manager;
-                $sql .= " AND eam.mangerid = :manager ";
+                $sql .= " AND eam.managerid = :manager ";
             }//if_manager
 
             // Execute
