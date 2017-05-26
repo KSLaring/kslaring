@@ -1351,31 +1351,31 @@ class FS_MAPPING {
 
             // SQL Instruction
             $sql = " SELECT DISTINCT 
-                                fs_imp.id,
-                                fs_imp.org_enhet_id   		as 'fscompany',
-                                fs_imp.org_nivaa,
-                                fs_imp.org_navn	    		as 'name',
-                                fs_imp.org_enhet_over,
-                                fs_imp.privat,
-                                fs_imp.ansvar,
-                                fs_imp.tjeneste,
-                                fs_imp.adresse1,
-                                fs_imp.adresse2,
-                                fs_imp.adresse3,
-                                fs_imp.postnr,
-                                fs_imp.poststed,
-                                fs_imp.epost,
-                                fs_granpa.ORG_NIVAA 		as 'parentnivaa',
-                                fs_granpa.ORG_ENHET_OVER	as 'parentparent',
-                                fs_granpa.ORG_NAVN			as 'parentname'
-                     FROM			{fs_imp_company}    fs_imp
-                        LEFT JOIN 	{fs_company}	    fs	  		ON fs.companyid 			= fs_imp.org_enhet_id
+                                  fs_imp.id,
+                                  fs_imp.org_enhet_id   		as 'fscompany',
+                                  fs_imp.org_nivaa,
+                                  fs_imp.org_navn	    		as 'name',
+                                  fs_imp.org_enhet_over,
+                                  fs_imp.privat,
+                                  fs_imp.ansvar,
+                                  fs_imp.tjeneste,
+                                  fs_imp.adresse1,
+                                  fs_imp.adresse2,
+                                  fs_imp.adresse3,
+                                  fs_imp.postnr,
+                                  fs_imp.poststed,
+                                  fs_imp.epost,
+                                  fs_granpa.ORG_NIVAA 		as 'parentnivaa',
+                                  fs_granpa.ORG_ENHET_OVER	as 'parentparent',
+                                  fs_granpa.ORG_NAVN			as 'parentname'
+                     FROM		  {fs_imp_company}  fs_imp
+                        LEFT JOIN {fs_company}	    fs	  		ON fs.companyid 			= fs_imp.org_enhet_id
                         -- Granparent information
-                        LEFT JOIN	mdl_fs_imp_company	fs_granpa	ON fs_granpa.org_enhet_id 	= fs_imp.org_enhet_over
-                     WHERE	  fs_imp.imported  = :imported
-                        AND   fs_imp.action   != :action
-                        AND	  fs.id IS NULL
-                        AND	  fs_imp.org_nivaa = :level ";
+                        LEFT JOIN {fs_imp_company}	fs_granpa	ON fs_granpa.org_enhet_id 	= fs_imp.org_enhet_over
+                     WHERE	      fs_imp.imported  = :imported
+                          AND     fs_imp.action   != :action
+                          AND	  fs.id IS NULL
+                          AND	  fs_imp.org_nivaa = :level ";
 
             // Add notIn criteria
             if ($notIn) {
@@ -1405,7 +1405,7 @@ class FS_MAPPING {
 
             // Order criteria
             $sql .= " ORDER BY fs_imp.org_navn
-                      LIMIT 0,1 "; // -- LIMIT $start, $length
+                      LIMIT $start, $length ";
 
             // Execute
             $rdo = $DB->get_records_sql($sql,$params);
@@ -1481,9 +1481,6 @@ class FS_MAPPING {
             self::get_parent($parent,$granpalevel,$grandpa);
 
             if ($grandpa) {
-                echo "GRANPA LEVEL: " . $grandpa->level . "</br>";
-                echo "GRANPA name:  " . $grandpa->name . "</br>";
-
                 $name = $grandpa->name;
             }
 
@@ -1519,9 +1516,6 @@ class FS_MAPPING {
             $params = array();
             $params['parent'] = $parent;
 
-            echo "PARENT :      " . $parent         . "</br>";
-            echo "PARENTLEVEL:  " . $parentlevel    . "</br>";
-
             // SQL Instruction
             $sql = " SELECT       fs_imp.ORG_NIVAA 			as 'level',
                                   fs_imp.ORG_NAVN			as 'name',
@@ -1532,8 +1526,6 @@ class FS_MAPPING {
             // Execute
             $rdo = $DB->get_record_sql($sql,$params);
             if ($rdo) {
-                echo "LEVEL RDO: " . $rdo->level        . "</br>";
-                echo "FS PARENT: " . $rdo->fs_parent    . "</br>";
                 if ($parentlevel != $rdo->level) {
                     self::get_parent($rdo->fs_parent,$parentlevel,$grandpa);
                 }else {
