@@ -52,7 +52,7 @@ class Manager_Cron {
             $dbLog .= " FINISH ERROR " . "\n";
             $dbLog .= " ERROR : " . $ex->getTraceAsString() . "\n";
             error_log($dbLog, 3, $CFG->dataroot . "/rpt_manager.log");
-            
+
             throw $ex;
         }//try_catch
     }//CRON
