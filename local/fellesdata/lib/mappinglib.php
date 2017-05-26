@@ -1473,20 +1473,18 @@ class FS_MAPPING {
      */
     private static function GetGranparentName($parent,$granpalevel) {
         /* Variables */
-        global $DB;
-        $name   = null;
-        $granpa = null;
-        $stop   = false;
+        $name    = null;
+        $grandpa = null;
 
         try {
             // Get granpa object
-            $granpa = self::get_parent($parent,$granpalevel);
+            self::get_parent($parent,$granpalevel,$grandpa);
 
-            if ($granpa) {
-                echo "GRANPA LEVEL: " . $granpa->level . "</br>";
-                echo "GRANPA name:  " . $granpa->name . "</br>";
-                
-                $name = $granpa->name;
+            if ($grandpa) {
+                echo "GRANPA LEVEL: " . $grandpa->level . "</br>";
+                echo "GRANPA name:  " . $grandpa->name . "</br>";
+
+                $name = $grandpa->name;
             }
 
             return $name;
@@ -1500,14 +1498,14 @@ class FS_MAPPING {
      * Get parent object connected with
      * @param           $parent
      * @param           $parentlevel
+     * @param           $grandpa
      *
-     * @return          mixed|null
      * @throws          Exception
      *
      * @creationDate    20/04/17
      * @author          eFaktor     (fbv)
      */
-    private static function get_parent($parent,$parentlevel) {
+    private static function get_parent($parent,$parentlevel,&$grandpa) {
         /* Variables */
         global $DB;
         $granpalevel = null;
@@ -1537,11 +1535,11 @@ class FS_MAPPING {
                 echo "LEVEL RDO: " . $rdo->level        . "</br>";
                 echo "FS PARENT: " . $rdo->fs_parent    . "</br>";
                 if ($parentlevel != $rdo->level) {
-                    self::get_parent($rdo->fs_parent,$parentlevel);
+                    self::get_parent($rdo->fs_parent,$parentlevel,$grandpa);
+                }else {
+                    $grandpa = $rdo;
                 }
             }//if_rdo
-
-            return $rdo;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
