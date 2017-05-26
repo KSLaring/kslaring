@@ -1405,10 +1405,10 @@ class FS_MAPPING {
 
             // Order criteria
             $sql .= " ORDER BY fs_imp.org_navn
-                      LIMIT $start, $length ";
+                      LIMIT 0,1 "; // -- LIMIT $start, $length
 
             // Execute
-            $rdo = $DB->get_records_sql($sql,$params,0,1);
+            $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 foreach ($rdo as $instance) {
                     // Info company
