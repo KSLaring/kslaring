@@ -1483,6 +1483,9 @@ class FS_MAPPING {
             $granpa = self::get_parent($parent,$granpalevel);
 
             if ($granpa) {
+                echo "GRANPA LEVEL: " . $granpa->level . "</br>";
+                echo "GRANPA name:  " . $granpa->name . "</br>";
+                
                 $name = $granpa->name;
             }
 
