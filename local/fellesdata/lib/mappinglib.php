@@ -1349,8 +1349,6 @@ class FS_MAPPING {
                     break;
             }//level
 
-            echo "GRANPA PARENT LEVEL: " . $granpalevel . "</br>";
-            
             // SQL Instruction
             $sql = " SELECT DISTINCT 
                                 fs_imp.id,
@@ -1523,17 +1521,15 @@ class FS_MAPPING {
             // SQL Instruction
             $sql = " SELECT       fs_imp.ORG_NIVAA 			as 'level',
                                   fs_imp.ORG_NAVN			as 'name',
-                                  fs_imp.ORG_ENHET_OVER		as 'fs_parent',
-                                  fs_granpa.ORG_ENHET_OVER	as 'parentparent'
+                                  fs_imp.ORG_ENHET_OVER		as 'fs_parent'
                      FROM	      {fs_imp_company}	fs_imp
-                        LEFT JOIN {fs_imp_company}	fs_granpa	ON fs_granpa.org_enhet_id 	= fs_imp.ORG_ENHET_OVER
                      WHERE	      fs_imp.org_enhet_id	= :parent ";
 
             // Execute
             $rdo = $DB->get_record_sql($sql,$params);
             if ($rdo) {
                 if ($parentlevel != $rdo->level) {
-                    self::get_parent($rdo->parentparent,$parentlevel);
+                    self::get_parent($rdo->fs_parent,$parentlevel);
                 }
             }//if_rdo
 
