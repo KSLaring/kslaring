@@ -56,7 +56,6 @@ class friadminrpt
             $categories[0] = get_string('selectone', 'local_friadmin'); // Sets the first value in the array as "Select one...".
             $rdo = $DB->get_records_sql($query);
 
-            // Gets all the categories from the kurskategori table that does have courses in them.
             if ($rdo) {
                 foreach ($rdo as $instance) {
                     $categories[$instance->id] = $instance->name;
@@ -93,7 +92,7 @@ class friadminrpt
                   FROM    {course} c";
 
         try {
-            $courses[0] = get_string('selectone', 'local_friadmin'); // Sets the first value in the array as "Select one...".
+            $courses[0] = get_string('selectone', 'local_friadmin');
             $rdo = $DB->get_records_sql($query);
 
             if ($rdo) {
@@ -204,7 +203,7 @@ class friadminrpt
                                     cl.name		        as 'levelone',		    -- Municipality (level one) / Course location
                                     fo2.value		    as 'sector',			-- Course Sector
                                     ca.name 		    as 'category', 		    -- Category Name
-                                    dl.customint1		as 'expiration', 	    -- Deadline for enrolments
+                                    e.customint1		as 'expiration', 	    -- Deadline for enrolments
                                     e.customint2	    as 'spots',			    -- Number of places
                                     e.customtext3	    as 'internalprice',	    -- Internal price
                                     e.customtext4	    as 'externalprice',     -- external price
@@ -217,8 +216,11 @@ class friadminrpt
                 FROM 				{course} 					c
                     -- Category
                     JOIN 			{course_categories} 		ca 	ON ca.id 		  = c.category
-                    JOIN			{enrol}					    e 	ON e.courseid 	  = c.id
-                    JOIN 			{user_enrolments}			ue 	ON ue.enrolid 	  = e.id
+                    -- Deadline / Internal price && External price
+                    LEFT JOIN {enrol}                           e   ON e.courseid  = c.id
+                                                                    AND e.enrol    = 'waitinglist'
+                                                                    AND e.status   = 0
+                    JOIN 	  {user_enrolments}			        ue 	ON ue.enrolid 	  = e.id
                     -- Counting students and instructors
                     LEFT JOIN (
                         SELECT ct.instanceid as 'course',
@@ -266,14 +268,14 @@ class friadminrpt
                     LEFT JOIN		{course_format_options}	    fo4	ON 	fo4.courseid  = c.id
                                                                     AND fo4.name 	  = 'producedby'
                     -- Deadline
-                    LEFT JOIN (
-                        SELECT 		customint1,
-                                    courseid
-                        FROM		{enrol}
-                        WHERE 		enrol = 'waitinglist'
-                        AND 		customint1 IS NOT NULL
-                        AND 		customint1 != 0
-                    ) dl ON dl.courseid = c.id
+                    -- LEFT JOIN (
+                    --     SELECT 		customint1,
+                    --                 courseid
+                    --     FROM		{enrol}
+                    --     WHERE 		enrol = 'waitinglist'
+                    --    AND 		customint1 IS NOT NULL
+                    --    AND 		customint1 != 0
+                    -- ) dl ON dl.courseid = c.id
                 WHERE ca.id = :categoryid
                 AND   c.startdate >= :from
                 AND   c.startdate <= :to
@@ -353,10 +355,11 @@ class friadminrpt
         // Jobrole.
         if ($jobrole) {
             $jobrolesql = " JOIN {user_info_competence_data}  uic2 ON uic2.userid = u.id
-                            JOIN {report_gen_jobrole}         gjr ON gjr.id IN (uic2.jobroles)
-                                                                  AND gjr.name LIKE '%" . $jobrole . "%' ";
+                            JOIN {report_gen_jobrole}         gjr  ON gjr.id IN (uic2.jobroles)
+                                                                   AND gjr.name LIKE '%" . $jobrole . "%' ";
         }
 
+        // Query.
         $query = "SELECT DISTINCT u.id
                   FROM  {user}                    u
                   -- INSTRUCTORS
@@ -414,9 +417,9 @@ class friadminrpt
     public static function get_course_instructor_data($instructors, $course, $category) {
         // Variables!
         global $DB;
-        $rdo = null;
-        $myarray = implode(',', array_keys($instructors));
-        $extrasql = ' ';
+        $rdo        = null;
+        $myarray    = implode(',', array_keys($instructors));
+        $extrasql   = ' ';
 
         if ($course) {
             $extrasql .= " AND c.id = :course ";
@@ -708,13 +711,13 @@ class friadminrpt
         // Variables.
         $col        = 0;
         $row        = 0;
-        $strsummary = get_string('summaryrptexcel', 'local_friadmin');
-        $strcategory = get_string('categoryexcel', 'local_friadmin');
-        $strfrom = get_string('fromexcel', 'local_friadmin');
-        $strto = get_string('toexcel', 'local_friadmin');
+        $strsummary     = get_string('summaryrptexcel', 'local_friadmin');
+        $strcategory    = get_string('categoryexcel', 'local_friadmin');
+        $strfrom        = get_string('fromexcel', 'local_friadmin');
+        $strto          = get_string('toexcel', 'local_friadmin');
 
         $myfrom = date("d-m-Y", $from);
-        $myto = date("d-m-Y", $to);
+        $myto   = date("d-m-Y", $to);
 
         try {
 
