@@ -1408,7 +1408,7 @@ class FS_MAPPING {
                       LIMIT $start, $length ";
 
             // Execute
-            $rdo = $DB->get_records_sql($sql,$params);
+            $rdo = $DB->get_records_sql($sql,$params,0,1);
             if ($rdo) {
                 foreach ($rdo as $instance) {
                     // Info company
