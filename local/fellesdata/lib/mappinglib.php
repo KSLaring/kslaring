@@ -1349,6 +1349,8 @@ class FS_MAPPING {
                     break;
             }//level
 
+            echo "GRANPA PARENT LEVEL: " . $granpalevel . "</br>";
+            
             // SQL Instruction
             $sql = " SELECT DISTINCT 
                                 fs_imp.id,
