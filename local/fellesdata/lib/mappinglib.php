@@ -1519,13 +1519,13 @@ class FS_MAPPING {
             $params['parent'] = $parent;
 
             // SQL Instruction
-            $sql = " SELECT       fs.fs_parent,
-							      fs.name,
-                                  fs.level,
-							      fs_granpa.ORG_ENHET_OVER	as 'parentparent'
-                     FROM	      {fs_company} 		fs
-                        LEFT JOIN {fs_imp_company}	fs_granpa	ON fs_granpa.org_enhet_id 	= fs.fs_parent
-                     WHERE fs.companyid = :parent  ";
+            $sql = " SELECT       fs_imp.ORG_NIVAA 			as 'level',
+                                  fs_imp.ORG_NAVN			as 'name',
+                                  fs_imp.ORG_ENHET_OVER		as 'fs_parent',
+                                  fs_granpa.ORG_ENHET_OVER	as 'parentparent'
+                     FROM	      {fs_imp_company}	fs_imp
+                        LEFT JOIN {fs_imp_company}	fs_granpa	ON fs_granpa.org_enhet_id 	= fs_imp.ORG_ENHET_OVER
+                     WHERE	      fs_imp.org_enhet_id	= :parent ";
 
             // Execute
             $rdo = $DB->get_record_sql($sql,$params);
