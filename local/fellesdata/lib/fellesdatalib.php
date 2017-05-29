@@ -1224,7 +1224,6 @@ class FSKS_USERS {
                 $objUser = (Object)$user;
 
                 if ($objUser->imported) {
-                    echo "USER KEY: " .$objUser->key . "</br>";
                     // Get Info User
                     $infoUser = $usersFS[$objUser->key];
 
@@ -1847,10 +1846,8 @@ class FSKS_USERS {
                 case STATUS:
                     // Execute
                     if (!$rdoUser) {
-                        echo "Insert " . "</br>";
                         $userId = $DB->insert_record('user',$infoUser);
                     }else {
-                        echo "UPDATE " . "</br>";
                         // Update
                         $userId = $rdoUser->id;
                         $rdoUser->firstname     = $userFS->firstname;
