@@ -1891,7 +1891,6 @@ class FSKS_USERS {
 
             // Synchronized
             if ($sync) {
-                echo "SYNC" . "</br>";
                 $instance = new stdClass();
                 $instance->id           = $fsKey;
                 $instance->imported     = 1;
