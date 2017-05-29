@@ -1154,7 +1154,7 @@ class FELLESDATA_CRON {
                 echo "Industry --> " . $industry . "</br>";
 
                 if ($total) {
-                    for ($i=0;$i<=$total;$i=$i+$limit) {
+                    //for ($i=0;$i<=$total;$i=$i+$limit) {
                         // Get users accounts
                         list($lstusers,$rdousers) = FSKS_USERS::get_users_accounts($industry,$start,$limit);
 
@@ -1170,7 +1170,7 @@ class FELLESDATA_CRON {
                                 $dblog .= "Error WS: " . $response['message'] . "\n" ."\n";
                             }//if_no_error
                         }//if_response
-                    }//for
+                    //}//for
                 }//if_total
             }//if_synchronization
 
