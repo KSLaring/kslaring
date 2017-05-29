@@ -1150,9 +1150,10 @@ class FELLESDATA_CRON {
                 // Users to synchronize
                 $total = $DB->count_records('fs_imp_users',array('imported' => '0'));
 
-                echo "LIMIT --> " . $limit . " TOTAL --> " . $total . "</br>";
-                $total = 0;
+                echo "</br> LIMIT --> " . $limit . " TOTAL --> " . $total . "</br>";
+                echo "Industry --> " . $industry . "</br>";
                 
+                $total = 0;
                 if ($total) {
                     for ($i=0;$i<=$total;$i=$i+$limit) {
                         // Get users accounts
