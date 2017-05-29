@@ -1185,8 +1185,7 @@ class FSKS_USERS {
                             trim(fs.epost) 												as 'email',
                             fs.action
                      FROM	{fs_imp_users}	fs
-                     WHERE 	fs.imported = :imported
-                     ORDER BY fs.fodselsnr ";
+                     WHERE 	fs.imported = :imported ";
             
             // Execute
             $rdo = $DB->get_records_sql($sql,$params,$start,$limit);
