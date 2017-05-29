@@ -1123,7 +1123,7 @@ class FELLESDATA_CRON {
 
             // To avoid problems timeout
             if (isset($SESSION->manual) && ($SESSION->manual)) {
-                $limit          = 150;
+                $limit          = 100;
             }//if_session_manul
 
             // Log
