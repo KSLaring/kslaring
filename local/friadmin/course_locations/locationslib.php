@@ -1115,6 +1115,46 @@ class CourseLocations {
         }//try_catch
     }//Print_LocationView
 
+
+    /** / */
+    public static function download_this_course_data($coursesdata, $from, $to, $category) {
+        // Variables.
+        global $CFG;
+        $row = 0;
+        $time = null;
+        $name = null;
+        $export = null;
+        $myxls = null;
+
+        try {
+            require_once($CFG->dirroot . '/lib/excellib.class.php');
+
+            $time = userdate(time(), '%d.%m.%Y', 99, false);
+            $name = clean_filename('Participants_List_Summary' . $time . ".xls");
+            // Creating a workbook.
+            $export = new MoodleExcelWorkbook($name);
+
+            // Search criterias.
+            $myxls = $export->add_worksheet('Filter');
+
+            self::add_participants_excel_filter($myxls, $row, $from, $to, $category);
+
+            // Raw.
+            $myxls = $export->add_worksheet('Content');
+
+            // Headers.
+            self::add_participants_header_excel($myxls, $row, $coursesdata);
+            // Content.
+            self::add_participants_content_excel($coursesdata, $myxls, $row, $from, $to);
+
+            $export->close();
+
+            exit;
+        } catch (Exception $ex) {
+            throw $ex;
+        }
+    }//download_participants_list
+
     /*********************/
     /* PRIVATE FUNCTIONS */
     /*********************/

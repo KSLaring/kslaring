@@ -555,7 +555,7 @@ class friadminrpt
             require_once($CFG->dirroot . '/lib/excellib.class.php');
 
             $time = userdate(time(), '%d.%m.%Y', 99, false);
-            $name = clean_filename('Participants_List_Summary' . $time . ".xls");
+            $name = clean_filename(get_string('participantslistsummary', 'local_friadmin') . $time . ".xls");
             // Creating a workbook.
             $export = new MoodleExcelWorkbook($name);
 
@@ -606,7 +606,7 @@ class friadminrpt
             require_once($CFG->dirroot . '/lib/excellib.class.php');
 
             $time = userdate(time(), '%d.%m.%Y', 99, false);
-            $name = clean_filename('Participants_List_Instructors' . $time . ".xls");
+            $name = clean_filename(get_string('participantslistinstructors', 'local_friadmin') . $time . ".xls");
             // Creating a workbook.
             $export = new MoodleExcelWorkbook($name);
 
@@ -657,7 +657,7 @@ class friadminrpt
             require_once($CFG->dirroot . '/lib/excellib.class.php');
 
             $time = userdate(time(), '%d.%m.%Y', 99, false);
-            $name = clean_filename('Participants_List_Coordinators' . $time . ".xls");
+            $name = clean_filename(get_string('participantslistcoordinators', 'local_friadmin') . $time . ".xls");
             // Creating a workbook.
             $export = new MoodleExcelWorkbook($name);
 
