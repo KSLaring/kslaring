@@ -1185,7 +1185,8 @@ class FSKS_USERS {
                             trim(fs.epost) 												as 'email',
                             fs.action
                      FROM	{fs_imp_users}	fs
-                     WHERE 	fs.imported = :imported ";
+                     WHERE 	fs.imported = :imported
+                     ORDER BY fs.fodselsnr ";
             
             // Execute
             $rdo = $DB->get_records_sql($sql,$params,$start,$limit);
@@ -1223,6 +1224,7 @@ class FSKS_USERS {
                 $objUser = (Object)$user;
 
                 if ($objUser->imported) {
+                    echo "USER KEY: " .$objUser->key . "</br>";
                     // Get Info User
                     $infoUser = $usersFS[$objUser->key];
 
@@ -1845,8 +1847,10 @@ class FSKS_USERS {
                 case STATUS:
                     // Execute
                     if (!$rdoUser) {
+                        echo "Insert " . "</br>";
                         $userId = $DB->insert_record('user',$infoUser);
                     }else {
+                        echo "UPDATE " . "</br>";
                         // Update
                         $userId = $rdoUser->id;
                         $rdoUser->firstname     = $userFS->firstname;
@@ -1887,6 +1891,7 @@ class FSKS_USERS {
 
             // Synchronized
             if ($sync) {
+                echo "SYNC" . "</br>";
                 $instance = new stdClass();
                 $instance->id           = $fsKey;
                 $instance->imported     = 1;

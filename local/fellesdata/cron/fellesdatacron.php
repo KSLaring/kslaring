@@ -1128,7 +1128,7 @@ class FELLESDATA_CRON {
 
             // To avoid problems timeout
             if (isset($SESSION->manual) && ($SESSION->manual)) {
-                $limit          = 150;
+                $limit          = 2;
             }//if_session_manul
 
             // Log
@@ -1152,8 +1152,7 @@ class FELLESDATA_CRON {
 
                 echo "</br> LIMIT --> " . $limit . " TOTAL --> " . $total . "</br>";
                 echo "Industry --> " . $industry . "</br>";
-                
-                $total = 0;
+
                 if ($total) {
                     for ($i=0;$i<=$total;$i=$i+$limit) {
                         // Get users accounts
