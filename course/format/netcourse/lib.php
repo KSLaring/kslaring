@@ -179,6 +179,11 @@ class format_netcourse extends format_base {
     public function page_set_course(moodle_page $page) {
         global $USER, $FULLME, $ME;
 
+        // No specific changes if a file shall be downloaded.
+        if (strpos($ME, 'forcedownload=1') !== false) {
+            return;
+        }
+
         if (is_null($this->openlast)) {
             $this->openlast = new format_netcourse_openlast($page,
                 $page->course, $USER, $FULLME);
