@@ -560,12 +560,12 @@ class friadminrpt
             $export = new MoodleExcelWorkbook($name);
 
             // Search criterias.
-            $myxls = $export->add_worksheet('Filter');
+            $myxls = $export->add_worksheet(get_string('filter', 'local_friadmin'));
 
                 self::add_participants_excel_filter($myxls, $row, $from, $to, $category);
 
             // Raw.
-            $myxls = $export->add_worksheet('Content');
+            $myxls = $export->add_worksheet(get_string('content', 'local_friadmin'));
 
                 // Headers.
                 self::add_participants_header_excel($myxls, $row, $coursesdata);
@@ -611,13 +611,13 @@ class friadminrpt
             $export = new MoodleExcelWorkbook($name);
 
             // Search criterias.
-            $myxls = $export->add_worksheet('Filter');
+            $myxls = $export->add_worksheet(get_string('filter', 'local_friadmin'));
 
                 self::add_participants_excel_filter_instructor(
                     $myxls, $row, $category, $course, $userfullname, $username, $useremail, $userworkplace, $userjobrole);
 
             // Raw.
-            $myxls = $export->add_worksheet('Content');
+            $myxls = $export->add_worksheet(get_string('content', 'local_friadmin'));
 
                 // Headers.
                 self::add_participants_header_excel_instructor($myxls, $row, $coursesdata);
@@ -662,13 +662,13 @@ class friadminrpt
             $export = new MoodleExcelWorkbook($name);
 
             // Search criterias.
-            $myxls = $export->add_worksheet('Filter');
+            $myxls = $export->add_worksheet(get_string('filter', 'local_friadmin'));
 
             self::add_participants_excel_filter_coordinator(
                 $myxls, $row, $category, $course, $userfullname, $username, $useremail, $userworkplace, $userjobrole);
 
             // Raw.
-            $myxls = $export->add_worksheet('Content');
+            $myxls = $export->add_worksheet(get_string('content', 'local_friadmin'));
 
             // Headers.
             self::add_participants_header_excel_coordinator($myxls, $row, $coursesdata);

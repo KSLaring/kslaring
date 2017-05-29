@@ -354,6 +354,9 @@ $string['emailexcel'] = 'Email';
 $string['workplaceexcel'] = 'Workplace';
 $string['jobroleexcel'] = 'Jobrole';
 
-$string['participantslistsummary'] = 'Participants_List_Summary';
-$string['participantslistinstructors'] = 'Participants_List_Instructors';
-$string['participantslistcoordinators'] = 'Participants_List_Coordinators';
+$string['participantslistsummary'] = 'Participants_List_Summary_';
+$string['participantslistinstructors'] = 'Participants_List_Instructors_';
+$string['participantslistcoordinators'] = 'Participants_List_Coordinators_';
+
+$string['filter'] = 'Filter';
+$string['content'] = 'Content';

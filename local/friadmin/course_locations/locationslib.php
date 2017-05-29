@@ -1130,7 +1130,7 @@ class CourseLocations {
             require_once($CFG->dirroot . '/lib/excellib.class.php');
 
             $time = userdate(time(), '%d.%m.%Y', 99, false);
-            $name = clean_filename('Participants_List_Summary' . $time . ".xls");
+            $name = clean_filename('this_is_one_course' . $time . ".xls");
             // Creating a workbook.
             $export = new MoodleExcelWorkbook($name);
 
