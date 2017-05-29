@@ -39,7 +39,7 @@ class FELLESDATA_CRON {
     /* PUBLIC */
     /**********/
 
-    public static function cron($plugin,$fstExecution) {
+    public static function cron_old($plugin,$fstExecution) {
         /* Variables    */
         global $SESSION;
         global $CFG;
@@ -63,16 +63,16 @@ class FELLESDATA_CRON {
             // Unmap process
             if (!$fstExecution) {
                 $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START  UNMAP Organizations. ' . "\n";
-                //self::unmap_organizations($plugin,KS_UNMAP_COMPANY);
+                self::unmap_organizations($plugin,KS_UNMAP_COMPANY);
             }//fstExecution_tounmap
 
             // Import KS
             $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START Import KS. ' . "\n";
-            //self::import_ks($plugin);
+            self::import_ks($plugin);
 
             // Import fellesdata
             $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START Import Fellesdata. ' . "\n";
-            //self::import_fellesdata($plugin);
+            self::import_fellesdata($plugin);
 
             // Users accounts synchornization
             $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START Users FS Synchronization. ' . "\n";
@@ -80,14 +80,14 @@ class FELLESDATA_CRON {
 
             // Companies synchornization
             $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' START Companies FS Synchronization. ' . "\n";
-            //self::companies_fs_synchronization($plugin,$fstExecution);
+            self::companies_fs_synchronization($plugin,$fstExecution);
 
             // Job roles to map
-            //self::jobroles_fs_to_map($plugin);
+            self::jobroles_fs_to_map($plugin);
 
             // Competence synchronization
             if (!$fstExecution) {
-                //self::competence_synchronization($plugin);
+                self::competence_synchronization($plugin);
             }
 
             /* Log  */
