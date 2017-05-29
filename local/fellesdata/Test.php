@@ -44,6 +44,7 @@ try {
             // Send Reminder
             //suspicious::send_suspicious_notifications($pluginInfo,true);
         }else {
+            $SESSION->manual = true;
             FELLESDATA_CRON::cron_manual(true,$option);
         }
     }else {
