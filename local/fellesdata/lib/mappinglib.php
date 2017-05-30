@@ -660,6 +660,8 @@ class FS_MAPPING {
 
             /* Execute */
             $sql .= " ORDER BY   fs.stillingskode,fs.stillingstekst ";
+
+            echo $sql . "</br>";
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 foreach ($rdo as $instance) {
