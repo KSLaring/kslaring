@@ -627,7 +627,7 @@ class FS_MAPPING {
             /* Search criteria */
             $params = array();
             $params['job_role'] = $ks_jobrole;
-            $params['action']   = DELETE;
+            $params['action']   = ACT_DELETE;
 
             /* SQL Instruction  */
             $sql = " SELECT 	    fs.stillingskode,
@@ -661,7 +661,6 @@ class FS_MAPPING {
             /* Execute */
             $sql .= " ORDER BY   fs.stillingskode,fs.stillingstekst ";
 
-            echo $sql . "</br>";
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 foreach ($rdo as $instance) {
