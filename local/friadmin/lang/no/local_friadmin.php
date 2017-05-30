@@ -353,3 +353,8 @@ $string['participantslistcoordinators'] = 'Participants_List_Coordinators_';
 
 $string['filter'] = 'Filter';
 $string['content'] = 'Content';
+
+$string['courselocation'] = 'Course Location';
+
+$string['download_one_location'] = 'Download one location';
+$string['download_all_locations'] = 'Download all locations';

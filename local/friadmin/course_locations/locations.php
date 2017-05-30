@@ -27,6 +27,8 @@ $perpage        = optional_param('perpage', 20, PARAM_INT);        // how many p
 $sort           = optional_param('sort','ASC',PARAM_TEXT);
 $act            = optional_param('act',0,PARAM_INT);
 $locationId     = optional_param('id',0,PARAM_INT);
+$format         = optional_param('format', 0, PARAM_INT);
+$county         = optional_param('county', '', PARAM_TEXT);
 $url            = new moodle_url('/local/friadmin/course_locations/locations.php',array('page' => $page, 'perpage' => $perpage));
 $return_url     = new moodle_url('/local/friadmin/course_locations/index.php');
 $context        = context_system::instance();
@@ -90,6 +92,20 @@ if ($act) {
         $fieldSort = '';
     }//if_dir
 
+    // Download in excel
+    if ($format == 1) {
+        ob_end_clean();
+        CourseLocations::download_one_location_data($county);
+
+        die;
+    }else if ($format == 2) {
+        ob_end_clean();
+        CourseLocations::download_all_locations_data();
+
+        die;
+    }else {
+
+    }
     /* Get locations    */
     $locations = CourseLocations::Get_LocationsList($filter,$page*$perpage,$perpage,$sort,$fieldSort);
     /* Get County Name      */
