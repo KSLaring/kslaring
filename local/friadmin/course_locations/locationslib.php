@@ -1006,7 +1006,7 @@ class CourseLocations {
             /* Url To Back  */
             $urlReturn     = new moodle_url('/local/friadmin/course_locations/index.php');
             // Url to download.
-            $urldownloadone = new moodle_url('/local/friadmin/course_locations/locations.php',array('format' => '1', 'location' => $mycounty)); // Download one.
+            $urldownloadone = new moodle_url('/local/friadmin/course_locations/locations.php',array('format' => '1', 'mycounty' => $mycounty)); // Download one.
             $urldownloadall = new moodle_url('/local/friadmin/course_locations/locations.php',array('format' => '2')); // Download all.
 
             /* Locations Report */
@@ -1049,7 +1049,7 @@ class CourseLocations {
 
             /* Return To Selection Page */
             $out_report .= html_writer::link($urlReturn,get_string('return_to_selection','local_friadmin'),array('class' => 'link_return'));
-            $out_report .= html_writer::link($urldownloadall, get_string('download_all_locations', 'local_friadmin'), array('class' => 'location_excel_download', 'style' => 'float: right'));;
+            $out_report .= html_writer::link($urldownloadall, get_string('download_all_locations', 'local_friadmin'), array('class' => 'location_excel_download', 'style' => 'float: right'));
             $out_report .= '<hr class="line_rpt_lnk">';
 
             return $out_report;
@@ -1122,7 +1122,7 @@ class CourseLocations {
 
 
     /** / */
-    public static function download_one_location_data($county) {
+    public static function download_one_location_data($mycounty) {
         // Variables.
         global $CFG;
         $row = 0;
@@ -1132,11 +1132,11 @@ class CourseLocations {
         $myxls = null;
 
         try {
-            $locationdata = self::get_course_location_data($county);
+            $locationdata = self::get_course_location_data($mycounty);
             require_once($CFG->dirroot . '/lib/excellib.class.php');
 
             $time = userdate(time(), '%d.%m.%Y', 99, false);
-            $name = clean_filename('this_is_one_location' . $time . ".xls");
+            $name = clean_filename(get_string('onelocation', 'local_friadmin') . $mycounty . '_' . $time . ".xls");
             // Creating a workbook.
             $export = new MoodleExcelWorkbook($name);
 
@@ -1171,7 +1171,7 @@ class CourseLocations {
             require_once($CFG->dirroot . '/lib/excellib.class.php');
 
             $time = userdate(time(), '%d.%m.%Y', 99, false);
-            $name = clean_filename('this_is_all_locations' . $time . ".xls");
+            $name = clean_filename(get_string('alllocations', 'local_friadmin') . $time . ".xls");
             // Creating a workbook.
             $export = new MoodleExcelWorkbook($name);
 

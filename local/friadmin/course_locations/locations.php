@@ -28,7 +28,7 @@ $sort           = optional_param('sort','ASC',PARAM_TEXT);
 $act            = optional_param('act',0,PARAM_INT);
 $locationId     = optional_param('id',0,PARAM_INT);
 $format         = optional_param('format', 0, PARAM_INT);
-$county         = optional_param('county', '', PARAM_TEXT);
+$mycounty       = optional_param('mycounty', '', PARAM_TEXT);
 $url            = new moodle_url('/local/friadmin/course_locations/locations.php',array('page' => $page, 'perpage' => $perpage));
 $return_url     = new moodle_url('/local/friadmin/course_locations/index.php');
 $context        = context_system::instance();
@@ -95,7 +95,7 @@ if ($act) {
     // Download in excel
     if ($format == 1) {
         ob_end_clean();
-        CourseLocations::download_one_location_data($county);
+        CourseLocations::download_one_location_data($mycounty);
 
         die;
     }else if ($format == 2) {
