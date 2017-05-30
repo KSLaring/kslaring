@@ -176,6 +176,11 @@ class format_classroom extends format_base {
     public function page_set_course(moodle_page $page) {
         global $USER, $FULLME, $ME;
 
+        // No specific changes if a file shall be downloaded.
+        if (strpos($ME, 'forcedownload=1') !== false) {
+            return;
+        }
+
         if (is_null($this->openlast)) {
             $this->openlast = new format_classroom_openlast($page,
                 $page->course, $USER, $FULLME);
@@ -206,16 +211,16 @@ class format_classroom extends format_base {
     public function extend_course_navigation($navigation, navigation_node $node) {
         global $PAGE, $SCRIPT, $DB;
 
-                // Exclude the navigation changes and the fake navigation block on report pages
-                // because some code on report page expect navigation nodes we exclude.
-                if ($SCRIPT === '/report/log/user.php' ||
-                    $SCRIPT === '/report/outline/user.php' ||
-                    $SCRIPT === '/course/user.php'
-                ) {
-                    $this->extend_course_navigation_unmodified($navigation, $node);
+        // Exclude the navigation changes and the fake navigation block on report pages
+        // because some code on report page expect navigation nodes we exclude.
+        if ($SCRIPT === '/report/log/user.php' ||
+            $SCRIPT === '/report/outline/user.php' ||
+            $SCRIPT === '/course/user.php'
+        ) {
+            $this->extend_course_navigation_unmodified($navigation, $node);
 
-                    return array();
-                }
+            return array();
+        }
 
         // Exclude the SCORM report page - it has issues with
         // the netcourse navigation block.
@@ -370,7 +375,7 @@ class format_classroom extends format_base {
                     if ($completion == COMPLETION_TRACKING_MANUAL) {
                         $imgtitle = get_string('completion-title-' . $completionicon, 'completion', $formattedname);
                         $newstate = $completiondata->completionstate ==
-                            COMPLETION_COMPLETE ? COMPLETION_INCOMPLETE : COMPLETION_COMPLETE;
+                        COMPLETION_COMPLETE ? COMPLETION_INCOMPLETE : COMPLETION_COMPLETE;
                         // In manual mode the icon is a toggle form...
 
                         // If this completion state is used by the
@@ -555,7 +560,8 @@ class format_classroom extends format_base {
      * - hiddensections
      *
      *
-     * @param               bool    $foreditform
+     * @param               bool $foreditform
+     *
      * @return                      array
      *
      * @updateDate      14/05/2014
@@ -571,36 +577,36 @@ class format_classroom extends format_base {
      * Add Course Locations - New Version
      * Add Course Sectors
      *
-     * @updateDate  24/06/2015
-     * @author      eFaktor     (fbv)
+     * @updateDate      24/06/2015
+     * @author          eFaktor     (fbv)
      *
      * Description
      * Add an extra field. Time from to
      *
-     * @updateDate  21/01/2016
-     * @author      eFaktor     (fbv)
+     * @updateDate      21/01/2016
+     * @author          eFaktor     (fbv)
      *
      * Description
      * Add the 'ratings' option format
      *
-     * @updateDate  15/06/2016
-     * @author      eFaktor     (fbv)
+     * @updateDate      15/06/2016
+     * @author          eFaktor     (fbv)
      *
      * Description
      * Remove video
      *
-     * @updateDate  10/08/2016
-     * @author      eFaktor     (fbv)
+     * @updateDate      10/08/2016
+     * @author          eFaktor     (fbv)
      *
      * Description
      * From - To date
      */
     public function course_format_options($foreditform = false) {
         /* Variables    */
-        global $USER,$COURSE;
-        $lstLocations   = null;
-        $lstSectors     = null;
-        $location       = null;
+        global $USER, $COURSE;
+        $lstLocations = null;
+        $lstSectors = null;
+        $location = null;
 
         /**
          * @updateDate  08/05/2015
@@ -627,9 +633,9 @@ class format_classroom extends format_base {
         $location = course_page::get_course_location($COURSE->id);
         if ($location) {
             $lstSectors = course_page::get_sectors_locations_list($location);
-        }else {
+        } else {
             $lstSectors = array();
-            $lstSectors[0] = get_string('sel_sector','local_friadmin');
+            $lstSectors[0] = get_string('sel_sector', 'local_friadmin');
         }//if_location
 
         static $courseformatoptions = false;
@@ -706,10 +712,10 @@ class format_classroom extends format_base {
                 ),
                 'course_sector' => array(
                     'default' => 0,
-                    'type'    => PARAM_RAW,
+                    'type' => PARAM_RAW,
                 ),
-                'time'      => array(
-                    'type'      => PARAM_TEXT,
+                'time' => array(
+                    'type' => PARAM_TEXT,
                 ),
                 'length' => array(
                     'type' => PARAM_TEXT,
@@ -783,14 +789,14 @@ class format_classroom extends format_base {
                 'course_sector' => array(
                     'label' => get_string('home_sector', 'format_classroom'),
                     'element_type' => 'select',
-                    'element_attributes' => array($lstSectors,'multiple')
+                    'element_attributes' => array($lstSectors, 'multiple')
                 ),
-                'time'          => array(
-                    'label'                 => get_string('home_time_from_to','format_classroom'),
-                    'help'                  => 'home_time_from_to',
-                    'help_component'        => 'format_classroom',
-                    'element_type'          => 'textarea',
-                    'element_attributes'    => array(0 => 'rows="4" style="width:50%;"'),
+                'time' => array(
+                    'label' => get_string('home_time_from_to', 'format_classroom'),
+                    'help' => 'home_time_from_to',
+                    'help_component' => 'format_classroom',
+                    'element_type' => 'textarea',
+                    'element_attributes' => array(0 => 'rows="4" style="width:50%;"'),
                 ),
                 'length' => array(
                     'label' => get_string('home_length', 'format_classroom'),
@@ -821,8 +827,8 @@ class format_classroom extends format_base {
      * This function is called from {@link course_edit_form::definition_after_data()}.
      *
      *
-     * @param       MoodleQuickForm $mform          form the elements are added to.
-     * @param       bool            $forsection     'true' if this is a section edit form, 'false' if this is course edit form.
+     * @param       MoodleQuickForm $mform      form the elements are added to.
+     * @param       bool            $forsection 'true' if this is a section edit form, 'false' if this is course edit form.
      *
      * @return                      array           array of references to the added form elements.
      *
@@ -833,20 +839,20 @@ class format_classroom extends format_base {
      * Don't call create_edit_form      --> parent
      * Different functionality          --> Course Home Page
      *
-     * @updateDate  21/01/2016
-     * @author      eFaktor     (fbv)
+     * @updateDate      21/01/2016
+     * @author          eFaktor     (fbv)
      *
      * Description
      * Add the 'ratings' option format
      *
-     * @updateDate  21/03/2016
-     * @author      eFaktor     (fbv)
+     * @updateDate      21/03/2016
+     * @author          eFaktor     (fbv)
      *
      * Description
      * The value of sectors selectors depends on the location chosen. Uses javascript
      *
-     * @updateDate  15/06/2016
-     * @author      eFaktor     (fbv)
+     * @updateDate      15/06/2016
+     * @author          eFaktor     (fbv)
      *
      * Description
      * Remove pagevideo
@@ -936,8 +942,8 @@ class format_classroom extends format_base {
      * thecurrent number of sections
      *
      *
-     * @param       array|stdClass  $data           return value from {@link moodleform::get_data()} or array with data
-     * @param       null            $oldcourse      if this function is called from {@link update_course()}
+     * @param       array|stdClass $data            return value from {@link moodleform::get_data()} or array with data
+     * @param       null           $oldcourse       if this function is called from {@link update_course()}
      *                                              this object contains information about the course before update
      *
      * @return                      bool whether there were any changes to the options values
@@ -1014,7 +1020,7 @@ class format_classroom extends format_base {
 
                 case 'pagegraphics':
                     if (isset($data['pagegraphics']) && isset($data['pagegraphics_filemanager'])) {
-                        $graphic_id = course_page::postupdate_homegraphics_manager($this->courseid,'pagegraphics','pagegraphics_filemanager',$data['pagegraphics_filemanager']);
+                        $graphic_id = course_page::postupdate_homegraphics_manager($this->courseid, 'pagegraphics', 'pagegraphics_filemanager', $data['pagegraphics_filemanager']);
                         $data[$key] = $graphic_id;
                     }
 
@@ -1039,7 +1045,7 @@ class format_classroom extends format_base {
                 case 'course_sector':
                     if (isset($_COOKIE['sectors'])) {
                         $data['course_sector'] = $_COOKIE['sectors'];
-                    }else {
+                    } else {
                         $data['course_sector'] = 0;
                     }
 
@@ -1081,7 +1087,8 @@ class format_classroom extends format_base {
 
         if (!($PAGE->pagetype === 'course-view-classroom' ||
             $PAGE->pagetype === 'local-course_page-home_page' ||
-            strpos($PAGE->pagetype, 'mod-') !== false)) {
+            strpos($PAGE->pagetype, 'mod-') !== false)
+        ) {
             return new format_classroom_specialnav('');
         }
 
@@ -1160,7 +1167,7 @@ class format_classroom extends format_base {
         $coursehomepageurl = false;
         if ($this->check_course_homepage_active($PAGE->course->id)) {
             $coursehomepageurl = new moodle_url('/local/course_page/home_page.php',
-                array('id' => $PAGE->course->id,'start'=>0));
+                array('id' => $PAGE->course->id, 'start' => 0));
         }
 
         $courseactive = '';
@@ -1445,7 +1452,7 @@ EOT;
                     array('id' => $cm->id));
 
                 // Set parameters for the link.
-//                $params['rel'] = 'lightbox';
+                //                $params['rel'] = 'lightbox';
                 $params['class'] = 'btn btn-lightbox scorm';
                 $params['data-scormid'] = $cm->id;
                 if (!is_null($scormdata)) {
@@ -1591,7 +1598,8 @@ EOT;
 
         // Get the current course nodes and extract the course node collection
         // The current course has only one collection, can be fetched with "last".
-        $thiscourse_navigation = $course_navigation->get("currentcourse");
+        // $thiscourse_navigation = $course_navigation->get("currentcourse");
+        $thiscourse_navigation = clone($course_navigation->get("currentcourse"));
 
         // Return null if the currentcourse has no navigation items.
         if (empty($thiscourse_navigation->children)) {
@@ -1654,7 +1662,7 @@ EOT;
                     }
                 } else {
                     $activitynodes = $thiscourse_navigation->
-                        find_all_of_type(navigation_node::TYPE_ACTIVITY);
+                    find_all_of_type(navigation_node::TYPE_ACTIVITY);
                     foreach ($activitynodes as $activitynode) {
                         if ($activitynode->action->compare($fullmeurl, URL_MATCH_PARAMS)) {
                             $activenode->make_inactive();
@@ -1669,14 +1677,14 @@ EOT;
 
         // Remove all activty submenu entries with the node type TYPE_SETTING.
         $customnodes = $thiscourse_navigation->
-            find_all_of_type(navigation_node::TYPE_SETTING);
+        find_all_of_type(navigation_node::TYPE_SETTING);
         foreach ($customnodes as $customnode) {
             $customnode->remove();
         }
 
         // Remove all activty submenu entries with the node type TYPE_CUSTOM.
         $customnodes = $thiscourse_navigation->
-            find_all_of_type(navigation_node::TYPE_CUSTOM);
+        find_all_of_type(navigation_node::TYPE_CUSTOM);
         foreach ($customnodes as $customnode) {
             $customnode->remove();
         }
@@ -1744,12 +1752,12 @@ EOT;
         $options['linkcategories'] = false;
 
         // Grab the items to display.
-//        $renderer = $this->get_renderer($this->page);
+        //        $renderer = $this->get_renderer($this->page);
         $renderer = $this->page->get_renderer('format_' . $this->get_format(), 'fakeblock');
         $content = $renderer->course_navigation_tree($thiscourse_navigation,
             $expansionlimit, $options);
 
-//        $content ='test';
+        //        $content ='test';
 
         return $content;
     }
@@ -1857,8 +1865,8 @@ EOT;
      * @return string The truncated string
      */
     protected function trim_left($string, $length) {
-//        return '...' . core_text::substr($string,
-//            core_text::strlen($string) - $length, $length);
+        //        return '...' . core_text::substr($string,
+        //            core_text::strlen($string) - $length, $length);
         return '... ' . shorten_text($string, $ideal = $length, $exact = false, $ending = '');
     }
 
