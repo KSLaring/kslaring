@@ -27,9 +27,10 @@ require('../../config.php');
 require_once($CFG->dirroot.'/mod/completionreset/locallib.php');
 require_once($CFG->libdir.'/completionlib.php');
 
-$id      = optional_param('id', 0, PARAM_INT); // Course Module ID
-$reset  = optional_param('reset', 0, PARAM_INT); // action 
-$cr      = optional_param('cr', 0, PARAM_INT);  // Completion Reset instance ID
+$id         = optional_param('id', 0, PARAM_INT); // Course Module ID
+$reset      = optional_param('reset', 0, PARAM_INT); // action
+$resetusers = optional_param('resetusers', 0, PARAM_INT); // action
+$cr         = optional_param('cr', 0, PARAM_INT);  // Completion Reset instance ID
 
 if ($cr) {
     if (!$completionreset = $DB->get_record('completionreset', array('id'=>$cr))) {
@@ -54,17 +55,6 @@ $context = context_module::instance($cm->id);
 require_capability('mod/completionreset:view', $context);
 $renderer=$PAGE->get_renderer('mod_completionreset');
 
-// Trigger module viewed event.
-/*
-$event = \mod_completionreset\event\course_module_viewed::create(array(
-   'objectid' => $completionreset->id,
-   'context' => $context
-));
-$event->add_record_snapshot('course_modules', $cm);
-$event->add_record_snapshot('course', $course);
-$event->add_record_snapshot('completionreset', $completionreset);
-$event->trigger();
-*/
 
 //do the reset if action=reset
 if($reset==1){
@@ -72,6 +62,11 @@ if($reset==1){
 	$redirecturl = new moodle_url('/course/view.php', array('id'=>$course->id));
 	redirect($redirecturl,get_string('coursehasbeenreset','completionreset'),3); 
 	return;
+}elseif ($resetusers==1) {
+    mod_completionreset_helper::perform_reset($course,true);
+    $redirecturl = new moodle_url('/course/view.php', array('id'=>$course->id));
+    redirect($redirecturl,get_string('courseusershasbeenreset','completionreset'),3);
+    return;
 }
 
 

@@ -49,3 +49,12 @@ $string['completionreset:manage'] = 'Bestem hvilke aktiviteter som skal tilbakes
 $string['completionreset:view'] = 'Tilgang til Resertifiseringsfunksjonen via en lenke på kurssiden.';
 $string['listheight'] = 'Listeboksens høyde';
 $string['listheightdetails'] = 'Antall aktiviteter som skal vises i listeboksen før det behøves å scrolle.';
+
+$string['choose_users'] = 'All users ith selected activities/resources will be reset and the course completion deleted. 
+                           The user will be shown a warning with a list of which activities/resources will be reset, and can cancel at that point. 
+                           If they continue, selected elements will be reset and the checkboxes in the course menu will show that they have to retake these.';
+$string['add_users']    = 'Add users';
+$string['resetursersbtn'] = 'Reset activities users';
+$string['back'] = 'Back';
+$string['courseusershasbeenreset'] = 'The activities course users history have been reset.';
+$string['btn_reset'] = 'Reset';

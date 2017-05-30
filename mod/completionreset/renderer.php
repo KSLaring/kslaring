@@ -50,34 +50,47 @@ class mod_completionreset_renderer extends plugin_renderer_base {
         return $output;
     }
 
-	   /**
+
+    /**
+     * Description
      * Returns the header for the englishcentral module
      *
-     * @param lesson $englishcentral a englishcentral Object.
-     * @param string $currenttab current tab that is shown.
-     * @param int    $question id of the question that needs to be displayed.
-     * @param string $extrapagetitle String to append to the page title.
-     * @return string
+     * @param       integer $addusers
+     *
+     * @return              null|string
+     * @throws              Exception
+     *
+     * @updateDate          29/03/2017
+     * @author              eFaktor     (fbv)
      */
-    public function header_choose() {
-        global $CFG;
+    public function header_choose($addusers = null) {
+        /* Variables */
+        $title  = null;
+        $output = null;
 
-        $title = get_string('headingchoose', 'completionreset', $this->page->course->shortname);
+        try {
+            // Get right title
+            if (!$addusers) {
+                $title = get_string('headingchoose', 'completionreset', $this->page->course->shortname);
+            }else {
+                $title = get_string('headingchoose', 'completionreset', $this->page->course->shortname);
+            }//if_add_users
+
+            /// Header setup
+            $this->page->set_title($this->page->course->shortname);
+            $this->page->set_heading($title);
+
+            $output  = $this->output->header();
+            $output .= $this->output->heading($title,4);
+            $output .= get_string('choose_users','completionreset');
+
+            return $output;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_Catch
+    }//header_choose
 
 
-        // Build the buttons
-       // $context = context_module::instance($cm->id);
-
-		/// Header setup
-        $this->page->set_title($this->page->course->shortname);
-        $this->page->set_heading($title);
-       // lesson_add_header_buttons($cm, $context, $extraeditbuttons, $lessonpageid);
-        $output = $this->output->header();
-		$output .= $this->output->heading($title,4);
-		$output .= get_string('chooseforminstructions','completionreset');
-        return $output;
-    }
-	
 	 public function show_reset_instructions() {
 		return get_string('resetinstructions','completionreset'); 
 	}
@@ -92,18 +105,48 @@ class mod_completionreset_renderer extends plugin_renderer_base {
     }
 	
 	public function show_reset_buttons($course,$cm){
-		global $CFG;
-		//convert formdata to array
-		$formdata = array();
-		$formdata['id']=$cm->id;
-		$formdata['reset']=1;
-		$reset = new single_button(
-			new moodle_url('/mod/completionreset/view.php',$formdata), 
-			get_string('resetbuttonlabel','completionreset'), 'get');
-		$cancel = new single_button(
-			new moodle_url('/course/view.php',array('id'=>$course->id)), 
-			get_string('cancel'), 'get');
-		return html_writer::div( $this->render($reset) . '&nbsp&nbsp' .  $this->render($cancel),'mod_completionreset_actionbuttons');
+		/* Variables */
+		$formdata   = null;
+        $reset      = null;
+        $cancel     = null;
+        $resetusers = null;
+        $context    = null;
+
+        try {
+            //convert formdata to array
+            $formdata   = array();
+            $formdata['id']     = $cm->id;
+            $formdata['reset']  = 1;
+
+            // Button to reset activities
+            $reset = new single_button(new moodle_url('/mod/completionreset/view.php',$formdata),
+                                       get_string('resetbuttonlabel','completionreset'),'get');
+
+            // Button to cancel
+            $cancel = new single_button(new moodle_url('/course/view.php',array('id'=>$course->id)),
+                                        get_string('cancel'), 'get');
+
+            // Button to reset activities for users selected
+            $context = context_course::instance($course->id);
+            if (mod_completionreset_helper::allow_choose_users($context->id)) {
+                $params = array();
+                $params['resetusers'] = 1;
+                $params['course']     = $course->id;
+                $resetusers = new single_button(new moodle_url('/mod/completionreset/choose.php',$params),
+                                                get_string('resetursersbtn','completionreset'),'get');
+
+                return html_writer::div( $this->render($reset) . '&nbsp&nbsp' . $this->render($resetusers) . '&nbsp&nbsp' .  $this->render($cancel),'mod_completionreset_actionbuttons');
+            }else {
+                return html_writer::div( $this->render($reset) . '&nbsp&nbsp' .  $this->render($cancel),'mod_completionreset_actionbuttons');
+            }
+
+
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+
+
+
 	}
 	
 	public function show_choose_button($course){
@@ -127,9 +170,10 @@ class mod_completionreset_renderer extends plugin_renderer_base {
 		$config= get_config('completionreset');
 		$listheight=$config->listheight;
 		if(!$listheight){$listheight=MOD_COMPLETIONRESET_LISTSIZE;}
-		 $listboxopts = array('class'=>MOD_COMPLETIONRESET_SELECT, 'size'=>$listheight,'multiple'=>true);
-		 $chosenbox =	html_writer::select($chosen,MOD_COMPLETIONRESET_CHOSEN,'',false,$listboxopts);
-		 $unchosenbox =	html_writer::select($unchosen,MOD_COMPLETIONRESET_UNCHOSEN,'',false,$listboxopts);
+
+        $listboxopts = array('class'=>MOD_COMPLETIONRESET_SELECT, 'size'=>$listheight,'multiple'=>true);
+        $chosenbox =	html_writer::select($chosen,MOD_COMPLETIONRESET_CHOSEN,'',false,$listboxopts);
+        $unchosenbox =	html_writer::select($unchosen,MOD_COMPLETIONRESET_UNCHOSEN,'',false,$listboxopts);
 
 		 
 		 //buttons
@@ -186,6 +230,30 @@ class mod_completionreset_renderer extends plugin_renderer_base {
 		$chooser = html_writer::table($htmltable);
 		
 		return $chooser;
-	}
-  
+	}//fetch_chooser
+
+    public function fetch_chooser_users($chooseusers,$config) {
+        /* Variables */
+        $listheight     = null;
+        $listboxopts    = null;
+        $chosenbox      = null;
+
+        try {
+            // Height
+            if (isset($config->listheight) && $config->listheight) {
+                $listheight = $config->listheight;
+            }else {
+                $listheight = MOD_COMPLETIONRESET_LISTSIZE;
+            }//if_config
+
+            // Data for selectors
+            $listboxopts = array('class' => MOD_COMPLETIONRESET_SELECT, 'size'=>$listheight, 'multiple'=>true);
+            $chosenbox   = html_writer::select($chooseusers->selected,MOD_COMPLETIONRESET_CHOSEN,'',false,$listboxopts);
+            $unchosenbox = html_writer::select($chooseusers->availables,MOD_COMPLETIONRESET_UNCHOSEN,'',false,$listboxopts);
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+
+
+    }//fetch_chooser_users
 }//end of class

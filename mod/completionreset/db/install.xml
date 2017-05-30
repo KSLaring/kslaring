@@ -4,6 +4,7 @@
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
   <TABLES>
+      <!-- Completion Reset -->
     <TABLE NAME="completionreset" COMMENT="completionreset ">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
@@ -15,6 +16,7 @@
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
       </KEYS>
 	 </TABLE>
+      <!-- Completion reset activities -->
 	  <TABLE NAME="completionreset_activities" COMMENT="completionreset activities">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
@@ -26,5 +28,18 @@
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
       </KEYS>
 	 </TABLE>
+
+      <!-- Completion reset users -->
+      <TABLE NAME="completionreset_users" COMMENT="completion reset users">
+          <FIELDS>
+              <FIELD NAME="id"      SEQUENCE="true"     TYPE="int" LENGTH="10" NOTNULL="true"/>
+              <FIELD NAME="resetid" SEQUENCE="false"    TYPE="int" LENGTH="10" NOTNULL="true"/>
+              <FIELD NAME="course"  SEQUENCE="false"    TYPE="int" LENGTH="10" NOTNULL="true"/>
+              <FIELD NAME="userid"  SEQUENCE="false"    TYPE="int" LENGTH="10" NOTNULL="true"/>
+          </FIELDS>
+          <KEYS>
+              <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+          </KEYS>
+      </TABLE>
   </TABLES>
 </XMLDB>

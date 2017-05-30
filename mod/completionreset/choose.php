@@ -28,110 +28,139 @@ require_once($CFG->dirroot.'/mod/completionreset/locallib.php');
 require_once($CFG->libdir.'/completionlib.php');
 require_once('locallib.php');
 
-//$id      = optional_param('id', 0, PARAM_INT); // Course Module ID
-//$p       = optional_param('p', 0, PARAM_INT);  // Completion Reset instance ID
-$courseid= optional_param('course', 0, PARAM_INT);  // Completion Reset CourseId
+//Params
+global $DB;
+global $SESSION;
+$courseid   = optional_param('course', 0, PARAM_INT);  // Completion Reset CourseId
+$resetusers = optional_param('resetusers', 0, PARAM_INT);
+$reset      = null;
+$chooser    = '';
 
+// Session variable to know from where it comes
+//if (!isset($SESSION->addusers)) {
+//    $SESSION->addusers = 0;
+//}
 
-$course = $DB->get_record('course', array('id'=>$courseid), '*', MUST_EXIST);
-$context = context_course::instance($course->id);
-$PAGE->set_url('/mod/completionreset/choose.php', array('id' => $course->id));
+// Course and cotnext
+$course         = $DB->get_record('course', array('id'=>$courseid), '*', MUST_EXIST);
+$context        = context_course::instance($course->id);
+$return         = new moodle_url('/course/view.php',array('id' => $course->id));
+$url            = new moodle_url('/mod/completionreset/choose.php', array('course' => $course->id));
+// Get reset
+$reset              = $DB->get_record(MOD_COMPLETIONRESET_TABLE,array('course' =>$courseid),'id');
+
 require_login($course, true);
 require_capability('mod/completionreset:manage', $context);
+
+// Set page
+$PAGE->set_url($url);
 $PAGE->set_pagelayout('course');
 $PAGE->set_context($context);
 $PAGE->set_title($course->shortname.': '. get_string('title','completionreset'));
 $PAGE->set_heading($course->fullname);
 $renderer = $PAGE->get_renderer('mod_completionreset');
 
-//$context = context_module::instance($cm->id);
+$mform = new mod_completionreset_chooseform(null,array($context,'',$resetusers));
 
-
-$mform = new mod_completionreset_chooseform(null,array(''));
 //if the cancel button was pressed, we are out of here
 if (!$mform->is_cancelled()) {
+    /**
+     * Description
+     * Add the new functionality.
+     * My users to the completion reset
+     *
+     * @updateDate  29/03/2017
+     * @author      eFaktor     (fbv)
+     */
     //if we have data, then our job here is to save it;
-	if ($formdata = $mform->get_data()) {
-		$data=new stdClass();
-		$data->course=$formdata->course;
-		$data->activities=$formdata->{MOD_COMPLETIONRESET_UPDATEFIELD};
-		$data->timemodified=time();
-		if($DB->record_exists(MOD_COMPLETIONRESET_ACTIVITIESTABLE,array('course'=>$formdata->course))){
-			$data->id=$formdata->id;
-			$DB->update_record(MOD_COMPLETIONRESET_ACTIVITIESTABLE,$data);
-		}else{
-			$DB->insert_record(MOD_COMPLETIONRESET_ACTIVITIESTABLE,$data);
-		}
-		//toggle disabled/enabled of completion reset links
-		/*
-		if(!empty($data->activities)){
-			mod_completionreset_helper::set_completionreset_availability($data->course,true);
-		}else{
-			mod_completionreset_helper::set_completionreset_availability($data->course,false);
-		}
-		*/
-	}
+    if ($formdata = $mform->get_data()) {
+
+        if (isset($formdata->savechanges) && ($formdata->savechanges)) {
+            if ($resetusers) {
+                mod_completionreset_helper::add_users_completion_reset($course->id,$reset->id,$formdata->{MOD_COMPLETIONRESET_UPDATEFIELD});
+                mod_completionreset_helper::perform_reset($course,true);
+                $redirecturl = new moodle_url('/course/view.php', array('id'=>$course->id));
+                redirect($redirecturl,get_string('courseusershasbeenreset','completionreset'),3);
+                return;
+            }else {
+                // Set data
+                $data = new stdClass();
+                $data->course       = $formdata->course;
+                $data->activities   = $formdata->{MOD_COMPLETIONRESET_UPDATEFIELD};
+                $data->timemodified = time();
+                // Check if the activity already exist
+                if($DB->record_exists(MOD_COMPLETIONRESET_ACTIVITIESTABLE,array('course'=>$formdata->course))){
+                    $data->id = $formdata->id;
+                    $DB->update_record(MOD_COMPLETIONRESET_ACTIVITIESTABLE,$data);
+                }else{
+                    // Add activity
+                    $DB->insert_record(MOD_COMPLETIONRESET_ACTIVITIESTABLE,$data);
+                }
+            }
+        }
+    }
+}else {
+    //if ($SESSION->addusers) {
+    //    $return = $url;
+    //}
+    $_POST = array();
+    redirect($return);
 }
 
-//data
-/*
-$rec = $DB->get_record(MOD_COMPLETIONRESET_ACTIVITIESTABLE,array('course'=>$course->id));
-if($rec){
-	$activities = explode(',',$rec->activities);
-}else{
-	$activities=array();
-}
-$modinfo = get_fast_modinfo($course);
-$cms = $modinfo->get_cms();
-$unchosendata = array();
-$chosendata = array();
-$sortorderarray = array();
-foreach($cms as $cm){
-	if(in_array($cm->instance,$activities)){
-		$chosendata[$cm->instance]=$cm->name;
-	}else{
-		$unchosendata[$cm->instance]=$cm->name;
-	}
-	$sortorderarray[]=$cm->instance;
-}
-*/
-$allactivities = mod_completionreset_helper::get_all_activities($course);
-$chosendata=$allactivities->chosendata;
-$unchosendata=$allactivities->unchosendata;
-$sortorderarray=$allactivities->sortorderarray;
-
-/*
-echo 'activities:<br/>';
-print_r($activities);
-echo 'chosendata:<br/>';
-print_r($chosendata);
-echo 'unchosendata:<br/>';
-print_r($unchosendata);
-*/
 //get our javascript all ready to go
 $jsmodule = array(
-	'name'     => 'mod_completionreset',
-	'fullpath' => '/mod/completionreset/module.js',
-	'requires' => array('io','json','button','array-extras')
+    'name'     => 'mod_completionreset',
+    'fullpath' => '/mod/completionreset/module.js',
+    'requires' => array('io','json','button','array-extras')
 );
+// Data selectors/ Javascript
 $opts =Array();
-$opts['chosen'] =MOD_COMPLETIONRESET_CHOSEN;
-$opts['unchosen'] =MOD_COMPLETIONRESET_UNCHOSEN;
-$opts['updatefield'] =MOD_COMPLETIONRESET_UPDATEFIELD;
-$opts['chosendata'] =$chosendata;
-$opts['unchosendata'] =$unchosendata;
-$opts['sortorder']=implode(',',$sortorderarray);
+$opts['chosen']         = MOD_COMPLETIONRESET_CHOSEN;
+$opts['unchosen']       = MOD_COMPLETIONRESET_UNCHOSEN;
+$opts['updatefield']    = MOD_COMPLETIONRESET_UPDATEFIELD;
+
+$data = new stdClass();
+
+if (!$resetusers) {
+    $allactivities = mod_completionreset_helper::get_all_activities($course);
+    $chosendata=$allactivities->chosendata;
+    $unchosendata=$allactivities->unchosendata;
+    $sortorderarray=$allactivities->sortorderarray;
+
+    // Data Selectors
+    $opts['chosendata']     = $chosendata;
+    $opts['unchosendata']   = $unchosendata;
+    $opts['sortorder']      = implode(',',$sortorderarray);
+
+    // Get selectors
+    $chooser = $renderer->fetch_chooser($chosendata,$unchosendata);
+
+    $rec = $DB->get_record(MOD_COMPLETIONRESET_ACTIVITIESTABLE,array('course'=>$course->id));
+    if($rec){
+        $data->id = $rec->id;
+        $data->{MOD_COMPLETIONRESET_UPDATEFIELD}=$rec->activities;
+    }
+}else {
+    // Get all users to add/remove
+    $choosenusers = mod_completionreset_helper::choose_users_selectors($context,$reset->id);
+
+    // Data Selectors
+    $opts['chosendata']     = $choosenusers->selected;
+    $opts['unchosendata']   = $choosenusers->availables;
+    $opts['sortorder']      = implode(',',$choosenusers->sort);
+
+    // Get selectors
+    $chooser = $renderer->fetch_chooser($choosenusers->selected,$choosenusers->availables);
+}//if_addusers
+
+// Initialize javascript
 $PAGE->requires->js_init_call('M.mod_completionreset.init', array($opts),false,$jsmodule);
-$chooser = $renderer->fetch_chooser($chosendata,$unchosendata);
-$mform = new mod_completionreset_chooseform(null,array($chooser));
-$data=new stdClass();
-$rec = $DB->get_record(MOD_COMPLETIONRESET_ACTIVITIESTABLE,array('course'=>$course->id));
-if($rec){
-	$data->id = $rec->id;
-	$data->{MOD_COMPLETIONRESET_UPDATEFIELD}=$rec->activities;
-}
+
+$mform = new mod_completionreset_chooseform(null,array($context,$chooser,$resetusers));
+
 $data->course=$course->id;
 $mform->set_data($data);
-echo $renderer->header_choose();
+echo $renderer->header_choose($resetusers);
 $mform->display();
 echo $renderer->footer();
+
