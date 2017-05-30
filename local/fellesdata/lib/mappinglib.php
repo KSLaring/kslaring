@@ -627,7 +627,7 @@ class FS_MAPPING {
             /* Search criteria */
             $params = array();
             $params['job_role'] = $ks_jobrole;
-            $params['action']   = DELETE;
+            $params['action']   = ACT_DELETE;
 
             /* SQL Instruction  */
             $sql = " SELECT 	    fs.stillingskode,
