@@ -1,0 +1,90 @@
+
+.path-admin-tool-capexplorer .perm-allow,
+.path-admin-tool-capexplorer .roleassigned {
+    color: green;
+}
+
+.path-admin-tool-capexplorer .perm-prevent {
+    color: red;
+}
+
+.path-admin-tool-capexplorer .perm-prohibit {
+    color: red;
+    font-weight: bold;
+}
+
+.path-admin-tool-capexplorer .perm-notset {
+    color: gray;
+}
+
+.path-admin-tool-capexplorer .capgranted {
+    color: green;
+    font-weight: bold;
+}
+
+.path-admin-tool-capexplorer .capdenied {
+    color: red;
+    font-weight: bold;
+}
+
+.path-admin-tool-capexplorer .option-disabled {
+    color: grey;
+}
+
+/* Increase width of autocomplete form fields slightly */
+.path-admin-tool-capexplorer #id_username,
+.path-admin-tool-capexplorer #id_capability {
+    width: 400px;
+}
+
+.path-admin-tool-capexplorer #tree-loading-message {
+    color: grey;
+}
+
+/* Set colour of autocomplete items so they don't go red if element validation failed. */
+.yui3-aclist-item {
+    color: black;
+}
+
+/* Remove YUI icon and padding */
+.yui3-skin-sam .yui3-treeview-icon {
+    display: none;
+}
+.yui3-skin-sam .yui3-treeview-label {
+    padding-left: 0;
+}
+
+/* Style our own nodeType specific icon */
+.capexplorer-tree-label {
+    background-repeat: no-repeat;
+}
+.dir-ltr .capexplorer-tree-label {
+    padding-left: 20px;
+    background-position: left center;
+}
+.dir-rtl .capexplorer-tree-label {
+    background-position: right center;
+    padding-right: 20px;
+}
+.capexplorer-tree-course {
+    background-image: url([[pix:tool_capexplorer|course]]);
+}
+.capexplorer-tree-category {
+    background-image: url([[pix:tool_capexplorer|category]]);
+}
+.capexplorer-tree-user {
+    background-image: url([[pix:tool_capexplorer|user]]);
+}
+.capexplorer-tree-userdir {
+    background-image: url([[pix:tool_capexplorer|users]]);
+}
+.capexplorer-tree-module {
+    background-image: url([[pix:tool_capexplorer|module]]);
+}
+.capexplorer-tree-block {
+    background-image: url([[pix:tool_capexplorer|block]]);
+}
+.capexplorer-tree-system {
+    background-image: url([[pix:tool_capexplorer|system]]);
+}
+
