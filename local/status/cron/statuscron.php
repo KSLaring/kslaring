@@ -1499,6 +1499,14 @@ class STATUS_CRON {
             if ($response === false) {
                 return null;
             }else {
+                echo $response. "</br>";
+
+                // Create a new response file
+                $path = $dir . '/' . $service . '_PAQUI.txt';
+                $file = fopen($path,'w');
+                fwrite($file,$response);
+                fclose($file);
+
                 if (isset($response->status)) {
                     mtrace($response->message);
                     // Log
