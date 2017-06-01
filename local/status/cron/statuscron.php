@@ -278,19 +278,19 @@ class STATUS_CRON {
             $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START Import Fellesdata STATUS. ' . "\n";
 
             // Import FS Users
-            self::import_status_users($plugin);
+            //self::import_status_users($plugin);
 
             // Import FS Companies
             self::import_status_orgstructure($plugin);
 
             // Import FS Job roles
-            self::import_status_jobroles($plugin);
+            //self::import_status_jobroles($plugin);
 
             // Import FS User Competence
-            self::import_status_managers_reporters($plugin);
+            //self::import_status_managers_reporters($plugin);
 
             // Import FS User Competence JR
-            self::import_status_user_competence($plugin);
+            //self::import_status_user_competence($plugin);
 
             // Log
             $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Import Fellesdata STATUS. ' . "\n";
@@ -409,6 +409,8 @@ class STATUS_CRON {
 
             // Import data into temporary tables
             if ($response) {
+                echo $response . "</br>";
+                /**
                 // Clean temporary table
                 FS::clean_temporary_fellesdata(IMP_COMPANIES);
 
@@ -432,8 +434,11 @@ class STATUS_CRON {
                             FS::backup_temporary_fellesdata(IMP_COMPANIES);
                         }//if_status
                     }//if_max_imp
-                }//if_exists
+                }else {
+                    // Send warning
+                }//if_exists **/
             }else {
+                // Send warning
                 $dblog .= ' ERROR Import STATUS ORG Structure - RESPONSE NULL. ' . "\n";
             }//if_fsResponse
 
@@ -1452,6 +1457,17 @@ class STATUS_CRON {
         $admin          = null;
 
         try {
+            // Check if exists temporary directory
+            $dir = $CFG->dataroot . '/fellesdata';
+            if (!file_exists($dir)) {
+                mkdir($dir);
+            }//if_dir
+
+            $backup = $CFG->dataroot . '/fellesdata/backup';
+            if (!file_exists($backup)) {
+                mkdir($backup);
+            }//if_backup
+
             // Get parameters service
             $to     = mktime(1, 60, 0, date("m"), date("d"), date("Y"));
             $to     = gmdate('Y-m-d\TH:i:s\Z',$to);
@@ -1479,35 +1495,24 @@ class STATUS_CRON {
             if ($response === false) {
                 return null;
             }else {
-                // Check if exists temporary directory
-                $dir = $CFG->dataroot . '/fellesdata';
-                if (!file_exists($dir)) {
-                    mkdir($dir);
-                }//if_dir
-
-                $backup = $CFG->dataroot . '/fellesdata/backup';
-                if (!file_exists($backup)) {
-                    mkdir($backup);
-                }//if_backup
-
-                // Clean all response
-                $path = $dir . '/' . $service . '.txt';
-                if (file_exists($path)) {
-                    // Move the file to the new directory
-                    copy($path,$backup . '/' . $service . '_' . time() . '.txt');
-
-                    unlink($path);
-                }
-
-                // Create a new response file
-                $file = fopen($path,'w');
-                fwrite($file,$response);
-                fclose($file);
-
                 if (isset($response->error)) {
                     mtrace($response->message);
                     return false;
                 }else {
+                    // Clean all response
+                    $path = $dir . '/' . $service . '.txt';
+                    if (file_exists($path)) {
+                        // Move the file to the new directory
+                        copy($path,$backup . '/' . $service . '_' . time() . '.txt');
+
+                        unlink($path);
+                    }
+
+                    // Create a new response file
+                    $file = fopen($path,'w');
+                    fwrite($file,$response);
+                    fclose($file);
+
                     return true;
                 }
             }//if_response
