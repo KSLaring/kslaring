@@ -28,7 +28,7 @@ class summary_form extends moodleform {
         // Category.
         $mform->addElement('select', 'category', get_string('category', 'local_friadmin'), $categorylist);
         $mform->addRule('category', null, 'required');
-        $mform->setDefault('cateogry', $categorylist[0]);
+        $mform->setDefault('category', $categorylist[0]);
 
         // From.
         $mform->addElement('date_selector', 'selsummaryfrom', get_string('summaryfrom', 'local_friadmin'),
@@ -58,9 +58,9 @@ class summary_form extends moodleform {
 
         // Variables for the years (0 for normal year and 1 for leap year).
         $yearbetween = $fromdate + (60 * 60 * 24 * 365);
-        $firstyear = date('L', $fromdate);
+        $firstyear  = date('L', $fromdate);
         $secondyear = date('L', $yearbetween);
-        $lastyear = date('L', $todate);
+        $lastyear   = date('L', $todate);
 
         // Checking for leap years.
         if ($firstyear == 1 || $secondyear == 1 || $lastyear == 1) {

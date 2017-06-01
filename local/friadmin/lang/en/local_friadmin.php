@@ -366,5 +366,5 @@ $string['courselocation'] = 'Course Location';
 $string['download_one_location'] = 'Download one location';
 $string['download_all_locations'] = 'Download all locations';
 
-$string['alllocations'] = 'Courses_in_all_locations_';
+$string['alllocations'] = 'All_courses_in_';
 $string['onelocation'] = 'Courses_in_';

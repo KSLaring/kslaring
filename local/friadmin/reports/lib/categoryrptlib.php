@@ -570,7 +570,7 @@ class friadminrpt
                 // Headers.
                 self::add_participants_header_excel($myxls, $row, $coursesdata);
                 // Content.
-                self::add_participants_content_excel($coursesdata, $myxls, $row, $from, $to);
+                // self::add_participants_content_excel($coursesdata, $myxls, $row, $from, $to);
 
             $export->close();
 

@@ -29,6 +29,7 @@ $act            = optional_param('act',0,PARAM_INT);
 $locationId     = optional_param('id',0,PARAM_INT);
 $format         = optional_param('format', 0, PARAM_INT);
 $mycounty       = optional_param('mycounty', '', PARAM_TEXT);
+$colocationname = optional_param('colocationname', '', PARAM_TEXT);
 $url            = new moodle_url('/local/friadmin/course_locations/locations.php',array('page' => $page, 'perpage' => $perpage));
 $return_url     = new moodle_url('/local/friadmin/course_locations/index.php');
 $context        = context_system::instance();
@@ -57,7 +58,7 @@ $PAGE->set_pagelayout('report');
 $PAGE->set_title($SITE->fullname);
 $PAGE->set_heading($SITE->fullname);
 $PAGE->navbar->add(get_string('plugin_course_locations','local_friadmin'));
-$PAGE->navbar->add(get_string('lst_locations','local_friadmin'),$return_url);
+$PAGE->navbar->add(get_string('lst_locations','local_friadmin'), $return_url);
 $PAGE->requires->js('/local/friadmin/course_locations/js/locations.js');
 
 /* Filter   */
@@ -95,17 +96,21 @@ if ($act) {
     // Download in excel
     if ($format == 1) {
         ob_end_clean();
-        CourseLocations::download_one_location_data($mycounty);
+
+        if ($SESSION->muni) {
+            CourseLocations::download_all_locations_data($mycounty, $SESSION->muni);
+        } else {
+            CourseLocations::download_all_locations_data($mycounty, null);
+        }
 
         die;
     }else if ($format == 2) {
         ob_end_clean();
-        CourseLocations::download_all_locations_data();
+        CourseLocations::download_one_location_data($mycounty, $colocationname);
 
         die;
-    }else {
-
     }
+
     /* Get locations    */
     $locations = CourseLocations::Get_LocationsList($filter,$page*$perpage,$perpage,$sort,$fieldSort);
     /* Get County Name      */

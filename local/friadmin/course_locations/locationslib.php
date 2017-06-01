@@ -1006,8 +1006,7 @@ class CourseLocations {
             /* Url To Back  */
             $urlReturn     = new moodle_url('/local/friadmin/course_locations/index.php');
             // Url to download.
-            $urldownloadone = new moodle_url('/local/friadmin/course_locations/locations.php',array('format' => '1', 'mycounty' => $mycounty)); // Download one.
-            $urldownloadall = new moodle_url('/local/friadmin/course_locations/locations.php',array('format' => '2')); // Download all.
+            $urldownloadall = new moodle_url('/local/friadmin/course_locations/locations.php',array('format' => '1', 'mycounty' => $mycounty)); // Download all.
 
             /* Locations Report */
             $out_report .= html_writer::start_div('locations_rpt_div');
@@ -1027,7 +1026,7 @@ class CourseLocations {
                     $out_report .= '</br>';
                     /* Return To Selection Page */
                     $out_report .= html_writer::link($urlReturn,get_string('return_to_selection','local_friadmin') ,array('class' => 'link_return'));
-                    $out_report .= html_writer::link($urldownloadone, get_string('download_one_location', 'local_friadmin'), array('class' => 'location_excel_download', 'style' => 'float: right'));
+                    $out_report .= html_writer::link($urldownloadall, get_string('download_all_locations', 'local_friadmin'), array('class' => 'location_excel_download', 'style' => 'float: right'));
                     /* Paging Bar  */
                     $out_report .= $OUTPUT->paging_bar($totalLocations, $page, $perpage, $url);
 
@@ -1122,7 +1121,7 @@ class CourseLocations {
 
 
     /** / */
-    public static function download_one_location_data($mycounty) {
+    public static function download_all_locations_data($mycounty, $municipality) {
         // Variables.
         global $CFG;
         $row = 0;
@@ -1132,46 +1131,17 @@ class CourseLocations {
         $myxls = null;
 
         try {
-            $locationdata = self::get_course_location_data($mycounty);
+            $locationdata = self::get_course_location_data($mycounty, $municipality, null);
+            $mymuni = self::get_municipality_name($municipality);
+
             require_once($CFG->dirroot . '/lib/excellib.class.php');
 
             $time = userdate(time(), '%d.%m.%Y', 99, false);
-            $name = clean_filename(get_string('onelocation', 'local_friadmin') . $mycounty . '_' . $time . ".xls");
-            // Creating a workbook.
-            $export = new MoodleExcelWorkbook($name);
-
-            // Creating the sheet.
-            $myxls = $export->add_worksheet(get_string('content', 'local_friadmin'));
-
-            // Headers.
-            self::add_location_excel_header($myxls, $row, $locationdata);
-            // Content.
-            self::add_participants_content_excel($locationdata, $myxls, $row);
-
-            $export->close();
-
-            exit;
-        } catch (Exception $ex) {
-            throw $ex;
-        }
-    }//download_one_location_data
-
-    /** / */
-    public static function download_all_locations_data() {
-        // Variables.
-        global $CFG;
-        $row = 0;
-        $time = null;
-        $name = null;
-        $export = null;
-        $myxls = null;
-
-        try {
-            $locationdata = self::get_course_location_data(null);
-            require_once($CFG->dirroot . '/lib/excellib.class.php');
-
-            $time = userdate(time(), '%d.%m.%Y', 99, false);
-            $name = clean_filename(get_string('alllocations', 'local_friadmin') . $time . ".xls");
+            if ($municipality) {
+                $name = clean_filename(get_string('alllocations', 'local_friadmin') . $mycounty . '_' . $mymuni . '_' . $time . ".xls");
+            } else {
+                $name = clean_filename(get_string('alllocations', 'local_friadmin') . $mycounty . '_' . $time . ".xls");
+            }
             // Creating a workbook.
             $export = new MoodleExcelWorkbook($name);
 
@@ -1191,9 +1161,97 @@ class CourseLocations {
         }
     }//download_all_locations_data
 
+
+    public static function download_one_location_data($mycounty, $colocation) {
+        // Variables.
+        global $CFG;
+        $row = 0;
+        $time = null;
+        $name = null;
+        $export = null;
+        $myxls = null;
+        $noresults = get_string('noresults', 'local_friadmin');
+        try {
+            $locationdata = self::get_course_location_data($mycounty, null, $colocation);
+
+            require_once($CFG->dirroot . '/lib/excellib.class.php');
+
+            $time = userdate(time(), '%d.%m.%Y', 99, false);
+            $name = clean_filename(get_string('onelocation', 'local_friadmin') . $colocation . '_' . $time . ".xls");
+            // Creating a workbook.
+            $export = new MoodleExcelWorkbook($name);
+
+            // Creating the sheet.
+            $myxls = $export->add_worksheet(get_string('content', 'local_friadmin'));
+
+            if ($locationdata) {
+                // Headers.
+                self::add_location_excel_header($myxls, $row, $locationdata);
+                // Content.
+                self::add_participants_content_excel($locationdata, $myxls, $row);
+            } else {
+                // If no results.
+                $myxls->write(0, 0, $noresults, array(
+                    'size' => 16,
+                    'name' => 'Arial',
+                    'text_wrap' => true,
+                    'v_align' => 'left'));
+
+                $myxls->merge_cells(0, 0, 4, 5);
+                $myxls->set_row($row, 20);
+            }
+
+            $export->close();
+
+            exit;
+        } catch (Exception $ex) {
+            throw $ex;
+        }
+    }//download_one_location_data
+
     /*********************/
     /* PRIVATE FUNCTIONS */
     /*********************/
+
+    /**
+     * @param $municipality
+     * @return null
+     * @throws Exception
+     * @creationDate    01/06/2017
+     * @author          eFaktor     (nas)
+     *
+     * Description
+     * Get the municipality names from id
+     */
+    private static function get_municipality_name($municipality) {
+        // Variables.
+        global $DB;
+        $sectorsName    = null;
+        $sql            = null;
+        $rdo            = null;
+
+        try {
+            // Query.
+            $sql = " SELECT name
+                     FROM {report_gen_companydata}
+                     WHERE id = :municipality";
+
+            $params = array();
+            $params['municipality'] = $municipality;
+
+            // Exec.
+            $rdo = $DB->get_record_sql($sql, $params);
+
+            if ($rdo) {
+                return $rdo->name;
+            } else {
+                return null;
+            }
+
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    } //get_municipality_name
 
     /**
      * @param           $sectors
@@ -1420,7 +1478,9 @@ class CourseLocations {
                         $content .= $location->detail;
                     $content .= html_writer::end_tag('td');
                     /* Actions      */
-                    $content .= html_writer::start_tag('td',array('class' => 'action','data-th' =>' '));
+                    $content .= html_writer::start_tag('td',array('class' => 'action', 'data-th' =>' ', 'style' => 'width: 10%;'));
+                        // Download link.
+                        $content .= self::exceldownloadlinkaction($location->name);
                         /* View Details Link    */
                         $content .= self::ViewDetail_LinkAction($location->id,$page,$perpage,$sort);
                         /* Activate / Deactivate Link   */
@@ -1477,6 +1537,31 @@ class CourseLocations {
                 $outLnk .= html_writer::link($urlView,
                                              html_writer::empty_tag('img', array('src'=>$OUTPUT->pix_url('t/viewdetails'),'alt'=>$strAlt,'class'=>'iconsmall')),
                                              array('title'=>$strAlt));
+            $outLnk .= html_writer::end_div();//lnk_edit
+
+            return $outLnk;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//ViewDetail_LinkAction
+
+    private static function exceldownloadlinkaction($location) {
+        // Variables.
+        global $OUTPUT;
+        $urlView = null;
+        $strAlt  = null;
+        $outLnk  = '';
+
+        try {
+            // Url to download.
+            $urldownloadone = new moodle_url('/local/friadmin/course_locations/locations.php',array('format' => '2', 'colocationname' => $location)); // Download one.
+
+            /* Build Action Link    */
+            $strAlt = get_string('onelocation','local_friadmin') . $location;
+            $outLnk .= html_writer::start_div('lnk_edit');
+            $outLnk .= html_writer::link($urldownloadone,
+                html_writer::empty_tag('img', array('src'=>$OUTPUT->pix_url('t/download'),'alt'=>$strAlt,'class'=>'iconsmall')),
+                array('title'=>$strAlt));
             $outLnk .= html_writer::end_div();//lnk_edit
 
             return $outLnk;
@@ -1802,10 +1887,12 @@ class CourseLocations {
             $strcoordinator     = get_string('coursecoordinator', 'local_friadmin');
             $maxdates           = null;
 
-            foreach ($coursesdata as $coursevalue) {
-                $fromtodates = explode(",", $coursevalue->fromto);
-                if ($maxdates < count($fromtodates)) {
-                    $maxdates = count($fromtodates);
+            if ($coursesdata) {
+                foreach ($coursesdata as $coursevalue) {
+                    $fromtodates = explode(",", $coursevalue->fromto);
+                    if ($maxdates < count($fromtodates)) {
+                        $maxdates = count($fromtodates);
+                    }
                 }
             }
 
@@ -2077,26 +2164,34 @@ class CourseLocations {
      * Description
      * A function used to get all the information from the databse that is used to create the summary excel
      *
-     * @param   string  $location Download criteria
+     * @param $location
+     * @param $municipality
+     * @param $colocation
      * @return array|null
      * @throws Exception
      *
-     * @updateDate 23/05/2017
+     * @updateDate 01/06/2017
      * @author      eFaktor     (nas)
      *
      */
-    private static function get_course_location_data($location) {
+    private static function get_course_location_data($location, $municipality, $colocation) {
         // Variables!
         global $DB;
         $rdo = null;
+        $extrasql = '';
 
         if ($location) {
-            $extrasql = "-- Location to search by
-                            JOIN {report_gen_company_relation}  myrel ON myrel.companyid = cl.levelone
-                            JOIN {report_gen_companydata}       mycom ON mycom.id = myrel.parentid
-                            WHERE mycom.name = :location";
+            $extrasql .= "WHERE mycom.name = :location";
         } else {
-            $extrasql = 'WHERE cl.name IS NOT NULL';
+            $extrasql .= "WHERE mycom.name LIKE '%'";
+        }
+
+        if ($municipality) {
+            $extrasql .= " AND cl.levelone = :municipality ";
+        }
+
+        if ($colocation) {
+            $extrasql .= " AND cl.name LIKE :colocation";
         }
 
         $query = "SELECT            c.id			    as 'courseid',			-- The course ID
@@ -2104,7 +2199,7 @@ class CourseLocations {
                                     c.shortname 	    as 'courseshort', 		-- Course short name
                                     c.format 		    as 'courseformat', 	    -- Course format
                                     fo4.value		    as 'producer',			-- Produced by
-                                    cl.name		        as 'levelone',		    -- Municipality (level one) / Course location
+                                    l1.name		        as 'levelone',		    -- Municipality (level one) / Course location
                                     fo2.value		    as 'sector',			-- Course Sector
                                     ca.name 		    as 'category', 		    -- Category Name
                                     e.customint1		as 'expiration', 	    -- Deadline for enrolments
@@ -2113,11 +2208,11 @@ class CourseLocations {
                                     e.customtext4	    as 'externalprice',     -- external price
                                     cs.instructors		as 'instructors',       -- Amount of instructors
                                     cs.students		    as 'students',		    -- Amount of students
-                                    wa.count 		    as 'waiting',		    -- Amount in waitinglist
-                                    cm.count		    as 'completed',		    -- Amount of completions
+                     count(distinct qu.userid)          as 'waiting',           -- Amount in waitinglist
+                     count(distinct cc.userid)          as 'completed',         -- Amount of completions
                                     c.visible		    as 'visibility',	    -- Course visibility
                                     fo3.value 		    as 'fromto',			-- From - To
-                                    cl.name             as 'location'
+                                    cl.name             as 'location'           -- Location
                 FROM 				{course} 					c
                     -- Category
                     JOIN 			{course_categories} 		ca 	ON ca.id 		  = c.category
@@ -2125,43 +2220,34 @@ class CourseLocations {
                     LEFT JOIN {enrol}                           e   ON e.courseid  = c.id
                                                                     AND e.enrol    = 'waitinglist'
                                                                     AND e.status   = 0
+                     -- Waiting
+                    LEFT JOIN {enrol_waitinglist_queue}         qu  ON qu.courseid = c.id
+                                                                    AND qu.queueno != '99999'
+                    -- Completed
+                    LEFT JOIN {course_completions}              cc ON cc.course = c.id 
+                    
                     -- Counting students and instructors
                     LEFT JOIN (
-                        SELECT ct.instanceid as 'course',
-                        count(rs.id) as 'students',
-                        count(ri.id) as 'instructors'
-                        FROM {role_assignments} ra
-                        JOIN {context} ct  ON  ct.id = ra.contextid
-                        AND ct.contextlevel = 50
+                        SELECT     ct.instanceid as 'course',
+                             count(rs.id)        as 'students',
+                             count(ri.id)        as 'instructors'
+                        FROM        {role_assignments}          ra
+                            JOIN    {context}                   ct  ON  ct.id = ra.contextid
+                                                                    AND ct.contextlevel = 50
                         -- Students
-                        LEFT JOIN  {role} rs ON rs.id   = ra.roleid
-                        AND rs.archetype  = 'student'
+                        LEFT JOIN   {role}                      rs  ON rs.id   = ra.roleid
+                                                                    AND rs.archetype  = 'student'
                         -- Intructors
-                        LEFT JOIN  {role} ri ON ri.id   = ra.roleid
-                        AND ri.archetype  = 'teacher'
-                        GROUP BY ct.instanceid
+                        LEFT JOIN   {role}                      ri  ON ri.id   = ra.roleid
+                                                                    AND ri.archetype  = 'teacher'
+                        GROUP BY    ct.instanceid
                     ) cs  ON 		cs.course = c.id
-                    -- Total Waiting
-                        LEFT JOIN (
-                        SELECT 		count(userid) 		as 'count',
-                                    courseid			as 'course'
-                        FROM		{enrol_waitinglist_queue}
-                        WHERE		queueno != '99999'
-                        GROUP BY 	courseid
-                    ) wa  ON		wa.course = e.courseid
-                    -- Total Completed
-                        LEFT JOIN (
-                        SELECT 		count(cc.userid) 	as 'count',
-                                    cc.course 			as 'course'
-                        FROM		{course_completions} 		cc
-                            JOIN	{course} 					c 	ON 	c.id = cc.course
-                        WHERE		cc.timecompleted IS NOT NULL
-                        GROUP BY	course
-                    ) cm  ON 		cm.course = c.id
                    -- Location
                     LEFT JOIN       {course_format_options}     fo  ON  fo.courseid = c.id
                                                                     AND fo.name = 'course_location'
                     LEFT JOIN       {course_locations}          cl  ON  cl.id = fo.value
+                    -- Levelone
+                    LEFT JOIN       {report_gen_companydata}    l1  ON  l1.id = cl.levelone
                    -- Sector
                     LEFT JOIN		{course_format_options}	    fo2	ON 	fo2.courseid  = c.id
                                                                     AND fo2.name 	  = 'course_sector'
@@ -2171,12 +2257,17 @@ class CourseLocations {
                     -- Produced By
                     LEFT JOIN		{course_format_options}	    fo4	ON 	fo4.courseid  = c.id
                                                                     AND fo4.name 	  = 'producedby'
+                    -- Location to search by
+                    JOIN {report_gen_company_relation}  myrel ON myrel.companyid = cl.levelone
+                    JOIN {report_gen_companydata}       mycom ON mycom.id = myrel.parentid
                 $extrasql
                 GROUP BY c.id";
 
         try {
             $params = array();
-            $params['location'] = $location;
+            $params['location']     = $location;
+            $params['municipality'] = $municipality;
+            $params['colocation']   = $colocation;
 
             $rdo = $DB->get_records_sql($query, $params);
 
@@ -2199,7 +2290,7 @@ class CourseLocations {
      * @param           $row
      * @throws Exception
      *
-     * @creationDate    23/05/2017
+     * @updateDate    01/06/2017
      * @author          eFaktor     (nas)
      *
      */

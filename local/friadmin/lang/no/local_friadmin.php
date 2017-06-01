@@ -333,7 +333,7 @@ $string['userjobrole'] = 'Job Role';
 
 $string['noresults'] = 'Ingen resultater';
 
-$string['summaryrptexcel'] = 'Summary Report';
+$string['summaryrptexcel'] = 'Oversikts Rapport';
 $string['coordinatorexcel'] = 'Coordinator Report';
 $string['instructorexcel'] = 'Instructor Report';
 $string['categoryexcel'] = 'Category';
@@ -359,5 +359,5 @@ $string['courselocation'] = 'Course Location';
 $string['download_one_location'] = 'Download one location';
 $string['download_all_locations'] = 'Download all locations';
 
-$string['alllocations'] = 'Courses_in_all_locations_';
+$string['alllocations'] = 'All_courses_in_';
 $string['onelocation'] = 'Courses_in_';
