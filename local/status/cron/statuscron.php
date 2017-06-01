@@ -1532,7 +1532,7 @@ class STATUS_CRON {
                         }//if_else_index
                     }
                 }else {
-                    echo "NO status field " . "</br>";
+                    echo "No status field " . "</br>";
                     return null;
                 }//if_response_status
             }//if_response
