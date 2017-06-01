@@ -1456,6 +1456,7 @@ class STATUS_CRON {
         $to             = null;
         $date           = null;
         $admin          = null;
+        $index          = null;
 
         try {
             // Check if exists temporary directory
@@ -1475,7 +1476,7 @@ class STATUS_CRON {
             $from   = gmdate('Y-m-d\TH:i:s\Z',0);
 
             // Build url end point
-            $url = $plugin->fs_point . '/' . $service . '?fromDatePP=' . $from . '&toDate=' . $to;
+            $url = $plugin->fs_point . '/' . $service . '?fromDate=' . $from . '&toDate=' . $to;
 
             // Call web service
             $ch = curl_init($url);
@@ -1492,7 +1493,6 @@ class STATUS_CRON {
             $response   = curl_exec( $ch );
             curl_close( $ch );
 
-            echo "Response --> " . $response . "</br>";
             // Format data
             if ($response === false) {
                 return null;
@@ -1503,21 +1503,31 @@ class STATUS_CRON {
                         return null;
                     }else {
                         // Check the file content
-                        // Clean all response
-                        $path = $dir . '/' . $service . '.txt';
-                        if (file_exists($path)) {
-                            // Move the file to the new directory
-                            copy($path,$backup . '/' . $service . '_' . time() . '.txt');
+                        $index = strpos('html',$response);
+                        if ($index) {
+                            return null;
+                        }else {
+                            $index = strpos('changeType',$response);
+                            if (!$index) {
+                                return null;
+                            }else {
+                                // Clean all response
+                                $path = $dir . '/' . $service . '.txt';
+                                if (file_exists($path)) {
+                                    // Move the file to the new directory
+                                    copy($path,$backup . '/' . $service . '_' . time() . '.txt');
 
-                            unlink($path);
-                        }
+                                    unlink($path);
+                                }
 
-                        // Create a new response file
-                        $file = fopen($path,'w');
-                        fwrite($file,$response);
-                        fclose($file);
+                                // Create a new response file
+                                $file = fopen($path,'w');
+                                fwrite($file,$response);
+                                fclose($file);
 
-                        return true;
+                                return true;
+                            }//if_index
+                        }//if_else_index
                     }
                 }else {
                     return null;
