@@ -439,6 +439,7 @@ class STATUS_CRON {
                     // Send warning
                 }//if_exists **/
             }else {
+                echo "HOLA ERROR" . "</br>";
                 // Send warning
                 $dblog .= ' ERROR Import STATUS ORG Structure - RESPONSE NULL. ' . "\n";
             }//if_fsResponse
@@ -1502,6 +1503,7 @@ class STATUS_CRON {
                         mtrace($response->message);
                         return null;
                     }else {
+                        echo $response->status . "</br>";
                         // Check the file content
                         $index = strpos('html',$response);
                         if ($index) {
@@ -1530,6 +1532,7 @@ class STATUS_CRON {
                         }//if_else_index
                     }
                 }else {
+                    echo "NO status field " . "</br>";
                     return null;
                 }//if_response_status
             }//if_response
