@@ -1499,8 +1499,6 @@ class STATUS_CRON {
             if ($response === false) {
                 return null;
             }else {
-                echo $response. "</br>";
-
                 // Create a new response file
                 $path = $dir . '/' . $service . '_PAQUI.txt';
                 $file = fopen($path,'w');
@@ -1516,6 +1514,7 @@ class STATUS_CRON {
 
                     return null;
                 }else {
+                    echo "DINS " . "</br>";
                     // Check the file content
                     $index = strpos('html',$response);
                     if ($index) {
