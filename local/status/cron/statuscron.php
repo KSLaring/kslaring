@@ -1517,10 +1517,12 @@ class STATUS_CRON {
                     echo "DINS " . "</br>";
                     // Check the file content
                     $index = strpos('html',$response);
+                    echo "INDEX HTML: " . $index . "</br>";
                     if ($index) {
                         return null;
                     }else {
                         $index = strpos('changeType',$response);
+                        echo "INDEX CONTENT: " . $index . "</br>";
                         if (!$index) {
                             return null;
                         }else {
