@@ -401,6 +401,7 @@ class STATUS_CRON {
         $i          = null;
 
         try {
+            echo "STATUS ORG" . "</br>";
             // Log
             $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START Import STATUS ORG Structure . ' . "\n";
 
@@ -1474,7 +1475,7 @@ class STATUS_CRON {
             $from   = gmdate('Y-m-d\TH:i:s\Z',0);
 
             // Build url end point
-            $url = $plugin->fs_point . '/' . $service . '?fromDate=' . $from . '&toDate=' . $to;
+            $url = $plugin->fs_point . '/' . $service . '?fromDatePP=' . $from . '&toDate=' . $to;
 
             // Call web service
             $ch = curl_init($url);
@@ -1491,6 +1492,7 @@ class STATUS_CRON {
             $response   = curl_exec( $ch );
             curl_close( $ch );
 
+            echo "Response --> " . $response . "</br>";
             // Format data
             if ($response === false) {
                 return null;
