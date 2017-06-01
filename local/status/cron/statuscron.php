@@ -42,11 +42,11 @@ class STATUS_CRON {
             self::synchronization($plugin,$industry);
             
             $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH FELLESDATA STATUS CRON . ' . "\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+            error_log($dblog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
         }catch (Exception $ex) {
             $dbLog = $ex->getMessage() . "\n" ."\n";
             $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH ERROR - FELLESDATA STATUS CRON . ' . "\n";
-            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+            error_log($dbLog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
 
             throw $ex;
         }//try_catch
@@ -125,12 +125,12 @@ class STATUS_CRON {
 
             // Log
             $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH FELLESDATA STATUS Get KS competence data . ' . "\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+            error_log($dblog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
         }catch (Exception $ex) {
             // Log
             $dbLog = $ex->getMessage() . "\n" ."\n";
             $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH FELLESDATA STATUS ERROR Get KS competence data . ' . "\n";
-            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+            error_log($dbLog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
 
             throw $ex;
         }//try_catch
@@ -188,12 +188,12 @@ class STATUS_CRON {
 
             // Log
             $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH FELLESDATA STATUS KS Managers/Reporters. ' . "\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+            error_log($dblog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
         }catch (Exception $ex) {
             // Log
             $dbLog = $ex->getMessage() . "\n" ."\n";
             $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH FELLESDATA STATUS ERROR KS Managers/Reporters. ' . "\n";
-            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+            error_log($dbLog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
 
             throw $ex;
         }//try_catch
@@ -246,12 +246,12 @@ class STATUS_CRON {
 
             // Log
             $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Synchronization Fellesdata STATUS. ' . "\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+            error_log($dblog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
         }catch (Exception $ex) {
             // Log
             $dblog  = "Error: " . $ex->getMessage() . "\n" . "\n";
             $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Synchronization Fellesdata STATUS. ' . "\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+            error_log($dblog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
 
             throw $ex;
         }//try_catch
@@ -294,14 +294,14 @@ class STATUS_CRON {
 
             // Log
             $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Import Fellesdata STATUS. ' . "\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+            error_log($dblog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
 
             return true;
         }catch (Exception $ex) {
             // Log
             $dblog  = "Error: " . $ex->getMessage() . "\n" . "\n";
             $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Import Fellesdata STATUS. ' . "\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+            error_log($dblog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
 
             throw $ex;
         }//try_catch
@@ -366,13 +366,13 @@ class STATUS_CRON {
 
             // Log
             $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Import STATUS Users . ' . "\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+            error_log($dblog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
         }catch (Exception $ex) {
             // Log
             $dblog  = "Error: " . $ex->getMessage() . "\n" . "\n";
             $dblog .= $ex->getTraceAsString() . "\n";
             $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' ERROR Import STATUS Users . ' . "\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+            error_log($dblog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
 
             throw $ex;
         }//try_catch
@@ -444,12 +444,12 @@ class STATUS_CRON {
 
             // Log
             $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Import STATUS ORG Structure . ' . "\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+            error_log($dblog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
         }catch (Exception $ex) {
             // Log
             $dblog  = "Error: " . $ex->getMessage() . "\n" . "\n";
             $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' ERROR Import STATUS ORG Structure . ' . "\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+            error_log($dblog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
 
             throw $ex;
         }//try_catch
@@ -516,12 +516,12 @@ class STATUS_CRON {
 
             // Log
             $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Import STATUS JOB ROLES . ' . "\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+            error_log($dblog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
         }catch (Exception $ex) {
             /* Log  */
             $dblog  = "Error: " . $ex->getMessage() . "\n" . "\n";
             $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' ERROR Import STATUS Job Roles . ' . "\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+            error_log($dblog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
 
             throw $ex;
         }//try_catch
@@ -588,12 +588,12 @@ class STATUS_CRON {
 
             // Log
             $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Import STATUS MANAGERRS REPORTERS . ' . "\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+            error_log($dblog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
         }catch (Exception $ex) {
             // log
             $dblog  = "Error: " . $ex->getMessage() . "\n" . "\n";
             $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' ERROR Import STATUS Managers Reporters . ' . "\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+            error_log($dblog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
 
             throw $ex;
         }//try_catch
@@ -660,12 +660,12 @@ class STATUS_CRON {
 
             // Log
             $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINSH Import STATUS USER COMPETENCE JR . ' . "\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+            error_log($dblog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
         }catch (Exception $ex) {
             // Log
             $dblog  = "Error: " . $ex->getMessage() . "\n" . "\n";
             $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' ERROR Import STATUS User Competence . ' . "\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+            error_log($dblog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
 
             throw $ex;
         }//try_catch
@@ -716,7 +716,7 @@ class STATUS_CRON {
                             // Log
                             $dbLog  = "ERROR WS: " . $response['message'] . "\n" . "\n";
                             $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' Finish ERROR Synchronization STATUS competence . ' . "\n";
-                            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+                            error_log($dbLog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
                         }//if_no_error
 
                     }//if_competence
@@ -725,12 +725,12 @@ class STATUS_CRON {
 
             // Log
             $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Synchronization STATUS competence. ' . "\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+            error_log($dblog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
         }catch (Exception $ex) {
             // Log
             $dblog  = "Error: " . $ex->getMessage() . "\n" . "\n";
             $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Synchronization STATUS competence. ' . "\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+            error_log($dblog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
 
             throw $ex;
         }//try_catch
@@ -791,12 +791,12 @@ class STATUS_CRON {
 
             // Log
             $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Synchronization STATUS delete competence. ' . "\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+            error_log($dblog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
         }catch (Exception $ex) {
             // Log
             $dblog  = "Error: " . $ex->getMessage() . "\n" . "\n";
             $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Synchronization STATUS delete competence. ' . "\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+            error_log($dblog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
 
             throw $ex;
         }//try_Catch
@@ -859,12 +859,12 @@ class STATUS_CRON {
             
             // Log
             $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Synchronization STATUS delete managers/reporters. ' . "\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+            error_log($dblog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
         }catch (Exception $ex) {
             // Log
             $dblog  = "Error: " . $ex->getMessage() . "\n" . "\n";
             $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Synchronization STATUS delete competence. ' . "\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+            error_log($dblog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
             throw $ex;
         }//try_catch
     }//sync_status_delete_managers_reporters
@@ -919,12 +919,12 @@ class STATUS_CRON {
 
             // Log
             $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Manager Reporter Synchronization (STATUS). ' . "\n";
-            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+            error_log($dbLog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
         }catch (Exception $ex) {
             // Log
             $dbLog  = $ex->getMessage() . "\n" . "\n";
             $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' Finish ERROR Manager Reporter Synchronization (STATUS). ' . "\n";
-            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+            error_log($dbLog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
 
             throw $ex;
         }//try_catch
@@ -962,12 +962,12 @@ class STATUS_CRON {
 
             // Log
             $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Users Accounts (STATUS) . ' . "\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+            error_log($dblog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
         }catch (Exception $ex) {
             // Log
             $dblog  = $ex->getMessage() . "\n" . "\n";
             $dblog .= $dblog(time(),'%d.%m.%Y', 99, false). ' Finish ERROR Users Accounts (STATUS). ' . "\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+            error_log($dblog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
 
             throw $ex;
         }//try_catch
@@ -1024,12 +1024,12 @@ class STATUS_CRON {
 
             // Log
             $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Existing Users Accounts (STATUS) . ' . "\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+            error_log($dblog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
         }catch (Exception $ex) {
             // Log
             $dblog  = $ex->getMessage() . "\n" . "\n";
             $dblog .= $dblog(time(),'%d.%m.%Y', 99, false). ' Finish ERROR Existing Users Accounts (STATUS). ' . "\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+            error_log($dblog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
 
             throw $ex;
         }//try_catch
@@ -1086,12 +1086,12 @@ class STATUS_CRON {
 
             // Log
             $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Users Accounts NEW (STATUS) . ' . "\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+            error_log($dblog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
         }catch (Exception $ex) {
             // Log
             $dblog  = $ex->getMessage() . "\n" . "\n";
             $dblog .= $dblog(time(),'%d.%m.%Y', 99, false). ' Finish ERROR Users Accounts NEW (STATUS). ' . "\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+            error_log($dblog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
 
             throw $ex;
         }//try_catch
@@ -1148,12 +1148,12 @@ class STATUS_CRON {
             
             // Log
             $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Users Accounts DELETED (STATUS) . ' . "\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+            error_log($dblog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
         }catch (Exception $ex) {
             // Log
             $dblog  = $ex->getMessage() . "\n" . "\n";
             $dblog .= $dblog(time(),'%d.%m.%Y', 99, false). ' Finish ERROR Users Accounts DELETED (STATUS). ' . "\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+            error_log($dblog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
 
             throw $ex;
         }//try_catch
@@ -1193,12 +1193,12 @@ class STATUS_CRON {
 
             // Log
             $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH FS Organizations Synchronization (STATUS) . ' . "\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+            error_log($dblog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
         }catch (Exception $ex) {
             // Log
             $dblog  = $ex->getMessage() . "\n" . "\n";
             $dblog .= $dblog(time(),'%d.%m.%Y', 99, false). ' Finish ERROR FS Organizations Synchronization (STATUS). ' . "\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+            error_log($dblog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
 
             throw $ex;
         }//try_catch
@@ -1246,7 +1246,7 @@ class STATUS_CRON {
                                 /* Log  */
                                 $dblog  .= "ERROR WS: " . $response['message'] . "\n\n";
                                 $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' Finish ERROR Status compenies to delete . ' . "\n";
-                                error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+                                error_log($dblog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
                             }//if_no_error
                         }//if_response
                     }//if_toSynchronize
@@ -1298,7 +1298,7 @@ class STATUS_CRON {
                                 /* Log  */
                                 $dblog  .= "ERROR WS: " . $response['message'] . "\n\n";
                                 $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' Finish ERROR Status existing companies . ' . "\n";
-                                error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+                                error_log($dblog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
                             }//if_no_error
                         }//if_response
                     }//if_toSynchronize
@@ -1349,12 +1349,12 @@ class STATUS_CRON {
             
             // Log
             $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Sync Jobroles (STATUS) . ' . "\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+            error_log($dblog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
         }catch (Exception $ex) {
             // Log
             $dblog  = $ex->getTraceAsString() . "\n" . "\n";
             $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' ERROR FINISH Sync Jobroles (STATUS . ' . "\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+            error_log($dblog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
             
             throw $ex;
         }//try_catch
@@ -1424,7 +1424,7 @@ class STATUS_CRON {
             $dbLog = "ERROR: " . $ex->getMessage() .  "\n\n";
             $dbLog .= $ex->getTraceAsString() . "\n\n";
             $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' Error calling web service . ' . "\n";
-            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+            error_log($dbLog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
 
             throw $ex;
         }//try_catch
