@@ -1458,6 +1458,7 @@ class STATUS_CRON {
         $date           = null;
         $admin          = null;
         $index          = null;
+        $dblog          = null;
 
         try {
             // Check if exists temporary directory
@@ -1499,43 +1500,41 @@ class STATUS_CRON {
                 return null;
             }else {
                 if (isset($response->status)) {
-                    if ($response->status != 200) {
-                        mtrace($response->message);
+                    mtrace($response->message);
+                    // Log
+                    $dblog .= time() . ' ERROR RESPONSE STATUS . ' . "\n";
+                    $dblog  .= $response->message . "\n" . "\n";
+                    error_log($dblog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
+
+                    return null;
+                }else {
+                    // Check the file content
+                    $index = strpos('html',$response);
+                    if ($index) {
                         return null;
                     }else {
-                        echo $response->status . "</br>";
-                        // Check the file content
-                        $index = strpos('html',$response);
-                        if ($index) {
+                        $index = strpos('changeType',$response);
+                        if (!$index) {
                             return null;
                         }else {
-                            $index = strpos('changeType',$response);
-                            if (!$index) {
-                                return null;
-                            }else {
-                                // Clean all response
-                                $path = $dir . '/' . $service . '.txt';
-                                if (file_exists($path)) {
-                                    // Move the file to the new directory
-                                    copy($path,$backup . '/' . $service . '_' . time() . '.txt');
+                            // Clean all response
+                            $path = $dir . '/' . $service . '.txt';
+                            if (file_exists($path)) {
+                                // Move the file to the new directory
+                                copy($path,$backup . '/' . $service . '_' . time() . '.txt');
 
-                                    unlink($path);
-                                }
+                                unlink($path);
+                            }
 
-                                // Create a new response file
-                                $file = fopen($path,'w');
-                                fwrite($file,$response);
-                                fclose($file);
+                            // Create a new response file
+                            $file = fopen($path,'w');
+                            fwrite($file,$response);
+                            fclose($file);
 
-                                return true;
-                            }//if_index
-                        }//if_else_index
-                    }
-                }else {
-                    echo $response . "</br>";
-                    echo "No status field " . "</br>";
-                    return null;
-                }//if_response_status
+                            return true;
+                        }//if_index
+                    }//if_else_index
+                }//if_else_status
             }//if_response
         }catch (Exception $ex) {
             throw $ex;
