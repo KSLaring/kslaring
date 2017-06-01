@@ -1497,26 +1497,31 @@ class STATUS_CRON {
             if ($response === false) {
                 return null;
             }else {
-                if (isset($response->error)) {
-                    mtrace($response->message);
-                    return false;
-                }else {
-                    // Clean all response
-                    $path = $dir . '/' . $service . '.txt';
-                    if (file_exists($path)) {
-                        // Move the file to the new directory
-                        copy($path,$backup . '/' . $service . '_' . time() . '.txt');
+                if (isset($response->status)) {
+                    if ($response->status != 200) {
+                        mtrace($response->message);
+                        return null;
+                    }else {
+                        // Check the file content
+                        // Clean all response
+                        $path = $dir . '/' . $service . '.txt';
+                        if (file_exists($path)) {
+                            // Move the file to the new directory
+                            copy($path,$backup . '/' . $service . '_' . time() . '.txt');
 
-                        unlink($path);
+                            unlink($path);
+                        }
+
+                        // Create a new response file
+                        $file = fopen($path,'w');
+                        fwrite($file,$response);
+                        fclose($file);
+
+                        return true;
                     }
-
-                    // Create a new response file
-                    $file = fopen($path,'w');
-                    fwrite($file,$response);
-                    fclose($file);
-
-                    return true;
-                }
+                }else {
+                    return null;
+                }//if_response_status
             }//if_response
         }catch (Exception $ex) {
             throw $ex;
