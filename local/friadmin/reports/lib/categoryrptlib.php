@@ -191,92 +191,104 @@ class friadminrpt
      *
      */
     public static function get_course_summary_data($category, $from, $to) {
-        // Variables!
+        /* Variables */
         global $DB;
-        $rdo = null;
-
-        $query = "SELECT            c.id			    as 'courseid',			-- The course ID
-                                    c.fullname 		    as 'coursefull', 		-- Course full name
-                                    c.shortname 	    as 'courseshort', 		-- Course short name
-                                    c.format 		    as 'courseformat', 	    -- Course format
-                                    fo4.value		    as 'producer',			-- Produced by
-                                    cl.name		        as 'levelone',		    -- Municipality (level one) / Course location
-                                    fo2.value		    as 'sector',			-- Course Sector
-                                    ca.name 		    as 'category', 		    -- Category Name
-                                    e.customint1		as 'expiration', 	    -- Deadline for enrolments
-                                    e.customint2	    as 'spots',			    -- Number of places
-                                    e.customtext3	    as 'internalprice',	    -- Internal price
-                                    e.customtext4	    as 'externalprice',     -- external price
-                                    cs.instructors		as 'instructors',       -- Amount of instructors
-                                    cs.students		    as 'students',		    -- Amount of students
-                     count(distinct qu.userid)          as 'waiting',           -- Amount in waitinglist
-                     count(distinct cc.userid)          as 'completed',         -- Amount of completions
-                                    c.visible		    as 'visibility',	    -- Course visibility
-                                    fo3.value 		    as 'fromto'			    -- From - To
-                FROM 				{course} 					c
-                    -- Category
-                    JOIN 			{course_categories} 		ca 	ON ca.id 		  = c.category
-                    -- Deadline / Internal price && External price
-                    LEFT JOIN {enrol}                           e   ON e.courseid  = c.id
-                                                                    AND e.enrol    = 'waitinglist'
-                                                                    AND e.status   = 0
-                     -- Waiting
-                    LEFT JOIN {enrol_waitinglist_queue}         qu  ON qu.courseid = c.id
-                                                                    AND qu.queueno != '99999'
-                    -- Completed
-                    LEFT JOIN {course_completions}              cc ON cc.course = c.id 
-                    
-                    -- Counting students and instructors
-                    LEFT JOIN (
-                        SELECT     ct.instanceid as 'course',
-                             count(rs.id)        as 'students',
-                             count(ri.id)        as 'instructors'
-                        FROM        {role_assignments}          ra
-                            JOIN    {context}                   ct  ON  ct.id = ra.contextid
-                                                                    AND ct.contextlevel = 50
-                        -- Students
-                        LEFT JOIN   {role}                      rs  ON rs.id   = ra.roleid
-                                                                    AND rs.archetype  = 'student'
-                        -- Intructors
-                        LEFT JOIN   {role}                      ri  ON ri.id   = ra.roleid
-                                                                    AND ri.archetype  = 'teacher'
-                        GROUP BY    ct.instanceid
-                    ) cs  ON 		cs.course = c.id
-                   -- Location
-                    LEFT JOIN       {course_format_options}     fo  ON  fo.courseid = c.id
-                                                                    AND fo.name = 'course_location'
-                    LEFT JOIN       {course_locations}          cl  ON  cl.id = fo.value
-                   -- Sector
-                    LEFT JOIN		{course_format_options}	    fo2	ON 	fo2.courseid  = c.id
-                                                                    AND fo2.name 	  = 'course_sector'
-                    -- Course Dates
-                    LEFT JOIN		{course_format_options}	    fo3	ON 	fo3.courseid  = c.id
-                                                                    AND fo3.name 	  = 'time'
-                    -- Produced By
-                    LEFT JOIN		{course_format_options}	    fo4	ON 	fo4.courseid  = c.id
-                                                                    AND fo4.name 	  = 'producedby'
-                WHERE ca.id = :categoryid
-                AND   c.startdate >= :from
-                AND   c.startdate <= :to
-                GROUP BY c.id";
+        $rdo    = null;
+        $query  = null;
+        $params = null;
 
         try {
+            // Search criteria
             $params = array();
-            $params['categoryid'] = $category;
-            $params['from'] = $from;
-            $params['to'] = $to;
+            $params['categoryid']   = $category;
+            $params['from']         = $from;
+            $params['to']           = $to;
 
+            // SQL Instruction
+            $query = " SELECT       c.id			    as 'courseid',			-- The course ID
+                                    c.fullname 		    as 'coursefull', 		-- Course full name
+                                    c.shortname 	    as 'courseshort', 		-- Course short name
+                                    c.format 		    as 'courseformat', 	    -- Course format,
+                                    c.visible		    as 'visibility',	    -- Course visibility								--
+                                    ca.name 		    as 'category', 		    -- Category Name
+                                    mu.name				as 'levelone',			-- Municipality (Level One)
+                                    l1.name				as 'location',			-- Course location,
+                                    se.name				as 'sector',			-- Course Sector (Level two)
+                                    fo3.value		    as 'producer',			-- Produced by
+                                    fo4.value 		    as 'fromto',			-- From - To
+                                    e.customint1		as 'deadline',			-- Deadline
+                                    e.customint2	    as 'spots',			    -- Number of places
+                                    e.customtext3	    as 'internalprice',	    -- Internal price
+                                    e.customtext4	    as 'externalprice',     -- external price  
+                                    csi.instructors		as 'instructors',       -- Amount of instructors
+                                    csi.students		as 'students',			-- Total users
+                                    count(wa.userid) 	as 'waiting',			-- Total users waiting list
+                                    count(cc.id)        as 'completed'			-- Total users completed
+                       FROM			{course} 				  c
+                          JOIN		{course_categories}		  ca    ON ca.id 			= c.category
+                          -- Format options -- Location (Municipality - Level one)
+                          LEFT JOIN	{course_format_options}   fo 	ON fo.courseid 	= c.id
+                                                                    AND fo.name 	= 'course_location' 
+                          LEFT JOIN	{course_locations} 		  l1    ON 	l1.id 	    = fo.value
+                          LEFT JOIN	{report_gen_companydata}  mu	ON	mu.id		= l1.levelone
+                          -- Format options -- Sector (Level two)
+                          LEFT JOIN	{course_format_options}	  fo2	ON 	fo2.courseid  = c.id
+                                                                    AND fo2.name 	  = 'course_sector'
+                          LEFT JOIN	{report_gen_companydata}  se	ON	se.id		  = fo2.value
+                          -- Format options -- Produced by
+                          LEFT JOIN	{course_format_options}	  fo3	ON 	fo3.courseid  = c.id
+                                                                    AND fo3.name 	  = 'producedby'   
+                          -- Format options -- time 
+                          LEFT JOIN	{course_format_options}	  fo4	ON 	fo4.courseid  = c.id
+                                                                    AND fo4.name 	  = 'time'    
+                          -- Deadline / Internal price && External price
+                          LEFT JOIN	{enrol}					  e   ON 	e.courseid    = c.id
+                                                                  AND e.enrol		  = 'waitinglist'
+                                                                  AND e.status 	  = 0
+                          -- Total users in waiting list
+                          LEFT JOIN	{enrol_waitinglist_queue} wa  ON  wa.waitinglistid	= e.id
+                                                                  AND wa.courseid			= c.id
+                                                                  AND queueno 		   != '99999'
+                          -- Total users completed the course
+                          LEFT JOIN	{course_completions}	  cc  ON  cc.course	= c.id
+                                                                  AND (cc.timecompleted IS NOT NULL 
+                                                                       OR 
+                                                                       cc.timecompleted != 0)
+                                
+                          -- TOTAL USERS ENROLLED AS STUDENT
+                          -- Total instructors --> non_editing teacher
+                          LEFT JOIN (
+                                     SELECT 	  ct.instanceid as 'course',
+                                                  count(rs.id)  as 'students',
+                                                  count(ri.id)  as 'instructors'
+                                     FROM		  {role_assignments}  ra
+                                        -- Only users with contextlevel = 50 (Course)
+                                        JOIN	  {context}			  ct  ON  ct.id 		  = ra.contextid
+                                                                          AND ct.contextlevel = 50
+                                        -- Students
+                                        LEFT JOIN {role}			  rs  ON  rs.id 		= ra.roleid
+                                                                          AND rs.archetype  = 'student'
+                                        -- Intructors
+                                        LEFT JOIN {role}			  ri  ON  ri.id 		= ra.roleid
+                                                                          AND ri.archetype  = 'teacher'
+                                     GROUP BY ct.instanceid
+                                    ) csi ON csi.course = c.id
+                       WHERE 	 c.category = :categoryid
+                          AND   c.startdate BETWEEN :from AND :to
+                       GROUP BY c.id ";
+
+            // Execute
             $rdo = $DB->get_records_sql($query, $params);
-
             if ($rdo) {
                 return $rdo;
             } else {
                 return null;
             }
-        } catch (Exception $ex) {
-            Throw $ex;
-        }  // end try_catch
-    } // end get_course_summarydata
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//get_course_summary_data
+
 
     /**
      * Description
@@ -303,80 +315,80 @@ class friadminrpt
         $extrasql       = '';
         $workplacesql   = '';
         $jobrolesql     = '';
-
-        // Course.
-        if ($course) {
-            $extrasql .= " AND c.id = :course ";
-        }
-
-        // Users fullname.
-        if ($fullname) {
-            $extrasql .= " AND CONCAT(u.firstname, ' ', u.lastname) LIKE '%" . $fullname . "%' ";
-        }
-
-        // Username.
-        if ($username) {
-            $extrasql .= " AND u.username LIKE '%" . $username . "%' ";
-        }
-
-        // Email.
-        if ($email) {
-            $extrasql .= " AND u.email LIKE '%" . $email . "%' ";
-        }
-
-        // Workplace.
-        if ($workplace) {
-            $workplacesql = " JOIN {user_info_competence_data} 	    uic ON uic.userid = u.id
-                              JOIN {report_gen_companydata} 	    rgc ON rgc.id = uic.competenceid
-                                                                        AND rgc.name LIKE '%" . $workplace . "'%' ";
-        }
-
-        // Jobrole.
-        if ($jobrole) {
-            $jobrolesql = " JOIN {user_info_competence_data}  uic2 ON uic2.userid = u.id
-                            JOIN {report_gen_jobrole}         gjr  ON gjr.id IN (uic2.jobroles)
-                                                                   AND gjr.name LIKE '%" . $jobrole . "%' ";
-        }
-
-        // Query.
-        $query = "SELECT DISTINCT u.id
-                  FROM  {user}                    u
-                  -- INSTRUCTORS
-                  JOIN  {role_assignments}        ra  ON  ra.userid = u.id
-                  JOIN  {context}                 ct  ON  ct.id = ra.contextid
-                  JOIN  {role}                    r   ON  r.id = ra.roleid
-                                                      AND r.archetype = 'teacher'
-                  -- Course
-                  JOIN 	{course}				  c	  ON c.id = ct.instanceid
-
-                  -- Category
-                  JOIN	{course_categories}		  ca  ON ca.id = c.category
-
-                  -- Jobroles
-                  $jobrolesql
-
-                  -- Workplace
-                  $workplacesql
-
-                  WHERE u.deleted = 0
-                  AND ca.id = :category
-                  $extrasql ";
+        $params         = null;
+        $query          = null;
 
         try {
+            // Search criteria
             $params = array();
-            $params['course'] = $course;
             $params['category'] = $category;
 
-            $rdo = $DB->get_records_sql($query, $params);
+            // Course.
+            if ($course) {
+                $params['course']   = $course;
+                $extrasql .= " AND c.id = :course ";
+            }
 
+            // Users fullname.
+            if ($fullname) {
+                $extrasql .= " AND CONCAT(u.firstname, ' ', u.lastname) LIKE '%" . $fullname . "%' ";
+            }
+
+            // Username.
+            if ($username) {
+                $extrasql .= " AND u.username LIKE '%" . $username . "%' ";
+            }
+
+            // Email.
+            if ($email) {
+                $extrasql .= " AND u.email LIKE '%" . $email . "%' ";
+            }
+
+            // Workplace.
+            if ($workplace) {
+                $workplacesql = " JOIN {user_info_competence_data} 	uic ON  uic.userid  = u.id
+                                  JOIN {report_gen_companydata} 	rgc ON  rgc.id      = uic.competenceid
+                                                                        AND rgc.name LIKE '%" . $workplace . "'%' ";
+            }
+
+            // Jobrole.
+            if ($jobrole) {
+                $jobrolesql = " JOIN {user_info_competence_data}  uic2 ON  uic2.userid = u.id
+                                JOIN {report_gen_jobrole}         gjr  ON  gjr.id IN (uic2.jobroles)
+                                                                       AND gjr.name LIKE '%" . $jobrole . "%' ";
+            }
+
+            // Query.
+            $query = " SELECT  DISTINCT u.id
+                       FROM    {user}                u
+                          -- INSTRUCTORS
+                          JOIN  {role_assignments}    ra  ON  ra.userid   = u.id
+                          JOIN  {context}             ct  ON  ct.id       = ra.contextid
+                          JOIN  {role}                r   ON  r.id        = ra.roleid
+                                                          AND r.archetype = 'teacher'
+                          -- Course
+                          JOIN 	{course}		      c	  ON  c.id        = ct.instanceid
+                          -- Category
+                          JOIN	{course_categories} ca  ON ca.id = c.category
+    
+                          -- Jobroles
+                          $jobrolesql
+                          -- Workplace
+                          $workplacesql
+                       WHERE u.deleted = 0
+                          AND ca.id = :category
+                          $extrasql ";
+
+            // Execute
+            $rdo = $DB->get_records_sql($query, $params);
             if ($rdo) {
                 return $rdo;
             } else {
                 return null;
             }
-        } catch (Exception $ex) {
-            Throw $ex;
-        }  // end try_catch
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
     } // end get_course_instructors
 
     /**
@@ -398,58 +410,65 @@ class friadminrpt
         global $DB;
         $rdo        = null;
         $myarray    = implode(',', array_keys($instructors));
-        $extrasql   = ' ';
-
-        if ($course) {
-            $extrasql .= " AND c.id = :course ";
-        }
-
-        $query = "  SELECT  DISTINCT CONCAT(u.id,c.id)          as 'unique',
-                            c.id                                as 'courseid',
-                            CONCAT(u.firstname,' ', u.lastname) as 'instr',
-                            c.fullname                          as 'coursename',
-                            ca.name                             as 'category',
-                            c.format                            as 'courseformat',
-                            co.name                             as 'levelone',
-                            cl.name                             as 'location',
-                            fo1.value                           as 'fromto',
-                            c.visible                           as 'visibility'
-                    FROM            {user}                    u
-                    -- Course
-                        JOIN 		{role_assignments}		  ra 	ON ra.userid  = u.id
-						JOIN		{context}				  ct	ON ct.id 	  = ra.contextid
-                        JOIN        {course}                  c     ON  c.id      = ct.instanceid
-
-                        -- Category
-                        JOIN        {course_categories}       ca    ON  ca.id = c.category
-                        -- Location
-                        LEFT JOIN   {course_format_options}   fo    ON  fo.courseid = c.id
-                                                                    AND fo.name = 'course_location'
-                        LEFT JOIN   {course_locations}        cl    ON  cl.id = fo.value
-                        LEFT JOIN   {report_gen_companydata}  co    ON  co.id = cl.levelone
-                        -- Dates
-                        LEFT JOIN   {course_format_options}   fo1   ON  fo1.courseid = c.id
-                                                                    AND fo1.name = 'time'
-                    WHERE u.deleted = 0
-                    AND ca.id = :category
-                    AND u.id IN ($myarray)
-                    $extrasql ";
+        $extrasql   = null;
+        $query      = null;
+        $params     = null;
 
         try {
+            // Search criteria
             $params = array();
-            $params['course'] = $course;
             $params['category'] = $category;
 
-            $rdo = $DB->get_records_sql($query, $params);
+            // Course criteria
+            if ($course) {
+                $params['course'] = $course;
+                $extrasql .= " AND c.id = :course ";
+            }//if_course
 
+            // SQL -Instruction
+            $query = " SELECT  DISTINCT 
+                                    CONCAT(u.id,c.id)          as 'unique',
+                                    c.id                                as 'courseid',
+                                    CONCAT(u.firstname,' ', u.lastname) as 'instr',
+                                    c.fullname                          as 'coursename',
+                                    ca.name                             as 'category',
+                                    c.format                            as 'courseformat',
+                                    co.name                             as 'levelone',
+                                    cl.name                             as 'location',
+                                    fo1.value                           as 'fromto',
+                                    c.visible                           as 'visibility'
+                       FROM         {user}                    u
+                          -- Course
+                          JOIN 		{role_assignments}		  ra 	ON ra.userid  = u.id
+						  JOIN		{context}				  ct	ON ct.id 	  = ra.contextid
+                          JOIN      {course}                  c     ON c.id       = ct.instanceid
+
+                          -- Category
+                          JOIN      {course_categories}       ca    ON  ca.id = c.category
+                          -- Location
+                          LEFT JOIN {course_format_options}   fo    ON  fo.courseid = c.id
+                                                                    AND fo.name     = 'course_location'
+                          LEFT JOIN {course_locations}        cl    ON  cl.id       = fo.value
+                          LEFT JOIN {report_gen_companydata}  co    ON  co.id       = cl.levelone
+                          -- Dates
+                          LEFT JOIN {course_format_options}   fo1   ON  fo1.courseid = c.id
+                                                                    AND fo1.name     = 'time'
+                       WHERE u.deleted = 0
+                          AND ca.id = :category
+                          AND u.id IN ($myarray)
+                          $extrasql ";
+
+
+            // Execute
+            $rdo = $DB->get_records_sql($query, $params);
             if ($rdo) {
                 return $rdo;
             } else {
                 return null;
             }
-        } catch (Exception $ex) {
-            Throw $ex;
-        }  // end try_catch
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
     } // end get_course_instructor_data
 
     /**
@@ -550,16 +569,14 @@ class friadminrpt
 
             // Search criterias.
             $myxls = $export->add_worksheet(get_string('filter', 'local_friadmin'));
-
-                self::add_participants_excel_filter($myxls, $row, $from, $to, $category);
+            self::add_participants_excel_filter($myxls, $row, $from, $to, $category);
 
             // Raw.
             $myxls = $export->add_worksheet(get_string('content', 'local_friadmin'));
-
-                // Headers.
-                self::add_participants_header_excel($myxls, $row, $coursesdata);
-                // Content.
-                // self::add_participants_content_excel($coursesdata, $myxls, $row, $from, $to);
+            // Headers.
+            self::add_participants_header_excel($myxls, $row, $coursesdata);
+            // Content.
+            //self::add_participants_content_excel($coursesdata, $myxls, $row, $from, $to);
 
             $export->close();
 
