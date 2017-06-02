@@ -1071,10 +1071,15 @@ class FELLESDATA_CRON {
 
             // Format data
             if ($response === false) {
+                // Send notification
+                FS_CRON::send_notifications_service($pluginInfo,'FS',$service);
+
                 return null;
             }else {
                 if (isset($response->status)) {
-                    mtrace($response->message);
+                    // Send notification
+                    FS_CRON::send_notifications_service($pluginInfo,'FS',$service);
+
                     // Log
                     $dblog .=  ' ERROR RESPONSE TARDIS . ' . "\n";
                     $dblog .= $response->message . "\n\n";
@@ -1084,8 +1089,12 @@ class FELLESDATA_CRON {
                     // Check the file content
                     $index = strpos($response, 'html');
                     if ($index) {
+                        // Send notification
+                        FS_CRON::send_notifications_service($pluginInfo,'FS',$service);
+
                         // Log
                         $dblog .=  ' ERROR RESPONSE TARDIS . ' . "\n";
+
                         return null;
                     } else {
                         // Clean all response
@@ -1114,6 +1123,9 @@ class FELLESDATA_CRON {
                 }//if_else
             }//if_response
         }catch (Exception $ex) {
+            // Send notification
+            FS_CRON::send_notifications_service($pluginInfo,'FS',$service);
+
             throw $ex;
         }//try_catch
     }//process_tradis_service

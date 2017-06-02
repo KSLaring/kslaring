@@ -280,6 +280,12 @@ class suspicious {
                     $notifyTo = explode(',',$plugin->suspicious_notify);
                 }//if_suspicious
 
+                // None to notify then send to the admin site
+                if (!$notifyTo) {
+                    $notifyTo = array();
+                    $notifyTo[] = $admin;
+                }//if_notify
+
                 // All notifications with the right language
                 foreach ($notifyTo as $to) {
                     $infoUser = get_complete_user_data('email',$to);
