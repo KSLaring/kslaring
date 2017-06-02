@@ -209,8 +209,8 @@ class friadminrpt
                                     e.customtext4	    as 'externalprice',     -- external price
                                     cs.instructors		as 'instructors',       -- Amount of instructors
                                     cs.students		    as 'students',		    -- Amount of students
-                                    wa.count 		    as 'waiting',		    -- Amount in waitinglist
-                                    cm.count		    as 'completed',		    -- Amount of completions
+                     count(distinct qu.userid)          as 'waiting',           -- Amount in waitinglist
+                     count(distinct cc.userid)          as 'completed',         -- Amount of completions
                                     c.visible		    as 'visibility',	    -- Course visibility
                                     fo3.value 		    as 'fromto'			    -- From - To
                 FROM 				{course} 					c
@@ -220,39 +220,28 @@ class friadminrpt
                     LEFT JOIN {enrol}                           e   ON e.courseid  = c.id
                                                                     AND e.enrol    = 'waitinglist'
                                                                     AND e.status   = 0
+                     -- Waiting
+                    LEFT JOIN {enrol_waitinglist_queue}         qu  ON qu.courseid = c.id
+                                                                    AND qu.queueno != '99999'
+                    -- Completed
+                    LEFT JOIN {course_completions}              cc ON cc.course = c.id 
+                    
                     -- Counting students and instructors
                     LEFT JOIN (
-                        SELECT ct.instanceid as 'course',
-                        count(rs.id) as 'students',
-                        count(ri.id) as 'instructors'
-                        FROM {role_assignments} ra
-                        JOIN {context} ct  ON  ct.id = ra.contextid
-                        AND ct.contextlevel = 50
+                        SELECT     ct.instanceid as 'course',
+                             count(rs.id)        as 'students',
+                             count(ri.id)        as 'instructors'
+                        FROM        {role_assignments}          ra
+                            JOIN    {context}                   ct  ON  ct.id = ra.contextid
+                                                                    AND ct.contextlevel = 50
                         -- Students
-                        LEFT JOIN  {role} rs ON rs.id   = ra.roleid
-                        AND rs.archetype  = 'student'
+                        LEFT JOIN   {role}                      rs  ON rs.id   = ra.roleid
+                                                                    AND rs.archetype  = 'student'
                         -- Intructors
-                        LEFT JOIN  {role} ri ON ri.id   = ra.roleid
-                        AND ri.archetype  = 'teacher'
-                        GROUP BY ct.instanceid
+                        LEFT JOIN   {role}                      ri  ON ri.id   = ra.roleid
+                                                                    AND ri.archetype  = 'teacher'
+                        GROUP BY    ct.instanceid
                     ) cs  ON 		cs.course = c.id
-                    -- Total Waiting
-                        LEFT JOIN (
-                        SELECT 		count(userid) 		as 'count',
-                                    courseid			as 'course'
-                        FROM		{enrol_waitinglist_queue}
-                        WHERE		queueno != '99999'
-                        GROUP BY 	courseid
-                    ) wa  ON		wa.course = e.courseid
-                    -- Total Completed
-                        LEFT JOIN (
-                        SELECT 		count(cc.userid) 	as 'count',
-                                    cc.course 			as 'course'
-                        FROM		{course_completions} 		cc
-                            JOIN	{course} 					c 	ON 	c.id = cc.course
-                        WHERE		cc.timecompleted IS NOT NULL
-                        GROUP BY	course
-                    ) cm  ON 		cm.course = c.id
                    -- Location
                     LEFT JOIN       {course_format_options}     fo  ON  fo.courseid = c.id
                                                                     AND fo.name = 'course_location'
@@ -721,11 +710,11 @@ class friadminrpt
                 'bg_color' => '#d4d4d4',
                 'text_wrap' => true,
                 'v_align' => 'left'));
-            $myxls->merge_cells($row, $col, $row, $col + 4);
+            $myxls->merge_cells($row, $col, $row + 1, $col + 4);
             $myxls->set_row($row, 20);
 
             // Category Header.
-            $row += 1;
+            $row += 2;
             $myxls->write($row, $col, $strcategory, array(
                 'size' => 16,
                 'name' => 'Arial',
