@@ -21,32 +21,40 @@ class STATUS_CRON {
     public static function cron($plugin) {
         /* Varibales */
         global $CFG;
-        
+        $dblog = null;
+        $time  = null;
+
         try {
-            // Log
-            $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START FELLESDATA STATUS CRON . ' . "\n";
+            // Local time
+            $time = time();
+
+            // Start Log
+            $dblog = $time . ' (' . userdate(time(),'%d.%m.%Y %H:%M', 99, false) . ') - START FELLESDATA STATUS CRON' . "\n";
             
             // Get industry code
             $industry = STATUS::get_industry_code($plugin->ks_muni);
 
             // Get competence from KS
-            self::competence_data($plugin,$industry);
+            self::competence_data($plugin,$industry,$dblog);
 
             // Get managers reporters from KS
-            self::managers_reporters($plugin,$industry);
+            self::managers_reporters($plugin,$industry,$dblog);
 
             // Import last status from fellesdata
-            self::import_status($plugin);
+            self::import_status($plugin,$dblog);
 
             // Syncronization
-            self::synchronization($plugin,$industry);
-            
-            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH FELLESDATA STATUS CRON . ' . "\n";
+            self::synchronization($plugin,$industry,$dblog);
+
+            // Finish Log
+            $dblog .= $time . ' (' . userdate(time(),'%d.%m.%Y %H:%M', 99, false) . ') - FINISH FELLESDATA STATUS CRON' . "\n\n";
             error_log($dblog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
         }catch (Exception $ex) {
-            $dbLog = $ex->getMessage() . "\n" ."\n";
-            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH ERROR - FELLESDATA STATUS CRON . ' . "\n";
-            error_log($dbLog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
+            // Finish log - error
+            $dblog .= "ERROR: " . "\n";
+            $dblog .= $ex->getTraceAsString() . "\n" ."\n";
+            $dblog .= $time . ' (' . userdate(time(),'%d.%m.%Y %H:%M', 99, false) . ') - ERROR FINISH FELLESDATA STATUS CRON' . "\n\n";
+            error_log($dblog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
 
             throw $ex;
         }//try_catch
@@ -54,26 +62,45 @@ class STATUS_CRON {
 
     public static function test($plugin) {
         /* Variables */
-        $industry = null;
+        global $CFG;
+        $industry   = null;
+        $dblog      = null;
+        $time       = null;
 
         try {
+            // Local time
+            $time = time();
+
+            // Start Log
+            $dblog = $time . ' (' . userdate(time(),'%d.%m.%Y %H:%M', 99, false) . ') - START FELLESDATA STATUS CRON' . "\n";
+
             // Get industry code
             $industry = STATUS::get_industry_code($plugin->ks_muni);
 
             echo "Industry --> " . $industry . "</br>";
 
             // Get competence from KS
-            //self::competence_data($plugin,$industry);
+            self::competence_data($plugin,$industry,$dblog);
 
             // Get managers reporters from KS
-            //self::managers_reporters($plugin,$industry);
+            self::managers_reporters($plugin,$industry,$dblog);
 
             // Import last status from fellesdata
-            self::import_status($plugin);
+            self::import_status($plugin,$dblog);
 
             // Syncronization
-            //self::synchronization($plugin,$industry);
+            self::synchronization($plugin,$industry,$dblog);
+
+            // Finish Log
+            $dblog .= $time . ' (' . userdate(time(),'%d.%m.%Y %H:%M', 99, false) . ') - FINISH FELLESDATA STATUS CRON' . "\n\n";
+            error_log($dblog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
         }catch (Exception $ex) {
+            // Finish log - error
+            $dblog .= "ERROR: " . "\n";
+            $dblog .= $ex->getTraceAsString() . "\n" ."\n";
+            $dblog .= $time . ' (' . userdate(time(),'%d.%m.%Y %H:%M', 99, false) . ') - ERROR FINISH FELLESDATA STATUS CRON' . "\n\n";
+            error_log($dblog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
+
             throw $ex;
         }//try_catch
     }
@@ -88,16 +115,15 @@ class STATUS_CRON {
      *
      * @param       $plugin
      * @param       $industry
+     * @param       $dblog
      *
      * @throws      Exception
      *
      * @creationDate    25/02/2017
      * @author          eFaktor     (fbv)
      */
-    private static function competence_data($plugin,$industry) {
+    private static function competence_data($plugin,$industry,&$dblog) {
         /* Variables */
-        global $CFG;
-        $dblog      = null;
         $params     = null;
         $response   = null;
         $file       = null;
@@ -105,7 +131,7 @@ class STATUS_CRON {
 
         try {
             // Log
-            $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START FELLESDATA STATUS Get KS competence data . ' . "\n";
+            $dblog .= 'Start STATUS Get KS competence data . ' . "\n";
 
             // Cal service
             $params = array();
@@ -120,18 +146,12 @@ class STATUS_CRON {
                     $dblog .= "Error WS: " . $response['message'] . "\n" ."\n";
                 }//if_no_error
             }else {
-                $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' ERROR Response null . ' . "\n";
+                $dblog .= ' RESPONSE NOT VALID ' . "\n";
             }//if_else_response
 
             // Log
-            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH FELLESDATA STATUS Get KS competence data . ' . "\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
+            $dblog .= ' FINISH STATUS Get KS competence data . ' . "\n";
         }catch (Exception $ex) {
-            // Log
-            $dbLog = $ex->getMessage() . "\n" ."\n";
-            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH FELLESDATA STATUS ERROR Get KS competence data . ' . "\n";
-            error_log($dbLog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
-
             throw $ex;
         }//try_catch
     }//competence_data
@@ -140,18 +160,17 @@ class STATUS_CRON {
      * Description
      * Get managers/reporters from KS
      *
-     * @param           Object $plugin
-     * @param           String $industry
+     * @param           Object  $plugin
+     * @param           String  $industry
+     * @param           String  $dblog
      *
      * @throws          Exception
      *
      * @creationDate    02/03/2017
      * @author          eFaktor     (fbv)
      */
-    private static function managers_reporters($plugin,$industry) {
+    private static function managers_reporters($plugin,$industry,&$dblog) {
         /* Variables */
-        global $CFG;
-        $dblog      = null;
         $params     = null;
         $response   = null;
         $file       = null;
@@ -159,7 +178,7 @@ class STATUS_CRON {
 
         try {
             // Log
-            $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START FELLESDATA STATUS KS Managers/Reporters . ' . "\n";
+            $dblog .= ' START STATUS KS Managers/Reporters . ' . "\n";
 
             // Cal service
             $params = array();
@@ -183,18 +202,12 @@ class STATUS_CRON {
                     $dblog .= "Error WS: " . $response['message'] . "\n" ."\n";
                 }//if_no_error
             }else {
-                $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' ERROR Response null . ' . "\n";
+                $dblog .= ' RESPONSE NOT VALID' . "\n";
             }//if_else_response
 
             // Log
-            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH FELLESDATA STATUS KS Managers/Reporters. ' . "\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
+            $dblog .= ' FINISH STATUS KS Managers/Reporters. ' . "\n";
         }catch (Exception $ex) {
-            // Log
-            $dbLog = $ex->getMessage() . "\n" ."\n";
-            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH FELLESDATA STATUS ERROR KS Managers/Reporters. ' . "\n";
-            error_log($dbLog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
-
             throw $ex;
         }//try_catch
     }//managers_reporters
@@ -204,55 +217,48 @@ class STATUS_CRON {
      * Carry out all synchronization
      * 
      * @param           Object  $plugin
-     * @param                   $industry
+     * @param           String  $industry
+     * @param           String  $dblog
      * 
      * @throws                  Exception
      * 
      * @creationDate    06/03/2017
      * @author          eFaktor     (fbv)
      */
-    private static function synchronization($plugin,$industry) {
+    private static function synchronization($plugin,$industry,&$dblog) {
         /* Variables */
-        global $CFG;
-        $dblog = null;
 
         try {
             // Log
-            $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START Synchronization Fellesdata STATUS. ' . "\n";
+            $dblog .= ' START Synchronization STATUS. ' . "\n";
 
             // Synchronization FS Users
-            self::sync_status_users_accounts($plugin,$industry);
+            self::sync_status_users_accounts($plugin,$industry,$dblog);
             
             // Synchronization FS Companies
-            self::sync_status_fs_organizations($plugin);
+            self::sync_status_fs_organizations($plugin,$dblog);
 
             // Synchronization FS Job roles
-            self::sync_status_fs_jobroles($plugin);
+            self::sync_status_fs_jobroles($plugin,$dblog);
             
             // Synchronization FS Managers/Reporters to delete
             // Managers
-            self::sync_status_delete_managers_reporters($plugin,MANAGERS);
+            self::sync_status_delete_managers_reporters($plugin,MANAGERS,$dblog);
             // Reporters
-            self::sync_status_delete_managers_reporters($plugin,REPORTERS);
+            self::sync_status_delete_managers_reporters($plugin,REPORTERS,$dblog);
 
             // Synchronization FS Managers/Reporters
-            self::sync_status_managers_reporters($plugin);
+            self::sync_status_managers_reporters($plugin,$dblog);
 
             // Synchronization FS User Competence to Delete
-            self::sync_status_delete_competence($plugin);
+            self::sync_status_delete_competence($plugin,$dblog);
 
             // Synchronization FS User Competence
-            self::sync_status_competence($plugin);
+            self::sync_status_competence($plugin,$dblog);
 
             // Log
-            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Synchronization Fellesdata STATUS. ' . "\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
+            $dblog .= ' FINISH Synchronization STATUS. ' . "\n";
         }catch (Exception $ex) {
-            // Log
-            $dblog  = "Error: " . $ex->getMessage() . "\n" . "\n";
-            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Synchronization Fellesdata STATUS. ' . "\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
-
             throw $ex;
         }//try_catch
     }//synchronization
@@ -262,6 +268,7 @@ class STATUS_CRON {
      * Import last status from tardis
      *
      * @param        object $plugin
+     * @param        String $dblog
      *
      * @return              bool
      * @throws              Exception
@@ -269,40 +276,33 @@ class STATUS_CRON {
      * @creationDate    27/02/2017
      * @author          eFaktor     (fbv)
      */
-    private static function import_status($plugin) {
+    private static function import_status($plugin,&$dblog) {
         /* Variables    */
-        global $CFG;
-        $dblog        = null;
 
         try {
-            $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START Import Fellesdata STATUS. ' . "\n";
+            // Log
+            $dblog .= ' START Import STATUS. ' . "\n";
 
             // Import FS Users
-            //self::import_status_users($plugin);
+            self::import_status_users($plugin,$dblog);
 
             // Import FS Companies
-            self::import_status_orgstructure($plugin);
+            self::import_status_orgstructure($plugin,$dblog);
 
             // Import FS Job roles
-            //self::import_status_jobroles($plugin);
+            self::import_status_jobroles($plugin,$dblog);
 
             // Import FS User Competence
-            //self::import_status_managers_reporters($plugin);
+            self::import_status_managers_reporters($plugin,$dblog);
 
             // Import FS User Competence JR
-            //self::import_status_user_competence($plugin);
+            self::import_status_user_competence($plugin,$dblog);
 
             // Log
-            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Import Fellesdata STATUS. ' . "\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
+            $dblog .= ' FINISH Import STATUS. ' . "\n";
 
             return true;
         }catch (Exception $ex) {
-            // Log
-            $dblog  = "Error: " . $ex->getMessage() . "\n" . "\n";
-            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Import Fellesdata STATUS. ' . "\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
-
             throw $ex;
         }//try_catch
     }//import_fellesdata
@@ -312,29 +312,29 @@ class STATUS_CRON {
      * Get last status of all users from tardis
      *
      * @param           object $plugin
+     * @param           String $dblog
      *
      * @throws                 Exception
      *
      * @creationDate    27/02/2017
      * @author          eFaktor (fbv)
      */
-    private static function import_status_users($plugin) {
+    private static function import_status_users($plugin,&$dblog) {
         /* Variables    */
         global $CFG;
         $path       = null;
         $content    = null;
         $response   = null;
-        $dblog      = null;
         $data       = null;
         $total      = null;
         $i          = null;
 
         try {
             // Log
-            $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START Import STATUS Users . ' . "\n";
+            $dblog .= ' START Import STATUS Users . ' . "\n";
 
             // Call web service
-            $response = self::process_tardis_status($plugin,TRADIS_FS_USERS);
+            $response = self::process_tardis_status($plugin,TRADIS_FS_USERS,$dblog);
 
             // Import data into temporary tables
             if ($response) {
@@ -362,18 +362,13 @@ class STATUS_CRON {
                         }//if_status
                     }//if_max_imp
                 }//if_exists
+            }else {
+                $dblog .= ' RESPONSE NOT VALID . ' . "\n";
             }//if_fsResponse
 
             // Log
-            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Import STATUS Users . ' . "\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
+            $dblog .= ' FINISH Import STATUS Users . ' . "\n";
         }catch (Exception $ex) {
-            // Log
-            $dblog  = "Error: " . $ex->getMessage() . "\n" . "\n";
-            $dblog .= $ex->getTraceAsString() . "\n";
-            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' ERROR Import STATUS Users . ' . "\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
-
             throw $ex;
         }//try_catch
     }//import_status_users
@@ -383,35 +378,32 @@ class STATUS_CRON {
      * Get last status of all organizations from Tardis
      *
      * @param       object  $plugin
+     * @param       String  $dblog
      *
      * @throws              Exception
      *
      * @creationDate        27/02/2017
      * @author              eFaktor     (fbv)
      */
-    private static function import_status_orgstructure($plugin) {
+    private static function import_status_orgstructure($plugin,&$dblog) {
         /* Variables    */
         global $CFG;
         $path       = null;
         $content    = null;
         $response   = null;
-        $dblog      = null;
         $data       = null;
         $total      = null;
         $i          = null;
 
         try {
-            echo "STATUS ORG" . "</br>";
             // Log
-            $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START Import STATUS ORG Structure . ' . "\n";
+            $dblog .= ' START Import STATUS ORG Structure . ' . "\n";
 
             // Call web service
-            $response = self::process_tardis_status($plugin,TRADIS_FS_COMPANIES);
+            $response = self::process_tardis_status($plugin,TRADIS_FS_COMPANIES,$dblog);
 
             // Import data into temporary tables
             if ($response) {
-                echo $response . "</br>";
-                /**
                 // Clean temporary table
                 FS::clean_temporary_fellesdata(IMP_COMPANIES);
 
@@ -436,23 +428,15 @@ class STATUS_CRON {
                         }//if_status
                     }//if_max_imp
                 }else {
-                    // Send warning
-                }//if_exists **/
+                    $dblog .= ' FILE DOES NOT EXIST ' . "\n";
+                }//if_exists
             }else {
-                echo "HOLA ERROR" . "</br>";
-                // Send warning
-                $dblog .= ' ERROR Import STATUS ORG Structure - RESPONSE NULL. ' . "\n";
+                $dblog .= ' RESPONSE NOT VALID ' . "\n";
             }//if_fsResponse
 
             // Log
-            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Import STATUS ORG Structure . ' . "\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
+            $dblog .= 'FINISH Import STATUS ORG Structure . ' . "\n";
         }catch (Exception $ex) {
-            // Log
-            $dblog  = "Error: " . $ex->getMessage() . "\n" . "\n";
-            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' ERROR Import STATUS ORG Structure . ' . "\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
-
             throw $ex;
         }//try_catch
     }//import_status_orgstructure
@@ -462,29 +446,29 @@ class STATUS_CRON {
      * Get last satus of all jobroles from tardis
      *
      * @param       object  $plugin
+     * @param       String  $dblog
      *
      * @throws              Exception
      *
      * @creationDate        27/02/2017
      * @author              eFaktor     (fbv)
      */
-    private static function import_status_jobroles($plugin) {
+    private static function import_status_jobroles($plugin,&$dblog) {
         /* Variables    */
         global $CFG;
         $path       = null;
         $content    = null;
         $response   = null;
-        $dblog      = null;
         $data       = null;
         $total      = null;
         $i          = null;
 
         try {
             // Log
-            $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START Import STATUS JOB ROLES . ' . "\n";
+            $dblog .= ' START Import STATUS JOB ROLES . ' . "\n";
 
             // Call web service
-            $response = self::process_tardis_status($plugin,TRADIS_FS_JOBROLES);
+            $response = self::process_tardis_status($plugin,TRADIS_FS_JOBROLES,$dblog);
 
             // Import data into temporary tables
             if ($response) {
@@ -511,20 +495,16 @@ class STATUS_CRON {
                             FS::backup_temporary_fellesdata(IMP_JOBROLES);
                         }//if_status
                     }//if_max_imp
+                }else {
+                    $dblog .= 'FILE DOES NOT EXIST ' . "\n";
                 }//if_exists
             }else {
-                $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' ERROR Import STATUS JOB ROLES - Response null . ' . "\n";
+                $dblog .= ' RESPONSE NOT VALID ' . "\n";
             }//if_fsResponse
 
             // Log
-            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Import STATUS JOB ROLES . ' . "\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
+            $dblog .= ' FINISH Import STATUS JOB ROLES . ' . "\n";
         }catch (Exception $ex) {
-            /* Log  */
-            $dblog  = "Error: " . $ex->getMessage() . "\n" . "\n";
-            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' ERROR Import STATUS Job Roles . ' . "\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
-
             throw $ex;
         }//try_catch
     }//import_status_jobroles
@@ -534,29 +514,29 @@ class STATUS_CRON {
      * Get last status of all managers/reportes from Tardis
      *
      * @param       object  $plugin
+     * @param       String  $dblog
      *
      * @throws              Exception
      *
      * @creationDate        27/02/2017
      * @author              eFaktor     (fbv)
      */
-    private static function import_status_managers_reporters($plugin) {
+    private static function import_status_managers_reporters($plugin,&$dblog) {
         /* Variables    */
         global $CFG;
         $path       = null;
         $content    = null;
         $response   = null;
-        $dblog      = null;
         $data       = null;
         $i          = null;
         $total      = null;
 
         try {
             // Log
-            $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START Import STATUS MANAGERRS REPORTERS . ' . "\n";
+            $dblog .= ' START Import STATUS MANAGERRS REPORTERS . ' . "\n";
 
             // Call web service
-            $response = self::process_tardis_status($plugin,TRADIS_FS_MANAGERS_REPORTERS);
+            $response = self::process_tardis_status($plugin,TRADIS_FS_MANAGERS_REPORTERS,$dblog);
 
             // Import data into temporary tables
             if ($response) {
@@ -583,20 +563,16 @@ class STATUS_CRON {
                             FS::backup_temporary_fellesdata(IMP_MANAGERS_REPORTERS);
                         }//if_status
                     }//if_max_imp
+                }else {
+                    $dblog .= 'FILE DOES NOT EXIST ' . "\n";
                 }//if_exists
             }else {
-                $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' ERROR Import STATUS MANAGERRS REPORTERS - Response null. ' . "\n";
+                $dblog .=  ' RESPONSE NOT VALID ' . "\n";
             }//if_fsResponse
 
             // Log
-            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Import STATUS MANAGERRS REPORTERS . ' . "\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
+            $dblog .= ' FINISH Import STATUS MANAGERRS REPORTERS . ' . "\n";
         }catch (Exception $ex) {
-            // log
-            $dblog  = "Error: " . $ex->getMessage() . "\n" . "\n";
-            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' ERROR Import STATUS Managers Reporters . ' . "\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
-
             throw $ex;
         }//try_catch
     }//import_status_managers_reporters
@@ -606,29 +582,29 @@ class STATUS_CRON {
      * Get competence users from tardis
      *
      * @param       object  $plugin
+     * @param       String  $dblog
      *
      * @throws              Exception
      *
      * @creationDate        27/02/2017
      * @author              eFaktor     (fbv)
      */
-    private static function import_status_user_competence($plugin) {
+    private static function import_status_user_competence($plugin,&$dblog) {
         /* Variables    */
         global $CFG;
         $path       = null;
         $content    = null;
         $response   = null;
-        $dblog      = null;
         $total      = null;
         $i          = null;
         $data       = null;
 
         try {
             // Log
-            $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START Import STATUS FS USERS COMPETENCE . ' . "\n";
+            $dblog .= ' START Import STATUS FS USERS COMPETENCE . ' . "\n";
 
             // Call web service
-            $response = self::process_tardis_status($plugin,TRADIS_FS_USERS_JOBROLES);
+            $response = self::process_tardis_status($plugin,TRADIS_FS_USERS_JOBROLES,$dblog);
 
             // Import data into temporary tables
             if ($response) {
@@ -655,20 +631,16 @@ class STATUS_CRON {
                             FS::backup_temporary_fellesdata(IMP_COMPETENCE_JR);
                         }//if_status
                     }//if_max_imp
+                }else {
+                    $dblog .= ' FILE DOES NOT EXIST ' . "\n";
                 }//if_exists
             }else {
-                $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' ERROR Import STATUS USER COMPETENCE JR - NULL RESPONSE . ' . "\n";
+                $dblog .= ' RESPONSE NOT VALID ' . "\n";
             }//if_data
 
             // Log
-            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINSH Import STATUS USER COMPETENCE JR . ' . "\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
+            $dblog .= ' FINSH Import STATUS USER COMPETENCE JR . ' . "\n";
         }catch (Exception $ex) {
-            // Log
-            $dblog  = "Error: " . $ex->getMessage() . "\n" . "\n";
-            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' ERROR Import STATUS User Competence . ' . "\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
-
             throw $ex;
         }//try_catch
     }//import_status_user_competence
@@ -678,25 +650,24 @@ class STATUS_CRON {
      * Synchronization status competence
      *
      * @param       Object  $plugin
+     * @param       String  $dblog
      *
      * @throws              Exception
      *
      * @creationDate    01/03/2017
      * @author          eFaktor     (fbv)
      */
-    private static function sync_status_competence($plugin) {
+    private static function sync_status_competence($plugin,&$dblog) {
         /* Variables    */
-        global $CFG;
         $competence     = null;
         $rdocompetence  = null;
         $response       = null;
-        $dblog          = null;
         $start          = 0;
         $limit          = 1000;
 
         try {
             // Log
-            $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START Synchronization STATUS competence. ' . "\n";
+            $dblog .= ' START Synchronization STATUS competence. ' . "\n";
 
             // User competence to synchronize
             $total = FSKS_USERS::get_total_users_competence_to_synchronize(false,true);
@@ -711,29 +682,24 @@ class STATUS_CRON {
                         $params['usersCompetence'] = $competence;
 
                         $response = self::process_service($plugin,KS_USER_COMPETENCE,$params);
-                        if ($response['error'] == '200') {
-                            // Synchronize user competence
-                            FSKS_USERS::synchronize_user_competence_fs($rdocompetence,$response['usersCompetence']);
+                        if ($response) {
+                            if ($response['error'] == '200') {
+                                // Synchronize user competence
+                                FSKS_USERS::synchronize_user_competence_fs($rdocompetence,$response['usersCompetence']);
+                            }else {
+                                // Log
+                                $dblog  .= "ERROR WS: " . $response['message'] . "\n\n";
+                            }//if_no_error
                         }else {
-                            // Log
-                            $dbLog  = "ERROR WS: " . $response['message'] . "\n" . "\n";
-                            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' Finish ERROR Synchronization STATUS competence . ' . "\n";
-                            error_log($dbLog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
-                        }//if_no_error
-
+                            $dblog .= 'RESPONSE NOT VALID' . "\n";
+                        }//if_else_response
                     }//if_competence
                }//for_rdo
             }//if_totla
 
             // Log
-            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Synchronization STATUS competence. ' . "\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
+            $dblog .= ' FINISH Synchronization STATUS competence. ' . "\n";
         }catch (Exception $ex) {
-            // Log
-            $dblog  = "Error: " . $ex->getMessage() . "\n" . "\n";
-            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Synchronization STATUS competence. ' . "\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
-
             throw $ex;
         }//try_catch
     }//sync_status_competence
@@ -743,16 +709,15 @@ class STATUS_CRON {
      * Synchronization of all competence data that has to be deleted
      *
      * @param           object  $plugin
+     * @param           String  $dblog
      *
      * @throws                  Exception
      *
      * @creationDate    28/02/2017
      * @author          eFaktor     (fbv)
      */
-    private static function sync_status_delete_competence($plugin) {
+    private static function sync_status_delete_competence($plugin,&$dblog) {
         /* Variables */
-        global $CFG;
-        $dblog      = null;
         $total      = null;
         $todelete   = null;
         $params     = null;
@@ -762,7 +727,7 @@ class STATUS_CRON {
 
         try {
             // Log
-            $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START Synchronization STATUS delete competence. ' . "\n";
+            $dblog .= ' START Synchronization STATUS delete competence. ' . "\n";
 
             // Get total to delete
             $total = STATUS::total_competence_to_delete_ks();
@@ -786,20 +751,14 @@ class STATUS_CRON {
                             $dblog .= "Error WS: " . $response['message'] . "\n" ."\n";
                         }//if_no_error
                     }else {
-                        $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' ERROR Response null . ' . "\n";
+                        $dblog .= ' RESPONSE NOT VALID' . "\n";
                     }//if_else_response
                 }//for
             }//if_total
 
             // Log
-            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Synchronization STATUS delete competence. ' . "\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
+            $dblog .= ' FINISH Synchronization STATUS delete competence. ' . "\n";
         }catch (Exception $ex) {
-            // Log
-            $dblog  = "Error: " . $ex->getMessage() . "\n" . "\n";
-            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Synchronization STATUS delete competence. ' . "\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
-
             throw $ex;
         }//try_Catch
     }//sync_status_delete_competence
@@ -810,16 +769,15 @@ class STATUS_CRON {
      *
      * @param           Object  $plugin
      * @param           String  $type
+     * @param           String  $dblog
      *
      * @throws                  Exception
      *
      * @creationDate    03/03/2017
      * @author          eFaktor     (fbv)
      */
-    private static function sync_status_delete_managers_reporters($plugin,$type) {
+    private static function sync_status_delete_managers_reporters($plugin,$type,&$dblog) {
         /* Variables */
-        global $CFG;
-        $dblog       = null;
         $total       = null;
         $todeleted   = null;
         $params      = null;
@@ -829,7 +787,7 @@ class STATUS_CRON {
         
         try {
             // Log
-            $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START Synchronization STATUS delete managers/reporters. ' . "\n";
+            $dblog .= ' START Synchronization STATUS delete managers/reporters. ' . "\n";
 
             // Get total to delete
             $total = STATUS::total_managers_reporters_to_delete($type);
@@ -854,19 +812,14 @@ class STATUS_CRON {
                             $dblog .= "Error WS: " . $response['message'] . "\n" ."\n";
                         }//if_no_error
                     }else {
-                        $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' ERROR Response null . ' . "\n";
+                        $dblog .= ' RESPONSE NOT VALID. ' . "\n";
                     }//if_else_response
                 }//for
             }//if_total
             
             // Log
-            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Synchronization STATUS delete managers/reporters. ' . "\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
+            $dblog .= ' FINISH Synchronization STATUS delete managers/reporters. ' . "\n";
         }catch (Exception $ex) {
-            // Log
-            $dblog  = "Error: " . $ex->getMessage() . "\n" . "\n";
-            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Synchronization STATUS delete competence. ' . "\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
             throw $ex;
         }//try_catch
     }//sync_status_delete_managers_reporters
@@ -876,26 +829,25 @@ class STATUS_CRON {
      * Synchronization of managers/resporters. Status
      *
      * @param           Object  $plugin
+     * @param           String  $dblog
      *
      * @throws                  Exception
      *
      * @creationDate    03/03/2017
      * @author          eFaktor     (fbv)
      */
-    private static function sync_status_managers_reporters($plugin) {
+    private static function sync_status_managers_reporters($plugin,&$dblog) {
         /* Variables    */
-        global $CFG;
         $toSynchronize  = null;
         $rdomanagers    = null;
         $response       = null;
-        $dbLog          = null;
         $total          = null;
         $start          = 0;
         $limit          = 1000;
 
         try {
             // Log
-            $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START Manager Reporter Synchronization (STATUS) . ' . "\n";
+            $dblog .= ' START Manager Reporter Synchronization (STATUS) . ' . "\n";
 
             // Managers and reporters to synchronize
             $total = FSKS_USERS::get_total_managers_reporters_to_synchronize();
@@ -907,27 +859,24 @@ class STATUS_CRON {
                     // Call webs ervice
                     if ($toSynchronize) {
                         $response = self::process_service($plugin,KS_MANAGER_REPORTER,array('managerReporter' => $toSynchronize));
-                        if ($response['error'] == '200') {
-                            // Syncrhonize managers and reporters
-                            FSKS_USERS::synchronize_manager_reporter_fs($rdomanagers,$response['managerReporter']);
+                        if ($response) {
+                            if ($response['error'] == '200') {
+                                // Syncrhonize managers and reporters
+                                FSKS_USERS::synchronize_manager_reporter_fs($rdomanagers,$response['managerReporter']);
+                            }else {
+                                // Log
+                                $dblog  .= "ERROR WS: " . $response['message'] . "\n\n";
+                            }//if_no_error
                         }else {
-                            // Log
-                            $dbLog  .= "ERROR WS: " . $response['message'] . "\n" . "\n";
-                            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' Finish ERROR Manager Reporter Synchronization (STATUS) . ' . "\n";
-                        }//if_no_error
+                            $dblog .= 'RESPONSE NOT VALID' . "\n";
+                        }//if_else_response
                     }//if_toSynchronize
                 }//for
             }//if_total
 
             // Log
-            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Manager Reporter Synchronization (STATUS). ' . "\n";
-            error_log($dbLog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
+            $dblog .= ' FINISH Manager Reporter Synchronization (STATUS). ' . "\n";
         }catch (Exception $ex) {
-            // Log
-            $dbLog  = $ex->getMessage() . "\n" . "\n";
-            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' Finish ERROR Manager Reporter Synchronization (STATUS). ' . "\n";
-            error_log($dbLog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
-
             throw $ex;
         }//try_catch
     }//sync_status_managers_reporters
@@ -938,39 +887,32 @@ class STATUS_CRON {
      * 
      * @param           Object  $plugin
      * @param           String  $industry
+     * @param           String  $dblog
      * 
      * @throws                  Exception
      * 
      * @creationDate    06/03/2017
      * @author          eFaktor     (fbv)
      */
-    private static function sync_status_users_accounts($plugin,$industry) {
+    private static function sync_status_users_accounts($plugin,$industry,&$dblog) {
         /* Variables */
-        global $CFG;
-        $dblog = null;
 
         try {
             // Log
-            $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START Users Accounts (STATUS) . ' . "\n";
+            $dblog .= ' START Users Accounts (STATUS) . ' . "\n";
 
             // First users to delete
-            self::sync_status_users_accounts_deleted($plugin,$industry);
+            self::sync_status_users_accounts_deleted($plugin,$industry,$dblog);
 
             // New users accounts
-            self::sync_status_new_users_accounts($plugin,$industry);
+            self::sync_status_new_users_accounts($plugin,$industry,$dblog);
 
             // Existing users accounts
-            self::sync_status_existing_users_accounts($plugin,$industry);
+            self::sync_status_existing_users_accounts($plugin,$industry,$dblog);
 
             // Log
-            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Users Accounts (STATUS) . ' . "\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
+            $dblog .= ' FINISH Users Accounts (STATUS) . ' . "\n";
         }catch (Exception $ex) {
-            // Log
-            $dblog  = $ex->getMessage() . "\n" . "\n";
-            $dblog .= $dblog(time(),'%d.%m.%Y', 99, false). ' Finish ERROR Users Accounts (STATUS). ' . "\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
-
             throw $ex;
         }//try_catch
     }//sync_status_users_accounts
@@ -979,18 +921,17 @@ class STATUS_CRON {
      * Description
      * Synchronize status existing users accounts
      * 
-     * @param       Object $plugin
-     * @param       String $industry
+     * @param       Object  $plugin
+     * @param       String  $industry
+     * @param       String  $dblog
      *
      * @throws             Exception
      *
      * @creationDate    07/03/2017
      * @author          eFaktor     (fbv)
      */
-    private static function sync_status_existing_users_accounts($plugin,$industry) {
+    private static function sync_status_existing_users_accounts($plugin,$industry,&$dblog) {
         /* Variables */
-        global $CFG;
-        $dblog      = null;
         $rdousers   = null;
         $lstusers   = null;
         $response   = null;
@@ -1000,7 +941,7 @@ class STATUS_CRON {
 
         try {
             // Log
-            $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START Existing Users Accounts (STATUS) . ' . "\n";
+            $dblog .= ' START Existing Users Accounts (STATUS) . ' . "\n";
 
             // get total users accounts
             $total = STATUS::get_total_status_existing_users_accounts();
@@ -1020,19 +961,15 @@ class STATUS_CRON {
                             // Log
                             $dblog .= "Error WS: " . $response['message'] . "\n" ."\n";
                         }//if_no_error
+                    }else {
+                        $dblog .= 'RESPONSE NOT VALID' . "\n";
                     }//if_response
                 }//for
             }//if_total
 
             // Log
-            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Existing Users Accounts (STATUS) . ' . "\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
+            $dblog .= ' FINISH Existing Users Accounts (STATUS) . ' . "\n";
         }catch (Exception $ex) {
-            // Log
-            $dblog  = $ex->getMessage() . "\n" . "\n";
-            $dblog .= $dblog(time(),'%d.%m.%Y', 99, false). ' Finish ERROR Existing Users Accounts (STATUS). ' . "\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
-
             throw $ex;
         }//try_catch
     }//sync_status_existing_users_accounts
@@ -1041,18 +978,17 @@ class STATUS_CRON {
      * Description
      * Synchronize all new users accounts
      *
-     * @param           Object $plugin
-     * @param           String $industry
+     * @param           Object  $plugin
+     * @param           String  $industry
+     * @param           String  $dblog
      *
      * @throws                 Exception
      *
      * @creationDate    07/03/2017
      * @author          eFaktor     (fbv)
      */
-    private static function sync_status_new_users_accounts($plugin,$industry) {
+    private static function sync_status_new_users_accounts($plugin,$industry,&$dblog) {
         /* Variables */
-        global $CFG;
-        $dblog      = null;
         $rdousers   = null;
         $lstusers   = null;
         $response   = null;
@@ -1062,7 +998,7 @@ class STATUS_CRON {
 
         try {
             // Log
-            $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START Users Accounts NEW (STATUS) . ' . "\n";
+            $dblog .= ' START Users Accounts NEW (STATUS) . ' . "\n";
 
             // get total users accounts
             $total = STATUS::get_total_status_new_users_accounts();
@@ -1082,19 +1018,15 @@ class STATUS_CRON {
                             // Log
                             $dblog .= "Error WS: " . $response['message'] . "\n" ."\n";
                         }//if_no_error
+                    }else {
+                        $dblog .= 'RESPONSE NOT VALID' . "\n";
                     }//if_response
                 }//for
             }//if_total
 
             // Log
-            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Users Accounts NEW (STATUS) . ' . "\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
+            $dblog .= ' FINISH Users Accounts NEW (STATUS) . ' . "\n";
         }catch (Exception $ex) {
-            // Log
-            $dblog  = $ex->getMessage() . "\n" . "\n";
-            $dblog .= $dblog(time(),'%d.%m.%Y', 99, false). ' Finish ERROR Users Accounts NEW (STATUS). ' . "\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
-
             throw $ex;
         }//try_catch
     }//sync_status_new_users_accounts
@@ -1105,16 +1037,15 @@ class STATUS_CRON {
      * 
      * @param           Object  $plugin
      * @param           String  $industry
+     * @param           String  $dblog
      *
      * @throws                  Exception
      *
      * @creationDate    07/03/2017
      * @author          eFaktor     (fbv)
      */
-    private static function sync_status_users_accounts_deleted($plugin,$industry) {
+    private static function sync_status_users_accounts_deleted($plugin,$industry,&$dblog) {
         /* Variables */
-        global $CFG;
-        $dblog      = null;
         $rdousers   = null;
         $lstusers   = null;
         $response   = null;
@@ -1124,7 +1055,7 @@ class STATUS_CRON {
 
         try {
             // Log
-            $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START Users Accounts DELETED (STATUS) . ' . "\n";
+            $dblog .= ' START Users Accounts DELETED (STATUS) . ' . "\n";
 
             // get total users accounts
             $total = STATUS::get_status_total_users_accounts_deleted();
@@ -1144,19 +1075,15 @@ class STATUS_CRON {
                             // Log
                             $dblog .= "Error WS: " . $response['message'] . "\n" ."\n";
                         }//if_no_error
+                    }else {
+                        $dblog .= 'RESPONSE NOT VALID' . "\n";
                     }//if_response
                 }//for
             }//if_total
             
             // Log
-            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Users Accounts DELETED (STATUS) . ' . "\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
+            $dblog .=' FINISH Users Accounts DELETED (STATUS) . ' . "\n";
         }catch (Exception $ex) {
-            // Log
-            $dblog  = $ex->getMessage() . "\n" . "\n";
-            $dblog .= $dblog(time(),'%d.%m.%Y', 99, false). ' Finish ERROR Users Accounts DELETED (STATUS). ' . "\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
-
             throw $ex;
         }//try_catch
     }//sync_status_users_accounts_deleted
@@ -1172,36 +1099,27 @@ class STATUS_CRON {
      * @creationDate    05/03/2017
      * @author          eFaktor     (fbv)
      */
-    private static function sync_status_fs_organizations($plugin) {
+    private static function sync_status_fs_organizations($plugin,&$dblog) {
         /* Variables */
-        global $CFG;
-        $dblog = null;
         
         try {
             // Log
-            $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START FS Organizations Synchronization (STATUS) . ' . "\n";
+            $dblog .= ' START FS Organizations Synchronization (STATUS) . ' . "\n";
 
             // First new companies --> Send notifications
-            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' STATUS New companies. Notifications . ' . "\n";
+            $dblog .= ' STATUS New companies. Notifications . ' . "\n";
             STATUS::synchronization_status_new_companies($plugin);
+            $dblog .= ' FINISH STATUS New companies. Notifications . ' . "\n";
 
             // Companies don't exists any more
-            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' STATUS  Companies to delete . ' . "\n";
-            self::synchronization_status_companies_no_exist($plugin);
+            self::synchronization_status_companies_no_exist($plugin,$dblog);
 
             // Existing companies
-            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' STATUS Existing companies . ' . "\n";
-            self::synchronization_status_existing_companies($plugin);
+            self::synchronization_status_existing_companies($plugin,$dblog);
 
             // Log
-            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH FS Organizations Synchronization (STATUS) . ' . "\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
+            $dblog .= ' FINISH FS Organizations Synchronization (STATUS) . ' . "\n";
         }catch (Exception $ex) {
-            // Log
-            $dblog  = $ex->getMessage() . "\n" . "\n";
-            $dblog .= $dblog(time(),'%d.%m.%Y', 99, false). ' Finish ERROR FS Organizations Synchronization (STATUS). ' . "\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
-
             throw $ex;
         }//try_catch
     }//sync_status_fs_organizations
@@ -1211,16 +1129,15 @@ class STATUS_CRON {
      * Synchronize companies that don't exist any more
      * 
      * @param           Object  $plugin
+     * @param           String  $dblog
      * 
      * @throws                  Exception
      * 
      * @creationDate    05/03/2017
      * @author          eFaktor     (fbv)
      */
-    private static function synchronization_status_companies_no_exist($plugin) {
+    private static function synchronization_status_companies_no_exist($plugin,&$dblog) {
         /* Variables */
-        global $CFG;
-        $dblog = null;
         $rdocompanies   = null;
         $todelete       = null;
         $response       = null;
@@ -1229,6 +1146,9 @@ class STATUS_CRON {
         $limit          = 1000;
         
         try {
+            // Log
+            $dblog .= ' STATUS  Companies to delete . ' . "\n";
+
             // Get total
             $total = STATUS::get_status_total_companies_to_delete();
             if ($total) {
@@ -1247,13 +1167,16 @@ class STATUS_CRON {
                             }else {
                                 /* Log  */
                                 $dblog  .= "ERROR WS: " . $response['message'] . "\n\n";
-                                $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' Finish ERROR Status compenies to delete . ' . "\n";
-                                error_log($dblog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
                             }//if_no_error
+                        }else {
+                            $dblog .= 'RESPONSE NOT VALID' . "\n";
                         }//if_response
                     }//if_toSynchronize
                 }//for
             }//if_total
+
+            // Log
+            $dblog .= ' FINISH STATUS  Companies to delete . ' . "\n";
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -1263,16 +1186,15 @@ class STATUS_CRON {
      * Description
      * Synchronize status of existing companies
      * @param           Object  $plugin
+     * @param           String  $dblog
      *
      * @throws                  Exception
      *
      * @creationDate    05/03/2017
      * @author          eFaktor     (fbv)
      */
-    private static function synchronization_status_existing_companies($plugin) {
+    private static function synchronization_status_existing_companies($plugin,&$dblog) {
         /* Variables */
-        global $CFG;
-        $dblog = null;
         $rdocompanies   = null;
         $toSynchronize  = null;
         $response       = null;
@@ -1281,6 +1203,9 @@ class STATUS_CRON {
         $limit          = 1000;
 
         try {
+            // Log
+            $dblog .= ' STATUS Existing companies . ' . "\n";
+
             // Get total
             $total = STATUS::get_total_status_existing_companies();
             if ($total) {
@@ -1299,13 +1224,16 @@ class STATUS_CRON {
                             }else {
                                 /* Log  */
                                 $dblog  .= "ERROR WS: " . $response['message'] . "\n\n";
-                                $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' Finish ERROR Status existing companies . ' . "\n";
-                                error_log($dblog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
                             }//if_no_error
+                        }else {
+                            $dblog .= "RESPONSE NOT VALID" . "\n";
                         }//if_response
                     }//if_toSynchronize
                 }//for
             }//if_total
+
+            // Log
+            $dblog .= ' FINISH STATUS Existing companies . ' . "\n";
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -1314,23 +1242,23 @@ class STATUS_CRON {
     /**
      * Description
      * Synchronize status jobroles
+     *
      * @param           Object  $plugin
+     * @param           String  $dblog
      * 
      * @throws                  Exception
      * 
      * @creationDate    06/03/2017
      * @author          eFaktor     (fbv)
      */
-    private static function sync_status_fs_jobroles($plugin) {
+    private static function sync_status_fs_jobroles($plugin,&$dblog) {
         /* Variables */
-        global $CFG;
         $tomail         = null;
-        $dblog          = null;
         $notifyto       = null;
         
         try {
             // Log
-            $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START Sync Jobroles (STATUS) . ' . "\n";
+            $dblog .=  ' START Sync Jobroles (STATUS) . ' . "\n";
 
             // Notifications
             if ($plugin->mail_notification) {
@@ -1350,14 +1278,8 @@ class STATUS_CRON {
             }//if_notigyTo
             
             // Log
-            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Sync Jobroles (STATUS) . ' . "\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
+            $dblog .= ' FINISH Sync Jobroles (STATUS) . ' . "\n";
         }catch (Exception $ex) {
-            // Log
-            $dblog  = $ex->getTraceAsString() . "\n" . "\n";
-            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' ERROR FINISH Sync Jobroles (STATUS . ' . "\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
-            
             throw $ex;
         }//try_catch
     }//sync_status_fs_jobroles
@@ -1378,11 +1300,9 @@ class STATUS_CRON {
      */
     private static function process_service($plugin,$service,$params) {
         /* Variables    */
-        global $CFG;
         $domain         = null;
         $token          = null;
         $server         = null;
-        $error          = false;
 
         try {
             // Data to call Service
@@ -1422,12 +1342,6 @@ class STATUS_CRON {
 
             return $result;
         }catch (Exception $ex) {
-            // Log
-            $dbLog = "ERROR: " . $ex->getMessage() .  "\n\n";
-            $dbLog .= $ex->getTraceAsString() . "\n\n";
-            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' Error calling web service . ' . "\n";
-            error_log($dbLog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
-
             throw $ex;
         }//try_catch
     }//process_ks_service
@@ -1438,6 +1352,7 @@ class STATUS_CRON {
      *
      * @param           $plugin
      * @param           $service
+     * @param           $dblog
      *
      * @return          mixed|null
      * @throws          Exception
@@ -1445,7 +1360,7 @@ class STATUS_CRON {
      * @creationDate    27/02/2017
      * @author          eFaktor     (fbv)
      */
-    private static function process_tardis_status($plugin,$service) {
+    private static function process_tardis_status($plugin,$service,&$dblog) {
         /* Variables    */
         global $CFG;
         $dir            = null;
@@ -1458,7 +1373,6 @@ class STATUS_CRON {
         $date           = null;
         $admin          = null;
         $index          = null;
-        $dblog          = null;
 
         try {
             // Check if exists temporary directory
@@ -1497,33 +1411,25 @@ class STATUS_CRON {
 
             // Format data
             if ($response === false) {
+
                 return null;
             }else {
-                // Create a new response file
-                $path = $dir . '/' . $service . '_PAQUI.txt';
-                $file = fopen($path,'w');
-                fwrite($file,$response);
-                fclose($file);
-
                 if (isset($response->status)) {
                     mtrace($response->message);
                     // Log
-                    $dblog .= time() . ' ERROR RESPONSE STATUS . ' . "\n";
-                    $dblog  .= $response->message . "\n" . "\n";
-                    error_log($dblog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
+                    $dblog .= ' ERROR RESPONSE STATUS . ' . "\n";
+                    $dblog .= $response->message . "\n\n";
 
                     return null;
                 }else {
-                    echo "DINS " . "</br>";
                     // Check the file content
                     $index = strpos($response,'html');
-                    echo "INDEX HTML: " . $index . "</br>";
                     if ($index) {
                         return null;
                     }else {
                         $index = strpos($response,'changeType');
-                        echo "INDEX CONTENT: " . $index . "</br>";
                         if (!$index) {
+                            $dblog .= ' ERROR RESPONSE STATUS . ' . "\n";
                             return null;
                         }else {
                             // Clean all response
@@ -1535,9 +1441,16 @@ class STATUS_CRON {
                                 unlink($path);
                             }
 
+                            // Remove bad characters
+                            $content = str_replace('\"','"',$response);
+                            // CR - LF && EOL
+                            $content = str_replace('\r\n',chr(13),$content);
+                            $content = str_replace('\r',chr(13),$content);
+                            $content = str_replace('\n',chr(13),$content);
+
                             // Create a new response file
                             $file = fopen($path,'w');
-                            fwrite($file,$response);
+                            fwrite($file,$content);
                             fclose($file);
 
                             return true;

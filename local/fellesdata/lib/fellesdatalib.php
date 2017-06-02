@@ -1772,7 +1772,6 @@ class FSKS_USERS {
         $sync           = false;
         $trans          = null;
         $userId         = null;
-        $dbLog          = null;
 
         // Start Transaction
         $trans = $DB->start_delegated_transaction();
@@ -1931,11 +1930,6 @@ class FSKS_USERS {
             // Commit
             $trans->allow_commit();
         }catch (Exception $ex) {
-            // Log
-            $dbLog .= $ex->getTraceAsString() . "\n" ."\n";
-            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH ERROR SynchronizeUserFS . ' . "\n";
-            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
-
             // Rollback
             $trans->rollback($ex);
 
@@ -2093,14 +2087,13 @@ class FSKS_USERS {
      */
     private static function get_users_competence_to_synchronize($toDelete,$status,$start,$limit) {
         /* Variables */
-        global $DB,$CFG;
+        global $DB;
         $params         = null;
         $sql            = null;
         $rdo            = null;
         $usersComp      = null;
         $infoComp       = null;
         $lstCompetence  = null;
-        $dblog          = null;
 
         try {
             // Search Criteria
@@ -2145,11 +2138,6 @@ class FSKS_USERS {
             $rdo = $DB->get_records_sql($sql,$params,$start,$limit);
             if ($rdo) {
                 $lstCompetence = json_encode($rdo);
-            }else {
-                // Log
-                $dblog  = "User Competence - GetUsersCompetence_ToSynchronize NO RDO".  "\n\n";
-                $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH GetUsersCompetence_ToSynchronize . ' . "\n";
-                error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
             }//if_rdo
 
             return array($lstCompetence,$rdo);
@@ -2176,7 +2164,6 @@ class FSKS_USERS {
         global $DB;
         $sql        = null;
         $rdo        = null;
-        $dbLog      = null;
         $toUnMap    = array();
         $info       = null;
 
