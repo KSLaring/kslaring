@@ -1411,11 +1411,15 @@ class STATUS_CRON {
 
             // Format data
             if ($response === false) {
+                // Send notification
+                FS_CRON::send_notifications_service($plugin,'STATUS',$service);
 
                 return null;
             }else {
                 if (isset($response->status)) {
-                    mtrace($response->message);
+                    // Send notification
+                    FS_CRON::send_notifications_service($plugin,'STATUS',$service);
+
                     // Log
                     $dblog .= ' ERROR RESPONSE STATUS . ' . "\n";
                     $dblog .= $response->message . "\n\n";
@@ -1425,11 +1429,19 @@ class STATUS_CRON {
                     // Check the file content
                     $index = strpos($response,'html');
                     if ($index) {
+                        // Send notification
+                        FS_CRON::send_notifications_service($plugin,'STATUS',$service);
+
                         return null;
                     }else {
                         $index = strpos($response,'changeType');
                         if (!$index) {
+                            // Send notification
+                            FS_CRON::send_notifications_service($plugin,'STATUS',$service);
+
+                            // Log
                             $dblog .= ' ERROR RESPONSE STATUS . ' . "\n";
+
                             return null;
                         }else {
                             // Clean all response

@@ -57,6 +57,16 @@ define('CLEAN_COMPETENCE',1);
 /* CLASS FSKS_JOBROLES */
 /***********************/
 class FS_CRON {
+    /**
+     * Description
+     * Check if the process can be executed/triggered
+     *
+     * @return          bool
+     * @throws          Exception
+     *
+     * @creationDate    19/03/2017
+     * @author          eFaktor     (fbv)
+     */
     public static function can_run() {
         /* variables */
         $fellesdata = null;
@@ -102,6 +112,73 @@ class FS_CRON {
             throw $ex;
         }//try_Catch
     }//can_run
+
+    /**
+     * Description
+     * Send notifications
+     *
+     * @param           $plugin
+     * @param           $type
+     * @param           $service
+     *
+     * @throws          Exception
+     *
+     * @creationDate    02/06/2017
+     * @author          eFaktor     (fbv)
+     */
+    public static function send_notifications_service($plugin,$type,$service) {
+        /* Variables */
+        global $SITE;
+        $infoUser           = null;
+        $admin              = null;
+        $notifyTo           = null;
+        $strSubject         = null;
+        $strBody            = null;
+
+        try {
+            // admin
+            $admin = get_admin();
+
+            // Get people to send notifications
+            if ($plugin->suspicious_notify) {
+                $notifyTo = explode(',',$plugin->suspicious_notify);
+            }//if_suspicious
+
+            // None to notify then send to the admin site
+            if (!$notifyTo) {
+                $notifyTo = array();
+                $notifyTo[] = $admin;
+            }//if_notify
+
+            // All notifications with the right language
+            foreach ($notifyTo as $to) {
+                $infoUser = get_complete_user_data('email',$to);
+                if (!$infoUser) {
+                    $admin->email   = $to;
+                    $infoUser       = $admin;
+                }//if_indoUser
+
+                // Subject
+                if ($type == 'STATUS') {
+                    $strSubject = (string)new lang_string('error_response_status_subject','local_fellesdata',$SITE->shortname,$infoUser->lang);
+                }else {
+                    $strSubject = (string)new lang_string('error_response_subject','local_fellesdata',$SITE->shortname,$infoUser->lang);
+                }//if_type
+
+                // Body
+                $strBody = (string)new lang_string('error_reponse_body','local_fellesdata',$service,$infoUser->lang);
+
+                // Send notification
+                email_to_user($infoUser, $SITE->shortname, $strSubject, $strBody, $strBody);
+            }//for_notifiy
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//send_notifications_service
+
+    /***********/
+    /* PRIVATE */
+    /***********/
 
     /**
      * Description
