@@ -34,7 +34,6 @@ try {
 
     // Call cron
     \STATUS_CRON::test($plugin);
-
 }catch (Exception $ex) {
     throw $ex;
 }//try_catch

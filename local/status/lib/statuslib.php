@@ -85,12 +85,8 @@ class STATUS {
         $dir    = null;
         $backup = null;
         $path   = null;
-        $dblog  = null;
 
         try {
-            // Log
-            $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START FELLESDATA STATUS Save competence data . ' . "\n";
-
             // Check if exists temporary directory
             $dir = $CFG->dataroot . '/fellesdata';
             if (!file_exists($dir)) {
@@ -118,15 +114,7 @@ class STATUS {
 
             // Import into DB
             self::import_competence_data($path);
-
-            // Log
-            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH FELLESDATA STATUS Save competence data. ' . "\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
         }catch (Exception $ex) {
-            $dbLog = "ERROR: " . $ex->getMessage() . "\n" ."\n";
-            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH FELLESDATA STATUS ERROR Save competence data. ' . "\n";
-            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
-
             throw $ex;
         }//try_catch
     }//save_competence
@@ -145,15 +133,11 @@ class STATUS {
     public static function save_managers_reporters($data,$type) {
         /* Variables */
         global $CFG;
-        $dir        = null;
+        $dir    = null;
         $backup = null;
         $path   = null;
-        $dblog  = null;
 
         try {
-            // Log
-            $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START FELLESDATA STATUS Save Managers Reporters . ' . "\n";
-
             // Check if exists temporary directory
             $dir = $CFG->dataroot . '/fellesdata';
             if (!file_exists($dir)) {
@@ -181,15 +165,7 @@ class STATUS {
             
             // Save Managers/Reporters
             self::import_managers_reporters($path,$type);
-            
-            // Log
-            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH FELLESDATA STATUS Save competence data. ' . "\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
         }catch (Exception $ex) {
-            $dbLog = "ERROR: " . $ex->getMessage() . "\n" ."\n";
-            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH FELLESDATA STATUS Save Managers Reporters. ' . "\n";
-            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
-
             throw $ex;
         }//try_catch
     }//save_managers_reporters
@@ -264,7 +240,6 @@ class STATUS {
     public static function competence_to_delete_ks($start,$limit) {
         /* Variables */
         global $DB;
-        $dblog      = null;
         $sql        = null;
         $rdo        = null;
         $params     = null;
@@ -1152,6 +1127,8 @@ class STATUS {
         }//try_catch
     }//get_status_existing_users_accounts
 
+
+
     /***********/
     /* PRIVATE */
     /***********/
@@ -1212,7 +1189,7 @@ class STATUS {
      * Description
      * Import the content of the file into the DB
      * 
-     * @param           String  $data
+     * @param           String  $path
      * @param           String  $type
      * 
      * @throws                  Exception
