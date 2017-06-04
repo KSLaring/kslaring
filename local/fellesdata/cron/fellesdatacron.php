@@ -698,9 +698,10 @@ class FELLESDATA_CRON {
             // Call web service
             $fsResponse = self::process_tradis_service($plugin,TRADIS_FS_COMPANIES,$dblog);
             echo " MANUAL FS ORG";
-            /**
+
             // Import data into temporary tables
             if ($fsResponse) {
+                echo "DINS" . "</br>";
                 // Clean temporary table
                 FS::clean_temporary_fellesdata(IMP_COMPANIES);
 
@@ -746,7 +747,7 @@ class FELLESDATA_CRON {
             }else {
                 $dblog .= ' RESPONSE NOT VALID ' . "\n";
             }//if_fsResponse
-             * */
+
 
             // Log
             $dblog .= ' FINSIH Import FS ORG Structure . ' . "\n";
@@ -1076,15 +1077,10 @@ class FELLESDATA_CRON {
                 // Send notification
                 FS_CRON::send_notifications_service($pluginInfo,'FS',$service);
 
+                // Log
+                $dblog .=  ' ERROR RESPONSE TARDIS - NULL OBJECT . ' . "\n";
                 return null;
             }else {
-                echo "RESPONSE : " . "</br></br>" . $response . "</br>";
-                // Create a new response file
-                $pathFile = $dir . '/' . $service . '_ORGINIAL.txt';
-                $responseFile = fopen($pathFile,'w');
-                fwrite($responseFile,$response);
-                fclose($responseFile);
-
                 if (isset($response->status)) {
                     // Send notification
                     FS_CRON::send_notifications_service($pluginInfo,'FS',$service);
@@ -1092,6 +1088,7 @@ class FELLESDATA_CRON {
                     // Log
                     $dblog .=  ' ERROR RESPONSE TARDIS . ' . "\n";
                     $dblog .= $response->message . "\n\n";
+                    $dblog .= "\n" . $response . "\n";
 
                     return null;
                 }else {
@@ -1103,6 +1100,7 @@ class FELLESDATA_CRON {
 
                         // Log
                         $dblog .=  ' ERROR RESPONSE TARDIS . ' . "\n";
+                        $dblog .= "\n" . $response . "\n";
 
                         return null;
                     } else {
