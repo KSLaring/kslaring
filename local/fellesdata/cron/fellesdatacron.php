@@ -1120,28 +1120,40 @@ class FELLESDATA_CRON {
 
                         return null;
                     } else {
-                        // Clean all response
-                        $pathFile = $dir . '/' . $service . '.txt';
-                        if (file_exists($pathFile)) {
-                            // Move the file to the new directory
-                            copy($pathFile,$backup . '/' . $service . '_' . $time . '.txt');
+                        $index = strpos($response,'changeType');
+                        if (!$index) {
+                            // Send notification
+                            FS_CRON::send_notifications_service($pluginInfo,'STATUS',$service);
 
-                            unlink($pathFile);
+                            // Log
+                            $dblog .=  ' ERROR RESPONSE TARDIS . ' . "\n";
+                            $dblog .= "\n" . $response . "\n";
+
+                            return null;
+                        }else {
+                            // Clean all response
+                            $pathFile = $dir . '/' . $service . '.txt';
+                            if (file_exists($pathFile)) {
+                                // Move the file to the new directory
+                                copy($pathFile,$backup . '/' . $service . '_' . $time . '.txt');
+
+                                unlink($pathFile);
+                            }
+
+                            // Remove bad characters
+                            $content = str_replace('\"','"',$response);
+                            // CR - LF && EOL
+                            $content = str_replace('\r\n',chr(13),$content);
+                            $content = str_replace('\r',chr(13),$content);
+                            $content = str_replace('\n',chr(13),$content);
+
+                            // Create a new response file
+                            $responseFile = fopen($pathFile,'w');
+                            fwrite($responseFile,$content);
+                            fclose($responseFile);
+
+                            return true;
                         }
-
-                        // Remove bad characters
-                        $content = str_replace('\"','"',$response);
-                        // CR - LF && EOL
-                        $content = str_replace('\r\n',chr(13),$content);
-                        $content = str_replace('\r',chr(13),$content);
-                        $content = str_replace('\n',chr(13),$content);
-
-                        // Create a new response file
-                        $responseFile = fopen($pathFile,'w');
-                        fwrite($responseFile,$content);
-                        fclose($responseFile);
-
-                        return true;
                     }//if_else
                 }//if_else
             }//if_response

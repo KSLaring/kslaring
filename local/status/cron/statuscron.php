@@ -1365,6 +1365,7 @@ class STATUS_CRON {
         global $CFG;
         $dir            = null;
         $backup         = null;
+        $original       = null;
         $file           = null;
         $path           = null;
         $url            = null;
@@ -1373,17 +1374,28 @@ class STATUS_CRON {
         $date           = null;
         $admin          = null;
         $index          = null;
+        $time           = null;
 
         try {
+            // Local time
+            $time = time();
+
             // Check if exists temporary directory
             $dir = $CFG->dataroot . '/fellesdata';
             if (!file_exists($dir)) {
                 mkdir($dir);
             }//if_dir
 
+            // Backup
             $backup = $CFG->dataroot . '/fellesdata/backup';
             if (!file_exists($backup)) {
                 mkdir($backup);
+            }//if_backup
+
+            // Original files
+            $original = $CFG->dataroot . '/fellesdata/original';
+            if (!file_exists($original)) {
+                mkdir($original);
             }//if_backup
 
             // Get parameters service
@@ -1409,11 +1421,19 @@ class STATUS_CRON {
             $response   = curl_exec( $ch );
             curl_close( $ch );
 
+            // Save original file receive it
+            $pathFile = $original . '/' . $service . '_' . $time . '.txt';
+            $responseFile = fopen($pathFile,'w');
+            fwrite($responseFile,$response);
+            fclose($responseFile);
+
             // Format data
             if ($response === false) {
                 // Send notification
                 FS_CRON::send_notifications_service($plugin,'STATUS',$service);
 
+                // Log
+                $dblog .=  ' ERROR RESPONSE STATUS - NULL OBJECT . ' . "\n";
                 return null;
             }else {
                 if (isset($response->status)) {
@@ -1421,8 +1441,9 @@ class STATUS_CRON {
                     FS_CRON::send_notifications_service($plugin,'STATUS',$service);
 
                     // Log
-                    $dblog .= ' ERROR RESPONSE STATUS . ' . "\n";
+                    $dblog .=  ' ERROR RESPONSE STATUS . ' . "\n";
                     $dblog .= $response->message . "\n\n";
+                    $dblog .= "\n" . $response . "\n";
 
                     return null;
                 }else {
@@ -1432,6 +1453,10 @@ class STATUS_CRON {
                         // Send notification
                         FS_CRON::send_notifications_service($plugin,'STATUS',$service);
 
+                        // Log
+                        $dblog .=  ' ERROR RESPONSE STATUS . ' . "\n";
+                        $dblog .= "\n" . $response . "\n";
+
                         return null;
                     }else {
                         $index = strpos($response,'changeType');
@@ -1440,7 +1465,8 @@ class STATUS_CRON {
                             FS_CRON::send_notifications_service($plugin,'STATUS',$service);
 
                             // Log
-                            $dblog .= ' ERROR RESPONSE STATUS . ' . "\n";
+                            $dblog .=  ' ERROR RESPONSE STATUS . ' . "\n";
+                            $dblog .= "\n" . $response . "\n";
 
                             return null;
                         }else {
@@ -1448,7 +1474,7 @@ class STATUS_CRON {
                             $path = $dir . '/' . $service . '.txt';
                             if (file_exists($path)) {
                                 // Move the file to the new directory
-                                copy($path,$backup . '/' . $service . '_' . time() . '.txt');
+                                copy($path,$backup . '/' . $service . '_' . $time . '.txt');
 
                                 unlink($path);
                             }
