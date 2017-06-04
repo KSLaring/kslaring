@@ -28,82 +28,10 @@ class CourseLocations {
     /* PUBLIC FUNCTIONS */
     /********************/
 
-
     /**
-     * @param           $user_id
-     * @return          array
-     * @throws          Exception
-     *
-     * @creationDate    28/04/2015
-     * @author          eFaktor     (fbv)
-     *
      * Description
-     * Get the competence locations for the user
+     * Get the competence locations for the user. Based only on his/her companies.
      *
-     * My Competence. Object
-     *          --> jobRoles
-     *          --> levelZero.      Counties split by coma.
-     *          --> levelOne.       Municipalities split by comma.
-     */
-    public static function Get_MyCompetence_old($user_id) {
-        /* Variables    */
-        global $DB;
-        $myJobRoles     = null;
-        $myCompetence   = null;
-        $levelZero      = null;
-        $levelOne       = null;
-        $sql            = null;
-        $rdo            = null;
-
-        try {
-            /* Get My Job Roles */
-            $myJobRoles = self::Get_MyJobRoles($user_id);
-
-            /* Get My Competence Locations  */
-            if ($myJobRoles) {
-                /* SQL Instruction  */
-                $sql = " SELECT     GROUP_CONCAT(DISTINCT IF(levelzero,levelzero,0) ORDER BY levelone SEPARATOR ',') 	as 'levelzero',
-                                    GROUP_CONCAT(DISTINCT IF(levelone,levelone,0) ORDER BY levelone SEPARATOR ',') 	as 'levelone'
-                         FROM	    {report_gen_jobrole_relation}
-                         WHERE		jobroleid 	IN ($myJobRoles) ";
-
-                /* Execute  */
-                $rdo = $DB->get_record_sql($sql);
-                if ($rdo) {
-                    if (isset($rdo->levelzero)) {
-                        $myCompetence = new stdClass();
-                        $myCompetence->jobRoles     = $myJobRoles;
-                        $myCompetence->levelZero    = null;
-                        $myCompetence->levelOne     = null;
-
-                        /* Level Zero    */
-                        $levelZero = explode(',',$rdo->levelzero);
-                        $levelZero = array_flip($levelZero);
-                        if (array_key_exists(0,$levelZero)) {
-                            $myCompetence->levelZero = 0;
-                        }else {
-                            $myCompetence->levelZero = $rdo->levelzero;
-
-                            /* Level One    */
-                            $levelOne = explode(',',$rdo->levelone);
-                            $levelOne = array_flip($levelOne);
-                            if (array_key_exists(0,$levelOne)) {
-                                $myCompetence->levelOne = 0;
-                            }else {
-                                $myCompetence->levelOne = $rdo->levelone;
-                            }//if_all_levelOne
-                        }//if_all_levelOne
-                    }
-                }//if_rdo
-            }//if_MyJobRoles
-
-            return $myCompetence;
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//Get_MyCompetence
-
-    /**
      * @param           $userId
      *
      * @return          null|stdClass
@@ -112,8 +40,6 @@ class CourseLocations {
      * @creationDate    01/12/2015
      * @author          eFaktor     (fbv)
      *
-     * Description
-     * Get the competence locations for the user. Based only on his/her companies.
      */
     public static function Get_MyCompetence($userId) {
         /* Variables    */
@@ -124,11 +50,11 @@ class CourseLocations {
         $myCompetence   = null;
 
         try {
-            /* Criteria */
+            // Search criteria
             $params = array();
             $params['user'] = $userId;
 
-            /* SQL Instruction */
+            // SQL Instruction
             $sql = " SELECT	GROUP_CONCAT(DISTINCT 	uicd.companyid 		ORDER BY uicd.companyid 	SEPARATOR ',')	as 'levelthree',
                             GROUP_CONCAT(DISTINCT 	cr_two.parentid  	ORDER BY cr_two.parentid 	SEPARATOR ',') 	as 'leveltwo',
                             GROUP_CONCAT(DISTINCT 	cr_one.parentid  	ORDER BY cr_one.parentid 	SEPARATOR ',') 	as 'levelone',
@@ -149,7 +75,7 @@ class CourseLocations {
                                                                             AND co_zero.hierarchylevel 	= 0
                      WHERE		uicd.userid = :user ";
 
-            /* Execute  */
+            // Execute
             $rdo = $DB->get_record_sql($sql,$params);
             if ($rdo) {
                 if (($rdo->jobroles)  ||
@@ -157,7 +83,7 @@ class CourseLocations {
                     ($rdo->levelone)  ||
                     ($rdo->leveltwo)  ||
                     ($rdo->levelthree)) {
-                    /* Competence   Info    */
+                    // Competence info
                     $myCompetence = new stdClass();
                     $myCompetence->jobRoles     = $rdo->jobroles;
                     $myCompetence->levelZero    = $rdo->levelzero;
@@ -174,15 +100,15 @@ class CourseLocations {
     }//Get_MyCompetence
 
     /**
+     * Description
+     * Get the job roles connected with user
+     *
      * @param           $user_id
      * @return          null
      * @throws          Exception
      *
      * @creationDate    28/04/2015
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get the job roles connected with user
      */
     public static function Get_MyJobRoles($user_id) {
         /* Variables    */
@@ -193,16 +119,16 @@ class CourseLocations {
         $rdo        = null;
 
         try {
-            /* Search Criteria  */
+            // Search criteria
             $params = array();
             $params['user'] = $user_id;
 
-            /* SQL Instruction  */
+            // SQL Instruction
             $sql = " SELECT		GROUP_CONCAT(DISTINCT uicd.jobroles ORDER BY uicd.jobroles SEPARATOR ',') as 'jobroles'
                      FROM		{user_info_competence_data} 	uicd
                      WHERE		uicd.userid = :user ";
 
-            /* Execute  */
+            // Execute
             $rdo = $DB->get_record_sql($sql,$params);
             if ($rdo) {
                 return $rdo->jobroles;
@@ -215,6 +141,9 @@ class CourseLocations {
     }//Get_MyJobRoles
 
     /**
+     * Description
+     * Get the companies
+     *
      * @param               $level
      * @param       null    $in
      * @param       null    $parent
@@ -223,9 +152,6 @@ class CourseLocations {
      *
      * @creationDate        28/04/2015
      * @author              eFaktor     (fbv)
-     *
-     * Description
-     * Get the companies
      */
     public static function Get_Companies($level,$in=null,$parent=null) {
         /* Variables    */
@@ -236,35 +162,34 @@ class CourseLocations {
         $rdo        = null;
 
         try {
-            /* Search Criteria  */
+            // Search criteria
             $params          = array();
             $params['level'] = $level;
 
-            /* List Companies   */
+            // List companies
             $companies[0] = get_string('select_level_list','local_friadmin');
 
-            /* SQL Instruction  */
+            // SQL Instruction
             $sql = " SELECT     DISTINCT  rcd.id,
                                           rcd.name,
                                           rcd.industrycode
                      FROM       {report_gen_companydata} rcd ";
 
-            /* Parents  */
+            // Parents
             if ($parent) {
                 $sql .= " JOIN  {report_gen_company_relation} rcr   ON    rcr.companyid = rcd.id
                                                                     AND   rcr.parentid  IN ($parent) ";
             }//if_level
 
-            /* Level        */
+            // Level
             $sql .= " WHERE rcd.hierarchylevel = :level ";
 
-            /* Companies In */
+            // Companies in
             if ($in) {
                 $sql .= " AND     rcd.id IN ($in) ";
             }//if_companies_in
 
-
-            /* Execute  */
+            // Execute
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 foreach ($rdo as $instance) {
@@ -279,15 +204,15 @@ class CourseLocations {
     }//Get_Companies
 
     /**
+     * Description
+     * Get the total amount of locations
+     *
      * @param           $filter
      * @return          int
      * @throws          Exception
      *
      * @creationDate    29/04/2015
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get the total amount of locations
      */
     public static function Get_TotalLocationsList($filter) {
         /* Variables    */
@@ -296,22 +221,22 @@ class CourseLocations {
         $rdo    = null;
 
         try {
-            /* SQL Instruction */
+            // SQL Instruction
             $sql = " SELECT		count(cl.id) as 'total'
                      FROM		{course_locations}	cl
                      WHERE		cl.activate		= :activate";
 
-            /* County Filter        */
+            // County criteria
             if ($filter['county']) {
                 $sql .= " AND		cl.levelzero    = :county ";
             }//if_muni_filter
 
-            /* Municipality Filter  */
+            // Municipality criteria
             if ($filter['muni']) {
                 $sql .= " AND		cl.levelone		= :muni ";
             }//if_muni_filter
 
-            /* Execute  */
+            // Execute
             $rdo = $DB->get_record_sql($sql,$filter);
             if ($rdo) {
                 return $rdo->total;
@@ -324,6 +249,10 @@ class CourseLocations {
     }//Get_TotalLocationsList
 
     /**
+     *
+     * Description
+     * Get the locations based on search criteria
+     *
      * @param           $filter
      * @param           $limit_from
      * @param           $limit_num
@@ -334,9 +263,6 @@ class CourseLocations {
      *
      * @creationDate    28/04/2015
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get the locations based on search criteria
      *
      * Locations
      *          [id]
@@ -361,7 +287,7 @@ class CourseLocations {
         $rdo        = null;
 
         try {
-            /* SQL Instruction */
+            // SQL instruction
             $sql = " SELECT		cl.id,
                                 levelone.name 	as 'levelone',
                                 cl.name,
@@ -381,12 +307,12 @@ class CourseLocations {
                         AND     cl.levelzero    = :county ";
 
 
-            /* Municipality Filter  */
+            // Muncipality criteria
             if ($filter['muni']) {
                 $sql .= " AND		cl.levelone		= :muni ";
             }//if_muni_filter
 
-            /* Order    */
+            // Order by
             switch ($fieldSort) {
                 case SORT_BY_LOCATION:
                     $sql .= " ORDER BY cl.name " . $sort;
@@ -405,28 +331,28 @@ class CourseLocations {
                     break;
             }//switch_sort
 
-            /* Execute      */
+            // Execute
             $rdo = $DB->get_records_sql($sql,$filter,$limit_from,$limit_num);
             if ($rdo) {
                 foreach ($rdo as $instance) {
-                    /* Address  */
+                    // Address
                     $strAddress     = $instance->street;
                     $strAddress    .= "</br>";
                     $strAddress    .= $instance->postcode . ' ' . $instance->city;
-                    /* Detail   */
+                    // Detail
                     $strDetail      = get_string('location_floor','local_friadmin') . ': ' . $instance->floor;
                     $strDetail     .= "</br>";
                     $strDetail     .=  get_string('location_room','local_friadmin') . ': ' . $instance->room;
                     $strDetail     .= "</br>";
                     $strDetail     .=  get_string('location_seats','local_friadmin') . ': ' . $instance->seats;
-                    /* Contact  */
+                    // Contact
                     $strContact     = $instance->contact;
                     $strContact    .= "</br>";
                     $strContact    .= $instance->email;
                     $strContact    .= "</br>";
                     $strContact    .= $instance->phone;
 
-                    /* Location Info    */
+                    // Location info
                     $info               = new stdClass();
                     $info->id           = $instance->id;
                     $info->municipality = $instance->levelone;
@@ -441,7 +367,7 @@ class CourseLocations {
                         $instance->status = get_string('deactivate','local_friadmin');
                     }//if_Activate
 
-                    /* Add Location */
+                    // Add location
                     $locations[$instance->id] = $info;
                 }//for_rdo_location
             }//if_rdo
@@ -488,43 +414,34 @@ class CourseLocations {
 
         try {
 
-            /* SQL Instruction  */
-            $sql = " SELECT		c.id,
-                                c.fullname,
-                                c.startdate,
-                                cle.length,
-                                cl.name as 'location',
-                                cl.seats,
-                                co.name as 'county',
-                                mu.name as 'municipality',
-                                cse.sectors
-                     FROM		{course}					c
-                         JOIN	(
-                                 SELECT		cfo.courseid,
-                                            cfo.value as 'length'
-                                 FROM 		{course_format_options}	cfo
-                                 WHERE		cfo.format 	LIKE '%frikomport%'
-                                    AND		cfo.name 	= 'length'
-                                ) cle ON cle.courseid = c.id
-                         JOIN	(
-                                 SELECT		cfo.courseid,
-                                            cfo.value as 'location'
-                                 FROM 		{course_format_options}	cfo
-                                 WHERE		cfo.name 	= 'course_location'
-                                ) cfl ON cfl.courseid = c.id
-                         JOIN	{course_locations}			    cl 			ON	cl.id 		= cfl.location
-                         JOIN	{report_gen_companydata}		co			ON  co.id    	= cl.levelzero
-                         JOIN	{report_gen_companydata}		mu			ON  mu.id 		= cl.levelone
-                         JOIN	(
-                                 SELECT		cfo.courseid,
-                                            cfo.value as 'sectors'
-                                 FROM 		{course_format_options}	cfo
-                                 WHERE		cfo.name 	= 'course_sector'
-                                ) cse ON cse.courseid = c.id
-                      ";
+            // SQL Instruction
+            $sql = " SELECT	c.id,
+                            c.fullname,
+                            c.startdate,
+                            cfe.value 	as 'length',
+                            cl.name 	as 'location',
+                            cl.seats,
+                            co.name 	as 'county',
+                            mu.name 	as 'municipality',
+                            cfs.value 	as 'sectors'
+                     FROM	      {course} 				    c
+                        -- Length
+                        LEFT JOIN {course_format_options}	cfe ON  cfe.courseid = c.id
+                                                                AND cfe.format 	LIKE '%frikomport%'
+                                                                AND	cfe.name 	= 'length'
+                        -- Location
+                        JOIN	  {course_format_options}	cfl ON  cfl.courseid = c.id
+                                                                AND cfl.name = 'course_location'
+                        JOIN	  {course_locations}		cl 	ON	cl.id 		= cfl.value
+                        -- County/Muni
+                        JOIN	  {report_gen_companydata}	co	ON	co.id 		= cl.levelzero
+                        JOIN	  {report_gen_companydata} 	mu	ON  mu.id 		= cl.levelone
+                        -- Sectors
+                        LEFT JOIN {course_format_options}	cfs	ON  cfs.courseid = c.id
+                                                                AND cfs.name = 'course_sector' ";
 
-            /* Add Search Criteria  */
-            /* County       */
+            // Search criteria
+            // County criteria
             if ($filter['county']) {
                 if (!$sqlWhere) {
                     $sqlWhere = " WHERE cl.levelzero = :county ";
@@ -533,7 +450,7 @@ class CourseLocations {
                 }//if_else
             }//if_filterCounty
 
-            /* Municipality */
+            // Muni criteria
             if ($filter['muni']) {
                 if (!$sqlWhere) {
                     $sqlWhere = " WHERE cl.levelone = :muni ";
@@ -542,22 +459,22 @@ class CourseLocations {
                 }//if_else
             }//if_filterMuni
 
-            /* Sector       */
+            // Sector criteria
             if ($filter['sector']) {
                 if (!$sqlWhere) {
-                    $sqlWhere = " WHERE     cse.sectors 	LIKE '"     . $filter['sector'] . ",%'" .
-                        " OR    cse.sectors  	LIKE '%,"   . $filter['sector'] . "' " .
-                        " OR    cse.sectors 	LIKE '%,"   . $filter['sector'] . ",%'" .
-                        " OR    cse.sectors 	= :sector ";
+                    $sqlWhere = " WHERE     cfs.value 	LIKE '"     . $filter['sector'] . ",%'" .
+                        " OR    cfs.value  	LIKE '%,"   . $filter['sector'] . "' " .
+                        " OR    cfs.value 	LIKE '%,"   . $filter['sector'] . ",%'" .
+                        " OR    cfs.value 	= :sector ";
                 }else {
-                    $sqlWhere .= " AND       cse.sectors 	LIKE '"     . $filter['sector'] . ",%'" .
-                        " OR    cse.sectors  	LIKE '%,"   . $filter['sector'] . "' " .
-                        " OR    cse.sectors 	LIKE '%,"   . $filter['sector'] . ",%'" .
-                        " OR    cse.sectors 	= :sector ";
+                    $sqlWhere .= " AND       cfs.value 	LIKE '"     . $filter['sector'] . ",%'" .
+                        " OR    cfs.value   	LIKE '%,"   . $filter['sector'] . "' " .
+                        " OR    cfs.value  	LIKE '%,"   . $filter['sector'] . ",%'" .
+                        " OR    cfs.value  	= :sector ";
                 }//if_else
             }//if_filterSector
 
-            /* Course       */
+            // Course criteria
             if ($filter['course']) {
                 if (!$sqlWhere) {
                     $sqlWhere = 'WHERE c.fullname like "%' . $filter['course'] . '%"';
@@ -566,7 +483,7 @@ class CourseLocations {
                 }//if_else
             }//if_filterCourse
 
-            /* Date (Start Date???)        */
+            // Date (Start date ??)
             if ($filter['fromDate'] && $filter['toDate']) {
                 if (!$sqlWhere) {
                     $sqlWhere = " WHERE c.startdate BETWEEN :fromDate AND :toDate ";
@@ -589,15 +506,16 @@ class CourseLocations {
                 }
             }//if_filerDate
 
-            /* Add Criterias    */
+
+            // Add criteria
             if ($sqlWhere) {
                 $sql .= $sqlWhere;
             }//if_sqlWhere
 
-            /* Add Order    */
+            // Order by
             $sql .= " ORDER BY	c.fullname ";
 
-            /* Execute  */
+            // Execute
             $rdo = $DB->get_records_sql($sql,$filter);
             if ($rdo) {
                 foreach ($rdo as $instance) {
@@ -726,6 +644,36 @@ class CourseLocations {
     }//Get_CountyName
 
     /**
+     * Description
+     * Get location name
+     *
+     * @param       integer $location
+     *
+     * @return              null
+     * @throws              Exception
+     *
+     * @creationDate    04/06/2017
+     * @author          eFaktor     (fbv)
+     */
+    public static function get_location_name($location) {
+        /* Variables */
+        global $DB;
+        $rdo = null;
+
+        try {
+            // Execute
+            $rdo = $DB->get_record('course_locations',array('id' => $location),'name');
+            if ($rdo) {
+                return $rdo->name;
+            }else {
+                return null;
+            }
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//get_location_name
+
+    /**
      * @param           $locationId
      * @return          mixed|null
      * @throws          Exception
@@ -744,11 +692,11 @@ class CourseLocations {
         $rdo    = null;
 
         try {
-            /* Search Criteria  */
+            // Search criteria
             $params = array();
             $params['location'] = $locationId;
 
-            /* SQL Instruction  */
+            // SQL Instruction
             $sql = " SELECT		    cl.id,
                                     levelzero.name 	as 'county',
                                     levelone.name 	as 'muni',
@@ -780,7 +728,7 @@ class CourseLocations {
                                     )	clo ON clo.location = cl.id
                      WHERE		cl.id = :location ";
 
-            /* Execute  */
+            // Execute
             $rdo = $DB->get_record_sql($sql,$params);
             if ($rdo) {
                 return $rdo;
@@ -808,41 +756,41 @@ class CourseLocations {
         $location = null;
 
         try {
-            /* New Location */
+            // New Location
             $location = new stdClass();
-            /* Location Id  */
+            // Location Id
             $location->id            = $dataForm['id'];
-            /* Name         */
+            // Name
             $location->name          = $dataForm['name'];
-            /* Description  */
+            // Description
             $location->description   = $dataForm['description'];
-            /* Url Desc */
+            //  Url Desc
             $location->url           = $dataForm['url_desc'];
-            /* Floor        */
+            // Floor
             $location->floor         = $dataForm['floor'];
-            /* Room         */
+            // Room
             $location->room          = $dataForm['room'];
-            /* Seats        */
+            // Seats
             $location->seats         = $dataForm['seats'];
-            /* Street       */
+            // Street
             $location->street        = $dataForm['street'];
-            /* Post Code    */
+            // Post Code
             $location->postcode      = $dataForm['postcode'];
-            /* City         */
+            // City
             $location->city          = $dataForm['city'];
-            /* Url Map          */
+            // Url Map
             $location->urlmap        = $dataForm['url_map'];
-            /* Post Address     */
+            // Post Address
             $location->post          = $dataForm['post_address'];
-            /* Contact Person   */
+            // Contact Person
             $location->contact       = $dataForm['contact'];
-            /* Contact Phone    */
+            // Contact Phone
             $location->phone         = $dataForm['phone'];
-            /* Contact eMail    */
+            // Contact eMail
             $location->email         = $dataForm['mail'];
-            /* Comments         */
+            // Comments
             $location->comments      = $dataForm['comments'];
-            /* Activate         */
+            // Activate
             if (isset($dataForm['activate']) && ($dataForm['activate'])) {
                 $location->activate     = 1;
             }else {
@@ -876,16 +824,16 @@ class CourseLocations {
         $rdo    = null;
 
         try {
-            /* Search Criteria  */
+            // Search Criteria
             $params = array();
             $params['location'] = $locationId;
 
-            /* SQL Instruction  */
+            // SQL Instruction
             $sql = " UPDATE {course_locations}
                         SET activate = !activate
                      WHERE  id = :location ";
 
-            /* Execute  */
+            // Execute
             $DB->execute($sql,$params);
         }catch (Exception $ex) {
             throw $ex;
@@ -911,18 +859,18 @@ class CourseLocations {
         $rdo    = null;
 
         try {
-            /* Search Criteria  */
+            // Search Criteria
             $params = array();
             $params['name']     = 'course_location';
             $params['location'] = $locationId;
 
-            /* SQL Instruction  */
+            // SQL Instruction
             $sql = " SELECT		cfo.courseid
                     FROM		{course_format_options} cfo
                     WHERE		cfo.name	= :name
                       AND       cfo.value   = :location";
 
-            /* Execute  */
+            // Execute
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 return true;
@@ -951,11 +899,11 @@ class CourseLocations {
         $params = null;
 
         try {
-            /* Search Criteria  */
+            // Search Criteria
             $params = array();
             $params['id'] = $locationId;
 
-            /* Execute  */
+            // Execute  
             $DB->delete_records('course_locations',$params);
 
             return true;
@@ -998,21 +946,20 @@ class CourseLocations {
         $out_report         = '';
         $urlReturn          = null;
         $url                = null;
-        $mycounty           = substr($county, 5);
 
         try {
-            /* Url  */
+            // Url
             $url            = new moodle_url('/local/friadmin/course_locations/locations.php',array('page' => $page, 'perpage' => $perpage,'sort' =>$sort));
-            /* Url To Back  */
+            // Url to back
             $urlReturn     = new moodle_url('/local/friadmin/course_locations/index.php');
             // Url to download.
-            $urldownloadall = new moodle_url('/local/friadmin/course_locations/locations.php',array('format' => '1', 'mycounty' => $mycounty)); // Download all.
+            $urldownloadall = new moodle_url('/local/friadmin/course_locations/locations.php',array('format' => '1')); // Download all.
 
-            /* Locations Report */
+            // Locations report
             $out_report .= html_writer::start_div('locations_rpt_div');
-                /* Header   */
+                // Header
                 $out_report .= html_writer::start_div('header_location');
-                    /* Title    */
+                    // Title
                     $out_report .= '<h3>';
                         $out_report .= get_string('exist_locations', 'local_friadmin') . ' - ' . $county;
                     $out_report .= '</h3>';
@@ -1024,19 +971,19 @@ class CourseLocations {
                     $out_report .= '</h3>';
                 }else {
                     $out_report .= '</br>';
-                    /* Return To Selection Page */
+                    // Return to selection page
                     $out_report .= html_writer::link($urlReturn,get_string('return_to_selection','local_friadmin') ,array('class' => 'link_return'));
                     $out_report .= html_writer::link($urldownloadall, get_string('download_all_locations', 'local_friadmin'), array('class' => 'location_excel_download', 'style' => 'float: right'));
-                    /* Paging Bar  */
+                    // Paging bar
                     $out_report .= $OUTPUT->paging_bar($totalLocations, $page, $perpage, $url);
 
-                    /* Location List    */
+                    // Location list
                     $out_report .= html_writer::start_div('location_list');
-                        /* Locations Table */
+                        // Locations table
                         $out_report .= html_writer::start_tag('table');
-                            /* Header Table     */
+                            // Header
                             $out_report .= self::AddHeader_TableLocations($sort,$fieldSort);
-                            /* Content Table    */
+                            // Content
                             $out_report .= self::AddContent_TableLocations($locations,$page,$perpage,$sort);
                         $out_report .= html_writer::end_tag('table');
                     $out_report .= html_writer::end_div();//location_list
@@ -1121,7 +1068,7 @@ class CourseLocations {
 
 
     /** / */
-    public static function download_all_locations_data($mycounty, $municipality) {
+    public static function download_all_locations_data($county, $muni) {
         // Variables.
         global $CFG;
         $row = 0;
@@ -1131,13 +1078,13 @@ class CourseLocations {
         $myxls = null;
 
         try {
-            $locationdata = self::get_course_location_data($mycounty, $municipality, null);
-            $mymuni = self::get_municipality_name($municipality);
-
+            $locationdata   = self::get_courses_by_location(null, $county, $muni);
+            $mymuni         = self::Get_CompanyLevelName($muni);
+            $mycounty       = self::Get_CompanyLevelName($county);
             require_once($CFG->dirroot . '/lib/excellib.class.php');
 
             $time = userdate(time(), '%d.%m.%Y', 99, false);
-            if ($municipality) {
+            if ($muni) {
                 $name = clean_filename(get_string('alllocations', 'local_friadmin') . $mycounty . '_' . $mymuni . '_' . $time . ".xls");
             } else {
                 $name = clean_filename(get_string('alllocations', 'local_friadmin') . $mycounty . '_' . $time . ".xls");
@@ -1162,22 +1109,28 @@ class CourseLocations {
     }//download_all_locations_data
 
 
-    public static function download_one_location_data($mycounty, $colocation) {
+    public static function download_one_location_data($location) {
         // Variables.
         global $CFG;
-        $row = 0;
-        $time = null;
-        $name = null;
-        $export = null;
-        $myxls = null;
-        $noresults = get_string('noresults', 'local_friadmin');
+        $row        = 0;
+        $time       = null;
+        $name       = null;
+        $export     = null;
+        $myxls      = null;
+        $noresults  = get_string('noresults', 'local_friadmin');
+        $loname     = null;
+
         try {
-            $locationdata = self::get_course_location_data($mycounty, null, $colocation);
+            // Get location name
+            $loname = self::get_location_name($location);
+
+            // Get courses connected with
+            $locationdata = self::get_courses_by_location($location);
 
             require_once($CFG->dirroot . '/lib/excellib.class.php');
 
             $time = userdate(time(), '%d.%m.%Y', 99, false);
-            $name = clean_filename(get_string('onelocation', 'local_friadmin') . $colocation . '_' . $time . ".xls");
+            $name = clean_filename(get_string('onelocation', 'local_friadmin') . $loname . '_' . $time . ".xls");
             // Creating a workbook.
             $export = new MoodleExcelWorkbook($name);
 
@@ -1212,46 +1165,6 @@ class CourseLocations {
     /*********************/
     /* PRIVATE FUNCTIONS */
     /*********************/
-
-    /**
-     * @param $municipality
-     * @return null
-     * @throws Exception
-     * @creationDate    01/06/2017
-     * @author          eFaktor     (nas)
-     *
-     * Description
-     * Get the municipality names from id
-     */
-    private static function get_municipality_name($municipality) {
-        // Variables.
-        global $DB;
-        $sectorsName    = null;
-        $sql            = null;
-        $rdo            = null;
-
-        try {
-            // Query.
-            $sql = " SELECT name
-                     FROM {report_gen_companydata}
-                     WHERE id = :municipality";
-
-            $params = array();
-            $params['municipality'] = $municipality;
-
-            // Exec.
-            $rdo = $DB->get_record_sql($sql, $params);
-
-            if ($rdo) {
-                return $rdo->name;
-            } else {
-                return null;
-            }
-
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    } //get_municipality_name
 
     /**
      * @param           $sectors
@@ -1480,7 +1393,7 @@ class CourseLocations {
                     /* Actions      */
                     $content .= html_writer::start_tag('td',array('class' => 'action', 'data-th' =>' ', 'style' => 'width: 10%;'));
                         // Download link.
-                        $content .= self::exceldownloadlinkaction($location->name);
+                        $content .= self::exceldownloadlinkaction($location->id);
                         /* View Details Link    */
                         $content .= self::ViewDetail_LinkAction($location->id,$page,$perpage,$sort);
                         /* Activate / Deactivate Link   */
@@ -1554,14 +1467,14 @@ class CourseLocations {
 
         try {
             // Url to download.
-            $urldownloadone = new moodle_url('/local/friadmin/course_locations/locations.php',array('format' => '2', 'colocationname' => $location)); // Download one.
+            $urldownloadone = new moodle_url('/local/friadmin/course_locations/locations.php',array('format' => '2', 'id' => $location)); // Download one.
 
             /* Build Action Link    */
             $strAlt = get_string('onelocation','local_friadmin') . $location;
             $outLnk .= html_writer::start_div('lnk_edit');
             $outLnk .= html_writer::link($urldownloadone,
-                html_writer::empty_tag('img', array('src'=>$OUTPUT->pix_url('t/download'),'alt'=>$strAlt,'class'=>'iconsmall')),
-                array('title'=>$strAlt));
+                                         html_writer::empty_tag('img', array('src'=>$OUTPUT->pix_url('t/download'),'alt'=>$strAlt,'class'=>'iconsmall')),
+                                         array('title'=>$strAlt));
             $outLnk .= html_writer::end_div();//lnk_edit
 
             return $outLnk;
@@ -2162,19 +2075,142 @@ class CourseLocations {
 
     /**
      * Description
+     * get all courses connected with a given location
      * A function used to get all the information from the databse that is used to create the summary excel
      *
-     * @param $location
-     * @param $municipality
-     * @param $colocation
-     * @return array|null
-     * @throws Exception
+     * @param       $location
+     * @param       $county
+     * @param       $muni
      *
-     * @updateDate 01/06/2017
-     * @author      eFaktor     (nas)
+     * @return      array|null
+     * @throws      Exception
+     *
+     * @creationDate 01/06/2017
+     * @author       eFaktor     (nas)
+     *
+     * @updateDate   04/06/2017
+     * @author       eFaktor     (fbv)
      *
      */
-    private static function get_course_location_data($location, $municipality, $colocation) {
+    private static function get_courses_by_location($location = null, $county = null, $muni = null) {
+        /* Variables */
+        global $DB;
+        $rdo        = null;
+        $sql        = null;
+        $sqlWhere   = null;
+        $sqlJoin    = null;
+        $params     = null;
+
+        try {
+            // Search criteria
+            $params = array();
+
+            //Location criteria
+            if ($location) {
+                $params['location'] = $location;
+                $sqlWhere   = " AND	  flo.value = :location ";
+            }else {
+                // County/Muni criteria
+                if ($county) {
+                    $params['zero'] = $county;
+                    $sqlJoin = " AND clo. levelzero = :zero ";
+                }//if_county
+
+                if ($muni) {
+                    $params['one'] = $muni;
+                    $sqlJoin .= " AND clo.levelone =: one ";
+                }
+            }//if_else_lcoation
+
+            // SQL instruction
+            $sql = " SELECT    	  c.id			    as 'courseid',			-- The course ID
+                                  clo.name			as 'location',			-- Location Name,
+                                  co.name			as 'levelone',			-- Kommune
+                                  c.fullname 		as 'coursefull', 		-- Course full name
+                                  c.shortname 	    as 'courseshort', 		-- Course short name
+                                  c.format 		    as 'courseformat', 	    -- Course format
+                                  ca.name 		    as 'category', 		    -- Category Name
+                                  cfp.value		    as 'producer',			-- Produced by
+                                  cfs.value			as 'sector',			-- Sector
+                                  e.customint1		as 'expiration',	  -- Deadline
+                                  e.customint2	    as 'spots',			    -- Number of places
+                                  e.customtext3	    as 'internalprice',	    -- Internal price
+                                  e.customtext4	    as 'externalprice',     -- external price  
+                                  csi.instructors	as 'instructors',       -- Amount of instructors
+                                  csi.students		as 'students',			-- Total users
+                                  count(wa.id) 		as 'waiting',			-- Total users waiting list
+                                  count(cc.id)      as 'completed',			-- Total users completed
+                                  c.visible		    as 'visibility',	    -- Course visibility
+                                  cft.value 		as 'fromto'				-- From - To
+                     FROM	  	  {course_format_options}	flo 
+                        -- Course conencted
+                        JOIN	  {course}					c	ON c.id 	      = flo.courseid
+                        -- Category
+                        JOIN 	  {course_categories} 		ca 	ON ca.id	      = c.category    
+                        -- Location Info
+                        JOIN 	  {course_locations}		clo	ON	clo.id 	      = flo.value
+                                                                $sqlJoin
+                        -- Kommune
+                        JOIN	  {report_gen_companydata}	co	ON	co.id 	      = clo.levelone
+                        -- Produced by
+                        LEFT JOIN {course_format_options}	cfp	ON 	cfp.courseid  = c.id
+                                                                AND cfp.name 	  = 'producedby'
+                        -- Sector
+                        LEFT JOIN {course_format_options}	cfs	ON 	cfs.courseid  = c.id
+                                                                AND cfs.name 	  = 'course_sector'
+                        -- Course Dates (From/To)
+                        LEFT JOIN {course_format_options}	cft	ON 	cft.courseid  = c.id
+                                                                AND cft.name 	  = 'time'
+                        -- Deadline for enrolment
+                        -- Number or places
+                        -- Internal / External proces
+                        -- Deadline / Internal price && External price
+                        LEFT JOIN {enrol}					e   ON 	e.courseid    = c.id
+                                                                AND e.enrol		  = 'waitinglist'
+                                                                AND e.status 	  = 0
+                        -- Total users in waiting list
+                        LEFT JOIN {enrol_waitinglist_queue}	wa	ON  wa.waitinglistid	= e.id
+                                                                AND wa.courseid			= c.id
+                                                                AND queueno 		   != '99999'
+                        -- Total users completed the course
+                        LEFT JOIN {course_completions}		cc	ON  cc.course	= c.id
+                                                                AND (cc.timecompleted IS NOT NULL 
+                                                                     OR 
+                                                                     cc.timecompleted != 0) 
+                        -- TOTAL USERS ENROLLED AS STUDENT
+                        -- Total instructors --> non_editing teacher
+                        LEFT JOIN (
+                                    SELECT 		  ct.instanceid as 'course',
+                                                  count(rs.id)  as 'students',
+                                                  count(ri.id)  as 'instructors'
+                                    FROM		  {role_assignments}	ra
+                                        -- Only users with contextlevel = 50 (Course)
+                                        JOIN	  {context}			ct  ON  ct.id 			= ra.contextid
+                                                                        AND ct.contextlevel = 50
+                                        -- Students
+                                        LEFT JOIN {role}			rs 	ON 	rs.id 		  = ra.roleid
+                                                                        AND rs.archetype  = 'student'
+                                        -- Intructors
+                                        LEFT JOIN {role}			ri 	ON 	ri.id 		  = ra.roleid
+                                                                        AND ri.archetype  = 'teacher'
+                                    GROUP BY ct.instanceid
+                                  ) csi ON csi.course = c.id 
+                     WHERE	  flo.name 	= 'course_location'
+                     $sqlWhere ";
+
+            // Group by
+            $sql .= " GROUP BY c.id ";
+
+            // Execute
+            $rdo = $DB->get_records_sql($sql,$params);
+
+            return $rdo;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//get_courses_by_location
+
+    private static function get_course_location_data($location,$municipality,$colocation) {
         // Variables!
         global $DB;
         $rdo = null;
