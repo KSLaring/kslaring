@@ -697,7 +697,8 @@ class FELLESDATA_CRON {
 
             // Call web service
             $fsResponse = self::process_tradis_service($plugin,TRADIS_FS_COMPANIES,$dblog);
-
+            echo " MANUAL FS ORG";
+            /**
             // Import data into temporary tables
             if ($fsResponse) {
                 // Clean temporary table
@@ -745,6 +746,7 @@ class FELLESDATA_CRON {
             }else {
                 $dblog .= ' RESPONSE NOT VALID ' . "\n";
             }//if_fsResponse
+             * */
 
             // Log
             $dblog .= ' FINSIH Import FS ORG Structure . ' . "\n";
@@ -1076,6 +1078,13 @@ class FELLESDATA_CRON {
 
                 return null;
             }else {
+                echo "RESPONSE : " . "</br></br>" . $response . "</br>";
+                // Create a new response file
+                $pathFile = $dir . '/' . $service . '_ORGINIAL.txt';
+                $responseFile = fopen($pathFile,'w');
+                fwrite($responseFile,$response);
+                fclose($responseFile);
+
                 if (isset($response->status)) {
                     // Send notification
                     FS_CRON::send_notifications_service($pluginInfo,'FS',$service);
