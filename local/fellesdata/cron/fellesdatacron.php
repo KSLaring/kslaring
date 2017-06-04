@@ -1016,6 +1016,7 @@ class FELLESDATA_CRON {
         global $CFG;
         $dir            = null;
         $backup         = null;
+        $original       = null;
         $responseFile   = null;
         $pathFile       = null;
         $urlTradis      = null;
@@ -1023,17 +1024,28 @@ class FELLESDATA_CRON {
         $toDate         = null;
         $date           = null;
         $admin          = null;
+        $time           = null;
         
         try {
+            // Local time
+            $time = time();
+
             // Check if exists temporary directory
             $dir = $CFG->dataroot . '/fellesdata';
             if (!file_exists($dir)) {
                 mkdir($dir);
             }//if_dir
 
+            // Backup
             $backup = $CFG->dataroot . '/fellesdata/backup';
             if (!file_exists($backup)) {
                 mkdir($backup);
+            }//if_backup
+
+            // Original files
+            $original = $CFG->dataroot . '/fellesdata/original';
+            if (!file_exists($original)) {
+                mkdir($original);
             }//if_backup
 
             // Get parameters service
@@ -1069,6 +1081,12 @@ class FELLESDATA_CRON {
 
             $response   = curl_exec( $ch );
             curl_close( $ch );
+
+            // Save original file receive it
+            $pathFile = $original . '/' . $service . '_' . $time . '.txt';
+            $responseFile = fopen($pathFile,'w');
+            fwrite($responseFile,$response);
+            fclose($responseFile);
 
             // Format data
             if ($response === false) {
@@ -1106,7 +1124,7 @@ class FELLESDATA_CRON {
                         $pathFile = $dir . '/' . $service . '.txt';
                         if (file_exists($pathFile)) {
                             // Move the file to the new directory
-                            copy($pathFile,$backup . '/' . $service . '_' . time() . '.txt');
+                            copy($pathFile,$backup . '/' . $service . '_' . $time . '.txt');
 
                             unlink($pathFile);
                         }
