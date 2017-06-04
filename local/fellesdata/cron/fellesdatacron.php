@@ -697,11 +697,9 @@ class FELLESDATA_CRON {
 
             // Call web service
             $fsResponse = self::process_tradis_service($plugin,TRADIS_FS_COMPANIES,$dblog);
-            echo " MANUAL FS ORG";
 
             // Import data into temporary tables
             if ($fsResponse) {
-                echo "DINS" . "</br>";
                 // Clean temporary table
                 FS::clean_temporary_fellesdata(IMP_COMPANIES);
 
