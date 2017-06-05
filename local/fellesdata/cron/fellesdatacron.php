@@ -70,23 +70,23 @@ class FELLESDATA_CRON {
             }//fstExecution_tounmap
 
             // Import KS
-            //self::import_ks($plugin,$dblog);
+            self::import_ks($plugin,$dblog);
 
             // Import fellesdata
             self::import_fellesdata($plugin,$dblog);
 
             // Users accounts synchornization
-            //self::users_fs_synchronization($plugin,$dblog);
+            self::users_fs_synchronization($plugin,$dblog);
 
             // Companies synchornization
-            //self::companies_fs_synchronization($plugin,$fstExecution,$dblog);
+            self::companies_fs_synchronization($plugin,$fstExecution,$dblog);
 
             // Job roles to map
-            //self::jobroles_fs_to_map($plugin,$dblog);
+            self::jobroles_fs_to_map($plugin,$dblog);
 
             // Competence synchronization
             if (!$fstExecution) {
-                //self::competence_synchronization($plugin,$dblog);
+                self::competence_synchronization($plugin,$dblog);
             }//if_fstExecution_competence
 
             // Log
@@ -1123,7 +1123,7 @@ class FELLESDATA_CRON {
                         $index = strpos($response,'changeType');
                         if (!$index) {
                             // Send notification
-                            FS_CRON::send_notifications_service($pluginInfo,'STATUS',$service);
+                            FS_CRON::send_notifications_service($pluginInfo,'FS',$service);
 
                             // Log
                             $dblog .=  ' ERROR RESPONSE TARDIS . ' . "\n";
