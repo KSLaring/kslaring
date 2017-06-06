@@ -747,7 +747,6 @@ class FELLESDATA_CRON {
                 $dblog .= ' RESPONSE NOT VALID ' . "\n";
             }//if_fsResponse
 
-
             // Log
             $dblog .= ' FINSIH Import FS ORG Structure . ' . "\n";
         }catch (Exception $ex) {
