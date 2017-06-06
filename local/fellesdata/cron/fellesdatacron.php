@@ -1122,11 +1122,11 @@ class FELLESDATA_CRON {
                     $index = strpos($response,'changeType');
                     if (!$index) {
                         // Send notification
-                        FS_CRON::send_notifications_service($pluginInfo,'FS',$service);
+                        //FS_CRON::send_notifications_service($pluginInfo,'FS',$service);
 
                         // Log
-                        $dblog .=  ' ERROR RESPONSE TARDIS . ' . "\n";
-                        $dblog .= "\n" . $response . "\n";
+                        //$dblog .=  ' ERROR RESPONSE TARDIS . ' . "\n";
+                        //$dblog .= "\n" . $response . "\n";
 
                         return null;
                     }else {

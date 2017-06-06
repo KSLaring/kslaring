@@ -37,6 +37,8 @@ try {
 
     if ($option) {
         if ($option == 20) {
+            //$pathFile = $CFG->dataroot . '/fellesdata/' . TRADIS_FS_JOBROLES . '.txt';
+            //strlen($response);
            //echo "Sending suspicious notifications..." . "</br>";
 
             // Send Notifications
