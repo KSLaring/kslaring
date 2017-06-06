@@ -1435,21 +1435,31 @@ class STATUS_CRON {
                 // Log
                 $dblog .=  ' ERROR RESPONSE STATUS - NULL OBJECT . ' . "\n";
                 return null;
+            }else if (isset($response->status) && $response->status != "200") {
+                // Send notification
+                FS_CRON::send_notifications_service($plugin,'STATUS',$service);
+
+                // Log
+                $dblog .=  ' ERROR RESPONSE STATUS . ' . "\n";
+                $dblog .= $response->message . "\n\n";
+                $dblog .= "\n" . $response . "\n";
+
+                return null;
             }else {
-                if (isset($response->status)) {
+                // Check the file content
+                $index = strpos($response,'html');
+                if ($index) {
                     // Send notification
                     FS_CRON::send_notifications_service($plugin,'STATUS',$service);
 
                     // Log
                     $dblog .=  ' ERROR RESPONSE STATUS . ' . "\n";
-                    $dblog .= $response->message . "\n\n";
                     $dblog .= "\n" . $response . "\n";
 
                     return null;
                 }else {
-                    // Check the file content
-                    $index = strpos($response,'html');
-                    if ($index) {
+                    $index = strpos($response,'changeType');
+                    if (!$index) {
                         // Send notification
                         FS_CRON::send_notifications_service($plugin,'STATUS',$service);
 
@@ -1459,42 +1469,30 @@ class STATUS_CRON {
 
                         return null;
                     }else {
-                        $index = strpos($response,'changeType');
-                        if (!$index) {
-                            // Send notification
-                            FS_CRON::send_notifications_service($plugin,'STATUS',$service);
+                        // Clean all response
+                        $path = $dir . '/' . $service . '.txt';
+                        if (file_exists($path)) {
+                            // Move the file to the new directory
+                            copy($path,$backup . '/' . $service . '_' . $time . '.txt');
 
-                            // Log
-                            $dblog .=  ' ERROR RESPONSE STATUS . ' . "\n";
-                            $dblog .= "\n" . $response . "\n";
+                            unlink($path);
+                        }
 
-                            return null;
-                        }else {
-                            // Clean all response
-                            $path = $dir . '/' . $service . '.txt';
-                            if (file_exists($path)) {
-                                // Move the file to the new directory
-                                copy($path,$backup . '/' . $service . '_' . $time . '.txt');
+                        // Remove bad characters
+                        $content = str_replace('\"','"',$response);
+                        // CR - LF && EOL
+                        $content = str_replace('\r\n',chr(13),$content);
+                        $content = str_replace('\r',chr(13),$content);
+                        $content = str_replace('\n',chr(13),$content);
 
-                                unlink($path);
-                            }
+                        // Create a new response file
+                        $file = fopen($path,'w');
+                        fwrite($file,$content);
+                        fclose($file);
 
-                            // Remove bad characters
-                            $content = str_replace('\"','"',$response);
-                            // CR - LF && EOL
-                            $content = str_replace('\r\n',chr(13),$content);
-                            $content = str_replace('\r',chr(13),$content);
-                            $content = str_replace('\n',chr(13),$content);
-
-                            // Create a new response file
-                            $file = fopen($path,'w');
-                            fwrite($file,$content);
-                            fclose($file);
-
-                            return true;
-                        }//if_index
-                    }//if_else_index
-                }//if_else_status
+                        return true;
+                    }//if_index
+                }//if_else_index
             }//if_response
         }catch (Exception $ex) {
             throw $ex;

@@ -1096,21 +1096,31 @@ class FELLESDATA_CRON {
                 // Log
                 $dblog .=  ' ERROR RESPONSE TARDIS - NULL OBJECT . ' . "\n";
                 return null;
+            }else if (isset($response->status) && $response->status != "200") {
+                // Send notification
+                FS_CRON::send_notifications_service($pluginInfo,'FS',$service);
+
+                // Log
+                $dblog .=  ' ERROR RESPONSE TARDIS . ' . "\n";
+                $dblog .= $response->message . "\n\n";
+                $dblog .= "\n" . $response . "\n";
+
+                return null;
             }else {
-                if (isset($response->status)) {
+                // Check the file content
+                $index = strpos($response, 'html');
+                if ($index) {
                     // Send notification
                     FS_CRON::send_notifications_service($pluginInfo,'FS',$service);
 
                     // Log
                     $dblog .=  ' ERROR RESPONSE TARDIS . ' . "\n";
-                    $dblog .= $response->message . "\n\n";
                     $dblog .= "\n" . $response . "\n";
 
                     return null;
-                }else {
-                    // Check the file content
-                    $index = strpos($response, 'html');
-                    if ($index) {
+                } else {
+                    $index = strpos($response,'changeType');
+                    if (!$index) {
                         // Send notification
                         FS_CRON::send_notifications_service($pluginInfo,'FS',$service);
 
@@ -1119,42 +1129,30 @@ class FELLESDATA_CRON {
                         $dblog .= "\n" . $response . "\n";
 
                         return null;
-                    } else {
-                        $index = strpos($response,'changeType');
-                        if (!$index) {
-                            // Send notification
-                            FS_CRON::send_notifications_service($pluginInfo,'FS',$service);
+                    }else {
+                        // Clean all response
+                        $pathFile = $dir . '/' . $service . '.txt';
+                        if (file_exists($pathFile)) {
+                            // Move the file to the new directory
+                            copy($pathFile,$backup . '/' . $service . '_' . $time . '.txt');
 
-                            // Log
-                            $dblog .=  ' ERROR RESPONSE TARDIS . ' . "\n";
-                            $dblog .= "\n" . $response . "\n";
-
-                            return null;
-                        }else {
-                            // Clean all response
-                            $pathFile = $dir . '/' . $service . '.txt';
-                            if (file_exists($pathFile)) {
-                                // Move the file to the new directory
-                                copy($pathFile,$backup . '/' . $service . '_' . $time . '.txt');
-
-                                unlink($pathFile);
-                            }
-
-                            // Remove bad characters
-                            $content = str_replace('\"','"',$response);
-                            // CR - LF && EOL
-                            $content = str_replace('\r\n',chr(13),$content);
-                            $content = str_replace('\r',chr(13),$content);
-                            $content = str_replace('\n',chr(13),$content);
-
-                            // Create a new response file
-                            $responseFile = fopen($pathFile,'w');
-                            fwrite($responseFile,$content);
-                            fclose($responseFile);
-
-                            return true;
+                            unlink($pathFile);
                         }
-                    }//if_else
+
+                        // Remove bad characters
+                        $content = str_replace('\"','"',$response);
+                        // CR - LF && EOL
+                        $content = str_replace('\r\n',chr(13),$content);
+                        $content = str_replace('\r',chr(13),$content);
+                        $content = str_replace('\n',chr(13),$content);
+
+                        // Create a new response file
+                        $responseFile = fopen($pathFile,'w');
+                        fwrite($responseFile,$content);
+                        fclose($responseFile);
+
+                        return true;
+                    }
                 }//if_else
             }//if_response
         }catch (Exception $ex) {
