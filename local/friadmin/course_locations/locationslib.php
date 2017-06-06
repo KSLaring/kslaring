@@ -2113,12 +2113,12 @@ class CourseLocations {
                 // County/Muni criteria
                 if ($county) {
                     $params['zero'] = $county;
-                    $sqlJoin = " AND clo. levelzero = :zero ";
+                    $sqlJoin = " AND clo.levelzero = :zero ";
                 }//if_county
 
                 if ($muni) {
                     $params['one'] = $muni;
-                    $sqlJoin .= " AND clo.levelone =: one ";
+                    $sqlJoin .= " AND clo.levelone = :one ";
                 }
             }//if_else_lcoation
 
@@ -2132,7 +2132,7 @@ class CourseLocations {
                                   ca.name 		    as 'category', 		    -- Category Name
                                   cfp.value		    as 'producer',			-- Produced by
                                   cfs.value			as 'sector',			-- Sector
-                                  e.customint1		as 'expiration',	  -- Deadline
+                                  e.customint1		as 'expiration',	    -- Deadline
                                   e.customint2	    as 'spots',			    -- Number of places
                                   e.customtext3	    as 'internalprice',	    -- Internal price
                                   e.customtext4	    as 'externalprice',     -- external price  
@@ -2454,8 +2454,8 @@ class CourseLocations {
                         $highdateunix = null;
                         $lowdateformated = null;
                         $highdateformated = null;
-                        $a = '';
 
+                        // Loop that sets the dates into the excel if there are any dates.
                         foreach ($fromtodates as $date) {
                             // If the date is not empty.
                             if ($date != '') {
@@ -2464,24 +2464,25 @@ class CourseLocations {
                                     'size' => 12,
                                     'name' => 'Arial',
                                     'text_wrap' => true,
-                                    'v_align' => 'left'));
+                                    'v_align' => 'top'));
                                 $myxls->merge_cells($row, $col, $row, $col + 1);
                                 $myxls->set_row($row, 20);
                                 $col += 2;
-                            } else {
-                                while ($i < $SESSION->maxdates) {
-                                    $myxls->write($row, $col, '', array(
-                                        'size' => 12,
-                                        'name' => 'Arial',
-                                        'text_wrap' => true,
-                                        'v_align' => 'left'));
-                                    $myxls->merge_cells($row, $col, $row, $col + 1);
-                                    $myxls->set_row($row, 20);
-                                    $col += 2;
-                                    $i++;
-                                }
+                                $i++;
                             }
-                            $a = null;
+                        }
+
+                        // Creates emtpy cells in excel up to the max amount of dates found.
+                        while ($i < $SESSION->maxdates) {
+                            $myxls->write($row, $col, '', array(
+                                'size' => 12,
+                                'name' => 'Arial',
+                                'text_wrap' => true,
+                                'v_align' => 'top'));
+                            $myxls->merge_cells($row, $col, $row, $col + 1);
+                            $myxls->set_row($row, 20);
+                            $col += 2;
+                            $i++;
                         }
                     }
 
@@ -2498,11 +2499,11 @@ class CourseLocations {
                     // Expiration.
                     $col += 2;
                     if ($coursevalue->expiration == 0) {
-                        $myxls->write($row, $col, "-", $coursevalue->expiration, array(
+                        $myxls->write($row, $col, "-", array(
                             'size' => 12,
                             'name' => 'Arial',
                             'text_wrap' => true,
-                            'v_align' => 'left'));
+                            'h_align' => 'right'));
                     } else {
                         $myxls->write($row, $col, $expiration = date("d.m.Y", $coursevalue->expiration), array(
                             'size' => 12,
@@ -2677,7 +2678,7 @@ class CourseLocations {
                         'size' => 12,
                         'name' => 'Arial',
                         'text_wrap' => true,
-                        'v_align' => 'left'));
+                        'v_align' => 'top'));
                     $myxls->merge_cells($row, $col, $row, $col + 1);
                     $myxls->set_row($row, 20);
 

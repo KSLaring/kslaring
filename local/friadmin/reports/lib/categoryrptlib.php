@@ -216,7 +216,7 @@ class friadminrpt
                                     se.name				as 'sector',			-- Course Sector (Level two)
                                     fo3.value		    as 'producer',			-- Produced by
                                     fo4.value 		    as 'fromto',			-- From - To
-                                    e.customint1		as 'deadline',			-- Deadline
+                                    e.customint1		as 'expiration',		-- Deadline
                                     e.customint2	    as 'spots',			    -- Number of places
                                     e.customtext3	    as 'internalprice',	    -- Internal price
                                     e.customtext4	    as 'externalprice',     -- external price  
@@ -576,7 +576,7 @@ class friadminrpt
             // Headers.
             self::add_participants_header_excel($myxls, $row, $coursesdata);
             // Content.
-            //self::add_participants_content_excel($coursesdata, $myxls, $row, $from, $to);
+            self::add_participants_content_excel($coursesdata, $myxls, $row, $from, $to);
 
             $export->close();
 
@@ -848,7 +848,7 @@ class friadminrpt
             $mycategory = self::get_category_name($category);
             $mycourse = self::get_course_name($course);
 
-            // Instructor Report Header.
+            // Instructor Report Header
             $myxls->write($row, $col, $strinsructor, array(
                 'size' => 22,
                 'name' => 'Arial',
@@ -856,11 +856,11 @@ class friadminrpt
                 'bg_color' => '#d4d4d4',
                 'text_wrap' => true,
                 'v_align' => 'left'));
-            $myxls->merge_cells($row, $col, $row, $col + 4);
+            $myxls->merge_cells($row, $col, $row + 1, $col + 4);
             $myxls->set_row($row, 20);
 
             // Category Header.
-            $row += 1;
+            $row += 2;
             $myxls->write($row, $col, $strcategory, array(
                 'size' => 16,
                 'name' => 'Arial',
@@ -1077,7 +1077,7 @@ class friadminrpt
             $mycategory = self::get_category_name($category);
             $mycourse = self::get_course_name($course);
 
-            // Coordinator Report Header.
+            // Coordinator Report Header
             $myxls->write($row, $col, $strcoordinator, array(
                 'size' => 22,
                 'name' => 'Arial',
@@ -1085,11 +1085,11 @@ class friadminrpt
                 'bg_color' => '#d4d4d4',
                 'text_wrap' => true,
                 'v_align' => 'left'));
-            $myxls->merge_cells($row, $col, $row, $col + 4);
+            $myxls->merge_cells($row, $col, $row + 1, $col + 4);
             $myxls->set_row($row, 20);
 
             // Category Header.
-            $row += 1;
+            $row += 2;
             $myxls->write($row, $col, $strcategory, array(
                 'size' => 16,
                 'name' => 'Arial',
@@ -1283,11 +1283,14 @@ class friadminrpt
 
         $query = "SELECT GROUP_CONCAT(DISTINCT cd.name ORDER BY cd.name SEPARATOR ',') as 'sectors'
                   FROM 	{report_gen_companydata} cd
-                  WHERE   id IN ($sector)
+                  WHERE   id IN (:sector)
 	                AND hierarchylevel = 2";
 
         try {
-            $rdo = $DB->get_record_sql($query);
+            $params = array();
+            $params['sector'] = $sector;
+
+            $rdo = $DB->get_record_sql($query, $params);
 
             if ($rdo) {
                 return $rdo->sectors;
@@ -1669,6 +1672,242 @@ class friadminrpt
     } //add_participants_header_excel
 
 
+    private static function add_participants_content_excel($coursedata, $myxls, $row, $from, $to) {
+
+        GLOBAL $SESSION;
+        // Variables.
+        $col            = 0;
+        $row            = 1;
+        $last           = null;
+        $workplaces     = null;
+        $setRow         = null;
+        $strUser        = null;
+        $completion     = null;
+        $maxdates       = null;
+        $mysectors      = null;
+
+        try {
+            if ($coursedata) {
+                foreach ($coursedata as $coursevalue) {
+
+                    $fromtodates = explode(",", $coursevalue->fromto);
+
+                    if ($coursevalue->sector) {
+                        $mysectors .= self::get_sectors($coursevalue->sector);
+                    } else {
+                        $mysectors = '';
+                    }
+
+                    $coordinator = self::get_coordinator($coursevalue->courseid);
+
+                    // Course fullname.
+                    $myxls->write($row, $col, $coursevalue->coursefull, array('size' => 12, 'name' => 'Arial', 'text_wrap' => true,'v_align' => 'left'));
+                    $myxls->merge_cells($row, $col, $row, $col + 4);
+                    $myxls->set_row($row,20);
+
+                    // Course shortname.
+                    $col += 5;
+                    $myxls->write($row, $col, $coursevalue->courseshort, array('size' => 12, 'name' => 'Arial', 'text_wrap' => true,'v_align' => 'left'));
+                    $myxls->merge_cells($row, $col, $row, $col + 3);
+                    $myxls->set_row($row,20);
+
+                    // Course format.
+                    $col += 4;
+                    $myxls->write($row, $col, $coursevalue->courseformat, array('size' => 12, 'name' => 'Arial', 'text_wrap' => true,'v_align' => 'left'));
+                    $myxls->merge_cells($row, $col, $row, $col + 1);
+                    $myxls->set_row($row,20);
+
+                    // Category.
+                    $col += 2;
+                    $myxls->write($row, $col, $coursevalue->category, array('size' => 12, 'name' => 'Arial', 'text_wrap' => true,'v_align' => 'left'));
+                    $myxls->merge_cells($row, $col, $row, $col + 4);
+                    $myxls->set_row($row,20);
+
+                    // Producer.
+                    $col += 5;
+                    $myxls->write($row, $col, $coursevalue->producer, array('size' => 12, 'name' => 'Arial', 'text_wrap' => true,'v_align' => 'left'));
+                    $myxls->merge_cells($row, $col, $row, $col + 4);
+                    $myxls->set_row($row,20);
+
+                    // Levelone.
+                    $col += 5;
+                    $myxls->write($row, $col, $coursevalue->levelone, array('size' => 12, 'name' => 'Arial', 'text_wrap' => true,'v_align' => 'left'));
+                    $myxls->merge_cells($row, $col, $row, $col + 2);
+                    $myxls->set_row($row,20);
+
+                    // Sector.
+                    $col += 3;
+                    //$myxls->write($row, $col, str_replace(',',"\n",$mysectors), array('size' => 12, 'name' => 'Arial', 'text_wrap' => true,'v_align' => 'left'));
+                    $myxls->write($row, $col, $mysectors, array('size' => 12, 'name' => 'Arial', 'text_wrap' => true,'v_align' => 'left'));
+                    $myxls->merge_cells($row, $col, $row, $col + 4);
+                    $myxls->set_row($row,20);
+
+                    // Course coordinator.
+                    $col += 5;
+                    $myxls->write($row, $col, $coordinator, array('size' => 12, 'name' => 'Arial', 'text_wrap' => true,'v_align' => 'left'));
+                    $myxls->merge_cells($row, $col, $row, $col + 4);
+                    $myxls->set_row($row,20);
+                    $col += 5;
+
+                    // Dates.
+                    if ($fromtodates) {
+                        $i = null;
+                        $lowdateunix = null;
+                        $highdateunix = null;
+                        $lowdateformated = null;
+                        $highdateformated = null;
+
+                        // Loop that sets the dates into the excel if there are any dates.
+                        foreach ($fromtodates as $date) {
+                            // If the date is not empty.
+                            if ($date != '') {
+
+                                $myxls->write($row, $col, $date, array(
+                                    'size' => 12,
+                                    'name' => 'Arial',
+                                    'text_wrap' => true,
+                                    'v_align' => 'top'));
+                                $myxls->merge_cells($row, $col, $row, $col + 1);
+                                $myxls->set_row($row, 20);
+                                $col += 2;
+                                $i++;
+                            }
+                        }
+
+                        // Creates emtpy cells in excel up to the max amount of dates found.
+                        while ($i < $SESSION->maxdates) {
+                            $myxls->write($row, $col, '', array(
+                                'size' => 12,
+                                'name' => 'Arial',
+                                'text_wrap' => true,
+                                'v_align' => 'top'));
+                            $myxls->merge_cells($row, $col, $row, $col + 1);
+                            $myxls->set_row($row, 20);
+                            $col += 2;
+                            $i++;
+                        }
+                    }
+
+                    // Number of days.
+                    $numberdays = count($fromtodates);
+                    $myxls->write($row, $col, $numberdays, array('size' => 12, 'name' => 'Arial', 'text_wrap' => true,'v_align' => 'left'));
+                    $myxls->merge_cells($row, $col, $row, $col + 1);
+                    $myxls->set_row($row,20);
+
+                    // Expiration.
+                    $col += 2;
+                    $myxls->write($row, $col, $today = date("d.m.Y", $coursevalue->expiration), array('size' => 12, 'name' => 'Arial', 'text_wrap' => true,'v_align' => 'left'));
+                    $myxls->merge_cells($row, $col, $row, $col + 1);
+                    $myxls->set_row($row,20);
+
+                    // Spots.
+                    $col += 2;
+                    if ($coursevalue->spots != '') {
+                        $myxls->write($row, $col, $coursevalue->spots, array('size' => 12, 'name' => 'Arial', 'text_wrap' => true,'v_align' => 'left'));
+                        $myxls->merge_cells($row, $col, $row, $col + 1);
+                        $myxls->set_row($row,20);
+                    } else {
+                        $myxls->write($row, $col, '0', array('size' => 12, 'name' => 'Arial', 'text_wrap' => true,'v_align' => 'left'));
+                        $myxls->merge_cells($row, $col, $row, $col + 1);
+                        $myxls->set_row($row,20);
+                    }
+
+                    // Internalprice.
+                    $col += 2;
+                    if ($coursevalue->internalprice != '') {
+                        $myxls->write($row, $col, $coursevalue->internalprice, array('size' => 12, 'name' => 'Arial', 'text_wrap' => true,'v_align' => 'left'));
+                        $myxls->merge_cells($row, $col, $row, $col + 1);
+                        $myxls->set_row($row,20);
+                    } else {
+                        $myxls->write($row, $col, '0', array('size' => 12, 'name' => 'Arial', 'text_wrap' => true,'v_align' => 'left'));
+                        $myxls->merge_cells($row, $col, $row, $col + 1);
+                        $myxls->set_row($row,20);
+                    }
+
+                    // Externalprice.
+                    $col += 2;
+                    if ($coursevalue->externalprice != '') {
+                        $myxls->write($row, $col, $coursevalue->externalprice, array('size' => 12, 'name' => 'Arial', 'text_wrap' => true,'v_align' => 'left'));
+                        $myxls->merge_cells($row, $col, $row, $col + 1);
+                        $myxls->set_row($row,20);
+                    } else {
+                        $myxls->write($row, $col, '0', array('size' => 12, 'name' => 'Arial', 'text_wrap' => true,'v_align' => 'left'));
+                        $myxls->merge_cells($row, $col, $row, $col + 1);
+                        $myxls->set_row($row,20);
+                    }
+                    // Instructors.
+                    $col += 2;
+                    if ($coursevalue->instructors != '') {
+                        $myxls->write($row, $col, $coursevalue->instructors, array('size' => 12, 'name' => 'Arial', 'text_wrap' => true,'v_align' => 'left'));
+                        $myxls->merge_cells($row, $col, $row, $col + 1);
+                        $myxls->set_row($row,20);
+                    } else {
+                        $myxls->write($row, $col, '0', array('size' => 12, 'name' => 'Arial', 'text_wrap' => true,'v_align' => 'left'));
+                        $myxls->merge_cells($row, $col, $row, $col + 1);
+                        $myxls->set_row($row,20);
+                    }
+                    // Students.
+                    $col += 2;
+                    if ($coursevalue->students != '') {
+                        $myxls->write($row, $col, $coursevalue->students, array('size' => 12, 'name' => 'Arial', 'text_wrap' => true,'v_align' => 'left'));
+                        $myxls->merge_cells($row, $col, $row, $col + 1);
+                        $myxls->set_row($row,20);
+                    } else {
+                        $myxls->write($row, $col, '0', array('size' => 12, 'name' => 'Arial', 'text_wrap' => true,'v_align' => 'left'));
+                        $myxls->merge_cells($row, $col, $row, $col + 1);
+                        $myxls->set_row($row,20);
+                    }
+                    // Waiting.
+                    $col += 2;
+                    if ($coursevalue->waiting != '') {
+                        $myxls->write($row, $col, $coursevalue->waiting, array('size' => 12, 'name' => 'Arial', 'text_wrap' => true,'v_align' => 'left'));
+                        $myxls->merge_cells($row, $col, $row, $col + 1);
+                        $myxls->set_row($row,20);
+                    } else {
+                        $myxls->write($row, $col, '0', array('size' => 12, 'name' => 'Arial', 'text_wrap' => true,'v_align' => 'left'));
+                        $myxls->merge_cells($row, $col, $row, $col + 1);
+                        $myxls->set_row($row,20);
+                    }
+                    // Completed.
+                    $col += 2;
+                    if ($coursevalue->completed != '') {
+                        $myxls->write($row, $col, $coursevalue->completed, array('size' => 12, 'name' => 'Arial', 'text_wrap' => true,'v_align' => 'left'));
+                        $myxls->merge_cells($row, $col, $row, $col + 1);
+                        $myxls->set_row($row,20);
+                    } else {
+                        $myxls->write($row, $col, '0', array('size' => 12, 'name' => 'Arial', 'text_wrap' => true,'v_align' => 'left'));
+                        $myxls->merge_cells($row, $col, $row, $col + 1);
+                        $myxls->set_row($row,20);
+                    }
+                    // Visibility.
+                    $col += 2;
+                    if ($coursevalue->visibility = 0) {
+                        $myxls->write($row, $col, get_string('no', 'local_friadmin'), array('size' => 12, 'name' => 'Arial', 'text_wrap' => true,'v_align' => 'left'));
+                    } else if ($coursevalue->visibility = 1) {
+                        $myxls->write($row, $col, get_string('yes', 'local_friadmin'), array('size' => 12, 'name' => 'Arial', 'text_wrap' => true,'v_align' => 'left'));
+                    }
+                    $myxls->merge_cells($row, $col, $row, $col + 1);
+                    $myxls->set_row($row,20);
+
+                    // Fromto.
+                    $col += 2;
+                    $myxls->write($row, $col, $coursevalue->fromto, array('size' => 12, 'name' => 'Arial', 'text_wrap' => true,'v_align' => 'left'));
+                    $myxls->merge_cells($row, $col, $row, $col + 1);
+                    $myxls->set_row($row,20);
+
+                    $row ++;
+                    $col = 0;
+
+                    $fromtodates = null;
+                    $mysectors   = null;
+
+                }//for_participants
+            }//if_participantList
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//add_participants_content_excel
+
     /**
      * Description
      * Add the header of the table to the excel report for instructors
@@ -1936,29 +2175,39 @@ class friadminrpt
                     // Dates.
                     if ($fromtodates) {
                         $i = null;
+                        $lowdateunix = null;
+                        $highdateunix = null;
+                        $lowdateformated = null;
+                        $highdateformated = null;
+
+                        // Loop that sets the dates into the excel if there are any dates.
                         foreach ($fromtodates as $date) {
+                            // If the date is not empty.
                             if ($date != '') {
+
                                 $myxls->write($row, $col, $date, array(
                                     'size' => 12,
                                     'name' => 'Arial',
                                     'text_wrap' => true,
-                                    'v_align' => 'left'));
+                                    'v_align' => 'top'));
                                 $myxls->merge_cells($row, $col, $row, $col + 1);
                                 $myxls->set_row($row, 20);
                                 $col += 2;
-                            } else {
-                                while ($i < $SESSION->maxdates) {
-                                    $myxls->write($row, $col, '', array(
-                                        'size' => 12,
-                                        'name' => 'Arial',
-                                        'text_wrap' => true,
-                                        'v_align' => 'left'));
-                                    $myxls->merge_cells($row, $col, $row, $col + 1);
-                                    $myxls->set_row($row, 20);
-                                    $col += 2;
-                                    $i++;
-                                }
+                                $i++;
                             }
+                        }
+
+                        // Creates emtpy cells in excel up to the max amount of dates found.
+                        while ($i < $SESSION->maxdates) {
+                            $myxls->write($row, $col, '', array(
+                                'size' => 12,
+                                'name' => 'Arial',
+                                'text_wrap' => true,
+                                'v_align' => 'top'));
+                            $myxls->merge_cells($row, $col, $row, $col + 1);
+                            $myxls->set_row($row, 20);
+                            $col += 2;
+                            $i++;
                         }
                     }
 
@@ -2242,29 +2491,39 @@ class friadminrpt
                     // Dates.
                     if ($fromtodates) {
                         $i = null;
+                        $lowdateunix = null;
+                        $highdateunix = null;
+                        $lowdateformated = null;
+                        $highdateformated = null;
+
+                        // Loop that sets the dates into the excel if there are any dates.
                         foreach ($fromtodates as $date) {
+                            // If the date is not empty.
                             if ($date != '') {
+
                                 $myxls->write($row, $col, $date, array(
                                     'size' => 12,
                                     'name' => 'Arial',
                                     'text_wrap' => true,
-                                    'v_align' => 'left'));
+                                    'v_align' => 'top'));
                                 $myxls->merge_cells($row, $col, $row, $col + 1);
                                 $myxls->set_row($row, 20);
                                 $col += 2;
-                            } else {
-                                while ($i < $SESSION->maxdates) {
-                                    $myxls->write($row, $col, '', array(
-                                        'size' => 12,
-                                        'name' => 'Arial',
-                                        'text_wrap' => true,
-                                        'v_align' => 'left'));
-                                    $myxls->merge_cells($row, $col, $row, $col + 1);
-                                    $myxls->set_row($row, 20);
-                                    $col += 2;
-                                    $i++;
-                                }
+                                $i++;
                             }
+                        }
+
+                        // Creates emtpy cells in excel up to the max amount of dates found.
+                        while ($i < $SESSION->maxdates) {
+                            $myxls->write($row, $col, '', array(
+                                'size' => 12,
+                                'name' => 'Arial',
+                                'text_wrap' => true,
+                                'v_align' => 'top'));
+                            $myxls->merge_cells($row, $col, $row, $col + 1);
+                            $myxls->set_row($row, 20);
+                            $col += 2;
+                            $i++;
                         }
                     }
 
