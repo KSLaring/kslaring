@@ -175,3 +175,8 @@ $string['status']       = 'Get last status';
 $string['day']          = 'Day to get last status';
 $string['stweekly']     = 'Weekly';
 $string['stmonthly']    = 'Monthly';
+
+$string['error_response_subject']           = ' {$a}: Integration TARDIS - ERROR RESPONSE';
+$string['error_response_status_subject']    = ' {$a}: Integration STATUS TARDIS - ERROR RESPONSE';
+$string['error_reponse_body']               = ' <p>We would like to inform you, that there has been a problem during the connection/communication with <strong>TARDIS</strong> services.</p> 
+                                                <p>So, the process <strong>{$a}</strong> has got an invalid response.</p> ';
