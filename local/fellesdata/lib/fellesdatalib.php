@@ -2706,9 +2706,10 @@ class FS {
      * @creationDate    04/05/2017
      * @author          eFaktor     (fbv)
      */
-    public static function clean_temporary_fellesdata($type) {
+    public static function clean_temporary_fellesdata($type,$plugin=null) {
         /* Variables */
         global $DB;
+        $sql = null;
 
         switch ($type) {
             case IMP_USERS:
@@ -2719,7 +2720,9 @@ class FS {
 
             case IMP_COMPANIES:
                 // FS Companies
-                $DB->delete_records('fs_imp_company');
+                $sql = " DELETE FROM {fs_imp_company} WHERE org_nivaa = $plugin->map_three";
+                $DB->execute($sql);
+                //$DB->delete_records('fs_imp_company');
 
                 break;
 

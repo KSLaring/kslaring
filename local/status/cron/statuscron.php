@@ -405,7 +405,7 @@ class STATUS_CRON {
             // Import data into temporary tables
             if ($response) {
                 // Clean temporary table
-                FS::clean_temporary_fellesdata(IMP_COMPANIES);
+                FS::clean_temporary_fellesdata(IMP_COMPANIES,$plugin);
 
                 // Open file
                 $path = $CFG->dataroot . '/fellesdata/' . TRADIS_FS_COMPANIES . '.txt';
