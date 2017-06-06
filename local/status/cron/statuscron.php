@@ -1461,11 +1461,11 @@ class STATUS_CRON {
                     $index = strpos($response,'changeType');
                     if (!$index) {
                         // Send notification
-                        FS_CRON::send_notifications_service($plugin,'STATUS',$service);
+                        //FS_CRON::send_notifications_service($plugin,'STATUS',$service);
 
                         // Log
-                        $dblog .=  ' ERROR RESPONSE STATUS . ' . "\n";
-                        $dblog .= "\n" . $response . "\n";
+                        //$dblog .=  ' ERROR RESPONSE STATUS . ' . "\n";
+                        //$dblog .= "\n" . $response . "\n";
 
                         return null;
                     }else {
