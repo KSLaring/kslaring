@@ -91,7 +91,7 @@ $string['fellesdata_days']          = 'Antall døgn å importere';
 $string['fellesdata_default_days']  = '4';
 
 $string['nav_unmap']                = 'Fjern mapping';
-$string['nav_unmap_org']            = 'Fjern org-elementer';
+$string['nav_unmap_org']            = 'Fjern mapping';
 $string['header_unmap_fellesdata']  = 'Fellesdata - Fjern mapping';
 $string['unmap_opt']                = 'Innstillinger for Fjern mapping';
 $string['level_unmap']              = 'Nivå hvor mapping skal fjernes';
