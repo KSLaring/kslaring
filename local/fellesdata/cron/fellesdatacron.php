@@ -696,26 +696,16 @@ class FELLESDATA_CRON {
             $dblog .= ' START Import FS ORG Structure . ' . "\n";
 
             // Call web service
-            //$fsResponse = self::process_tradis_service($plugin,TRADIS_FS_COMPANIES,$dblog);
+            $fsResponse = self::process_tradis_service($plugin,TRADIS_FS_COMPANIES,$dblog);
 
             // Import data into temporary tables
-            //if ($fsResponse) {
+            if ($fsResponse) {
                 // Clean temporary table
                 FS::clean_temporary_fellesdata(IMP_COMPANIES,$plugin);
 
                 // Open file
                 $pathFile = $CFG->dataroot . '/fellesdata/' . TRADIS_FS_COMPANIES . '.txt';
 
-            // Get content
-            $content = file_get_contents($pathFile);
-            if (strpos(chr(13),$content)) {
-                $content = explode(chr(13),$content);
-            }else {
-                $content = file($pathFile);
-            }
-
-            self::save_temporary_fs($content,IMP_COMPANIES);
-/**
                 if (file_exists($pathFile)) {
                     // Get last changes
                     // First check if is a suspicious file
@@ -752,12 +742,10 @@ class FELLESDATA_CRON {
                 }else {
                     // Log
                     $dblog .= 'FILE DOES NOT EXIST ' . "\n";
-                }//if_exists **/
-            //}else {
-            //    $dblog .= ' RESPONSE NOT VALID ' . "\n";
-            //}//if_fsResponse
-
-
+                }//if_exists
+            }else {
+                $dblog .= ' RESPONSE NOT VALID ' . "\n";
+            }//if_fsResponse
 
             // Log
             $dblog .= ' FINSIH Import FS ORG Structure . ' . "\n";
