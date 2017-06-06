@@ -1,0 +1,288 @@
+/*
+* This file is part of Moodle - http://moodle.org/
+*
+* Moodle is free software: you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation, either version 3 of the License, or
+* (at your option) any later version.
+*
+* Moodle is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+*
+*
+* Adaptable Buttons Style sheet
+*
+* Version details
+*
+* @package    theme_adaptable
+* @copyright  2015 Jeremy Hopkins (Coventry University)
+* @copyright  2015 Fernando Acedo (3-bits.com)
+* @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+*
+*/
+
+.btn-link,
+.btn-default,
+.btn-primary,
+[data-role="next"],
+[data-role="previous"],
+input[type="submit"],
+input[type="button"],
+#searchform_button,
+a.submit,
+#notice .singlebutton + .singlebutton input,
+#page-login-index2 .forgetpass a,
+input.form-submit,
+input#id_submitbutton,
+input#id_submitbutton2,
+.path-admin .buttons input[type="submit"],
+td.submit input {
+    font-family: [[setting:fontname]], sans-serif !important;
+    background: none;
+    background-color: [[setting:buttoncolor]];
+    text-shadow: none;
+    box-shadow: 0 -2px 0 0 rgba(0, 0, 0, 0.5) inset;
+    border: 0px;
+    -webkit-border-radius: [[setting:buttonradius]];
+    -moz-border-radius: [[setting:buttonradius]];
+    border-radius: [[setting:buttonradius]];
+    background-size: 100% 200%;
+    color: [[setting:buttontextcolor]] !important;
+    cursor: pointer;
+    padding: 8px 15px 8px;
+    -webkit-transition: background .2s ease-out;
+    -moz-transition: background .2s ease-out;
+    -ie-transition: background .2s ease-out;
+    -o-transition: background .2s ease-out;
+    transition: background .2s ease-out;
+}
+
+.btn,
+.btn a {
+    background-color: [[setting:buttoncolor]];
+    background-image: none;
+    color: [[setting:buttontextcolor]] !important;
+    display: inline-block;
+    padding: 4px 12px;
+    margin-bottom: 0;
+    font-size: 14px;
+    line-height: 20px;
+    text-align: center;
+    text-shadow: none;
+    vertical-align: middle;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    border-color: #e6e6e6 #e6e6e6 #bfbfbf;
+    border-color: rgba(0,0,0,0.1) rgba(0,0,0,0.1) rgba(0,0,0,0.25);
+    border-bottom-color: #b3b3b3;
+    -webkit-border-radius: [[setting:buttonradius]];
+    -moz-border-radius: [[setting:buttonradius]];
+    border-radius: [[setting:buttonradius]];
+    -webkit-box-shadow: 0 -2px 0 0 rgba(0, 0, 0, 0.5) inset;
+    -moz-box-shadow: 0 -2px 0 0 rgba(0, 0, 0, 0.5) inset;
+    box-shadow: 0 -2px 0 0 rgba(0, 0, 0, 0.5) inset;
+    padding: 8px 15px 8px;
+}
+
+.btn:first-child {
+    color: [[setting:buttontextcolor]] !important;
+}
+
+#notice .singlebutton + .singlebutton input,
+.submit.buttons input[name="cancel"] {
+    background-color: [[setting:editoffbk]]; !important;
+    text-shadow: none;
+}
+
+input[type="submit"]:hover,
+input[type="button"]:hover,
+#searchform_button:hover,
+a.submit:hover,
+#notice .singlebutton + .singlebutton input:hover,
+.submit.buttons input[name="cancel"]:hover,
+#page-login-index2 .forgetpass a:hover,
+.btn:hover,
+.btn:active {
+    background-position: 0 -100%;
+    text-decoration: none !important;
+    color: [[setting:buttontextcolor]] !important;
+    background-color: [[setting:buttonhovercolor]];
+    background-image: none;
+}
+
+input[type="submit"]:focus,
+input[type="button"]:focus,
+#searchform_button:focus,
+a.submit:focus, #notice .singlebutton + .singlebutton input:focus,
+.submit.buttons input[name="cancel"]:focus,
+#page-login-index2 .forgetpass a:focus,
+.btn:focus {
+    background-position: 0 -100%;
+    text-decoration: none !important;
+    color: [[setting:buttontextcolor]] !important;
+    background-color: [[setting:buttonhovercolor]];
+}
+
+button.close {
+    background: transparent !important;
+    text-shadow: none !important;
+    color: [[setting:buttontextcolor]] !important;
+    opacity: 1 !important;
+    box-shadow: none !important;
+}
+
+#edittingbutton .btn {
+    color: [[setting:editfont]] !important;
+}
+
+.btn-link:hover,
+.btn-default:hover,
+
+input.form-submit:hover,
+input#id_submitbutton:hover,
+input#id_submitbutton2:hover,
+.path-admin .buttons input[type="submit"]:hover,
+td.submit input:hover,
+input.form-submit:focus,
+input#id_submitbutton:focus,
+input#id_submitbutton2:focus,
+.path-admin .buttons input[type="submit"]:focus,
+td.submit input:focus,
+input.form-submit:active,
+input#id_submitbutton:active,
+input#id_submitbutton2:active,
+.path-admin .buttons input[type="submit"]:active,
+td.submit input:active,
+input.form-submit.active,
+input#id_submitbutton.active,
+input#id_submitbutton2.active,
+.path-admin .buttons input[type="submit"].active,
+td.submit input.active, input.form-submit.disabled,
+input#id_submitbutton.disabled,
+input#id_submitbutton2.disabled,
+.path-admin .buttons input[type="submit"].disabled,
+td.submit input.disabled,
+input.form-submit[disabled],
+input#id_submitbutton[disabled],
+input#id_submitbutton2[disabled],
+.path-admin .buttons input[type="submit"][disabled],
+td.submit input[disabled] {
+    background-color: [[setting:buttonhovercolor]];
+    color: [[setting:buttontextcolor]] !important;
+    background-image: none;
+}
+
+#edittingbutton .btn,
+#edittingbutton input[type="submit"],
+#edittingbutton a,
+.purgecaches a:hover {
+    background-image: none;
+    background-color: [[setting:editonbk]];
+    color: [[setting:editfont]] !important;
+    margin-top: [[setting:edittopmargin]];
+    padding: [[setting:editverticalpadding]] [[setting:edithorizontalpadding]];
+    -webkit-border-radius: [[setting:buttonradius]];
+    -moz-border-radius: [[setting:buttonradius]];
+    border-radius: [[setting:buttonradius]];
+    box-shadow: 0 -2px 0 0 rgba(0, 0, 0, 0.5) inset;
+}
+
+.submit.buttons input[name="cancel"],
+.editing #edittingbutton .btn,
+.editing #edittingbutton input[type="submit"],
+.editing #edittingbutton a:hover,
+.purgecaches a {
+    color: [[setting:editfont]];
+    background-image: none;
+    background-color: [[setting:editoffbk]];
+    margin-top: [[setting:edittopmargin]];
+    padding: [[setting:editverticalpadding]] [[setting:edithorizontalpadding]];
+    text-decoration: none;
+}
+
+[data-role="end"],
+[data-role="cancel"],
+.cancel a,
+.purgecaches a {
+    font-family: [[setting:fontname]], sans-serif !important;
+    font-size: 14px;
+    line-height: 20px;
+    height: 36px;
+    cursor: pointer;
+    background: none;
+    background-color: [[setting:editoffbk]];
+    text-shadow: none;
+    box-shadow: 0 -2px 0 0 rgba(0, 0, 0, 0.5) inset;
+    border: 0px;
+    -webkit-border-radius: [[setting:buttonradius]];
+    -moz-border-radius: [[setting:buttonradius]];
+    border-radius: [[setting:buttonradius]];
+    background-size: 100% 200%;
+    color: [[setting:buttontextcolor]] !important;
+    cursor: pointer;
+    padding: 8px 15px 8px;
+    -webkit-transition: background .2s ease-out;
+    -moz-transition: background .2s ease-out;
+    -ie-transition: background .2s ease-out;
+    -o-transition: background .2s ease-out;
+    transition: background .2s ease-out;
+}
+
+.cancel a:hover,
+[data-role="end"]:hover,
+[data-role="cancel"]:hover {
+    background-image: none;
+    background-color: [[setting:editonbk]];
+    color: [[setting:editfont]] !important;
+    text-decoration: none;
+}
+
+
+.btn-primary.disabled,
+.btn-primary[disabled] {
+    background-image: none;
+    background-color: #d5d5d5;
+    color: #ffffff;
+}
+
+#notice .singlebutton + .singlebutton input,
+.submit.buttons input[name="cancel"] {
+    color: [[setting:editfont]] !important;
+    background-image: none;
+    background-color: [[setting:editoffbk]] !important;
+    text-shadow: none;
+}
+
+.btn-login {
+    background-color: [[setting:buttonlogincolor]];
+    background-image: none;
+    border: 0 none;
+    -webkit-border-radius: [[setting:buttonradius]];
+    -moz-border-radius: [[setting:buttonradius]];
+    border-radius: [[setting:buttonradius]];
+    box-shadow: 0 -2px 0 0 rgba(0, 0, 0, 0.5) inset;
+    color: [[setting:buttonlogintextcolor]];
+    cursor: pointer;
+    padding: [[setting:buttonloginpadding]] 15px;
+    text-shadow: none;
+    transition: background 0.2s ease-out 0s;
+    margin-top: [[setting:buttonloginmargintop]];
+    margin-right:2px;
+    height:[[setting:buttonloginheight]];
+}
+
+.btn-login:hover {
+    background-image: none;
+    background-color: [[setting:buttonloginhovercolor]];
+    color: [[setting:buttonlogintextcolor]];
+    text-decoration: none;
+}
+
+.continuebutton {
+    margin: 10px 0;
+}

@@ -1,0 +1,76 @@
+/*
+ * @package     theme_essential
+ * @copyright   2016 Gareth J Barnard, David Bezemer
+ * @copyright   2014 Gareth J Barnard, David Bezemer
+ * @copyright   2013 Julian Ridden
+ * @license     http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+// Import the bootstrap variables.
+@import "../../bootstrapbase/less/moodle.less";
+@import "bootstrap-override/variables";
+@import "bootstrap-override/type";
+
+// Moodle fixes.
+@import "moodle-fixes/moodle-fixes";
+
+// Set image location.  Now in bootstrap-override/sprites.less included in bootstrap-pix.less.
+@iconSpritePath: ~"";
+@iconWhiteSpritePath: ~"";
+
+// Increase form label width.
+@horizontalComponentOffset: 200px;
+// On Wider screens.
+@horizontalComponentOffset980: 220px;
+@horizontalComponentOffset1200: 265px;
+
+// We need to darken the link colour as its contrast is too low for accessibility tests.
+// Bootstrap defines - @linkColor: #08c;
+// We only need to darken this ever so slightly - so 7%;
+// Calculated with => @linkColor: darken(#08c, 7%);
+@linkColor: #0070a8;
+@linkColorHover: darken(@linkColor, 15%);
+
+// Essential styles.
+@import "essential/variables";
+// Start with core.
+@import "essential/core";
+// Import the essential styles.
+@import "essential/accessibility";
+@import "essential/admin";
+@import "essential/alert";
+@import "essential/assign";
+@import "essential/autocomplete";
+@import "essential/blocks";
+@import "essential/breadcrumb";
+@import "essential/button";
+@import "essential/calendar";
+@import "essential/carousel";
+@import "essential/categories";
+@import "essential/chat";
+@import "essential/course";
+@import "essential/dock";
+@import "essential/editicons";
+@import "essential/footer";
+@import "essential/form";
+@import "essential/forum";
+@import "essential/frontpage";
+@import "essential/grade";
+@import "essential/greybox";
+@import "essential/header";
+@import "essential/message";
+@import "essential/navigation";
+@import "essential/plugins";
+@import "essential/question";
+@import "essential/search";
+@import "essential/tabs";
+// Load as last for potential overwrites.
+@import "essential/print";
+@import "essential/responsive";
+@import "essential/fixes";
+
+// Selected Bootstrap3 styles.
+@import "bootstrap3/variables";
+@import "bootstrap3/list-group";
+
+/* Essential placeholder */
