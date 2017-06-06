@@ -701,10 +701,11 @@ class FELLESDATA_CRON {
             // Import data into temporary tables
             if ($fsResponse) {
                 // Clean temporary table
-                FS::clean_temporary_fellesdata(IMP_COMPANIES);
+                FS::clean_temporary_fellesdata(IMP_COMPANIES,$plugin);
 
                 // Open file
                 $pathFile = $CFG->dataroot . '/fellesdata/' . TRADIS_FS_COMPANIES . '.txt';
+
                 if (file_exists($pathFile)) {
                     // Get last changes
                     // First check if is a suspicious file

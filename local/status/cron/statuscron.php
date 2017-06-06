@@ -80,16 +80,16 @@ class STATUS_CRON {
             echo "Industry --> " . $industry . "</br>";
 
             // Get competence from KS
-            self::competence_data($plugin,$industry,$dblog);
+            //self::competence_data($plugin,$industry,$dblog);
 
             // Get managers reporters from KS
-            self::managers_reporters($plugin,$industry,$dblog);
+            //self::managers_reporters($plugin,$industry,$dblog);
 
             // Import last status from fellesdata
             self::import_status($plugin,$dblog);
 
             // Syncronization
-            self::synchronization($plugin,$industry,$dblog);
+            //self::synchronization($plugin,$industry,$dblog);
 
             // Finish Log
             $dblog .= $time . ' (' . userdate(time(),'%d.%m.%Y %H:%M', 99, false) . ') - FINISH FELLESDATA STATUS CRON' . "\n\n";
@@ -284,19 +284,19 @@ class STATUS_CRON {
             $dblog .= ' START Import STATUS. ' . "\n";
 
             // Import FS Users
-            self::import_status_users($plugin,$dblog);
+            //self::import_status_users($plugin,$dblog);
 
             // Import FS Companies
             self::import_status_orgstructure($plugin,$dblog);
 
             // Import FS Job roles
-            self::import_status_jobroles($plugin,$dblog);
+            //self::import_status_jobroles($plugin,$dblog);
 
             // Import FS User Competence
-            self::import_status_managers_reporters($plugin,$dblog);
+            //self::import_status_managers_reporters($plugin,$dblog);
 
             // Import FS User Competence JR
-            self::import_status_user_competence($plugin,$dblog);
+            //self::import_status_user_competence($plugin,$dblog);
 
             // Log
             $dblog .= ' FINISH Import STATUS. ' . "\n";
@@ -405,7 +405,7 @@ class STATUS_CRON {
             // Import data into temporary tables
             if ($response) {
                 // Clean temporary table
-                FS::clean_temporary_fellesdata(IMP_COMPANIES);
+                FS::clean_temporary_fellesdata(IMP_COMPANIES,$plugin);
 
                 // Open file
                 $path = $CFG->dataroot . '/fellesdata/' . TRADIS_FS_COMPANIES . '.txt';
