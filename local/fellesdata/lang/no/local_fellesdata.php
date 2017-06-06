@@ -11,13 +11,13 @@
  *
  */
 
-$string['pluginname']           = 'Fellesdata-integrasjon';
+$string['pluginname']           = 'TARDIS-integrasjon';
 
-$string['crontask']             = 'Fellesdata Synchronization Cron Task';
-$string['fellesdata:manage']    = 'Administrere Fellesdata-integrasjonen';
+$string['crontask']             = 'TARDIS synkroniseringsoppgave';
+$string['fellesdata:manage']    = 'Administrere TARDIS-integrasjonen';
 
-$string['fellesdata_settings']      = 'Fellesdata-innstillinger';
-$string['fellesdata_end']           = 'API for import fra Fellesdata';
+$string['fellesdata_settings']      = 'TARDIS-innstillinger';
+$string['fellesdata_end']           = 'API for import fra TARDIS';
 $string['idnumber_end']             = 'Personnummer-endepunkt';
 $string['fellesdata_source']        = 'Kilde';
 $string['fellesdata_source_desc']   = 'TARDIS, Agresso, Visma';
@@ -34,7 +34,7 @@ $string['cron_deactivate']          = 'Deaktivert';
 
 $string['basic_notify']             = 'Varsle med e-post til';
 
-$string['subject']              = '{$a}: Integrasjon mellom FELLESDATA og KS Læring';
+$string['subject']              = '{$a}: Integrasjon mellom TARDIS og KS Læring';
 $string['body_company_to_sync'] = '<p>Vi vil gjerne informere deg om at det nå er dukket opp org-elementer som må mappes manuelt.</p>
                                    <p>Org-elementer det gjelder er: {$a->companies}</p>
                                    </br>
@@ -45,7 +45,7 @@ $string['body_jr_to_sync']      = '<p>Vi vil gjerne informere deg om  at det nå
                                    <p>Vi ber deg se over: <strong>{$a->mapping}</strong></p>';
 
 $string['nav_mapping']          = 'Mapping';
-$string['header_fellesdata']    = 'Fellesdata-mapping';
+$string['header_fellesdata']    = 'TARDIS-mapping';
 
 $string['nav_map_org']          = 'Org-struktur mapping';
 $string['nav_map_org_new']      = 'Mapping av org-strukturen - nye org-elementer';
@@ -54,7 +54,7 @@ $string['nav_map_jr']           = 'Jobbrolle-mapping';
 $string['level_map']            = 'Nivå (0-1-2-3) som skal mappes';
 $string['pattern']              = 'Tekstmønster';
 $string['pattern_help']         = 'For eksempel "Skole". Det betyr at du vil mappe alle org-elementer som hører til f.eks. "Skole og oppvekst".';
-$string['to_match']             = 'Å mappe fra Fellesdata';
+$string['to_match']             = 'Å mappe fra TARDIS';
 $string['remain_match']         = '{$a} igjen å mappe';
 $string['possible_matches']     = 'Mulige treff i KS Læring';
 
@@ -74,7 +74,7 @@ $string['no_jr_to_map']         = 'Det finnes ingen jobbroller å mappe.';
 
 $string['btn_match']        = 'Treff';
 
-$string['menu_title']           = 'Fellesdata';
+$string['menu_title']           = 'TARDIS';
 $string['map_org']              = 'Mapper org-enheter';
 $string['map_jr']               = 'Mapper jobbroller';
 
@@ -91,14 +91,14 @@ $string['fellesdata_days']          = 'Antall døgn å importere';
 $string['fellesdata_default_days']  = '4';
 
 $string['nav_unmap']                = 'Fjern mapping';
-$string['nav_unmap_org']            = 'Fjern org-elementer';
-$string['header_unmap_fellesdata']  = 'Fellesdata - Fjern mapping';
+$string['nav_unmap_org']            = 'Fjern mapping';
+$string['header_unmap_fellesdata']  = 'TARDIS - Fjern mapping';
 $string['unmap_opt']                = 'Innstillinger for Fjern mapping';
 $string['level_unmap']              = 'Nivå hvor mapping skal fjernes';
 
 $string['to_unmapp']    = 'Skal fjernes';
 $string['mapped_with']  = 'Mappet med';
-$string['fs_company']   = 'Fellesdata org-element';
+$string['fs_company']   = 'TARDIS org-element';
 $string['none_unmapped']    = 'Det finnes ingen org-elementer som passer til søket';
 $string['no_selection'] = 'Det er ikke valgt noe org-element';
 
@@ -176,7 +176,7 @@ $string['day']          = 'Day to get last status';
 $string['stweekly']     = 'Weekly';
 $string['stmonthly']    = 'Monthly';
 
-$string['error_response_subject']           = ' {$a}: Integration TARDIS - ERROR RESPONSE';
-$string['error_response_status_subject']    = ' {$a}: Integration STATUS TARDIS - ERROR RESPONSE';
-$string['error_reponse_body']               = ' <p>We would like to inform you, that there has been a problem during the connection/communication with <strong>TARDIS</strong> services.</p> 
-                                                <p>So, the process <strong>{$a}</strong> has got an invalid response.</p> ';
+$string['error_response_subject']           = ' {$a}: Integrasjon TARDIS - FEILMELDING';
+$string['error_response_status_subject']    = ' {$a}: Integrasjon STATUS TARDIS - FEILMELDING';
+$string['error_reponse_body']               = ' <p>Vi vil gjerne informere deg om at det har oppstått et problem i oppkoblingen med <strong>TARDIS</strong>-tjenestene.</p> 
+                                                <p>Prosessen <strong>{$a}</strong> har mottatt en ugyldig respons</p> ';
