@@ -101,7 +101,7 @@ if ($form->is_cancelled()) {
 /* Header   */
 echo $OUTPUT->header();
 
-if (!$myCompetence->levelZero && !$IsAdmin) {
+if ($myCompetence && !$myCompetence->levelZero && !$IsAdmin) {
     echo $OUTPUT->heading(get_string('no_competence_add_location', 'local_friadmin'),4);
 }else {
     $form->display();
