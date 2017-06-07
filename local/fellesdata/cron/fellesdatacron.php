@@ -221,6 +221,10 @@ class FELLESDATA_CRON {
                     break;
             }//switch_option
 
+            if (isset($SESSION->manual) && ($SESSION->manual)) {
+                echo $dblog . "</br>";
+            }//if_session_manul
+
             // Log
             $dblog .= $time . ' (' . userdate(time(),'%d.%m.%Y %H:%M', 99, false) . ') - FINISH FELLESDATA MANUAL' . "\n\n";
             error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
