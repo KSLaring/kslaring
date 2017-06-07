@@ -1439,6 +1439,7 @@ class STATUS_CRON {
 
                 // Log
                 $dblog .=  ' ERROR RESPONSE STATUS - NULL OBJECT . ' . "\n";
+
                 return null;
             }else if (isset($response->status) && $response->status != "200") {
                 // Send notification

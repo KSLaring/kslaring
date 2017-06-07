@@ -613,11 +613,14 @@ class FELLESDATA_CRON {
             // Log
             $dblog .= 'START Import FS Users ' . "\n";
 
+            echo "1" . "</br>";
             // Call web service
             $fsResponse = self::process_tradis_service($plugin,TRADIS_FS_USERS,$dblog);
+            echo "2" . "</br>";
 
             // Import data into temporary tables
             if ($fsResponse) {
+                echo "3" . "</br>";
                 // Clean temporary table
                 FS::clean_temporary_fellesdata(IMP_USERS);
 
@@ -668,6 +671,7 @@ class FELLESDATA_CRON {
             // Log
             $dblog .= 'FINISH Import FS Users ' . "\n";
         }catch (Exception $ex) {
+            echo $ex->getTraceAsString() . "</br>";
             throw $ex;
         }//try_catch
     }//import_fs_users
