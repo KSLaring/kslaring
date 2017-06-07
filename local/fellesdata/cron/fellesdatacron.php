@@ -1070,6 +1070,7 @@ class FELLESDATA_CRON {
             // Build url end point
             $urlTradis = $pluginInfo->fs_point . '/' . $service . '?fromDate=' . $fromDate . '&toDate=' . $toDate;
             $urlTradis = trim($urlTradis);
+            echo $urlTradis . "</br>";
 
             // Call web service
             $ch = curl_init($urlTradis);
@@ -1099,6 +1100,7 @@ class FELLESDATA_CRON {
 
             // Format data
             if ($response === false) {
+                echo "POPOPO" . "</br>";
                 // Send notification
                 FS_CRON::send_notifications_service($pluginInfo,'FS',$service);
 
