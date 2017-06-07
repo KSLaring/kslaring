@@ -1094,8 +1094,10 @@ class FELLESDATA_CRON {
                 // Log
                 $dblog .=  ' ERROR RESPONSE TARDIS - NULL OBJECT . ' . "\n";
                 return null;
-            }else if (is_null($response)){
-                echo "NULL" . "</br>";
+            }else if ($response == null){
+                // Log
+                $dblog .=  ' ERROR RESPONSE TARDIS - NULL OBJECT . ' . "\n";
+                return null;
             }else if (isset($response->status) && $response->status != "200") {
                 echo "STATUS " . $response->status . "</br>";
                 // Send notification
@@ -1125,13 +1127,9 @@ class FELLESDATA_CRON {
                 } else {
                     $index = strpos($response,'changeType');
                     if (!$index) {
-                        // Send notification
-                        //FS_CRON::send_notifications_service($pluginInfo,'FS',$service);
-
                         // Log
-                        //$dblog .=  ' ERROR RESPONSE TARDIS . ' . "\n";
-                        //$dblog .= "\n" . $response . "\n";
-
+                        echo "EMPTY" . "</br>";
+                        $dblog .=  ' ERROR RESPONSE TARDIS - EMPTY FILE . ' . "\n";
                         return null;
                     }else {
                         // Clean all response
