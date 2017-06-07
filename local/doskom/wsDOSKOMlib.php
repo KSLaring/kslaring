@@ -491,7 +491,7 @@ class WS_DOSKOM {
                 /* Execute  */
                 $rdo = $DB->get_record_sql($sqlTotal,$params);
                 if ($rdo) {
-                    return true;
+                    return $rdo->id;
                 }else {
                     return false;
                 }
