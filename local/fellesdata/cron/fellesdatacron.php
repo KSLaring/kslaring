@@ -222,7 +222,7 @@ class FELLESDATA_CRON {
             }//switch_option
 
             if (isset($SESSION->manual) && ($SESSION->manual)) {
-                echo $dblog . "</br>";
+                echo str_replace( "\n", '</br>', $dblog ) . "</br>";
             }//if_session_manul
 
             // Log
