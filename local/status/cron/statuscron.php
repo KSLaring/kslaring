@@ -362,8 +362,6 @@ class STATUS_CRON {
                         }//if_status
                     }//if_max_imp
                 }//if_exists
-            }else {
-                $dblog .= ' RESPONSE NOT VALID . ' . "\n";
             }//if_fsResponse
 
             // Log
@@ -430,8 +428,6 @@ class STATUS_CRON {
                 }else {
                     $dblog .= ' FILE DOES NOT EXIST ' . "\n";
                 }//if_exists
-            }else {
-                $dblog .= ' RESPONSE NOT VALID ' . "\n";
             }//if_fsResponse
 
             // Log
@@ -498,8 +494,6 @@ class STATUS_CRON {
                 }else {
                     $dblog .= 'FILE DOES NOT EXIST ' . "\n";
                 }//if_exists
-            }else {
-                $dblog .= ' RESPONSE NOT VALID ' . "\n";
             }//if_fsResponse
 
             // Log
@@ -566,8 +560,6 @@ class STATUS_CRON {
                 }else {
                     $dblog .= 'FILE DOES NOT EXIST ' . "\n";
                 }//if_exists
-            }else {
-                $dblog .=  ' RESPONSE NOT VALID ' . "\n";
             }//if_fsResponse
 
             // Log
@@ -634,8 +626,6 @@ class STATUS_CRON {
                 }else {
                     $dblog .= ' FILE DOES NOT EXIST ' . "\n";
                 }//if_exists
-            }else {
-                $dblog .= ' RESPONSE NOT VALID ' . "\n";
             }//if_data
 
             // Log
@@ -1424,13 +1414,13 @@ class STATUS_CRON {
             // Save original file receive it
             $pathFile = $original . '/' . $service . '.txt';
             if (file_exists($pathFile)) {
+                // DELETE
                 unlink($pathFile);
-
-                // Overwrite
-                $responseFile = fopen($pathFile,'w');
-                fwrite($responseFile,$response);
-                fclose($responseFile);
             }
+            // Overwrite
+            $responseFile = fopen($pathFile,'w');
+            fwrite($responseFile,$response);
+            fclose($responseFile);
 
             // Format data
             if ($response === false) {
@@ -1439,6 +1429,11 @@ class STATUS_CRON {
 
                 // Log
                 $dblog .=  ' ERROR RESPONSE STATUS - NULL OBJECT . ' . "\n";
+
+                return null;
+            }else if ($response == null){
+                // Log
+                $dblog .=  ' ERROR RESPONSE TARDIS - NULL OBJECT . ' . "\n";
                 return null;
             }else if (isset($response->status) && $response->status != "200") {
                 // Send notification
@@ -1465,13 +1460,8 @@ class STATUS_CRON {
                 }else {
                     $index = strpos($response,'changeType');
                     if (!$index) {
-                        // Send notification
-                        //FS_CRON::send_notifications_service($plugin,'STATUS',$service);
-
                         // Log
-                        //$dblog .=  ' ERROR RESPONSE STATUS . ' . "\n";
-                        //$dblog .= "\n" . $response . "\n";
-
+                        $dblog .=  ' ERROR RESPONSE TARDIS - EMPTY FILE . ' . "\n";
                         return null;
                     }else {
                         // Clean all response

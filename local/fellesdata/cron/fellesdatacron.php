@@ -221,6 +221,10 @@ class FELLESDATA_CRON {
                     break;
             }//switch_option
 
+            if (isset($SESSION->manual) && ($SESSION->manual)) {
+                echo str_replace( "\n", '</br>', $dblog ) . "</br>";
+            }//if_session_manul
+
             // Log
             $dblog .= $time . ' (' . userdate(time(),'%d.%m.%Y %H:%M', 99, false) . ') - FINISH FELLESDATA MANUAL' . "\n\n";
             error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
@@ -347,8 +351,6 @@ class FELLESDATA_CRON {
                     // Log
                     $dblog .= "ERROR SERVICE: " . $response['message'] . "\n\n";
                 }//if_no_error
-            }else {
-                $dblog .= 'RESPONSE NOT VALID' . "\n";
             }//if_else
 
             // Log
@@ -660,14 +662,12 @@ class FELLESDATA_CRON {
                     // Log
                     $dblog .= 'FILE DOES NOT EXIST ' . "\n";
                 }//if_exists
-            }else {
-                // Log
-                $dblog .= 'RESPONSE NOT VALID' . "\n";
             }//if_fsResponse
 
             // Log
             $dblog .= 'FINISH Import FS Users ' . "\n";
         }catch (Exception $ex) {
+            echo $ex->getTraceAsString() . "</br>";
             throw $ex;
         }//try_catch
     }//import_fs_users
@@ -743,8 +743,6 @@ class FELLESDATA_CRON {
                     // Log
                     $dblog .= 'FILE DOES NOT EXIST ' . "\n";
                 }//if_exists
-            }else {
-                $dblog .= ' RESPONSE NOT VALID ' . "\n";
             }//if_fsResponse
 
             // Log
@@ -823,8 +821,6 @@ class FELLESDATA_CRON {
                     // Log
                     $dblog .= 'FILE DOES NOT EXIST ' . "\n";
                 }//if_exists
-            }else {
-                $dblog .= 'RESPONSE NOT VALID ' . "\n";
             }//if_fsResponse
 
             // Log
@@ -904,8 +900,6 @@ class FELLESDATA_CRON {
                     // Log
                     $dblog .= 'FILE DOES NOT EXIST ' . "\n";
                 }//if_exists
-            }else {
-                $dblog .= ' RESPONSE NOT VALID' . "\n";
             }//if_fsResponse
 
             // Log
@@ -985,8 +979,6 @@ class FELLESDATA_CRON {
                 }else {
                     $dblog .= 'FILE DOES NOT EXIST' . "\n";
                 }//if_exists
-            }else {
-                $dblog .= 'RESPONSE NOT VALID' . "\n";
             }//if_data
 
             // Log
@@ -1085,19 +1077,23 @@ class FELLESDATA_CRON {
             // Save original file receive it
             $pathFile = $original . '/' . $service . '.txt';
             if (file_exists($pathFile)) {
+                // DELETE
                 unlink($pathFile);
-
-                // Overwrite
-                $responseFile = fopen($pathFile,'w');
-                fwrite($responseFile,$response);
-                fclose($responseFile);
             }
+            // Overwrite
+            $responseFile = fopen($pathFile,'w');
+            fwrite($responseFile,$response);
+            fclose($responseFile);
 
             // Format data
             if ($response === false) {
                 // Send notification
                 FS_CRON::send_notifications_service($pluginInfo,'FS',$service);
 
+                // Log
+                $dblog .=  ' ERROR RESPONSE TARDIS - NULL OBJECT . ' . "\n";
+                return null;
+            }else if ($response == null){
                 // Log
                 $dblog .=  ' ERROR RESPONSE TARDIS - NULL OBJECT . ' . "\n";
                 return null;
@@ -1126,13 +1122,8 @@ class FELLESDATA_CRON {
                 } else {
                     $index = strpos($response,'changeType');
                     if (!$index) {
-                        // Send notification
-                        //FS_CRON::send_notifications_service($pluginInfo,'FS',$service);
-
                         // Log
-                        //$dblog .=  ' ERROR RESPONSE TARDIS . ' . "\n";
-                        //$dblog .= "\n" . $response . "\n";
-
+                        $dblog .=  ' ERROR RESPONSE TARDIS - EMPTY FILE . ' . "\n";
                         return null;
                     }else {
                         // Clean all response
@@ -1368,9 +1359,6 @@ class FELLESDATA_CRON {
                                 /* Log  */
                                 $dblog  .= "ERROR WS: " . $response['message'] . "\n\n";
                             }//if_no_error
-                        }else {
-                            /* Log  */
-                            $dblog  .= "RESPONSE NOT VALID " . "\n\n";
                         }//if_response
                     }//if_toSynchronize
                 }//for
@@ -1434,9 +1422,6 @@ class FELLESDATA_CRON {
                                 /* Log  */
                                 $dblog  .= "ERROR WS: " . $response['message'] . "\n\n";
                             }//if_no_error
-                        }else {
-                            /* Log  */
-                            $dblog  .= "RESPONSE NOT VALID " . "\n\n";
                         }//if_response
                     }//if_toSynchronize
                 }//for
