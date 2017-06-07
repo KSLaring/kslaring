@@ -1422,10 +1422,15 @@ class STATUS_CRON {
             curl_close( $ch );
 
             // Save original file receive it
-            $pathFile = $original . '/' . $service . '_' . $time . '.txt';
-            $responseFile = fopen($pathFile,'w');
-            fwrite($responseFile,$response);
-            fclose($responseFile);
+            $pathFile = $original . '/' . $service . '.txt';
+            if (file_exists($pathFile)) {
+                unlink($pathFile);
+
+                // Overwrite
+                $responseFile = fopen($pathFile,'w');
+                fwrite($responseFile,$response);
+                fclose($responseFile);
+            }
 
             // Format data
             if ($response === false) {
