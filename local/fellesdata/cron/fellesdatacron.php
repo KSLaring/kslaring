@@ -1090,13 +1090,13 @@ class FELLESDATA_CRON {
             // Save original file receive it
             $pathFile = $original . '/' . $service . '.txt';
             if (file_exists($pathFile)) {
+                // DELETE
                 unlink($pathFile);
-
-                // Overwrite
-                $responseFile = fopen($pathFile,'w');
-                fwrite($responseFile,$response);
-                fclose($responseFile);
             }
+            // Overwrite
+            $responseFile = fopen($pathFile,'w');
+            fwrite($responseFile,$response);
+            fclose($responseFile);
 
             // Format data
             if ($response === false) {
@@ -1119,6 +1119,8 @@ class FELLESDATA_CRON {
 
                 return null;
             }else {
+                echo "HOLA --> " . $response . "</br>";
+
                 // Check the file content
                 $index = strpos($response, 'html');
                 if ($index) {

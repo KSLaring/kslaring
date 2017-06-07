@@ -1424,13 +1424,13 @@ class STATUS_CRON {
             // Save original file receive it
             $pathFile = $original . '/' . $service . '.txt';
             if (file_exists($pathFile)) {
+                // DELETE
                 unlink($pathFile);
-
-                // Overwrite
-                $responseFile = fopen($pathFile,'w');
-                fwrite($responseFile,$response);
-                fclose($responseFile);
             }
+            // Overwrite
+            $responseFile = fopen($pathFile,'w');
+            fwrite($responseFile,$response);
+            fclose($responseFile);
 
             // Format data
             if ($response === false) {
