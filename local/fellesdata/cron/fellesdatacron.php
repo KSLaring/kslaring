@@ -611,14 +611,11 @@ class FELLESDATA_CRON {
             // Log
             $dblog .= 'START Import FS Users ' . "\n";
 
-            echo "1" . "</br>";
             // Call web service
             $fsResponse = self::process_tradis_service($plugin,TRADIS_FS_USERS,$dblog);
-            echo "2" . "</br>";
 
             // Import data into temporary tables
             if ($fsResponse) {
-                echo "3" . "</br>";
                 // Clean temporary table
                 FS::clean_temporary_fellesdata(IMP_USERS);
 
@@ -1057,7 +1054,6 @@ class FELLESDATA_CRON {
             // Build url end point
             $urlTradis = $pluginInfo->fs_point . '/' . $service . '?fromDate=' . $fromDate . '&toDate=' . $toDate;
             $urlTradis = trim($urlTradis);
-            echo $urlTradis . "</br>";
 
             // Call web service
             $ch = curl_init($urlTradis);
@@ -1087,7 +1083,6 @@ class FELLESDATA_CRON {
 
             // Format data
             if ($response === false) {
-                echo "POPOPO" . "</br>";
                 // Send notification
                 FS_CRON::send_notifications_service($pluginInfo,'FS',$service);
 
@@ -1099,7 +1094,6 @@ class FELLESDATA_CRON {
                 $dblog .=  ' ERROR RESPONSE TARDIS - NULL OBJECT . ' . "\n";
                 return null;
             }else if (isset($response->status) && $response->status != "200") {
-                echo "STATUS " . $response->status . "</br>";
                 // Send notification
                 FS_CRON::send_notifications_service($pluginInfo,'FS',$service);
 
@@ -1110,12 +1104,9 @@ class FELLESDATA_CRON {
 
                 return null;
             }else {
-                echo "HOLA --> " . $response . "</br>";
-
                 // Check the file content
                 $index = strpos($response, 'html');
                 if ($index) {
-                    echo "ERROR HTML " . "</br>";
                     // Send notification
                     FS_CRON::send_notifications_service($pluginInfo,'FS',$service);
 
@@ -1128,7 +1119,6 @@ class FELLESDATA_CRON {
                     $index = strpos($response,'changeType');
                     if (!$index) {
                         // Log
-                        echo "EMPTY" . "</br>";
                         $dblog .=  ' ERROR RESPONSE TARDIS - EMPTY FILE . ' . "\n";
                         return null;
                     }else {
