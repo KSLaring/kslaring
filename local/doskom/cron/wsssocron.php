@@ -539,8 +539,14 @@ class wsdoskom_cron {
             $params = array();
             $params['secret'] = $externalId;
 
+            // SQL Instruction
+            $sql = " SELECT	u.id
+                     FROM	{user} 	u
+                     WHERE	u.secret = :secret
+                            AND u.username NOT IN ('guest','admin') ";
+
             // Execute
-            $rdo = $DB->get_record('user',$params,'id');
+            $rdo = $DB->get_record_sql($sql,$params);
             if ($rdo) {
                 return $rdo->id;
             }else {

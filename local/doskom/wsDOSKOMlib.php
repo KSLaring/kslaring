@@ -477,17 +477,18 @@ class WS_DOSKOM {
 
             /* SQL Instruction */
             $sql = " SELECT		u.id
-                     FROM		{user} 	u ";
+                     FROM		{user} 	u 
+                     WHERE      u.username NOT IN ('guest','admin') ";
 
             /* First Only Personale Number  */
-            $sqlTotal = $sql . " WHERE		u.username  = :username ";
+            $sqlTotal = $sql . " AND		u.username  = :username ";
             /* Execute  */
             $rdo = $DB->get_record_sql($sqlTotal,$params);
             if ($rdo) {
                 return $rdo->id;
             }else {
                 /* Second with secret   */
-                $sqlTotal = $sql . " WHERE		u.secret  = :secret ";
+                $sqlTotal = $sql . " AND	u.secret  = :secret ";
                 /* Execute  */
                 $rdo = $DB->get_record_sql($sqlTotal,$params);
                 if ($rdo) {
