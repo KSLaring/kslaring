@@ -1108,6 +1108,7 @@ class FELLESDATA_CRON {
                 $dblog .=  ' ERROR RESPONSE TARDIS - NULL OBJECT . ' . "\n";
                 return null;
             }else if (isset($response->status) && $response->status != "200") {
+                echo "STATUS " . $response->status . "</br>";
                 // Send notification
                 FS_CRON::send_notifications_service($pluginInfo,'FS',$service);
 
@@ -1121,6 +1122,7 @@ class FELLESDATA_CRON {
                 // Check the file content
                 $index = strpos($response, 'html');
                 if ($index) {
+                    echo "ERROR HTML " . "</br>";
                     // Send notification
                     FS_CRON::send_notifications_service($pluginInfo,'FS',$service);
 
