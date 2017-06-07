@@ -347,8 +347,6 @@ class FELLESDATA_CRON {
                     // Log
                     $dblog .= "ERROR SERVICE: " . $response['message'] . "\n\n";
                 }//if_no_error
-            }else {
-                $dblog .= 'RESPONSE NOT VALID' . "\n";
             }//if_else
 
             // Log
@@ -663,9 +661,6 @@ class FELLESDATA_CRON {
                     // Log
                     $dblog .= 'FILE DOES NOT EXIST ' . "\n";
                 }//if_exists
-            }else {
-                // Log
-                $dblog .= 'RESPONSE NOT VALID' . "\n";
             }//if_fsResponse
 
             // Log
@@ -747,8 +742,6 @@ class FELLESDATA_CRON {
                     // Log
                     $dblog .= 'FILE DOES NOT EXIST ' . "\n";
                 }//if_exists
-            }else {
-                $dblog .= ' RESPONSE NOT VALID ' . "\n";
             }//if_fsResponse
 
             // Log
@@ -827,8 +820,6 @@ class FELLESDATA_CRON {
                     // Log
                     $dblog .= 'FILE DOES NOT EXIST ' . "\n";
                 }//if_exists
-            }else {
-                $dblog .= 'RESPONSE NOT VALID ' . "\n";
             }//if_fsResponse
 
             // Log
@@ -908,8 +899,6 @@ class FELLESDATA_CRON {
                     // Log
                     $dblog .= 'FILE DOES NOT EXIST ' . "\n";
                 }//if_exists
-            }else {
-                $dblog .= ' RESPONSE NOT VALID' . "\n";
             }//if_fsResponse
 
             // Log
@@ -989,8 +978,6 @@ class FELLESDATA_CRON {
                 }else {
                     $dblog .= 'FILE DOES NOT EXIST' . "\n";
                 }//if_exists
-            }else {
-                $dblog .= 'RESPONSE NOT VALID' . "\n";
             }//if_data
 
             // Log
@@ -1107,6 +1094,8 @@ class FELLESDATA_CRON {
                 // Log
                 $dblog .=  ' ERROR RESPONSE TARDIS - NULL OBJECT . ' . "\n";
                 return null;
+            }else if (is_null($response)){
+                echo "NULL" . "</br>";
             }else if (isset($response->status) && $response->status != "200") {
                 echo "STATUS " . $response->status . "</br>";
                 // Send notification
@@ -1378,9 +1367,6 @@ class FELLESDATA_CRON {
                                 /* Log  */
                                 $dblog  .= "ERROR WS: " . $response['message'] . "\n\n";
                             }//if_no_error
-                        }else {
-                            /* Log  */
-                            $dblog  .= "RESPONSE NOT VALID " . "\n\n";
                         }//if_response
                     }//if_toSynchronize
                 }//for
@@ -1444,9 +1430,6 @@ class FELLESDATA_CRON {
                                 /* Log  */
                                 $dblog  .= "ERROR WS: " . $response['message'] . "\n\n";
                             }//if_no_error
-                        }else {
-                            /* Log  */
-                            $dblog  .= "RESPONSE NOT VALID " . "\n\n";
                         }//if_response
                     }//if_toSynchronize
                 }//for
