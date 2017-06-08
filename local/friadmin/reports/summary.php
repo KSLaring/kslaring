@@ -27,6 +27,7 @@
 require_once( '../../../config.php');
 require_once( 'forms/rpt_forms.php');
 require_once( 'lib/categoryrptlib.php');
+require_once($CFG->dirroot . '/lib/excellib.class.php');
 
 // Params!
 require_login();
@@ -52,18 +53,13 @@ $noresults = null;
 if ($mform->is_cancelled()) {
     redirect($CFG->wwwroot);
 } else if ($fromform = $mform->get_data()) {
-    $category = $fromform->category;
-    $coursesdata = friadminrpt::get_course_summary_data($category, $fromform->selsummaryfrom, $fromform->selsummaryto);
+    $coursesdata = friadminrpt::get_course_summary_data($fromform);
 
-    if ($coursesdata) {
-        ob_end_clean();
-        friadminrpt::download_participants_list($coursesdata, $fromform->selsummaryfrom, $fromform->selsummaryto, $category);
+    // Download file
+    ob_end_clean();
+    friadminrpt::download_participants_list($coursesdata, $fromform);
 
-        die;
-    } else {
-        // No results.
-        $noresults = get_string('noresults', 'local_friadmin');
-    }
+    die;
 }
 
 // Print Header!
@@ -71,7 +67,6 @@ echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('summaryheading', 'local_friadmin'));
 
 $mform->display();
-echo $noresults;
 
 // Print Footer!
 echo $OUTPUT->footer();

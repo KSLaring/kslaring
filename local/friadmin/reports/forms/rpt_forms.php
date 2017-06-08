@@ -29,6 +29,8 @@ class summary_form extends moodleform {
         $mform->addElement('select', 'category', get_string('category', 'local_friadmin'), $categorylist);
         $mform->addRule('category', null, 'required');
         $mform->setDefault('category', $categorylist[0]);
+        $mform->addRule('category', get_string('required'), 'required', 'nonzero', 'client');
+        $mform->addRule('category', get_string('required'), 'nonzero', null, 'client');
 
         // From.
         $mform->addElement('date_selector', 'selsummaryfrom', get_string('summaryfrom', 'local_friadmin'),
@@ -46,7 +48,7 @@ class summary_form extends moodleform {
 
     public function validation($data, $files) {
         $errors = parent::validation($data, $files);
-        $date = getdate();
+        $date = time();
 
         // The selected dates.
         $fromdate = $data['selsummaryfrom'];
@@ -55,6 +57,7 @@ class summary_form extends moodleform {
         // The selected dates rounded.
         $fromdaterounded = $fromdate + ($fromdate % 86400);
         $todaterounded = $todate + ($todate % 86400);
+
 
         // Variables for the years (0 for normal year and 1 for leap year).
         $yearbetween = $fromdate + (60 * 60 * 24 * 365);
@@ -74,18 +77,16 @@ class summary_form extends moodleform {
         }
 
         // Checks the data.
-        if ($data['selsummaryfrom'] > $data['selsummaryto']) {
-            $errors['selsummaryfrom'] = get_string('biggerthanto', 'local_friadmin');
-            $errors['selsummaryto'] = get_string('smallerthanfrom', 'local_friadmin');
-        } else if ($data['selsummaryfrom'] > $date) {
+        if ($data['selsummaryfrom'] > $date) {
+            // Not bigger than the present day
             $errors['selsummaryfrom'] = get_string('biggerthannow', 'local_friadmin');
-        } else if ($todaterounded - $fromdaterounded > $twoyearsrounded) {
+        }else if ($data['selsummaryfrom'] > $data['selsummaryto']){
+            // From cannot be bigger thant to
+            $errors['selsummaryfrom'] = get_string('biggerthanto', 'local_friadmin');
+        }else if ($todaterounded - $fromdaterounded > $twoyearsrounded) {
             $errors['selsummaryfrom'] = get_string('morethantwoyears', 'local_friadmin');
         }
 
-        if ($data['category'] == '0') {
-            $errors['category'] = 'You need to select a category';
-        }
         return $errors;
     }
 } // end summary_form
@@ -103,6 +104,8 @@ class course_instructor_form extends moodleform {
         // Category.
         $mform->addElement('select', 'category', get_string('category', 'local_friadmin'), $categorylist);
         $mform->addRule('category', null, 'required');
+        $mform->addRule('category', get_string('required'), 'required', 'nonzero', 'client');
+        $mform->addRule('category', get_string('required'), 'nonzero', null, 'client');
 
         // Course.
         $mform->addElement('select', 'course', get_string('course', 'local_friadmin'), $courses);
@@ -138,9 +141,6 @@ class course_instructor_form extends moodleform {
     public function validation($data, $files) {
         $errors = parent::validation($data, $files);
 
-        if ($data['category'] == '0') {
-            $errors['category'] = 'You need to select a category';
-        }
 
         return $errors;
     }
@@ -160,6 +160,8 @@ class course_coordinator_form extends moodleform {
         // Category.
         $mform->addElement('select', 'category', get_string('category', 'local_friadmin'), $categorylist);
         $mform->addRule('category', null, 'required');
+        $mform->addRule('category', get_string('required'), 'required', 'nonzero', 'client');
+        $mform->addRule('category', get_string('required'), 'nonzero', null, 'client');
 
         // Course.
         $mform->addElement('select', 'course', get_string('course', 'local_friadmin'), $courses);
@@ -194,10 +196,6 @@ class course_coordinator_form extends moodleform {
 
     public function validation($data, $files) {
         $errors = parent::validation($data, $files);
-
-        if ($data['category'] == '0') {
-            $errors['category'] = 'You need to select a category';
-        }
 
         return $errors;
     }

@@ -27,18 +27,17 @@
 require_once( '../../../config.php');
 require_once( 'forms/rpt_forms.php');
 require_once( 'lib/categoryrptlib.php');
+require_once($CFG->dirroot . '/lib/excellib.class.php');
 
-// Params!
 require_login();
 
 // Variables!
-$contextsystem  = context_system::instance();
-$CFG->wwwroot;
-$noresults = null;
+global $CFG,$PAGE,$OUTPUT;
+$contextsystem      = context_system::instance();
+$coursescoordinator = null;
+$url                = new moodle_url('/local/friadmin/reports/coordinator.php');
 
-// Startpage!
-$url = new moodle_url('/local/friadmin/reports/coordinator.php');
-
+// Start page
 $PAGE->set_url($url);
 $PAGE->set_pagelayout('admin');
 $PAGE->set_context($contextsystem);
@@ -56,26 +55,14 @@ friadminrpt::get_javascript_values('course', 'category', null);
 if ($mform->is_cancelled()) {
     redirect($CFG->wwwroot);
 } else if ($fromform = $mform->get_data()) {
+    // Get course with coordinators
+    $coursescoordinator = friadminrpt::get_courses_with_coordinator($fromform);
 
-    $coordinatorsinfo = friadminrpt::get_course_coordinator_data($fromform->course, $fromform->category);
+    // Download file
+    ob_end_clean();
+    friadminrpt::download_participants_list_coordinator($coursescoordinator,$fromform);
 
-    if ($coordinatorsinfo) {
-        ob_end_clean();
-        friadminrpt::download_participants_list_coordinator(
-            $coordinatorsinfo,
-            $fromform->category,
-            $fromform->course,
-            $fromform->userfullname,
-            $fromform->username,
-            $fromform->useremail,
-            $fromform->userworkplace,
-            $fromform->userjobrole);
-
-        die;
-    } else {
-        // No results.
-        $noresults = get_string('noresults', 'local_friadmin');
-    }
+    die;
 }
 
 // Print Header!
@@ -83,7 +70,6 @@ echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('coordinatorheading', 'local_friadmin'));
 
 $mform->display();
-echo $noresults;
 
 // Print Footer!
 echo $OUTPUT->footer();

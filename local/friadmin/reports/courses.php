@@ -45,7 +45,8 @@ require_sesskey();
 
 $courselst = friadminrpt::get_courses_js($category);
 
-$data = array('courses' => array());
+$data   = array('courses' => array());
+$courses = array();
 
 if ($courselst) {
     foreach ($courselst as $infocourse) {
@@ -53,9 +54,10 @@ if ($courselst) {
         $info->id = $infocourse->id;
         $info->name = $infocourse->fullname;
 
-        $data['courses'][$info->id] = $info;
+        $courses[$info->id] = $info;
     }
 }
 
+$data['courses'] = $courses;
 $json[] = $data;
 echo json_encode(array('results' => $json));

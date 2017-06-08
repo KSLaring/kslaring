@@ -304,6 +304,7 @@ $string['usercompetance'] = 'Competance';
 
 $string['producer'] = 'Producer';
 $string['levelone'] = 'Level one';
+$string['kommune']  = 'Municipality';
 $string['sector'] = 'Sector';
 $string['coordinator'] = 'Coordinator';
 $string['spots'] = 'Available seats';

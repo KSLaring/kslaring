@@ -107,8 +107,11 @@ M.core_user.init_courses = function (Y, course, category) {
                 for (indexCourse in lstCourses) {
                     info = lstCourses[indexCourse];
                     var option = Y.Node.create('<option value="' + info.id + '">' + info.name + '</option>');
-                    Y.one('#id_course').append(option);
+                    this.course.append(option);
                 }
+
+                /* Mark selected    */
+                this.course.set('selectedIndex',0);
             }
         },
 
