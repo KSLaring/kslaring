@@ -1,9 +1,24 @@
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 /**
  * Report Competence Manager - Java Script - Company Structure Selector - Course Report
  *
  * @package         report
  * @subpackage      manager/course_report/js
  * @copyright       2013    eFaktor {@link http://www.efaktor.no}
+ * @license         http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
  * @creationDate    27/10/2015
  * @author          eFaktor     (fbv)
@@ -31,16 +46,16 @@ var level_structure = {
 
     // Level zero selector
     levelZero   : Y.one('#id_' + name + '0') || null,
-    hZero   : Y.one('#id_h0') || null,
+    hZero       : Y.one('#id_h0') || null,
     // Level one selector
     levelOne    : Y.one('#id_' + name + '1') || null,
-    hOne   : Y.one('#id_h1') || null,
+    hOne        : Y.one('#id_h1') || null,
     // Level two selector
     levelTwo    : Y.one('#id_' + name + '2') || null,
-    hTwo   : Y.one('#id_h2') || null,
+    hTwo        : Y.one('#id_h2') || null,
     // Level three selector
     levelThree  : Y.one('#id_' + name + '3') || null,
-    hThree   : Y.one('#id_h3') || null,
+    hThree      : Y.one('#id_h3') || null,
 
     // Job roles selector
     jobRoleLst : Y.one('#id_' + jr_selector),
@@ -302,7 +317,7 @@ var level_structure = {
         }//if_levelThree
 
         this.hThree.set('value',valueThree);
-        
+
         var iotrans = Y.io(M.cfg.wwwroot + '/report/manager/jobrole.php',
             {
                 method: 'POST',
