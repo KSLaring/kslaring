@@ -176,6 +176,11 @@ class format_classroom extends format_base {
     public function page_set_course(moodle_page $page) {
         global $USER, $FULLME, $ME;
 
+        // No specific changes if a file shall be downloaded.
+        if (strpos($ME, 'forcedownload=1') !== false) {
+            return;
+        }
+
         if (is_null($this->openlast)) {
             $this->openlast = new format_classroom_openlast($page,
                 $page->course, $USER, $FULLME);
@@ -556,6 +561,7 @@ class format_classroom extends format_base {
      *
      *
      * @param               bool    $foreditform
+     *
      * @return                      array
      *
      * @updateDate      14/05/2014
@@ -594,6 +600,10 @@ class format_classroom extends format_base {
      *
      * Description
      * From - To date
+     *
+     * @updateDate      09/06/2017
+     * @author          eFaktor     (fbv)
+     * Location/sector not available for the manager --> Readonly
      */
     public function course_format_options($foreditform = false) {
         /* Variables    */
@@ -601,6 +611,8 @@ class format_classroom extends format_base {
         $lstLocations   = null;
         $lstSectors     = null;
         $location       = null;
+        $assigned       = null;
+        $readonly       = null;
 
         /**
          * @updateDate  08/05/2015
@@ -610,6 +622,19 @@ class format_classroom extends format_base {
          * Get the available locations for the course
          */
         $lstLocations = course_page::get_course_locations_list($USER->id);
+        // Get locations already assigned by other managers
+        $assigned       = course_page::get_course_location_assigned($COURSE->id);
+        // Check if it belongs to the present user or not
+        if ($assigned) {
+            if (!array_key_exists($assigned->id,$lstLocations)) {
+                $lstLocations[$assigned->id] = $assigned->name;
+                $readonly = 'readonly';
+            }else {
+                $readonly = '';
+            }//if_Exists
+        }else {
+            $readonly = '';
+        }//if_assigned
 
         /**
          * @updateDate  08/05/2015
@@ -778,12 +803,12 @@ class format_classroom extends format_base {
                 'course_location' => array(
                     'label' => get_string('home_location', 'format_classroom'),
                     'element_type' => 'select',
-                    'element_attributes' => array($lstLocations)
+                    'element_attributes' => array($lstLocations,$readonly)
                 ),
                 'course_sector' => array(
                     'label' => get_string('home_sector', 'format_classroom'),
                     'element_type' => 'select',
-                    'element_attributes' => array($lstSectors,'multiple')
+                    'element_attributes' => array($lstSectors, 'multiple ' . $readonly)
                 ),
                 'time'          => array(
                     'label'                 => get_string('home_time_from_to','format_classroom'),
@@ -1274,9 +1299,19 @@ class format_classroom extends format_base {
 
         if (!is_null($cm)) {
             if ($cm->modname === 'lesson') {
-                global $pageid, $USER, $lesson, $lessonoutput;
+                global $fullme, $pageid, $USER, $lesson, $lessonoutput;
 
-                // hack: page->cm is null in this state, add it here.
+                // Don't need the following information for the lessonexport.
+                if (!empty($fullme) && strpos($fullme, 'lessonexport') !== false) {
+                    return $retval;
+                }
+
+                // If no lesson page is set we don't need the following information.
+                if (is_null($pageid)) {
+                    return $retval;
+                }
+
+                // Hack: page->cm is null in this state, add it here.
                 $PAGE->set_cm($cm);
 
                 // Get the lesson library with the lesson class and create a new instance
@@ -1304,7 +1339,9 @@ class format_classroom extends format_base {
                 // and force the progressbar off to avoid the lesson's own progressbar
                 // at the bottom of the lesson page. The progressbar will be rendered
                 // independent of the lesson settings.
+                if (!empty($lesson->pages)) {
                 $lesson->properties()->progressbar = 1;
+                }
 
                 // The lesson page with the pageid -9 is the last lesson page
                 // On the last page force the progress bar to 100% which happens when
@@ -1312,7 +1349,7 @@ class format_classroom extends format_base {
                 $showgrades = $PAGE->course->showgrades;
                 $actualpageid = null;
                 $nextpage = $lesson->get_next_page($pageid);
-                // Force the progress bar to 100%
+                // Force the progress bar to 100%.
                 if ($pageid === -9) {
                     if (!isset($USER->modattempts[$lesson->id])) {
                         $USER->modattempts[$lesson->id] = true;
@@ -1585,7 +1622,8 @@ EOT;
 
         // Get the current course nodes and extract the course node collection
         // The current course has only one collection, can be fetched with "last".
-        $thiscourse_navigation = $course_navigation->get("currentcourse");
+        // $thiscourse_navigation = $course_navigation->get("currentcourse");
+        $thiscourse_navigation = clone($course_navigation->get("currentcourse"));
 
         // Return null if the currentcourse has no navigation items.
         if (empty($thiscourse_navigation->children)) {

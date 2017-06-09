@@ -1,10 +1,25 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 /**
  * Course Template - Edit Course Settings
  *
  * @package         local
  * @subpackage      friadmin/course_template
  * @copyright       2014        eFaktor {@link http://www.efaktor.no}
+ * @license         http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
  * @creationDate    07/01/2016
  * @author          eFaktor     (fbv)
@@ -154,6 +169,8 @@ class ct_settings_form extends moodleform {
      */
     function AddCourseFormat(&$form,$option,$value,$format,$courseId) {
         global $USER;
+        $assigned       = null;
+        $readonly       = null;
 
         $str_format = 'format_' . $format;
         switch ($option) {
@@ -245,15 +262,41 @@ class ct_settings_form extends moodleform {
 
             case 'course_location':
                 $lstLocations = course_page::get_course_locations_list($USER->id);
-                $form->addElement('select','course_location',get_string('home_location',$str_format),$lstLocations);
+                // Get locations already assigned by other managers
+                $assigned       = course_page::get_course_location_assigned($courseId);
+                // Check if it belongs to the present user or not
+                if ($assigned) {
+                    if (!array_key_exists($assigned->id,$lstLocations)) {
+                        $lstLocations[$assigned->id] = $assigned->name;
+                        $readonly = 'readonly';
+                    }else {
+                        $readonly = '';
+                    }//if_Exists
+                }else {
+                    $readonly = '';
+                }//if_assigned
+                $form->addElement('select','course_location',get_string('home_location',$str_format),$lstLocations,$readonly);
                 $form->setDefault('course_location',$value);
 
                 break;
 
             case 'course_sector':
-                $location = course_page::get_course_location($courseId);
-                $lstSectors     = course_page::get_sectors_locations_list($location);
-                $form->addElement('select','course_sector',get_string('home_sector',$str_format),$lstSectors,'multiple');
+                $lstLocations = course_page::get_course_locations_list($USER->id);
+                // Get locations already assigned by other managers
+                $assigned       = course_page::get_course_location_assigned($courseId);
+                // Check if it belongs to the present user or not
+                if ($assigned) {
+                    if (!array_key_exists($assigned->id,$lstLocations)) {
+                        $lstLocations[$assigned->id] = $assigned->name;
+                        $readonly = 'readonly';
+                    }else {
+                        $readonly = '';
+                    }//if_Exists
+                }else {
+                    $readonly = '';
+                }//if_assigned
+                $lstSectors     = course_page::get_sectors_locations_list($assigned->id);
+                $form->addElement('select','course_sector',get_string('home_sector',$str_format),$lstSectors,'multiple ' . $readonly);
                 $form->setDefault('course_sector',$value);
 
                 break;

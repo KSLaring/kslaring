@@ -23,6 +23,7 @@
  * @package             course/format
  * @subpackage          classroom_frikomport/lang
  * @copyright           2010 eFaktor
+ * @license             http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
  * @creationDate        20/04/2015
  * @author              eFaktor     (fbv)

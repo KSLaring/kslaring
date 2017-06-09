@@ -278,3 +278,95 @@ $string['body_uninstructor'] = '<p>We would like to inform you that you have jus
 $string['notemplate']        = 'None';
 $string['courseformats']     = 'Course template list';
 $string['courseformatsdesc'] = 'The course list. Please select the course formats that may be used as templates.';
+
+$string['summaryfrom']  = 'From:';
+$string['summaryto']    = 'To:';
+$string['selectone']    = "Select one...";
+$string['download']     = 'Download';
+$string['category']     = 'Category';
+$string['course']       = 'Course';
+
+$string['summaryheading']       = 'Course Summary report';
+$string['instructorheading']    = 'Course Instructor report';
+$string['coordinatorheading']   = 'Course Coordinator report';
+
+$string['biggerthanto']     = 'The selected from-date can not be bigger than the selected to-date';
+$string['smallerthanfrom']  = 'The selected to-date can not be smaller than the selected from-date';
+$string['biggerthannow']    = 'The selected date can not be bigger than the current date';
+$string['morethantwoyears'] = 'The difference between the dates can not be more than 2 years';
+
+$string['header_instructorsfilter'] = 'Instructors filter';
+$string['header_coordinatorfilter'] = 'Coordinator filter';
+
+$string['userfullname'] = 'User full name';
+$string['username'] = 'Username';
+$string['useremail'] = 'eMail';
+$string['usercompetance'] = 'Competance';
+
+$string['producer'] = 'Producer';
+$string['levelone'] = 'Level one';
+$string['kommune']  = 'Municipality';
+$string['sector'] = 'Sector';
+$string['coordinator'] = 'Coordinator';
+$string['spots'] = 'Available seats';
+$string['prices'] = 'Prices';
+$string['instructors'] = 'Instructors';
+$string['students'] = 'Students';
+$string['waitinglist'] = 'Waitinglist';
+$string['completed'] = 'Completed';
+$string['visible'] = 'Visibility';
+$string['expiration'] = 'Expiration';
+
+$string['courselong'] = 'Course fullname';
+$string['courseshort'] = 'Course shortname';
+$string['courseformat'] = 'Format';
+$string['internalprice'] = 'Internal price';
+$string['externalprice'] = 'External price';
+$string['nexttab'] = 'Click the next tab to see all the raw data';
+$string['from'] = 'From';
+$string['to'] = 'To';
+$string['fromto'] = 'From - To';
+$string['dates'] = 'Dates';
+$string['coursecoordinator'] = 'Coordinator';
+$string['numberofdays'] = 'Number of days';
+
+$string['yes'] = 'Yes';
+$string['no'] = 'No';
+
+$string['instructorname'] = 'Instructor name';
+$string['coordinatorname'] = 'Coordinator name';
+$string['coursename'] = 'Course name';
+
+$string['userworkplace'] = 'Workplace';
+$string['userjobrole'] = 'Job Role';
+
+$string['noresults'] = 'No results';
+
+$string['summaryrptexcel'] = 'Summary Report';
+$string['coordinatorexcel'] = 'Coordinator Report';
+$string['instructorexcel'] = 'Instructor Report';
+$string['categoryexcel'] = 'Category';
+$string['courseexcel'] = 'Course';
+$string['fromexcel'] = 'From';
+$string['toexcel'] = 'To';
+$string['courseexcel'] = 'Course';
+$string['fullnameexcel'] = 'Users Fullname';
+$string['usernameexcel'] = 'Username';
+$string['emailexcel'] = 'Email';
+$string['workplaceexcel'] = 'Workplace';
+$string['jobroleexcel'] = 'Jobrole';
+
+$string['participantslistsummary'] = 'Participants_List_Summary_';
+$string['participantslistinstructors'] = 'Participants_List_Instructors_';
+$string['participantslistcoordinators'] = 'Participants_List_Coordinators_';
+
+$string['filter'] = 'Filter';
+$string['content'] = 'Content';
+
+$string['courselocation'] = 'Course Location';
+
+$string['download_one_location'] = 'Download one location';
+$string['download_all_locations'] = 'Download all locations';
+
+$string['alllocations'] = 'All_courses_in_';
+$string['onelocation'] = 'Courses_in_';
