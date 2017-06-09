@@ -108,6 +108,7 @@ $string['selprefnetcoursetemplatelabel']    = 'Foretrukket nettkursmal';
 $string['selprefnetcoursetemplatedesc']     = 'Vennligst velg din foretrukne nettkursmal.';
 $string['selmysetingssave']                 = 'Lagre innstillinger';
 $string['missinglocaltempcategory']         = 'Din valgte kurskategori for kursmaler finnes ikke. Vennligst velg en annen kurskategori for dine kursmaler i <a href="{$a}">Mine innstillinger</a> i Kursveiviseren.';
+$string['selbtntext']                       = 'Endre';
 
 $string['locationline']         = 'Hvor: ';
 $string['fromto']               = 'Fra - til: ';
@@ -362,3 +363,16 @@ $string['download_all_locations'] = 'Download all locations';
 
 $string['alllocations'] = 'All_courses_in_';
 $string['onelocation'] = 'Courses_in_';
+
+$string['classroom']            = 'Arrangementsformat';
+$string['classroom_frikomport'] = 'Enkelt arrangementsformat';
+$string['netcourse']            = 'Nettkursformat';
+$string['netcourse_frikomport'] = 'Enkelt nettkursformat';
+$string['topcoll']              = 'Collapsed topics';
+$string['single_frikomport']    = 'Enkeltelementsformat';
+$string['singleactivity']       = 'Enkeltelementsformat';
+$string['whitepaper']           = 'white paper';
+$string['topics']               = 'Emneformat';
+$string['grid']                 = 'Rutenettformat';
+$string['weeks']                = 'weeks';
+$string['social']               = 'social';

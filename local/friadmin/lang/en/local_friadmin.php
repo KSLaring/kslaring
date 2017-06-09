@@ -113,6 +113,7 @@ $string['selmysetingssave']                 = 'Save settings';
 $string['missinglocaltempcategory']         = 'Your selected course template forlder is missing. 
 Please select a new folder for your course templates in <a href="{$a}">My settings</a> 
 in the Course wizard.';
+$string['selbtntext']                       = 'Edit';
 
 $string['locationline']         = 'Location: ';
 $string['fromto']               = 'From - to: ';
@@ -369,3 +370,17 @@ $string['download_all_locations'] = 'Download all locations';
 
 $string['alllocations'] = 'All_courses_in_';
 $string['onelocation'] = 'Courses_in_';
+
+$string['classroom']            = 'classroom';
+$string['classroom_frikomport'] = 'single arrangement';
+$string['netcourse']            = 'netcourse';
+$string['netcourse_frikomport'] = 'single netcourse';
+$string['topcoll']              = 'Collapsed topics';
+$string['single_frikomport']    = 'single activity';
+$string['singleactivity']       = 'single activity';
+$string['whitepaper']           = 'white paper';
+$string['topics']               = 'topics';
+$string['grid']                 = 'grid';
+$string['weeks']                = 'weeks';
+$string['social']               = 'social';
+
