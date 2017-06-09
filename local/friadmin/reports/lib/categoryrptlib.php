@@ -1862,7 +1862,9 @@ class friadminrpt
 
                 // Course format.
                 $col ++;
-                $myxls->write($row, $col, get_string($course->courseformat,'local_friadmin'), array('size' => 12, 'name' => 'Arial', 'text_wrap' => true,'v_align' => 'left'));
+                $format = (get_string_manager()->string_exists($course->courseformat,'local_admin')
+                            ? get_string($course->courseformat,'local_friadmin') : $course->courseformat);
+                $myxls->write($row, $col, $format, array('size' => 12, 'name' => 'Arial', 'text_wrap' => true,'v_align' => 'left'));
                 $myxls->merge_cells($row, $col, $row, $col);
                 $myxls->set_row($row,$h);
                 $myxls->set_column($col,$col,$ws);
@@ -2299,7 +2301,9 @@ class friadminrpt
 
                 // Course format.
                 $col ++;
-                $myxls->write($row, $col, get_string($course->courseformat,'local_friadmin'), array('size' => 12, 'name' => 'Arial', 'text_wrap' => true, 'v_align' => 'left'));
+                $format = (get_string_manager()->string_exists($course->courseformat,'local_admin')
+                            ? get_string($course->courseformat,'local_friadmin') : $course->courseformat);
+                $myxls->write($row, $col, $format, array('size' => 12, 'name' => 'Arial', 'text_wrap' => true, 'v_align' => 'left'));
                 $myxls->merge_cells($row, $col, $row, $col);
                 $myxls->set_row($row, $h);
                 $myxls->set_column($col,$col,$ws);
@@ -2633,7 +2637,9 @@ class friadminrpt
 
                 // Course format.
                 $col ++;
-                $myxls->write($row, $col, get_string($course->courseformat,'local_friadmin'), array('size' => 12, 'name' => 'Arial', 'text_wrap' => true, 'v_align' => 'left'));
+                $format = (get_string_manager()->string_exists($course->courseformat,'local_admin')
+                            ? get_string($course->courseformat,'local_friadmin') : $course->courseformat);
+                $myxls->write($row, $col, $format, array('size' => 12, 'name' => 'Arial', 'text_wrap' => true, 'v_align' => 'left'));
                 $myxls->merge_cells($row, $col, $row, $col);
                 $myxls->set_row($row, $h);
                 $myxls->set_column($col,$col,$ws);
