@@ -600,13 +600,19 @@ class format_classroom extends format_base {
      *
      * Description
      * From - To date
+     *
+     * @updateDate      09/06/2017
+     * @author          eFaktor     (fbv)
+     * Location/sector not available for the manager --> Readonly
      */
     public function course_format_options($foreditform = false) {
         /* Variables    */
         global $USER, $COURSE;
-        $lstLocations = null;
-        $lstSectors = null;
-        $location = null;
+        $lstLocations   = null;
+        $lstSectors     = null;
+        $location       = null;
+        $assigned       = null;
+        $readonly       = null;
 
         /**
          * @updateDate  08/05/2015
@@ -615,7 +621,20 @@ class format_classroom extends format_base {
          * Description
          * Get the available locations for the course
          */
-        $lstLocations = course_page::get_course_locations_list($USER->id);
+        $lstLocations   = course_page::get_course_locations_list($USER->id);
+        // Get locations already assigned by other managers
+        $assigned       = course_page::get_course_location_assigned($COURSE->id);
+        // Check if it belongs to the present user or not
+        if ($assigned) {
+            if (!array_key_exists($assigned->id,$lstLocations)) {
+                $lstLocations[$assigned->id] = $assigned->name;
+                $readonly = 'readonly';
+            }else {
+                $readonly = '';
+            }//if_Exists
+        }else {
+            $readonly = '';
+        }//if_assigned
 
         /**
          * @updateDate  08/05/2015
@@ -784,12 +803,12 @@ class format_classroom extends format_base {
                 'course_location' => array(
                     'label' => get_string('home_location', 'format_classroom'),
                     'element_type' => 'select',
-                    'element_attributes' => array($lstLocations)
+                    'element_attributes' => array($lstLocations,$readonly)
                 ),
                 'course_sector' => array(
                     'label' => get_string('home_sector', 'format_classroom'),
                     'element_type' => 'select',
-                    'element_attributes' => array($lstSectors, 'multiple')
+                    'element_attributes' => array($lstSectors, 'multiple ' . $readonly)
                 ),
                 'time' => array(
                     'label' => get_string('home_time_from_to', 'format_classroom'),
