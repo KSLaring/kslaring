@@ -1862,7 +1862,7 @@ class friadminrpt
 
                 // Course format.
                 $col ++;
-                $myxls->write($row, $col, $course->courseformat, array('size' => 12, 'name' => 'Arial', 'text_wrap' => true,'v_align' => 'left'));
+                $myxls->write($row, $col, get_string($course->courseformat,'local_friadmin'), array('size' => 12, 'name' => 'Arial', 'text_wrap' => true,'v_align' => 'left'));
                 $myxls->merge_cells($row, $col, $row, $col);
                 $myxls->set_row($row,$h);
                 $myxls->set_column($col,$col,$ws);
@@ -2299,7 +2299,7 @@ class friadminrpt
 
                 // Course format.
                 $col ++;
-                $myxls->write($row, $col, $course->courseformat, array('size' => 12, 'name' => 'Arial', 'text_wrap' => true, 'v_align' => 'left'));
+                $myxls->write($row, $col, get_string($course->courseformat,'local_friadmin'), array('size' => 12, 'name' => 'Arial', 'text_wrap' => true, 'v_align' => 'left'));
                 $myxls->merge_cells($row, $col, $row, $col);
                 $myxls->set_row($row, $h);
                 $myxls->set_column($col,$col,$ws);
@@ -2633,7 +2633,7 @@ class friadminrpt
 
                 // Course format.
                 $col ++;
-                $myxls->write($row, $col, $course->courseformat, array('size' => 12, 'name' => 'Arial', 'text_wrap' => true, 'v_align' => 'left'));
+                $myxls->write($row, $col, get_string($course->courseformat,'local_friadmin'), array('size' => 12, 'name' => 'Arial', 'text_wrap' => true, 'v_align' => 'left'));
                 $myxls->merge_cells($row, $col, $row, $col);
                 $myxls->set_row($row, $h);
                 $myxls->set_column($col,$col,$ws);

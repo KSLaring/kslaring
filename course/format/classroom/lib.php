@@ -1106,8 +1106,7 @@ class format_classroom extends format_base {
 
         if (!($PAGE->pagetype === 'course-view-classroom' ||
             $PAGE->pagetype === 'local-course_page-home_page' ||
-            strpos($PAGE->pagetype, 'mod-') !== false)
-        ) {
+            strpos($PAGE->pagetype, 'mod-') !== false)) {
             return new format_classroom_specialnav('');
         }
 
