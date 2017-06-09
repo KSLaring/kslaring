@@ -363,3 +363,16 @@ $string['download_all_locations'] = 'Download all locations';
 
 $string['alllocations'] = 'All_courses_in_';
 $string['onelocation'] = 'Courses_in_';
+
+$string['classroom']            = 'Arrangementsformat';
+$string['classroom_frikomport'] = 'Enkelt arrangementsformat';
+$string['netcourse']            = 'Nettkursformat';
+$string['elearning_frikomport'] = 'Enkelt nettkursformat';
+$string['topcoll']              = 'Collapsed topics';
+$string['single_frikomport']    = 'Enkeltelementsformat';
+$string['singleactivity']       = 'Enkeltelementsformat';
+$string['whitepaper']           = 'white paper';
+$string['topics']               = 'Emneformat';
+$string['grid']                 = 'Rutenettformat';
+$string['weeks']                = 'weeks';
+$string['social']               = 'social';

@@ -59,3 +59,9 @@ $string['nparticipants']    = 'Participants list';
 $string['nwaitlist']        = 'Wait list';
 $string['ncompcourses']     = 'Completed courses';
 $string['nstatistics']      = 'Statistics';
+
+$string['summaryrpt']       = 'Course summary report';
+$string['instructorrpt']    = 'Course Instructor report';
+$string['coordinatorrpt']   = 'Course Coordinator report';
+
+$string['exceldl'] = 'Reports';
