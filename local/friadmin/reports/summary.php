@@ -13,15 +13,17 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
-
 /**
- * The friadmin reports index page - shows the course summary
+ * Friadmin - Category reports (Summary report)
  *
- * @package         local
- * @subpackage      friadmin
- * @copyright       2017 eFaktor
- * @author          Nicolai A. Samuelsen
+ * @package         local/friadmin
+ * @subpackage      reports
+ * @copyright       2012        eFaktor {@link http://www.efaktor.no}
  * @license         http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ *
+ * @creationDate    01/04/2017  (nas)
+ * @author          eFaktor
+ *
  */
 
 require_once( '../../../config.php');

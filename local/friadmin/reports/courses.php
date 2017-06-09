@@ -13,16 +13,18 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
-//
-// * Friadmin(local) - courses
-// *
-// * @package         local                                                 !
-// * @subpackage      friadmin/reports                                      !
-// * @copyright       2017        eFaktor {@link http://www.efaktor.no}     !
-// *                                                                        !
-// * @updateDate      20/01/2017                                            !
-// * @author          eFaktor     (nas)                                     !
-
+/**
+ * Friadmin - Category reports (Courses search)
+ *
+ * @package         local/friadmin
+ * @subpackage      reports
+ * @copyright       2012        eFaktor {@link http://www.efaktor.no}
+ * @license         http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ *
+ * @creationDate    01/04/2017  (nas)
+ * @author          eFaktor
+ *
+ */
 define('AJAX_SCRIPT', true);
 
 require_once('../../../config.php');

@@ -13,6 +13,18 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+/**
+ * Friadmin - Category reports (Forms)
+ *
+ * @package         local/friadmin
+ * @subpackage      reports/forms
+ * @copyright       2012        eFaktor {@link http://www.efaktor.no}
+ * @license         http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ *
+ * @creationDate    01/04/2017
+ * @author          eFaktor    (nas)
+ *
+ */
 
 defined('MOODLE_INTERNAL') || die();
 
