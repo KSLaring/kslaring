@@ -330,7 +330,7 @@ class suspicious {
                 }//for_notify
 
                 // Update notifications as sent
-                self::update_as_sent($notifications,$plugin,$remainder);
+                //self::update_as_sent($notifications,$plugin,$remainder);
             }//if_notifications
         }catch (Exception $ex) {
             throw $ex;
