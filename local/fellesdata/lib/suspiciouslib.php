@@ -325,9 +325,10 @@ class suspicious {
                     // End body message
                     $strBodyEnd = (string)new lang_string('body_suspicious_end','local_fellesdata',null,$infoUser->lang);
                     $strBody .= $strMiddle . $strBodyEnd;
+                    $strBody .= 'SKIP THIS MESSAGE. I AM PAQUI AND I AM TESTING MANUALLY';
 
                     // Send notification
-                    //email_to_user($infoUser, $SITE->shortname, $strSubject, $strBody, $strBody);
+                    email_to_user($infoUser, $SITE->shortname, $strSubject, $strBody, $strBody);
 
                     echo "NOTIFY TO --> " . $to . "</br>" . $strBody . "</br>";
                 }//for_notify

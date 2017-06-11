@@ -576,11 +576,11 @@ class FELLESDATA_CRON {
             // Send suspicious notifications
             if ($pluginInfo->suspicious_path) {
                 // Send Notifications
-                //suspicious::send_suspicious_notifications($pluginInfo);
+                suspicious::send_suspicious_notifications($pluginInfo);
                 $dblog .= 'SEND SUSPICIOUS NOTIFICATIONS ' . "\n";
 
                 // Send Reminder
-                //suspicious::send_suspicious_notifications($pluginInfo,true);
+                suspicious::send_suspicious_notifications($pluginInfo,true);
                 $dblog .= 'SEND SUSPICIOUS REMAINDER NOTIFICATIONS ' . "\n";
             }//suspicious_path
 
