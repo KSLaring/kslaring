@@ -318,7 +318,7 @@ class suspicious {
                         //$notify->reject  = '<a href="' . $notify->reject . '">' . (string)new lang_string('reject','local_fellesdata',null,$infoUser->lang) . '</a>';
 
                         // Build body message
-                        //$strMiddle .= (string)new lang_string('body_suspicious_middle','local_fellesdata',$notify,$infoUser->lang);
+                        $strMiddle .= (string)new lang_string('body_suspicious_middle','local_fellesdata',$notify,$infoUser->lang);
                     }//notifications
 
                     // End body message
