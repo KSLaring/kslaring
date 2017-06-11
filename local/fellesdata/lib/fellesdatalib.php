@@ -147,11 +147,15 @@ class FS_CRON {
             // None to notify then send to the admin site
             if (!$notifyTo) {
                 $notifyTo = array();
-                $notifyTo[] = $admin;
+                $notifyTo[] = $admin->email;
             }//if_notify
 
             // All notifications with the right language
             foreach ($notifyTo as $to) {
+                // Clean variables
+                $strSubject = null;
+                $strBody    = null;
+                
                 $infoUser = get_complete_user_data('email',$to);
                 if (!$infoUser) {
                     $admin->email   = $to;
