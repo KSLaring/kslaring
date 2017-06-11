@@ -312,8 +312,8 @@ class suspicious {
                     // All suspicious files in the same email
                     foreach ($notifications as $notify) {
                         $aux = new stdClass();
-                        $aux->file = 'pepe';
-                        $aux->marked = 1;
+                        $aux->file      = $notify->file;
+                        $aux->marked    = $notify->marked;
                         // Links with the right language string
                         $aux->approve = "<a href='" . $notify->approve . "'>" . (string)new lang_string('approve','local_fellesdata',null,$infoUser->lang) . "</a>" ;
                         $aux->reject = "<a href='" . $notify->reject . "'>" . (string)new lang_string('reject','local_fellesdata',null,$infoUser->lang) . "</a>" ;
