@@ -283,11 +283,16 @@ class suspicious {
                 // None to notify then send to the admin site
                 if (!$notifyTo) {
                     $notifyTo = array();
-                    $notifyTo[] = $admin;
+                    $notifyTo[] = $admin->email;
                 }//if_notify
 
                 // All notifications with the right language
                 foreach ($notifyTo as $to) {
+                    //$strSubject = null;
+                    //$strBody    = null;
+                    //$strMiddle  = null;
+                    //$strBodyEnd = null;
+
                     $infoUser = get_complete_user_data('email',$to);
                     if (!$infoUser) {
                         $admin->email   = $to;
@@ -319,7 +324,9 @@ class suspicious {
                     $strBody .= $strMiddle . $strBodyEnd;
 
                     // Send notification
-                    email_to_user($infoUser, $SITE->shortname, $strSubject, $strBody, $strBody);
+                    //email_to_user($infoUser, $SITE->shortname, $strSubject, $strBody, $strBody);
+
+                    echo "NOTIFY TO --> " . $to . "</br>" . $strBody . "</br>";
                 }//for_notify
 
                 // Update notifications as sent

@@ -42,7 +42,7 @@ try {
            //echo "Sending suspicious notifications..." . "</br>";
 
             // Send Notifications
-            //suspicious::send_suspicious_notifications($pluginInfo);
+            suspicious::send_suspicious_notifications($pluginInfo);
             // Send Reminder
             //suspicious::send_suspicious_notifications($pluginInfo,true);
         }else {
