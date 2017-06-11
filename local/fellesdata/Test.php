@@ -37,12 +37,14 @@ try {
 
     if ($option) {
         if ($option == 20) {
-           //echo "Sending suspicious notifications..." . "</br>";
+            //$pathFile = $CFG->dataroot . '/fellesdata/' . TRADIS_FS_JOBROLES . '.txt';
+            //strlen($response);
+           echo "Sending suspicious notifications..." . "</br>";
 
             // Send Notifications
-            //suspicious::send_suspicious_notifications($pluginInfo);
+            suspicious::send_suspicious_notifications($pluginInfo);
             // Send Reminder
-            //suspicious::send_suspicious_notifications($pluginInfo,true);
+            suspicious::send_suspicious_notifications($pluginInfo,true);
         }else {
             $SESSION->manual = true;
             FELLESDATA_CRON::cron_manual(true,$option);

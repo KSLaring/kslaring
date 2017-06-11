@@ -283,11 +283,17 @@ class suspicious {
                 // None to notify then send to the admin site
                 if (!$notifyTo) {
                     $notifyTo = array();
-                    $notifyTo[] = $admin;
+                    $notifyTo[] = $admin->email;
                 }//if_notify
 
                 // All notifications with the right language
                 foreach ($notifyTo as $to) {
+                    // Cleaning variables
+                    $strSubject = null;
+                    $strBody    = null;
+                    $strMiddle  = null;
+                    $strBodyEnd = null;
+
                     $infoUser = get_complete_user_data('email',$to);
                     if (!$infoUser) {
                         $admin->email   = $to;
@@ -306,12 +312,16 @@ class suspicious {
 
                     // All suspicious files in the same email
                     foreach ($notifications as $notify) {
+                        // Info to send
+                        $aux = new stdClass();
+                        $aux->file      = $notify->file;
+                        $aux->marked    = $notify->marked;
                         // Links with the right language string
-                        $notify->approve = '<a href="' . $notify->approve . '">' . (string)new lang_string('approve','local_fellesdata',null,$infoUser->lang) . '</a>';
-                        $notify->reject  = '<a href="' . $notify->reject . '">' . (string)new lang_string('reject','local_fellesdata',null,$infoUser->lang) . '</a>';
+                        $aux->approve = "<a href='" . $notify->approve . "'>" . (string)new lang_string('approve','local_fellesdata',null,$infoUser->lang) . "</a>" ;
+                        $aux->reject = "<a href='" . $notify->reject . "'>" . (string)new lang_string('reject','local_fellesdata',null,$infoUser->lang) . "</a>" ;
 
                         // Build body message
-                        $strMiddle .= (string)new lang_string('body_suspicious_middle','local_fellesdata',$notify,$infoUser->lang);
+                        $strMiddle .= (string)new lang_string('body_suspicious_middle','local_fellesdata',$aux,$infoUser->lang);
                     }//notifications
 
                     // End body message
