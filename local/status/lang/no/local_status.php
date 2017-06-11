@@ -11,6 +11,6 @@
  *
  */
 
-$string['pluginname']           = 'Status fellesdata';
+$string['pluginname']           = 'TARDIS STATUS';
 
-$string['crontask']             = 'Status Fellesdata Tasks';
+$string['crontask']             = 'TARDIS STATUS CRON';
