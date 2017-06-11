@@ -313,9 +313,7 @@ class suspicious {
                     foreach ($notifications as $notify) {
                         // Links with the right language string
                         $notify->approve = "<a href='" . $notify->approve . "'>" . (string)new lang_string('approve','local_fellesdata',null,$infoUser->lang) . "</a>" ;
-
-                        //$notify->approve = '<a href="' . $notify->approve . '">' . (string)new lang_string('approve','local_fellesdata',null,$infoUser->lang) . '</a>';
-                        //$notify->reject  = '<a href="' . $notify->reject . '">' . (string)new lang_string('reject','local_fellesdata',null,$infoUser->lang) . '</a>';
+                        $notify->reject = "<a href='" . $notify->reject . "'>" . (string)new lang_string('reject','local_fellesdata',null,$infoUser->lang) . "</a>" ;
 
                         // Build body message
                         $strMiddle .= (string)new lang_string('body_suspicious_middle','local_fellesdata',$notify,$infoUser->lang);
