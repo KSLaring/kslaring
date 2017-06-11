@@ -113,7 +113,7 @@ $string['body_suspicious']              =   '<p>Det ser ut til at disse filene i
                                              </br>
                                              <ul>';
 $string['body_suspicious_end']          = '</ul>';
-$string['body_suspicious_middle']       = '<li><u><strong>{$a->file}</strong></u> markert som mistenkelige importdata <strong>{$a->marked}</strong>. For å godkjenne: {$approve} For å nekte: {$reject} </li>';
+$string['body_suspicious_middle']       = '<li><u><strong>{$a->file}</strong></u> markert som mistenkelige importdata <strong>{$a->marked}</strong>. For å godkjenne: {$a->approve} For å nekte: {$a->reject} </li>';
 
 $string['approve']  = 'Godkjenn';
 $string['reject']   = 'Nekt';

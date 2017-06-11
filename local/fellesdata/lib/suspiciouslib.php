@@ -311,12 +311,15 @@ class suspicious {
 
                     // All suspicious files in the same email
                     foreach ($notifications as $notify) {
+                        $aux = null;
+                        $aux->file = 'pepe';
+                        $aux->marked = 1;
                         // Links with the right language string
-                        $approve = "<a href='" . $notify->approve . "'>" . (string)new lang_string('approve','local_fellesdata',null,$infoUser->lang) . "</a>" ;
-                        $reject = "<a href='" . $notify->reject . "'>" . (string)new lang_string('reject','local_fellesdata',null,$infoUser->lang) . "</a>" ;
+                        $aux->approve = "<a href='" . $notify->approve . "'>" . (string)new lang_string('approve','local_fellesdata',null,$infoUser->lang) . "</a>" ;
+                        $aux->reject = "<a href='" . $notify->reject . "'>" . (string)new lang_string('reject','local_fellesdata',null,$infoUser->lang) . "</a>" ;
 
                         // Build body message
-                        $strMiddle .= (string)new lang_string('body_suspicious_middle','local_fellesdata',$notify,$approve,$reject,$infoUser->lang);
+                        $strMiddle .= (string)new lang_string('body_suspicious_middle','local_fellesdata',$aux,$infoUser->lang);
                     }//notifications
 
                     // End body message
