@@ -288,6 +288,7 @@ class suspicious {
 
                 // All notifications with the right language
                 foreach ($notifyTo as $to) {
+                    // Cleaning variables
                     $strSubject = null;
                     $strBody    = null;
                     $strMiddle  = null;
@@ -311,6 +312,7 @@ class suspicious {
 
                     // All suspicious files in the same email
                     foreach ($notifications as $notify) {
+                        // Info to send
                         $aux = new stdClass();
                         $aux->file      = $notify->file;
                         $aux->marked    = $notify->marked;
@@ -325,16 +327,13 @@ class suspicious {
                     // End body message
                     $strBodyEnd = (string)new lang_string('body_suspicious_end','local_fellesdata',null,$infoUser->lang);
                     $strBody .= $strMiddle . $strBodyEnd;
-                    $strBody .= 'SKIP THIS MESSAGE. I AM PAQUI AND I AM TESTING MANUALLY';
 
                     // Send notification
                     email_to_user($infoUser, $SITE->shortname, $strSubject, $strBody, $strBody);
-
-                    echo "NOTIFY TO --> " . $to . "</br>" . $strBody . "</br>";
                 }//for_notify
 
                 // Update notifications as sent
-                //self::update_as_sent($notifications,$plugin,$remainder);
+                self::update_as_sent($notifications,$plugin,$remainder);
             }//if_notifications
         }catch (Exception $ex) {
             throw $ex;
