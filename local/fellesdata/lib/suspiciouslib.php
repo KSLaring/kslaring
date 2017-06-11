@@ -288,10 +288,10 @@ class suspicious {
 
                 // All notifications with the right language
                 foreach ($notifyTo as $to) {
-                    //$strSubject = null;
-                    //$strBody    = null;
-                    //$strMiddle  = null;
-                    //$strBodyEnd = null;
+                    $strSubject = null;
+                    $strBody    = null;
+                    $strMiddle  = null;
+                    $strBodyEnd = null;
 
                     $infoUser = get_complete_user_data('email',$to);
                     if (!$infoUser) {
