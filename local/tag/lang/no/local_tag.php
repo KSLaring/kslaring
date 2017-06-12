@@ -25,7 +25,6 @@
  */
 
 $string['pluginname'] = 'Utvidet taggefunksjonalitet';
-
 $string['metaheading'] = 'Metatagg-innstillinger';
 $string['metaheading_desc'] = 'Vennlist angi en prefiksstreng som skal definere metataggene.<br>
 For eksempel »Meta_« som hovedprefiks for metatagger og »Meta_gruppe« for gruppetagger.';
@@ -37,10 +36,8 @@ $string['metaoptionprefix'] = 'Tagg-prefiks for Meta-opsjon';
 $string['metaoptionprefix_desc'] = 'Angi prefikset som skal brukes for alle meta-opsjonstagger, som "Meta_opsjon"';
 $string['metaoptionsingleselect'] = 'Tagg for meta-radioknapp';
 $string['metaoptionsingleselect_desc'] = 'Velg taggnavn for radionknapp-tagger for å angi at bare en tagg kan velges. En eksempel kan være: "Meta_opsjon_radioknapp"';
-$string['metaoptionprovider'] = 'Meta provider tag';
-$string['metaoptionprovider_desc'] = 'Set the provider tag name used to combine meta_group tags displayed together in one secton 
-in the course search, like »Meta_option_provider«. Please add provider tag to the meta_group tags to combine them.';
-
+$string['metaoptionprovider'] = 'Meta tibyder-tagg';
+$string['metaoptionprovider_desc'] = 'Angi tilbydertagg som skal kombineres med meta_group tagger som skal vises sammen i en gruppe i kurssøket, slik som "Meta_option_Tilbyder". Vennligst legg til tilbydertaggen til meta_group tagger for å kombinere dem.';
 $string['editgrouptags_title'] = 'Redigere gruppetagger';
 $string['waitdragdrop'] = 'Dra og slipp kan ta en liten stund før denne siden er initialisert...';
 $string['readydragdrop'] = '<b>Dra og slipp er nå klar til bruk.</b>';
