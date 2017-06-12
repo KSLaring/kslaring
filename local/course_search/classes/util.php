@@ -321,10 +321,13 @@ class util {
         $order = explode(' ', $value);
         $grouptags = \local_tag\collection::get_meta_tags($tagcollid, \local_tag\tag::get_meta_group_prefix(), $order);
         $providergroups = \local_tag\collection::get_meta_tags($tagcollid, \local_tag\tag::get_meta_option_provider());
-        $providergroupsobj = array_shift($providergroups);
-        $providergrouptags = \local_tag\collection::get_group_tags($tagcollid, $providergroupsobj->id, 1, false,
-            0, '', $metaprefix, '');
-        $providergrouptagids = array_keys($providergrouptags);
+        $providergrouptagids = array();
+        if (!empty($providergroups)) {
+            $providergroupsobj = array_shift($providergroups);
+            $providergrouptags = \local_tag\collection::get_group_tags($tagcollid, $providergroupsobj->id, 1, false,
+                0, '', $metaprefix, '');
+            $providergrouptagids = array_keys($providergrouptags);
+        }
 
         return array($tagcollid, $metaprefix, $grouptags, $providergrouptagids);
     }
