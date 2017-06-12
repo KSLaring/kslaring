@@ -268,9 +268,9 @@ $string['body_uninstructor'] = '<p>Vi ønsker å informere deg om at du ikke len
                                 </br>
                                 <p>Dette er en automatisk generert epost fra {$a->site}. Du kan ikke svare på denne eposten.</p>';
 
-$string['notemplate']        = 'None';
-$string['courseformats']     = 'Course template list';
-$string['courseformatsdesc'] = 'The course list. Please select the course formats that may be used as templates.';
+$string['notemplate']        = 'Ingen';
+$string['courseformats']     = 'Liste over kursmaler';
+$string['courseformatsdesc'] = 'Kurslisten. Vennligst velg kurs som skal brukes som kursmaler.';
 
 $string['summaryfrom']  = 'Fra:';
 $string['summaryto']    = 'Til:';
@@ -296,83 +296,83 @@ $string['username'] = 'brukernavn';
 $string['useremail'] = 'e-post';
 $string['usercompetance'] = 'Kompetanse';
 
-$string['producer'] = 'Producer';
-$string['levelone'] = 'Level one';
+$string['producer'] = 'Produsent';
+$string['levelone'] = 'Nivå 1';
 $string['kommune']  = 'Kommune';
-$string['sector'] = 'Sector';
-$string['coordinator'] = 'Coordinator';
-$string['spots'] = 'Available seats';
-$string['prices'] = 'Prices';
-$string['instructors'] = 'Instructors';
-$string['students'] = 'Students';
-$string['waitinglist'] = 'Waitinglist';
-$string['completed'] = 'Completed';
-$string['visible'] = 'Visibility';
-$string['expiration'] = 'Expiration';
+$string['sector'] = 'Sektor';
+$string['coordinator'] = 'Koordinator';
+$string['spots'] = 'Tilgjengelige plasser';
+$string['prices'] = 'Priser';
+$string['instructors'] = 'Instruktører';
+$string['students'] = 'Studenter';
+$string['waitinglist'] = 'Venteliste';
+$string['completed'] = 'Fullført';
+$string['visible'] = 'Synlighet';
+$string['expiration'] = 'Utløper';
 
-$string['courselong'] = 'Course fullname';
-$string['courseshort'] = 'Course shortname';
-$string['courseformat'] = 'Format';
-$string['internalprice'] = 'Internal price';
-$string['externalprice'] = 'External price';
-$string['nexttab'] = 'Click the next tab to see all the raw data';
-$string['from'] = 'From';
-$string['to'] = 'To';
-$string['fromto'] = 'From - To';
-$string['dates'] = 'Dates';
-$string['coursecoordinator'] = 'Coordinator';
-$string['numberofdays'] = 'Number of days';
+$string['courselong'] = 'Kursets fulle navn';
+$string['courseshort'] = 'Kursets kortnavn';
+$string['courseformat'] = 'Kursformat';
+$string['internalprice'] = 'Internpris';
+$string['externalprice'] = 'Eksternpris';
+$string['nexttab'] = 'Klikk på fanen for å se alle rådata';
+$string['from'] = 'Fra';
+$string['to'] = 'Til';
+$string['fromto'] = 'Fra - Til';
+$string['dates'] = 'Datoer';
+$string['coursecoordinator'] = 'Koordinator';
+$string['numberofdays'] = 'Antall dager';
 
 $string['yes'] = 'Ja';
 $string['no'] = 'Nei';
 
-$string['instructorname'] = 'Instructor name';
-$string['coordinatorname'] = 'Coordinator name';
-$string['coursename'] = 'Course name';
+$string['instructorname'] = 'Instruktørens navn';
+$string['coordinatorname'] = 'Koordinatorens navn';
+$string['coursename'] = 'Kursnavn';
 
-$string['userworkplace'] = 'Workplace';
-$string['userjobrole'] = 'Job Role';
+$string['userworkplace'] = 'Arbeidssted';
+$string['userjobrole'] = 'Jobbrolle';
 
 $string['noresults'] = 'Ingen resultater';
 
-$string['summaryrptexcel'] = 'Oversikts Rapport';
-$string['coordinatorexcel'] = 'Coordinator Report';
-$string['instructorexcel'] = 'Instructor Report';
-$string['categoryexcel'] = 'Category';
-$string['courseexcel'] = 'Course';
-$string['fromexcel'] = 'From';
-$string['toexcel'] = 'To';
-$string['courseexcel'] = 'Course';
-$string['fullnameexcel'] = 'Users Fullname';
-$string['usernameexcel'] = 'Username';
-$string['emailexcel'] = 'Email';
-$string['workplaceexcel'] = 'Workplace';
-$string['jobroleexcel'] = 'Jobrole';
+$string['summaryrptexcel'] = 'Oversiktsrapport';
+$string['coordinatorexcel'] = 'Koordinatorrapport';
+$string['instructorexcel'] = 'Instruktørrapport';
+$string['categoryexcel'] = 'Kategori';
+$string['courseexcel'] = 'Kurs';
+$string['fromexcel'] = 'Fra';
+$string['toexcel'] = 'Til';
+$string['courseexcel'] = 'Kurs';
+$string['fullnameexcel'] = 'Brukerens navn';
+$string['usernameexcel'] = 'Brukernavn';
+$string['emailexcel'] = 'E-post';
+$string['workplaceexcel'] = 'Arbeidssted';
+$string['jobroleexcel'] = 'Jobbrolle';
 
-$string['participantslistsummary'] = 'Participants_List_Summary_';
-$string['participantslistinstructors'] = 'Participants_List_Instructors_';
+$string['participantslistsummary'] = 'Sammendrag av deltakerliste';
+$string['participantslistinstructors'] = 'Instruktørliste';
 $string['participantslistcoordinators'] = 'Participants_List_Coordinators_';
 
 $string['filter'] = 'Filter';
-$string['content'] = 'Content';
+$string['content'] = 'Innhold';
 
-$string['courselocation'] = 'Course Location';
+$string['courselocation'] = 'Kurssted';
 
-$string['download_one_location'] = 'Download one location';
-$string['download_all_locations'] = 'Download all locations';
+$string['download_one_location'] = 'Last ned kursoverikt for kursstedet';
+$string['download_all_locations'] = 'Last ned kursoversikt for alle kurssteder';
 
-$string['alllocations'] = 'All_courses_in_';
-$string['onelocation'] = 'Courses_in_';
+$string['alllocations'] = 'Alle kurs i';
+$string['onelocation'] = 'Kurs i';
 
 $string['classroom']            = 'Arrangementsformat';
 $string['classroom_frikomport'] = 'Enkelt arrangementsformat';
 $string['netcourse']            = 'Nettkursformat';
 $string['elearning_frikomport'] = 'Enkelt nettkursformat';
-$string['topcoll']              = 'Collapsed topics';
+$string['topcoll']              = 'Kollapset emnevisning';
 $string['single_frikomport']    = 'Enkeltelementsformat';
 $string['singleactivity']       = 'Enkeltelementsformat';
 $string['whitepaper']           = 'white paper';
 $string['topics']               = 'Emneformat';
 $string['grid']                 = 'Rutenettformat';
-$string['weeks']                = 'weeks';
-$string['social']               = 'social';
+$string['weeks']                = 'ukeformat';
+$string['social']               = 'sosialt format';
