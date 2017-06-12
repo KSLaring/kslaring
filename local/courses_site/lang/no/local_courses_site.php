@@ -37,8 +37,8 @@ $string['picture']          = 'Bilde';
 $string['picture_required'] = 'Du må legge til et bilde';
 $string['current']          = 'Nåværende bilde';
 
-$string['picturetitle']     = 'Bilde title';
-$string['picturetitle_required'] = 'Du må legge til et bilde title';
+$string['picturetitle']     = 'Bildetittel';
+$string['picturetitle_required'] = 'Du må legge til en bildetittel';
 
 $string['save']  = 'Lagre';
 
