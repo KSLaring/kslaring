@@ -1,58 +1,77 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
- * First Access
+ * First access - First access
  *
- * Description
+ * @package
+ * @subpackage
+ * @copyright       2012    eFaktor {@link http://www.efaktor.no}
+ * @license         http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
- * @package             local
- * @subpackage          first_access
- * @copyright           2014        eFaktor {@link http://www.efaktor.no}
+ * @creationDate    10/11/2014
+ * @author          eFaktor     (fbv)
  *
- * @creationDate        18/06/2015
- * @author              eFaktor     (fbv)
- *
+ * @updateDate      12/06/2017
+ * @author          eFaktor     (fbv)
  */
 require_once('../../config.php');
 require_once('locallib.php');
 require_once('first_access_form.php');
 
-/* PARAMS */
+global $PAGE, $CFG,$OUTPUT,$USER,$SITE;
+
+// Params
 $userId         = $USER->id;
 $context        = context_system::instance();
 $url            = new moodle_url('/local/first_access/first_access.php');
 $user_context   = context_user::instance($userId);
 $redirect       = new moodle_url('/user/profile.php',array('id'=>$userId));
+
+// Start Page
 $PAGE->set_url($url);
 $PAGE->set_context($user_context);
 $PAGE->set_heading($SITE->fullname);
 $PAGE->set_title($SITE->fullname);
 $PAGE->set_pagelayout('admin');
 
-/* SHOW FORM */
+// Show form
 $form = new first_access_form(null,$userId);
 if ($form->is_cancelled()) {
     $_POST = array();
     redirect($CFG->wwwroot);
 }else if ($data = $form->get_data()){
-    /* Save generic data    */
+    // Generic data
     FirstAccess::update_user_profile($data);
     // Save custom profile fields data.
     profile_save_data($data);
 
-    /* Check if it still remains to update competence profile */
+    // Check if it still remains to update competence profile
     if (!FirstAccess::has_completed_competence_profile($data->id)) {
         $redirect = new moodle_url('/user/profile/field/competence/competence.php',array('id' => $data->id));
     }//if_CompletedCompetenceProfile
 
     $user = get_complete_user_data('id',$data->id);
-    complete_user_login($user,true);
+    complete_user_login($user);
 
-    //$_POST = array();
     redirect($redirect);
 }//if_else
 
 echo $OUTPUT->header();
-echo $OUTPUT->heading(get_string('welcome_title','local_first_access'));
+echo $OUTPUT->heading(get_string('welcome_title','local_first_access',$SITE->shortname));
 
 echo html_writer::start_div();
     echo "<h5>" . get_string('welcome_message','local_first_access') . "</h5></br>";
