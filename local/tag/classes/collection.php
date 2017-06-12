@@ -109,11 +109,12 @@ class collection extends core_tag_collection {
      * @param string    $sort         Sort order for display, default 'name' - tags will be sorted after they are retrieved
      * @param string    $search       Search string
      * @param string    $excludename  Exclude the tags containing the name, for example exclude the meta tags
+     * @param array     $inidlist     List of tag ids to filter against
      *
      * @return array The group tags, if sorted indices 0 ... n, if not sorted the indices are the tag ids
      */
     public static function get_group_tags($tagcollid, $grouptagid, $ctx = 1, $isstandard = false, $limit = 150,
-            $sort = 'name', $search = '', $excludename = '') {
+            $sort = 'name', $search = '', $excludename = '', $inidlist = array()) {
         global $DB;
         $params = array();
 
@@ -135,6 +136,11 @@ class collection extends core_tag_collection {
         if (strval($excludename) !== '') {
             $whereclause .= ' AND tg.name NOT LIKE ?';
             $params[] = '%' . core_text::strtolower($excludename) . '%';
+        }
+        if (!empty($inidlist)) {
+            list($insql, $inparams) = $DB->get_in_or_equal($inidlist);
+            $whereclause .= ' AND tg.id ' . $insql;
+            $params = array_merge($params, $inparams);
         }
 
         $sql = "SELECT tg.id, tg.rawname, tg.name, tg.isstandard, tg.flag, tg.tagcollid

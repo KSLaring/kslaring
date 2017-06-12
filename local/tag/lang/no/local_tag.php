@@ -37,6 +37,9 @@ $string['metaoptionprefix'] = 'Tagg-prefiks for Meta-opsjon';
 $string['metaoptionprefix_desc'] = 'Angi prefikset som skal brukes for alle meta-opsjonstagger, som "Meta_opsjon"';
 $string['metaoptionsingleselect'] = 'Tagg for meta-radioknapp';
 $string['metaoptionsingleselect_desc'] = 'Velg taggnavn for radionknapp-tagger for å angi at bare en tagg kan velges. En eksempel kan være: "Meta_opsjon_radioknapp"';
+$string['metaoptionprovider'] = 'Meta provider tag';
+$string['metaoptionprovider_desc'] = 'Set the provider tag name used to combine meta_group tags displayed together in one secton 
+in the course search, like »Meta_option_provider«. Please add provider tag to the meta_group tags to combine them.';
 
 $string['editgrouptags_title'] = 'Redigere gruppetagger';
 $string['waitdragdrop'] = 'Dra og slipp kan ta en liten stund før denne siden er initialisert...';

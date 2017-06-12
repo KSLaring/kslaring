@@ -50,6 +50,9 @@ class tag extends core_tag_tag {
     /** @var string Defines the singleselect option meta tag */
     const COURSE_TAGS_META_OPTION_SINGLESELECT = 'meta_option_singleselect';
 
+    /** @var string Defines the provider option meta tag */
+    const COURSE_TAGS_META_OPTION_PROVIDER = 'meta_option_provider';
+
     /** @var object $settings The tag settings object */
     protected static $settings = null;
 
@@ -115,7 +118,7 @@ class tag extends core_tag_tag {
     }
 
     /**
-     * Get the singleselct option meta tag.
+     * Get the singleselect option meta tag.
      * Return either the value saved in the config or the predefined constant.
      *
      * @return string
@@ -126,6 +129,21 @@ class tag extends core_tag_tag {
             return strtolower($prefix);
         } else {
             return self::COURSE_TAGS_META_OPTION_SINGLESELECT;
+        }
+    }
+
+    /**
+     * Get the provider option meta tag.
+     * Return either the value saved in the config or the predefined constant.
+     *
+     * @return string
+     */
+    public static function get_meta_option_provider() {
+        $prefix = get_config('', 'tag_metaoptionprovider');
+        if ($prefix) {
+            return strtolower($prefix);
+        } else {
+            return self::COURSE_TAGS_META_OPTION_PROVIDER;
         }
     }
 }
