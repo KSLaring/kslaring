@@ -88,13 +88,13 @@ class first_access_form extends moodleform {
             }
         }//country
 
-        // Header - County/kommune
-        $form->addElement('header', 'muni', get_string('header_muni', 'local_first_access'));
-        $form->setExpanded('muni',true);
-
         // Kommune
         $muniProfile = FirstAccess::get_municipality_profile();
         if ($muniProfile) {
+            // Header - County/kommune
+            $form->addElement('header', 'muni', get_string('header_muni', 'local_first_access'));
+            $form->setExpanded('muni',true);
+
             require_once($CFG->dirroot.'/user/profile/lib.php');
             require_once($CFG->dirroot . '/user/profile/field/'.$muniProfile->datatype.'/field.class.php');
 
