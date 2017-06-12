@@ -1,0 +1,34 @@
+<div>
+    <h4>Preselect the search criteria</h4>
+
+    <input type="text" id="tagFilter" placeholder="Type here to filter tags" title="Type here to filter tags">
+
+    {{#taglist}}
+        {{#provider}}
+            {{#hassubcategories}}
+                <div class="group-box has-subcategories">
+                    <h4>{{{title}}}</h4>
+
+                    <div class="accordion" id="accordion-{{{type}}}">
+                        {{#subcategories}}
+                            {{> local_course_search/course_search_tag_preselect_area_group }}
+                        {{/subcategories}}
+                    </div>
+                </div>
+            {{/hassubcategories}}
+        {{/provider}}
+        {{#others}}
+            {{#hassubcategories}}
+                <div class="group-box has-subcategories">
+                    <h4>{{{title}}}</h4>
+
+                    <div class="accordion" id="accordion-{{{type}}}">
+                        {{#subcategories}}
+                            {{> local_course_search/course_search_tag_preselect_area_group }}
+                        {{/subcategories}}
+                    </div>
+                </div>
+            {{/hassubcategories}}
+        {{/others}}
+    {{/taglist}}
+</div>

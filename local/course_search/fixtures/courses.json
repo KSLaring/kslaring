@@ -1,0 +1,316 @@
+{
+  "courses": [
+    {
+      "id": 24,
+      "name": "Testing course",
+      "img": "/local/playground/coursesearch/assets/meeting.png",
+      "summary": "This course is meant for testing of content and design.",
+      "link": "/local/course_page/home_page.php?id=",
+      "date": "08.06.2017",
+      "sortdate": "20170608",
+      "availseats": "",
+      "deadline": "",
+      "municipality": "Lillehammer",
+      "location": "",
+      "tags": [
+        {
+          "group": "municipality",
+          "name": "Oppland Fylkeskommune"
+        },
+        {
+          "group": "municipality",
+          "name": "Lillehammer"
+        },
+        {
+          "group": "type",
+          "name": "Netcourse"
+        },
+        {
+          "group": "topics",
+          "name": "IT"
+        },
+        {
+          "group": "topics",
+          "name": "Kultur"
+        }
+      ]
+    },
+    {
+      "id": 26,
+      "name": "Fra Office 2003 til 2010 - obligatorisk",
+      "img": "/local/playground/coursesearch/assets/office2010.jpg",
+      "summary": "Disse leksjonene viser forskjellene mellom Word 2003 og Word 2010 og noen av de nye funksjonene knyttet opp mot basiskompetansen til en informasjonsmedarbeider i Midt-Telemarkkommunene.",
+      "link": "/local/course_page/home_page.php?id=",
+      "date": "31.03.2017",
+      "sortdate": "20170331",
+      "availseats": "",
+      "deadline": "",
+      "municipality": "Gjøvik",
+      "location": "",
+      "tags": [
+        {
+          "group": "municipality",
+          "name": "Oppland Fylkeskommune"
+        },
+        {
+          "group": "municipality",
+          "name": "Gjøvik"
+        },
+        {
+          "group": "audience",
+          "name": "Ansatt"
+        },
+        {
+          "group": "type",
+          "name": "Netcourse"
+        },
+        {
+          "group": "topics",
+          "name": "IT"
+        },
+        {
+          "group": "topics",
+          "name": "Oppvekst"
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "name": "Classroom course",
+      "img": "/local/playground/coursesearch/assets/ks_placeholder.jpg",
+      "summary": "Vivamus ante lectus, volutpat quis adipiscing a, bibendum at massa.",
+      "link": "/local/course_page/home_page.php?id=",
+      "date": "15.05.2017",
+      "sortdate": "20170515",
+      "availseats": "50",
+      "deadline": "",
+      "municipality": "Oslo",
+      "location": "Room 113 - B-Office",
+      "tags": [
+        {
+          "group": "municipality",
+          "name": "Oslo Fylkeskommune"
+        },
+        {
+          "group": "municipality",
+          "name": "Oslo"
+        },
+        {
+          "group": "audience",
+          "name": "Leder"
+        },
+        {
+          "group": "type",
+          "name": "Classroom"
+        },
+        {
+          "group": "topics",
+          "name": "Oppvekst"
+        },
+        {
+          "group": "topics",
+          "name": "Kultur"
+        },
+        {
+          "group": "topics",
+          "name": "Velferd"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Netcourse-g pellentesque et velit justo maecenas",
+      "img": "/local/playground/coursesearch/assets/suitcase.jpg",
+      "summary": "Nulla non consectetur urna, in.",
+      "link": "/local/course_page/home_page.php?id=",
+      "date": "12.04.2017",
+      "sortdate": "20170412",
+      "availseats": "",
+      "deadline": "",
+      "municipality": "Åseral",
+      "location": "",
+      "tags": [
+        {
+          "group": "municipality",
+          "name": "Akershus Fylkeskommune"
+        },
+        {
+          "group": "municipality",
+          "name": "Åseral"
+        },
+        {
+          "group": "audience",
+          "name": "Ansatt"
+        },
+        {
+          "group": "type",
+          "name": "Netcourse"
+        },
+        {
+          "group": "topics",
+          "name": "IT"
+        },
+        {
+          "group": "topics",
+          "name": "Oppvekst"
+        },
+        {
+          "group": "topics",
+          "name": "Økonomisk planlegging og analyse"
+        }
+      ]
+    },
+    {
+      "id": 45,
+      "name": "Topics course",
+      "img": "/local/playground/coursesearch/assets/kurs.jpg",
+      "summary": "Aliquam eu quam accumsan, tempus felis eu, aliquet purus. Quisque scelerisque urna a cursus porttitor. Donec rutrum tellus lorem, eu vestibulum sapien.",
+      "link": "/course/view.php?id=",
+      "date": "23.06.2017",
+      "sortdate": "20170623",
+      "availseats": "",
+      "deadline": "",
+      "municipality": "Åseral",
+      "location": "",
+      "tags": [
+        {
+          "group": "municipality",
+          "name": "Akershus Fylkeskommune"
+        },
+        {
+          "group": "municipality",
+          "name": "Åseral"
+        },
+        {
+          "group": "audience",
+          "name": "Ansatt"
+        },
+        {
+          "group": "type",
+          "name": "Topics"
+        },
+        {
+          "group": "topics",
+          "name": "Helse"
+        },
+        {
+          "group": "topics",
+          "name": "Velferd"
+        }
+      ]
+    },
+    {
+      "id": 43,
+      "name": "Helse IT classroom course",
+      "img": "/local/playground/coursesearch/assets/ks_placeholder.jpg",
+      "summary": "Morbi tempus sit amet risus at placerat. Nulla imperdiet bibendum blandit. Nam.",
+      "link": "/local/course_page/home_page.php?id=",
+      "date": "15.05.2017",
+      "sortdate": "20170515",
+      "availseats": "50",
+      "deadline": "",
+      "municipality": "Oslo",
+      "location": "Room 1107 - Helsehuset",
+      "tags": [
+        {
+          "group": "municipality",
+          "name": "Oslo Fylkeskommune"
+        },
+        {
+          "group": "municipality",
+          "name": "Oslo"
+        },
+        {
+          "group": "audience",
+          "name": "Ansatt"
+        },
+        {
+          "group": "type",
+          "name": "Classroom"
+        },
+        {
+          "group": "topics",
+          "name": "IT"
+        },
+        {
+          "group": "topics",
+          "name": "Helse"
+        }
+      ]
+    },
+    {
+      "id": 20,
+      "name": "Ta vare på offeret",
+      "img": "/local/playground/coursesearch/assets/ks_placeholder.jpg",
+      "summary": "Dette kurset har som mål å ta styring over hverdagen og organisere arbeidet bedre og få ting gjort. Til hvert kurs er det et arbeidshefte som du skal arbeide deg gjennom etter å ha sett videoene.",
+      "link": "/local/course_page/home_page.php?id=",
+      "date": "05.06.2014",
+      "sortdate": "20140605",
+      "availseats": "49",
+      "deadline": "",
+      "municipality": "Stavanger",
+      "location": "Kurs og kompetansesenteret, Sandvigå 7, Data 3",
+      "tags": [
+        {
+          "group": "municipality",
+          "name": "Rogaland Fylkeskommune"
+        },
+        {
+          "group": "municipality",
+          "name": "Stavanger"
+        },
+        {
+          "group": "audience",
+          "name": "Ansatt"
+        },
+        {
+          "group": "type",
+          "name": "Classroom"
+        },
+        {
+          "group": "topics",
+          "name": "Helse"
+        }
+      ]
+    },
+    {
+      "id": 164,
+      "name": "Microlearning Course",
+      "img": "/local/playground/coursesearch/assets/ks_placeholder.jpg",
+      "summary": "Microlearning Course - Testing",
+      "link": "/local/course_page/home_page.php?id=",
+      "date": "28.11.2016",
+      "sortdate": "20161128",
+      "availseats": "50",
+      "deadline": "",
+      "municipality": "Bergen",
+      "location": "Åsane brannstasjon",
+      "tags": [
+        {
+          "group": "municipality",
+          "name": "Hordaland Fylkeskommune"
+        },
+        {
+          "group": "municipality",
+          "name": "Bergen"
+        },
+        {
+          "group": "audience",
+          "name": "Ansatt"
+        },
+        {
+          "group": "type",
+          "name": "Classroom"
+        },
+        {
+          "group": "topics",
+          "name": "IT"
+        },
+        {
+          "group": "topics",
+          "name": "Helse"
+        }
+      ]
+    }
+  ]
+}

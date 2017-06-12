@@ -1,0 +1,23 @@
+<div class="accordion-group">
+    <div class="accordion-heading">
+        <a class="accordion-toggle" href="#collapse-{{{type}}}"
+           data-toggle="collapse" data-parent="#accotdion-{{{type}}}">
+            {{{title}}}
+        </a>
+    </div>
+    <div id="collapse-{{{type}}}" class="accordion-body collapse">
+        <div class="accordion-inner">
+            <ul class="unlist">
+                {{#tags}}
+                    <li>
+                        <label class="checkbox">
+                            <input type="checkbox" value="" data-id="{{{id}}}" data-type="course" data-group="{{{group}}}"
+                                   data-groupid="{{{groupid}}}" data-name="{{{name}}}">
+                            {{{name}}}
+                        </label>
+                    </li>
+                {{/tags}}
+            </ul>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,26 @@
+<fieldset class="{{{group}}} collapse-group">
+    <h4>{{{title}}}</h4>
+    {{#shown}}
+        {{^isselect}}
+            <label class="checkbox" data-id="{{{id}}}" data-type="{{{type}}}" data-group="{{{group}}}" data-groupid="{{{groupid}}}"
+                   data-name="{{{name}}}">
+                <input type="checkbox"{{#checked}} checked="checked"{{/checked}} value="">
+                {{{name}}}
+            </label>
+        {{/isselect}}
+        {{#isselect}}
+            <label class="select" data-type="{{{type}}}" data-group="{{{group}}}" data-groupid="{{{groupid}}}"
+                   data-name="{{{name}}}" data-sort="{{{sort}}}">
+                <select name="select-{{{group}}}" id="select-{{{group}}}">
+                    {{#elementitems}}
+                        <option value="{{{.}}}">Sort by {{{.}}}</option>
+                    {{/elementitems}}
+                </select>
+                <label class="checkbox hidden"
+                       data-type="{{{type}}}" data-group="{{{group}}}" data-groupid="{{{groupid}}}" data-name="{{{name}}}" data-sort="{{{sort}}}">
+                    <input type="checkbox" checked="checked" value="">
+                </label>
+            </label>
+        {{/isselect}}
+    {{/shown}}
+</fieldset>

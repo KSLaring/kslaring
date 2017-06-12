@@ -1,0 +1,30 @@
+<h3>{{{pagetitle}}}</h3>
+
+<section id="catalog-area" class="row-fluid" data-userid="{{{userid}}}">
+    <aside id="search-area" class="span3 pull-left light-box">
+        <form id="course-search-form">
+
+            <fieldset class="form-search">
+                <h4>{{{searchtitle}}}</h4>
+                <input id="course-search" name="course-search" type="text" class="input-large search-query">
+                <button type="submit" class="btn course-search-btn">{{{searchbtntext}}}</button>
+            </fieldset>
+
+            {{> local_course_search/course_search_region_search}}
+
+            <button type="submit" id="switch-display" class="btn">{{{toggleselection}}}</button>
+        </form>
+    </aside>
+
+    <section id="display-area" class="span9 pull-right">
+        <section id="tag-area" class="row-fluid">
+            {{> local_course_search/course_search_selected_tags}}
+        </section>
+        <section id="result-area" class="row-fluid">
+            <div class="alert alert-info">
+                <p>{{#str}} nocoursesshowninfo, local_course_search {{/str}}</p>
+            </div>
+        </section>
+        <section id="tag-preselect-area" class="row-fluid section-hidden"></section>
+    </section>
+</section>

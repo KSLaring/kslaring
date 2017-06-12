@@ -1,0 +1,29 @@
+<tr id="courselistitem-{{{id}}}" class="course-list-item" data-name="{{{name}}}" data-sortorder="{{{sortorder}}}"
+    data-sortdate="{{{sortdate}}}" data-availnumber="{{{availnumber}}}" data-deadline="{{{deadline}}}"
+    data-municipality="{{{municipality}}}" data-location="{{{location}}}">
+    <td>
+        <table>
+            <tbody>
+            <tr class="course-data">
+                <td class="c0 course-title">
+                    <a href="{{{link}}}">{{{name}}}</a>
+                </td>
+                <td class="c1">{{{date}}}</td>
+                <td class="c2">{{{availseats}}}</td>
+                <td class="c3">{{{deadline}}}</td>
+                <td class="c4">{{{municipality}}}</td>
+                <td class="c5">{{{location}}}</td>
+            </tr>
+            <tr class="course-tags">
+                <td colspan="6">
+                    <ul class="course-tag-list unlist">
+                        {{#tags}}
+                            <li data-id="{{{id}}}" data-group="{{{group}}}" data-name="{{{name}}}">{{{name}}}</li>
+                        {{/tags}}
+                    </ul>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </td>
+</tr>

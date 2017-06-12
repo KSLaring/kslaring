@@ -1,0 +1,386 @@
+@kommitBlueLight: #00aef0;
+@kommitBlueGayLight: #b5c5da;
+@kommitBlueGayLighter: #e8edf3;
+@kommitBlue: #0e7b9e;
+@kommitBlueDark: #003876;
+@kommitGray: #7e7e7e;
+@kommitGrayWarm: #e8e8e8;
+@kommitGreyDark: #1a1a1a;
+@kommitGrayLight: #f2f2f3;
+@kommitMenuBg: #f9f9f9;
+
+@kommitRed: #bf4126;
+@kommitOrange: #f9b233;
+
+// Grays
+// -------------------------
+@black: #000;
+@grayDarker: #222;
+@grayDark: #333333;
+@gray: #555;
+@grayMid: #999;
+@grayLight: #ccc;
+@grayLight2: #ddd;
+@grayLighter: #eee;
+@white: #fff;
+
+// Scaffolding
+// -------------------------
+@bodyBackground: @white;
+@textColor: @grayDark;
+
+// Links
+// -------------------------
+@linkColor: @kommitBlueDark;
+@linkColorHover: darken(@linkColor, 15%);
+
+#page-course-search {
+    #page-header {
+        display: none;
+    }
+}
+
+#annotations {
+    padding: 0 1em;
+
+    dt {
+        margin-top: .5em;
+    }
+    dl {
+        margin: .2em 0 1em;
+    }
+}
+
+.btn {
+    &.btn-link {
+        background-color: transparent;
+        background-image: none;
+        border-color: transparent;
+        cursor: pointer;
+        color: @linkColor;
+        border-radius: 0;
+
+        &:hover {
+            color: @linkColor;
+        }
+    }
+    &.toggle-annotations {
+        color: tint(@linkColor, 70%);
+    }
+}
+
+.row-fluid {
+    [class*="span"] {
+        &:first-of-type {
+            margin-left: 0;
+        }
+    }
+}
+
+.checkbox {
+    input[type="checkbox"] {
+        margin-top: 3px;
+    }
+    .amount {
+        display: inline-block;
+        float: right;
+    }
+}
+
+.light-box {
+    background-color: @white;
+    padding: 1em .7em;
+
+    h4 {
+        font-size: 1em;
+    }
+}
+
+#catalog-area {
+    margin-bottom: 1em;
+}
+
+#search-area {
+    min-height: 10em;
+
+    input[type="text"] {
+        width: 80%;
+    }
+
+    .form-search {
+        > h4 {
+            margin-top: 0;
+        }
+    }
+
+    .collapse-group {
+        margin-bottom: 1em;
+
+        .btn {
+            padding-left: 0;
+        }
+    }
+
+    #course-search {
+        border-radius: 0;
+        margin-bottom: .5em;
+        max-width: 20em;
+        width: 85%;
+    }
+
+    .course-search-btn {
+        margin-top: 0;
+        vertical-align: top;
+    }
+}
+
+#display-area {
+    //border: 1px solid @white;
+
+    .section-hidden {
+        display: none;
+    }
+}
+
+#tag-area {
+    padding: .1em 0 .8em;
+}
+
+#result-area {
+    //border: 1px solid @white;
+    margin-top: 1em;
+    min-height: 10em;
+}
+
+.selected-tags {
+    li {
+        display: inline-block;
+    }
+}
+
+.btn-tag {
+    background-color: @kommitGrayWarm;
+    border: 1px solid darken(@kommitGrayWarm, 10%);
+    color: @textColor;
+
+    [class^="icon-"] {
+        margin-top: 2px;
+        margin-left: .3em;
+    }
+}
+
+.in.collapse + a.btn.showdetails:after {
+    content: 'Show less ...';
+}
+
+.collapse + a.btn.showdetails:after {
+    content: 'Show more ...';
+}
+
+#tablist {
+    table {
+        width: 100%;
+    }
+}
+
+// List as table
+#course-list {
+    .course-list-col-titles {
+        th {
+            cursor: pointer;
+
+            &.sortasc {
+                background: transparent url("/pix/t/down.svg") 0 50% no-repeat;
+                padding-left: 16px;
+            }
+            &.sortdesc {
+                background: transparent url("/pix/t/up.svg") 0 50% no-repeat;
+                padding-left: 16px;
+            }
+        }
+    }
+}
+
+.course-list {
+    th,
+    td {
+        //border: 1px solid @white;
+        padding: .2em .2em;
+        vertical-align: top;
+    }
+    .c0 {
+        width: 40%;
+    }
+    .c1 {
+        width: 12%;
+        min-width: 5em;
+    }
+    .c2 {
+        width: 12%;
+        min-width: 2em;
+    }
+    .c3 {
+        width: 12%;
+        min-width: 5em;
+    }
+    .c4 {
+        width: 12%;
+        max-width: 6em;
+        min-width: 6em;
+    }
+    .c5 {
+        width: 12%;
+        max-width: 5em;
+        min-width: 5em;
+    }
+    .course-tag-list {
+        //margin: 0 0 0 3em;
+        margin: 0;
+
+        li {
+            //background-color: lighten(@kommitGrayLight, 2%);
+            //border: 1px solid @kommitGrayWarm;
+            color: lighten(@textColor, 50%);
+            display: inline-block;
+            padding: 0 .3em;
+        }
+    }
+    .course-list-item {
+        border-top: 1px solid @grayLight2;
+
+        &.hide-item {
+            display: none;
+        }
+        .course-tags {
+            background-color: lighten(@kommitGrayLight, 2%);
+        }
+        //&:not(.hide-item) {
+        //&:nth-of-type(odd) {
+        &.odd {
+            background-color: @kommitBlueGayLighter;
+
+            .course-tags {
+                background-color: lighten(@kommitBlueGayLighter, 2%);
+            }
+            .course-tag-list {
+                li {
+                    //background-color: lighten(@kommitBlueGayLighter, 2%);
+                    //border-color: darken(@kommitBlueGayLighter, 5%);
+                }
+            }
+        }
+        //}
+    }
+    .btn {
+        &.btn-link {
+            padding-left: 0;
+        }
+    }
+    &.tags-hidden {
+        .course-tags {
+            display: none;
+        }
+    }
+}
+
+.course-cards {
+    .course-card-item {
+        background-color: @white;
+        display: inline-block;
+        margin: 0 1% 1em 1%;
+        min-height: 17em;
+        padding: .5em 2%;
+        vertical-align: top;
+        width: 27%;
+
+        &:nth-of-type(3n) {
+            margin-right: 0;
+            //border-right: 1px solid #faa;
+        }
+        &:nth-of-type(3n+1) {
+            margin-left: 0;
+            //border-left: 1px solid #faa;
+        }
+
+        &.hide-item {
+            display: none;
+        }
+
+        .course-img {
+            text-align: center;
+
+            img {
+                max-height: 8em;
+
+                &.img-responsive {
+                    //width: 100%;
+                }
+            }
+        }
+        .course-title {
+            line-height: 1.3;
+        }
+        .course-desc {
+            max-height: 9em;
+            overflow: hidden;
+        }
+        .course-summary {
+            height: 4em;
+        }
+    }
+}
+
+#page-course-search {
+    .datepicker {
+        table {
+            tr {
+                td {
+                    &.today {
+                        background: @kommitBlueGayLighter;
+
+                        &.disabled {
+                            background: #ccc;
+                        }
+                    }
+                    &.active,
+                    &.active.active {
+                        background: @kommitBlue;
+                        color: @white;
+                    }
+                }
+            }
+        }
+    }
+}
+
+#tag-preselect-area {
+    .group-box {
+        //float: left;
+        //margin: 0 2% 1em 0;
+        //min-width: 45%;
+
+        .light-box {
+            margin-bottom: 1em;
+
+            h4 {
+                margin-top: 0;
+
+                .btn-toggle-open {
+                    margin: 0;
+                }
+            }
+        }
+    }
+    .accordion-inner {
+        .unlist {
+            columns: 1em 3;
+        }
+    }
+}
+
+#tagFilter {
+    background-image: url('/local/playground/coursesearch/assets/searchicon.png');
+    background-position: 5px 5px;
+    background-repeat: no-repeat;
+    padding-left: 30px;
+}
