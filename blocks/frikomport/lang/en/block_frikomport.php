@@ -39,6 +39,7 @@ $string['frikomport:myaddinstance'] = 'Add a new Course Wizard block to My home'
 $string['frikomport:view'] = 'View the Course Wizard block';
 
 $string['ncourses']                     = 'Course list';
+$string['ncoursesearch']                = 'Course search';
 $string['nnewcourses']                  = 'Create new courses';
 $string['naddcourse']                   = 'New course';
 $string['naddfromtemplate']             = 'New event';

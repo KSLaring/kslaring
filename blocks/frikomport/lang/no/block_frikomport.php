@@ -39,6 +39,7 @@ $string['frikomport:myaddinstance'] = 'Legg til en ny Kursveiviser-blokk til Min
 $string['frikomport:view'] = 'Vis Friadmin-blokken';
 
 $string['ncourses']                     = 'Kursoversikt';
+$string['ncoursesearch']                = 'Course search';
 $string['nnewcourses']                  = 'Opprett nytt kurs';
 $string['naddcourse']                   = 'Nytt kurs';
 $string['naddfromtemplate']             = 'Nytt arrangement';

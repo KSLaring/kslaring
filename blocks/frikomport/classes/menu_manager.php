@@ -71,6 +71,15 @@ class block_frikomport_menu_manager {
         $this->nodes->add_node($subnode);
 
         $item = array(
+            'text' => get_string('ncoursesearch', 'block_frikomport'),
+            'icon' => $settingsicon,
+            'type' => navigation_node::NODETYPE_LEAF,
+            'action' => '/local/course_search/search.php'
+        );
+        $subnode = new navigation_node($item);
+        $this->nodes->add_node($subnode);
+
+        $item = array(
             'text' => get_string('naddfromtemplate', 'block_frikomport'),
             'icon' => $settingsicon,
             'type' => navigation_node::NODETYPE_LEAF,
