@@ -40,6 +40,14 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                 'deadline': 'deadline',
                 'municipality': 'municipality',
                 'location': 'location'
+            },
+            sortstrmapping = {
+                'name': 'course_name',
+                'date': 'course_date',
+                'availseats': 'course_seats',
+                'deadline': 'course_deadline',
+                'municipality': 'course_municipality',
+                'location': 'course_location'
             };
 
         var grepselectedCourseTags = function (data) {
@@ -246,7 +254,7 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                     .parent('li')
                     .remove();
                 activityContext.remove = 1;
-            } else if ($ele.parent().data('group') === 'sort') {
+            } else if ($parent.data('group') === 'sort') {
                 // If the sort changed then remove the exisiting sort tag and add the new.
                 $relatedTag = $tagarea
                     .find('button')
@@ -256,7 +264,9 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
 
                 // Prepare sort related data.
                 activityContext.sort = $parent.data('sort');
-                activityContext.name = "Sort by " + activityContext.sort;
+                activityContext.name = M.str.local_course_search.sortby + " " +
+                    M.str.local_friadmin[sortstrmapping[activityContext.sort]];
+                console.log($ele, $parent);
                 templates
                     .render('local_course_search/course_search_selected_tags_item', activityContext)
                     .done(function (html) {

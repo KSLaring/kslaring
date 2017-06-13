@@ -35,4 +35,13 @@ $string['preselectprovider'] = 'Forvalg av tilbydere';
 $string['preselectothers'] = 'Forvalg av andre';
 $string['provider'] = 'Tilbyder';
 $string['date'] = 'Dato';
-$string['nocoursesshowninfo'] = 'Hvis du ikke ser noen kurs på denne siden må du først velge et interesseområde av ting du er interessert å søke i. Vennligst foreta et utvalg og lagre dette for å få opp relevante treff innen ditt interesseområde.';
+$string['nocoursesshowninfo'] = 'Hvis du ikke ser noen kurs på denne siden må du først velge et interesseområde av ting du er 
+interessert å søke i. Vennligst foreta et utvalg og lagre dette for å få opp relevante treff innen ditt interesseområde.';
+$string['cards'] = 'Korta';
+$string['list'] = 'Liste';
+$string['sortby'] = 'Sorter etter';
+$string['displayoptions'] = 'Visning valgmulighet';
+$string['sortdesc'] = 'Sorter descending';
+$string['showtags'] = 'Vise kurs tager';
+$string['preselectcriteria'] = 'Forvalg av søk vilkår';
+$string['typehere'] = 'Skrive her å filtrere tager';

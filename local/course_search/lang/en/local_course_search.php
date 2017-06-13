@@ -37,3 +37,11 @@ $string['provider'] = 'Provider';
 $string['date'] = 'Date';
 $string['nocoursesshowninfo'] = 'If no courses will be shown and you are logged in you may not have selected any search criteria. Please select
 your prefered search criteria to show the related coruses.';
+$string['cards'] = 'Cards';
+$string['list'] = 'List';
+$string['sortby'] = 'Sort by';
+$string['displayoptions'] = 'Display options';
+$string['sortdesc'] = 'Sort descending';
+$string['showtags'] = 'Show course tags';
+$string['preselectcriteria'] = 'Preselect the search criteria';
+$string['typehere'] = 'Type here to filter tags';

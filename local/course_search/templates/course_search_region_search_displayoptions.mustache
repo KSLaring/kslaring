@@ -13,7 +13,7 @@
                    data-name="{{{name}}}" data-sort="{{{sort}}}">
                 <select name="select-{{{group}}}" id="select-{{{group}}}">
                     {{#elementitems}}
-                        <option value="{{{.}}}">Sort by {{{.}}}</option>
+                        <option value="{{{value}}}">{{#str}}sortby, local_course_search{{/str}} {{{text}}}</option>
                     {{/elementitems}}
                 </select>
                 <label class="checkbox hidden"

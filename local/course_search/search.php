@@ -39,6 +39,16 @@ $PAGE->set_pagelayout('base');
 $PAGE->set_title(get_string('title', 'local_course_search'));
 
 // Require needed JavaScript.
+$identifieres = array(
+    'course_name',
+    'course_date',
+    'course_seats',
+    'course_deadline',
+    'course_municipality',
+    'course_location',
+);
+$PAGE->requires->strings_for_js($identifieres, 'local_friadmin');
+$PAGE->requires->string_for_js('sortby', 'local_course_search');
 $PAGE->requires->js_call_amd('local_course_search/coursesearch', 'init');
 
 /* @var \local_course_search_renderer $pluginrenderer The course search plugin renderer. */
