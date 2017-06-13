@@ -344,8 +344,8 @@ class mod_completionreset_helper{
                 $params['coursemoduleid'] = $cm->id;
 
                 // Update Course completions
-                $sql = " UPDATE course_modules_completion 
-                            SET viewed = 0,
+                $sql = " UPDATE {course_modules_completion} 
+                            SET  viewed = 0,
                                  timemodified = 0,
                                  completionstate = 0
                          WHERE userid IN ($userid) 
