@@ -312,66 +312,63 @@ class mod_completionreset_helper{
             $params = array();
             $params['userid'] = $userid;
 
+            //course modules completion table
+            $cmids = array();
+            foreach($allactivities->chosencms as $cm){
+                // Add module
+                $cmids[]=$cm->id;
+
+                // add criteria
+                $params['coursemoduleid'] = $cm->id;
+                $recs=$DB->get_records('course_modules_completion',$params);
+                if($recs){
+                    foreach($recs as $rec){
+                        $data = new stdClass();
+                        $data->id               = $rec->id;
+                        $data->viewed           = 0;
+                        $data->timemodified     = 0;
+                        $data->completionstate  = 0;
+                        $DB->update_record('course_modules_completion',$data);
+                    }
+                }
+            }//if_all_activities
+
+            //lets get a csv list of moduleids for bulk operations
+            $cmids =implode(',',$cmids);
+
+            //course completion crti compl table
+            $recs=$DB->get_records_select('course_completion_criteria','course=:course AND moduleinstance IN (:cmids)',
+                array('course'=>$courseid,'cmids'=>$cmids));
+            if($recs){
+                foreach($recs as $rec){
+                    $DB->delete_records('course_completion_crit_compl',
+                        array('course'=>$courseid,'userid'=>$userid,'criteriaid'=>$rec->id));
+                }
+            }
+
+            //per activity type reset
+            foreach($allactivities->chosencms as $cm){
+                switch($cm->modname){
+                    case 'lesson':  self::clear_lesson($cm,$userid); break;
+                    case 'quiz':    self::clear_quiz($cm,$userid); break;
+                    case 'scorm':   self::clear_scorm($cm,$userid); break;
+                    case 'assign':  self::clear_assign($cm,$userid);  break;
+                    default: //do nothing
+                }
+            }
+
+            //delete all grades from gradebook
+            //this caused a lot of trouble initially, so delegated grade deletion in most cases to the
+            //per activity reset above.  But assign would not delete and it left a 0% in teh gradebook
+            //so kills the gradebook entry for all the selected activities. The per activity reset still
+            //deletes its grades.
+            self::force_gradebook_clear($allactivities,$userid);
+
+            //finally clear the completion cache, so that on page refresh, the changes are updated
+            self::clear_completion_cache($courseid);
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-
-		
-		
-		//course modules completion table
-		$cmids = array();
-		foreach($allactivities->chosencms as $cm){
-            // Add module
-		    $cmids[]=$cm->id;
-
-		    // add criteria
-            $params['coursemoduleid'] = $cm->id;
-			$recs=$DB->get_records('course_modules_completion',$params);
-			if($recs){
-				foreach($recs as $rec){
-					$data = new stdClass();
-					$data->id               = $rec->id;
-					$data->viewed           = 0;
-					$data->timemodified     = 0;
-					$data->completionstate  = 0;
-					$DB->update_record('course_modules_completion',$data);
-				}
-			}
-		}//if_all_activities
-		
-		//lets get a csv list of moduleids for bulk operations
-		$cmids =implode(',',$cmids);
-		
-		//course completion crti compl table
-		$recs=$DB->get_records_select('course_completion_criteria','course=:course AND moduleinstance IN (:cmids)',
-						              array('course'=>$courseid,'cmids'=>$cmids));
-		if($recs){
-			foreach($recs as $rec){
-				$DB->delete_records('course_completion_crit_compl',
-						             array('course'=>$courseid,'userid'=>$userid,'criteriaid'=>$rec->id));
-			}
-		}
-
-		//per activity type reset
-		foreach($allactivities->chosencms as $cm){
-			switch($cm->modname){
-				case 'lesson':  self::clear_lesson($cm,$userid); break;
-				case 'quiz':    self::clear_quiz($cm,$userid); break;
-				case 'scorm':   self::clear_scorm($cm,$userid); break;
-				case 'assign':  self::clear_assign($cm,$userid);  break;
-				default: //do nothing
-			}
-		}
-		
-		//delete all grades from gradebook
-		//this caused a lot of trouble initially, so delegated grade deletion in most cases to the
-		//per activity reset above.  But assign would not delete and it left a 0% in teh gradebook
-		//so kills the gradebook entry for all the selected activities. The per activity reset still
-		//deletes its grades. 
-		self::force_gradebook_clear($allactivities,$userid);
-
-		//finally clear the completion cache, so that on page refresh, the changes are updated
-		self::clear_completion_cache($courseid);
 	}//perform_reset_activities
 	
 	//This will clear the gradebook for a single activity, 
