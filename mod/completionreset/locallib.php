@@ -334,7 +334,7 @@ class mod_completionreset_helper{
                         $data->viewed           = 0;
                         $data->timemodified     = 0;
                         $data->completionstate  = 0;
-                        $DB->update_record('course_modules_completion',$data);
+                        //$DB->update_record('course_modules_completion',$data);
                     }
                 }
 
@@ -373,10 +373,7 @@ class mod_completionreset_helper{
             self::force_gradebook_clear($allactivities,$userid);
 
             //finally clear the completion cache, so that on page refresh, the changes are updated
-            //if ($userid == $USER->id) {
-                self::clear_completion_cache($courseid,$userid);
-            //}
-
+            self::clear_completion_cache($courseid,$userid);
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -445,9 +442,6 @@ class mod_completionreset_helper{
             // changes this), then clear it
             if (isset($SESSION->completioncache) && $SESSION->completioncacheuserid==$userid) {
                 unset($SESSION->completioncache[$courseid]);
-                echo "CLEAN SESSION CACHE " . "</br>";
-            }else {
-                echo " NOT CLEAN SESSION CACHE " . "</br>";
             }
         }catch (Exception $ex) {
 		    throw $ex;
