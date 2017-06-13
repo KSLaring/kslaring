@@ -338,15 +338,16 @@ class mod_completionreset_helper{
                     foreach($recs as $rec){
                         $data = new stdClass();
                         $data->id               = $rec->id;
-                        $data->viewed           = 1;
-                        $data->timemodified     = time();
+                        $data->viewed           = 0;
+                        $data->timemodified     = 0;
                         $data->completionstate  = 0;
                         $DB->update_record('course_modules_completion',$data);
                     }
                 }
 
             }//if_all_activities
-        **/
+             * */
+
 
             //lets get a csv list of moduleids for bulk operations
             $cmids =implode(',',$cmids);
