@@ -64,18 +64,3 @@ if ($loggedin) {
     </header>
 </div>
 
-<!--Put in header-->
-<style type="text/css"></style>
-<script type="text/javascript" language="javascript">
-    ed24ChatObj = {
-        'entrypoint': 'Kommuneforlaget_Kommit'
-        , 'mainid': 'A53'
-        , 'Online': '<img src="https://login.edialog24.com/kontakt/online_42275571536875427..png"/>'
-        , 'Offline': '<img src="https://login.edialog24.com/kontakt/online_422755716172106262..png"/>'
-        , 'Busy': '<img src="https://login.edialog24.com/images/standard2-offline-no.jpg"/>'
-        , 'webserverAddress': 'https://login.edialog24.com'
-        , 'urlToOpen': 'https://login.edialog24.com/chattemplate/Kommuneforlaget_Kommit/index.html'
-        , 'windowSettings': 'width=600,height=800,status=0,scrollbars=0,titlebar=0'
-    };
-</script>
-<script src="https://login.edialog24.com/ChatClient3/EntrypointScript4.js" type="text/javascript"></script>
