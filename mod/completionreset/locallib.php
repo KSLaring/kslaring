@@ -298,7 +298,7 @@ class mod_completionreset_helper{
                     // reset_activities
                     self::perform_reset_activities($allactivities,$course->id,$info->userid);
 
-                    //$DB->delete_records('completionreset_users',$params);
+                    $DB->delete_records('completionreset_users',$params);
                 }//for_toreset
 
 
@@ -332,9 +332,9 @@ class mod_completionreset_helper{
                         $data = new stdClass();
                         $data->id               = $rec->id;
                         $data->viewed           = 0;
-                        $data->timemodified     = 0;
+                        $data->timemodified     = null;
                         $data->completionstate  = 0;
-                        //$DB->update_record('course_modules_completion',$data);
+                        $DB->update_record('course_modules_completion',$data);
                     }
                 }
 
