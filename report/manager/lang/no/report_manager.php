@@ -493,9 +493,9 @@ $string['mapped_with']          = 'Mappet med TARDIS';
 
 $string['crontask']             = 'Cron-oppgave for kompetansestyring';
 
-$string['user_report']              = 'Kursdeltakerrapport';
-$string['user_report_link']         = 'Kursdeltakerrapport';
-$string['user_return_to_selection'] = 'Gå tilbake til rapportutvalget';
+$string['user_report']              = 'Kursoversiktsrapport';
+$string['user_report_link']         = 'Kursoversiktsrapport';
+$string['user_return_to_selection'] = 'Gå tilbake til valg av rapportnivå';
 $string['rpt_gender']               = 'Kjønn';
 $string['rpt_female']               = 'Kvinne';
 $string['rpt_male']                 = 'Mann';
