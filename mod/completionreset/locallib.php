@@ -331,8 +331,8 @@ class mod_completionreset_helper{
                     foreach($recs as $rec){
                         $data = new stdClass();
                         $data->id               = $rec->id;
-                        $data->viewed           = 0;
-                        $data->timemodified     = null;
+                        $data->viewed           = 1;
+                        $data->timemodified     = 0;
                         $data->completionstate  = 0;
                         $DB->update_record('course_modules_completion',$data);
                     }
