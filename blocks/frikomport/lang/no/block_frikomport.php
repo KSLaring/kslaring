@@ -34,12 +34,12 @@
 $string['enabledock']               = 'Tillat brukeren å flytte denne blokken til sidestolpen';
 $string['pluginname']               = 'Kursveiviser';
 $string['searchinfrikomport']       = 'Søk';
-$string['frikomport:addinstance']   = 'Legg til en ny Kursveiviser-blokk';
-$string['frikomport:myaddinstance'] = 'Legg til en ny Kursveiviser-blokk til Min startside';
-$string['frikomport:view'] = 'Vis Friadmin-blokken';
+$string['frikomport:addinstance']   = 'Legg til en ny Kursveiviserblokk';
+$string['frikomport:myaddinstance'] = 'Legg til en ny Kursveiviserblokk til Min startside';
+$string['frikomport:view'] = 'Vis Kursveiviserblokken';
 
 $string['ncourses']                     = 'Kursoversikt';
-$string['ncoursesearch']                = 'Course search';
+$string['ncoursesearch']                = 'Finn kurs';
 $string['nnewcourses']                  = 'Opprett nytt kurs';
 $string['naddcourse']                   = 'Nytt kurs';
 $string['naddfromtemplate']             = 'Nytt arrangement';
@@ -61,8 +61,8 @@ $string['nwaitlist']        = 'Venteliste';
 $string['ncompcourses']     = 'Fullførte kurs';
 $string['nstatistics']      = 'Statistikk';
 
-$string['summaryrpt']       = 'Course summary report';
-$string['instructorrpt']    = 'Course Instructor report';
-$string['coordinatorrpt']   = 'Course Coordinator report';
+$string['summaryrpt']       = 'Kursoversiktsrapport';
+$string['instructorrpt']    = 'Instruktørrapport';
+$string['coordinatorrpt']   = 'Koordinatorrapport';
 
-$string['exceldl'] = 'Reports';
+$string['exceldl'] = 'Rapporter';
