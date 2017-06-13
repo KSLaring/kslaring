@@ -266,9 +266,14 @@ class mod_completionreset_helper{
             }else {
                 // Get users
                 $toreset = $DB->get_records('completionreset_users',array('course' => $course->id),'userid');
+                if ($toreset) {
+                    echo "TO RESET " . implode(',',array_keys($toreset)) . " </br>";
+                }
             }//if_resetusers
 
             if ($toreset) {
+                echo "TO RESET " . implode(',',array_keys($toreset)) . " </br>";
+
                 //fetch activity list
                 $allactivities = self::get_all_activities($course);
 

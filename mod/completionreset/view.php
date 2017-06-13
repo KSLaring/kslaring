@@ -63,6 +63,7 @@ if($reset==1){
 	redirect($redirecturl,get_string('coursehasbeenreset','completionreset'),3); 
 	return;
 }elseif ($resetusers==1) {
+    echo "RESET USERS  " . "</br>";
     mod_completionreset_helper::perform_reset($course,true);
     $redirecturl = new moodle_url('/course/view.php', array('id'=>$course->id));
     redirect($redirecturl,get_string('courseusershasbeenreset','completionreset'),3);
