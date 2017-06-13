@@ -58,12 +58,13 @@ $renderer=$PAGE->get_renderer('mod_completionreset');
 
 //do the reset if action=reset
 if($reset==1){
-	mod_completionreset_helper::perform_reset($course);
+    mod_completionreset_helper::perform_reset($course);
 	$redirecturl = new moodle_url('/course/view.php', array('id'=>$course->id));
 	redirect($redirecturl,get_string('coursehasbeenreset','completionreset'),3); 
 	return;
 }elseif ($resetusers==1) {
-    mod_completionreset_helper::perform_reset($course,true);
+    mod_completionreset_helper::perform_reset($course);
+
     $redirecturl = new moodle_url('/course/view.php', array('id'=>$course->id));
     redirect($redirecturl,get_string('courseusershasbeenreset','completionreset'),3);
     return;

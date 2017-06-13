@@ -245,7 +245,8 @@ class mod_completionreset_helper{
         }//try_catch
     }//add_users_completion_reset
 
-    public static function perform_reset($course,$resetusers = null) {
+
+    public static function perform_reset($course) {
         /* Variables */
         global $USER;
         global $DB;
@@ -261,9 +262,8 @@ class mod_completionreset_helper{
                 // Current user
                 $info = new stdClass();
                 $info->userid = $USER->id;
-
                 // Add current user
-                $toreset[$USER->id] = $info;
+                $toreset[$userid] = $info;
             }else {
                 // Get users
                 $rdo = $DB->get_records('completionreset_users',array('course' => $course->id),'userid');
@@ -275,8 +275,6 @@ class mod_completionreset_helper{
             }//if_resetusers
 
             if ($toreset) {
-                echo "TO RESET " . implode(',',array_keys($toreset)) . " </br>";
-
                 //fetch activity list
                 $allactivities = self::get_all_activities($course);
 
@@ -284,6 +282,21 @@ class mod_completionreset_helper{
                 $params = array();
                 $params['course'] = $course->id;
 
+                $users = implode(',',array_keys($toreset));
+
+                // Update Course completions
+                $sql = " UPDATE course_completions 
+                            SET timecompleted = NULL,
+                                 reaggregate = 0
+                                 
+                         WHERE userid IN ($users) 
+                              AND course = :course ";
+                $DB->execute($sql,$params);
+
+                // reset_activities
+                self::perform_reset_activities($allactivities,$course->id,$users);
+
+                /**
                 foreach ($toreset as $info) {
                     $params['userid'] = $info->userid;
 
@@ -297,11 +310,11 @@ class mod_completionreset_helper{
                         $DB->update_record('course_completions',$data);
                     }//if_course_completions
 
-                    // reset_activities
-                    self::perform_reset_activities($allactivities,$course->id,$info->userid);
 
-                    $DB->delete_records('completionreset_users',$params);
+
+                    //$DB->delete_records('completionreset_users',$params);
                 }//for_toreset
+                **/
 
 
             }//if_toreset
@@ -312,7 +325,7 @@ class mod_completionreset_helper{
 
 	private static function perform_reset_activities($allactivities,$courseid,$userid){
         /* Variables */
-		global $DB;
+		global $DB,$USER;
         $params = null;
 
         try {
@@ -329,6 +342,17 @@ class mod_completionreset_helper{
 
                 // add criteria
                 $params['coursemoduleid'] = $cm->id;
+
+                // Update Course completions
+                $sql = " UPDATE course_modules_completion 
+                            SET viewed = 0,
+                                 timemodified = 0,
+                                 completionstate = 0
+                         WHERE userid IN ($userid) 
+                              AND coursemoduleid = :coursemoduleid ";
+                $DB->execute($sql,$params);
+
+                /**
                 $recs=$DB->get_records('course_modules_completion',$params);
                 if($recs){
                     foreach($recs as $rec){
@@ -339,7 +363,7 @@ class mod_completionreset_helper{
                         $data->completionstate  = 0;
                         $DB->update_record('course_modules_completion',$data);
                     }
-                }
+                } **/
             }//if_all_activities
 
             //lets get a csv list of moduleids for bulk operations
@@ -349,19 +373,19 @@ class mod_completionreset_helper{
             $recs=$DB->get_records_select('course_completion_criteria','course=:course AND moduleinstance IN (:cmids)',
                 array('course'=>$courseid,'cmids'=>$cmids));
             if($recs){
-                foreach($recs as $rec){
-                    $DB->delete_records('course_completion_crit_compl',
-                        array('course'=>$courseid,'userid'=>$userid,'criteriaid'=>$rec->id));
-                }
+                //foreach($recs as $rec){
+                //    $DB->delete_records('course_completion_crit_compl',
+                //        array('course'=>$courseid,'userid'=>$userid,'criteriaid'=>$rec->id));
+                //}
             }
 
             //per activity type reset
             foreach($allactivities->chosencms as $cm){
                 switch($cm->modname){
-                    case 'lesson':  self::clear_lesson($cm,$userid); break;
-                    case 'quiz':    self::clear_quiz($cm,$userid); break;
-                    case 'scorm':   self::clear_scorm($cm,$userid); break;
-                    case 'assign':  self::clear_assign($cm,$userid);  break;
+                    //case 'lesson':  self::clear_lesson($cm,$userid); break;
+                    //case 'quiz':    self::clear_quiz($cm,$userid); break;
+                    //case 'scorm':   self::clear_scorm($cm,$userid); break;
+                    //case 'assign':  self::clear_assign($cm,$userid);  break;
                     default: //do nothing
                 }
             }
@@ -374,7 +398,10 @@ class mod_completionreset_helper{
             self::force_gradebook_clear($allactivities,$userid);
 
             //finally clear the completion cache, so that on page refresh, the changes are updated
-            self::clear_completion_cache($courseid,$userid);
+            if ($userid == $USER->id) {
+                self::clear_completion_cache($courseid,$userid);
+            }
+
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
