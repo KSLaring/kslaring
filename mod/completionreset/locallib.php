@@ -259,12 +259,14 @@ class mod_completionreset_helper{
 
         try {
             if (!$resetusers) {
+                echo " 1 " . "</br>";
                 // Current user
                 $info = new stdClass();
                 $info->userid = $USER->id;
                 // Add current user
                 $toreset[$USER->id] = $info;
             }else {
+                echo " 1 USERS" . "</br>";
                 // Get users
                 $rdo = $DB->get_records('completionreset_users',array('course' => $course->id),'userid');
                 if ($rdo) {
@@ -275,6 +277,8 @@ class mod_completionreset_helper{
             }//if_resetusers
 
             if ($toreset) {
+                echo " 2 " . "</br>";
+
                 //fetch activity list
                 $allactivities = self::get_all_activities($course);
 
@@ -283,11 +287,13 @@ class mod_completionreset_helper{
                 $params['course'] = $course->id;
 
                 foreach ($toreset as $info) {
+                    echo " 4 --> USER --> " . $info->userid . "</br>";
                     $params['userid'] = $info->userid;
 
                     //course completions table
                     $rec=$DB->get_record('course_completions',$params);
                     if($rec){
+                        echo "5 " . "</br>";
                         $data = new stdClass();
                         $data->id               = $rec->id;
                         $data->timecompleted    = null;
@@ -296,6 +302,7 @@ class mod_completionreset_helper{
                     }//if_course_completions
 
                     // reset_activities
+                    echo "6 " . "</br>";
                     self::perform_reset_activities($allactivities,$course->id,$info->userid);
 
                     //$DB->delete_records('completionreset_users',$params);
@@ -314,6 +321,7 @@ class mod_completionreset_helper{
         $params = null;
 
         try {
+            echo "7 " . "</br>";
             // Criteria
             $params = array();
             $params['userid'] = $userid;
@@ -321,6 +329,7 @@ class mod_completionreset_helper{
             //course modules completion table
             $cmids = array();
             foreach($allactivities->chosencms as $cm){
+                echo "8 " . "</br>";
                 echo "COURSE MODULE --> " . $cm->id . "</br>";
                 // Add module
                 $cmids[]=$cm->id;
@@ -330,6 +339,7 @@ class mod_completionreset_helper{
                 $recs=$DB->get_records('course_modules_completion',$params);
                 if($recs){
                     foreach($recs as $rec){
+                        echo "9  --> ". $rec->id . "</br>";
                         $data = new stdClass();
                         $data->id               = $rec->id;
                         $data->viewed           = 0;
@@ -348,10 +358,11 @@ class mod_completionreset_helper{
             $recs=$DB->get_records_select('course_completion_criteria','course=:course AND moduleinstance IN (:cmids)',
                 array('course'=>$courseid,'cmids'=>$cmids));
             if($recs){
+                echo "10 --> cmids --> " . $cmids . "</br>";
                 $params = array();
                 $params['course'] = $courseid;
                 foreach($recs as $rec){
-
+                    echo "11 " . "</br>";
                     $DB->delete_records('course_completion_crit_compl', array('course'=>$courseid,'userid'=>$userid,'criteriaid'=>$rec->id));
                 }
             }
@@ -360,7 +371,7 @@ class mod_completionreset_helper{
             foreach($allactivities->chosencms as $cm){
                 switch($cm->modname){
                     case 'lesson':  self::clear_lesson($cm,$userid); break;
-                    case 'quiz':    self::clear_quiz($cm,$userid); break;
+                    case 'quiz':    echo "12 --> quiz " . "</br>"; self::clear_quiz($cm,$userid); break;
                     case 'scorm':   self::clear_scorm($cm,$userid); break;
                     case 'assign':  self::clear_assign($cm,$userid);  break;
                     default: //do nothing
@@ -372,6 +383,7 @@ class mod_completionreset_helper{
             //per activity reset above.  But assign would not delete and it left a 0% in teh gradebook
             //so kills the gradebook entry for all the selected activities. The per activity reset still
             //deletes its grades.
+            echo "14 " . "</br>";
             self::force_gradebook_clear($allactivities,$userid);
 
             //finally clear the completion cache, so that on page refresh, the changes are updated
@@ -416,21 +428,25 @@ class mod_completionreset_helper{
             //per activity to be reset
             $itemids = array();
             foreach($allactivities->chosencms as $cm){
+                echo "15 " . "</br>";
                 $rec = $DB->get_record('grade_items',
                     array('courseid'=>$cm->course,'itemmodule'=>$cm->modname,'iteminstance'=>$cm->instance));
                 if($rec){
+                    echo "16 " . "</br>";
                     $itemids[]=$rec->id;
                 }
             }
 
             $itemids_string = implode(',',$itemids);
             if(!empty($itemids)){
+                echo "17 " . "</br>";
                 $DB->delete_records_select('grade_grades','userid = :userid AND itemid IN ('.$itemids_string .')',
                     array('userid'=>$userid));
             }
 
             //delete all history
             if(!empty($itemids)){
+                echo "18 " . "</br>";
                 $DB->delete_records_select('grade_grades_history','userid = :userid AND itemid IN ('.$itemids_string .')',
                     array('userid'=>$userid));
             }
@@ -490,6 +506,8 @@ class mod_completionreset_helper{
 		try {
             require_once($CFG->libdir . '/questionlib.php');
             require_once($CFG->dirroot . '/question/engine/datalib.php');
+
+            echo "12 CLEAR QUIZ " . "</br>";
 
             // Delete attempts.
             question_engine::delete_questions_usage_by_activities(new qubaid_join(
@@ -554,6 +572,7 @@ class mod_completionreset_helper{
 
             $rec = $DB->get_record(MOD_COMPLETIONRESET_ACTIVITIESTABLE,array('course'=>$course->id));
             if($rec){
+                echo " 3 --> ACTIVITIES --> " .  $rec->activities . "</br>";
                 $activities = explode(',',$rec->activities);
             }else{
                 $activities=array();
