@@ -730,9 +730,12 @@ class completionreset_content_file_info extends file_info_stored {
  * @author      eFaktor (fbv)
  */
 class resettable_assign extends assign {
+    private $course_module;
 
 	public function __construct($coursemodulecontext, $coursemodule, $course)
     {
+        $this->course_module = $coursemodule;
+
         // call parent constructor
         parent::__construct($coursemodulecontext, $coursemodule, $course);
         // Set context
@@ -754,10 +757,10 @@ class resettable_assign extends assign {
        
 
         // Temporary cache only lives for a single request - used to reduce db lookups.
-        $this->cache = array();
+        //$this->set_cache = array();
 
-        $this->submissionplugins = $this->load_plugins('assignsubmission');
-        $this->feedbackplugins = $this->load_plugins('assignfeedback');
+        //$this->submissionplugins = $this->load_plugins('assignsubmission');
+        //$this->feedbackplugins = $this->load_plugins('assignfeedback');
     }
 
  	/**
@@ -779,21 +782,21 @@ class resettable_assign extends assign {
         if($submissions){
 			foreach($submissions as $submission){
 				// Delete files associated with this assignment.
-				foreach ($this->submissionplugins as $plugin) {
+				foreach ($this->get_submission_plugins as $plugin) {
 					$fileareas = array();
 					$plugincomponent = $plugin->get_subtype() . '_' . $plugin->get_type();
 					$fileareas = $plugin->get_file_areas();
 					foreach ($fileareas as $filearea => $notused) {
-						$fs->delete_area_files($this->context->id, $plugincomponent, $filearea,$submission->id);
+						$fs->delete_area_files($this->get_context()->id, $plugincomponent, $filearea,$submission->id);
 					}
 				}
 
-				foreach ($this->feedbackplugins as $plugin) {
+				foreach ($this->get_feedback_plugins as $plugin) {
 					$fileareas = array();
 					$plugincomponent = $plugin->get_subtype() . '_' . $plugin->get_type();
 					$fileareas = $plugin->get_file_areas();
 					foreach ($fileareas as $filearea => $notused) {
-						$fs->delete_area_files($this->context->id, $plugincomponent, $filearea,$submission->id);
+						$fs->delete_area_files($this->get_context()->id, $plugincomponent, $filearea,$submission->id);
 					}
 				}
 			}
@@ -806,7 +809,7 @@ class resettable_assign extends assign {
 		//$DB->delete_records('assign_user_mapping', array('assignment'=>$this->id,'userid'=>$userid));
 		
 		//update gradebook
-		$instance->cmidnumber =  $this->coursemodule->id; 
+		$instance->cmidnumber =  $this->course_module->id;
         assign_update_grades($instance, $userid);
     }
 
