@@ -373,9 +373,9 @@ class mod_completionreset_helper{
             self::force_gradebook_clear($allactivities,$userid);
 
             //finally clear the completion cache, so that on page refresh, the changes are updated
-            if ($userid == $USER->id) {
+            //if ($userid == $USER->id) {
                 self::clear_completion_cache($courseid,$userid);
-            }
+            //}
 
         }catch (Exception $ex) {
             throw $ex;
@@ -445,6 +445,9 @@ class mod_completionreset_helper{
             // changes this), then clear it
             if (isset($SESSION->completioncache) && $SESSION->completioncacheuserid==$userid) {
                 unset($SESSION->completioncache[$courseid]);
+                echo "CLEAN SESSION CACHE " . "</br>";
+            }else {
+                echo " NOT CLEAN SESSION CACHE " . "</br>";
             }
         }catch (Exception $ex) {
 		    throw $ex;
@@ -487,8 +490,6 @@ class mod_completionreset_helper{
 		try {
             require_once($CFG->libdir . '/questionlib.php');
             require_once($CFG->dirroot . '/question/engine/datalib.php');
-
-            echo "12 CLEAR QUIZ " . "</br>";
 
             // Delete attempts.
             question_engine::delete_questions_usage_by_activities(new qubaid_join(
@@ -553,7 +554,6 @@ class mod_completionreset_helper{
 
             $rec = $DB->get_record(MOD_COMPLETIONRESET_ACTIVITIESTABLE,array('course'=>$course->id));
             if($rec){
-                echo " 3 --> ACTIVITIES --> " .  $rec->activities . "</br>";
                 $activities = explode(',',$rec->activities);
             }else{
                 $activities=array();
