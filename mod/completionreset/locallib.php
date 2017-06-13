@@ -269,7 +269,7 @@ class mod_completionreset_helper{
                 $rdo = $DB->get_records('completionreset_users',array('course' => $course->id),'userid');
                 if ($rdo) {
                     foreach ($rdo as $instance) {
-                        $toreset[$instance->userid] = $instance->userid;
+                        $toreset[$instance->userid] = $instance;
                     }
                     echo "TO RESET FIRST " . implode(',',array_keys($toreset)) . " </br>";
                 }
