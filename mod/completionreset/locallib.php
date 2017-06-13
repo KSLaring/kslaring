@@ -253,6 +253,7 @@ class mod_completionreset_helper{
         $toreset = array();
         $params  = null;
         $info    = null;
+        $rdo     = null;
 
 
         try {
@@ -265,9 +266,12 @@ class mod_completionreset_helper{
                 $toreset[$USER->id] = $info;
             }else {
                 // Get users
-                $toreset = $DB->get_records('completionreset_users',array('course' => $course->id),'userid');
-                if ($toreset) {
-                    echo "TO RESET " . implode(',',array_keys($toreset)) . " </br>";
+                $rdo = $DB->get_records('completionreset_users',array('course' => $course->id),'userid');
+                if ($rdo) {
+                    foreach ($rdo as $instance) {
+                        $toreset[$instance->userid] = $instance->userid;
+                    }
+                    echo "TO RESET FIRST " . implode(',',array_keys($toreset)) . " </br>";
                 }
             }//if_resetusers
 
