@@ -285,7 +285,7 @@ class mod_completionreset_helper{
                 $users = implode(',',array_keys($toreset));
 
                 // Update Course completions
-                $sql = " UPDATE course_completions 
+                $sql = " UPDATE {course_completions} 
                             SET timecompleted = NULL,
                                  reaggregate = 0
                                  
