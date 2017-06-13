@@ -246,7 +246,7 @@ class mod_completionreset_helper{
     }//add_users_completion_reset
 
 
-    public static function perform_reset($course) {
+    public static function perform_reset($course,$resetusers=0) {
         /* Variables */
         global $USER;
         global $DB;
@@ -263,7 +263,7 @@ class mod_completionreset_helper{
                 $info = new stdClass();
                 $info->userid = $USER->id;
                 // Add current user
-                $toreset[$userid] = $info;
+                $toreset[$USER->id] = $info;
             }else {
                 // Get users
                 $rdo = $DB->get_records('completionreset_users',array('course' => $course->id),'userid');
