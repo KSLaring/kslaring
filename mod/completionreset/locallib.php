@@ -334,7 +334,7 @@ class mod_completionreset_helper{
                         $data->viewed           = 1;
                         $data->timemodified     = time();
                         $data->completionstate  = 0;
-                        $DB->update_record('course_modules_completion',$data);
+                        //$DB->update_record('course_modules_completion',$data);
                     }
                 }
 
