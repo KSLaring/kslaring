@@ -320,33 +320,26 @@ class mod_completionreset_helper{
 
             //course modules completion table
             $cmids = array();
-            /**
-             * @updateDate  13/06/2017
-             * @author      eFaktor     (fbv)
-             */
-            // IT DOESN WORK FOR RESET USER SELECTED
-            // WHEN IS THE SAME USER WHO RESET COMPLETION NEVER IS EXECUTED
-            /**
             foreach($allactivities->chosencms as $cm){
                 // Add module
                 $cmids[]=$cm->id;
 
                 // add criteria
                 $params['coursemoduleid'] = $cm->id;
+                $params['userid'] = $userid;
                 $recs=$DB->get_records('course_modules_completion',$params);
                 if($recs){
                     foreach($recs as $rec){
                         $data = new stdClass();
                         $data->id               = $rec->id;
-                        $data->viewed           = 1;
-                        $data->timemodified     = time();
+                        $data->viewed           = 0;
+                        $data->timemodified     = 0;
                         $data->completionstate  = 0;
                         $DB->update_record('course_modules_completion',$data);
                     }
                 }
 
             }//if_all_activities
-        **/
 
             //lets get a csv list of moduleids for bulk operations
             $cmids =implode(',',$cmids);
