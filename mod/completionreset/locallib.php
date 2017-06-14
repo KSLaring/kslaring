@@ -315,8 +315,8 @@ class mod_completionreset_helper{
                             $data->completionstate  = 0;
                             $rdo = $DB->get_record('course_modules_completion',array('coursemoduleid' => $cmid,'userid' => $info->userid));
                             if ($rdo) {
-                            $data->id = $rdo->id;
-                            $DB->update_record('course_modules_completion',$data);
+                                $data->id = $rdo->id;
+                                $DB->update_record('course_modules_completion',$data);
                             }
 
                             //COMPLETION_NOT_VIEWED
@@ -395,7 +395,9 @@ class mod_completionreset_helper{
             $rdo->reaggregate   = 0;
 
             // Reset completion
-            $DB->update_record('course_completions',$rdo);
+            if ($rdo) {
+                $DB->update_record('course_completions',$rdo);
+            }
         }catch (Exception $ex) {
             throw $ex;
         }
