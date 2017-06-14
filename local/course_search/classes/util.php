@@ -46,6 +46,17 @@ class util {
     public static function get_searchtags($userid) {
         $context = null;
 
+        $strsortby = get_string('sortby', 'local_course_search');
+        $strdisplayoptions = get_string('displayoptions', 'local_course_search');
+        $strsortdesc = get_string('sortdesc', 'local_course_search');
+        $strshowtags = get_string('showtags', 'local_course_search');
+        $strcoursename = get_string('course_name', 'local_friadmin');
+        $strcoursedate = get_string('course_date', 'local_friadmin');
+        $strcourseseats = get_string('course_seats', 'local_friadmin');
+        $strcoursedeadline = get_string('course_deadline', 'local_friadmin');
+        $strcoursemunicipality = get_string('course_municipality', 'local_friadmin');
+        $strcourselocation = get_string('course_location', 'local_friadmin');
+
         if (false) {
             $json = file_get_contents(__DIR__ . '/../fixtures/course_search.json');
             $context = json_decode($json);
@@ -63,22 +74,40 @@ class util {
                             'type' => 'display',
                             'groupid' => 0,
                             'group' => 'display',
-                            'title' => 'Display options',
+                            'title' => $strdisplayoptions,
                             'shown' => array(
                                 (object)array(
                                     'type' => 'display',
                                     'groupid' => 0,
                                     'group' => 'sort',
-                                    'name' => 'Sort by',
+                                    'name' => $strsortby,
                                     'sort' => 'name',
                                     'isselect' => 1,
                                     'elementitems' => array(
-                                        'name',
-                                        'date',
-                                        'availseats',
-                                        'deadline',
-                                        'municipality',
-                                        'location'
+                                        (object)array(
+                                            'value' => 'name',
+                                            'text' => \core_text::strtolower($strcoursename)
+                                        ),
+                                        (object)array(
+                                            'value' => 'date',
+                                            'text' => \core_text::strtolower($strcoursedate)
+                                        ),
+                                        (object)array(
+                                            'value' => 'availseats',
+                                            'text' => \core_text::strtolower($strcourseseats)
+                                        ),
+                                        (object)array(
+                                            'value' => 'deadline',
+                                            'text' => \core_text::strtolower($strcoursedeadline)
+                                        ),
+                                        (object)array(
+                                            'value' => 'municipality',
+                                            'text' => \core_text::strtolower($strcoursemunicipality)
+                                        ),
+                                        (object)array(
+                                            'value' => 'location',
+                                            'text' => \core_text::strtolower($strcourselocation)
+                                        )
                                     ),
                                     'checked' => 1
                                 ),
@@ -86,7 +115,7 @@ class util {
                                     'type' => 'display',
                                     'groupid' => 0,
                                     'group' => 'sortdesc',
-                                    'name' => 'Sort descending',
+                                    'name' => $strsortdesc,
                                     'isselect' => 0,
                                     'checked' => 0
                                 ),
@@ -94,7 +123,7 @@ class util {
                                     'type' => 'display',
                                     'groupid' => 0,
                                     'group' => 'tags',
-                                    'name' => 'Show course tags',
+                                    'name' => $strshowtags,
                                     'isselect' => 0,
                                     'checked' => 0
                                 ),
