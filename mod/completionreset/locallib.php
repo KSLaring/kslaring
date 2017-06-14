@@ -259,8 +259,9 @@ class mod_completionreset_helper{
         $data       = null;
 
 
+
         // Strat transaction
-        $trans = $DB->start_delegated_transaction();
+        //$trans = $DB->start_delegated_transaction();
 
         try {
             if (!$resetusers) {
@@ -285,7 +286,6 @@ class mod_completionreset_helper{
 
                 // Criterias completion
                 $course_activities = $completion->get_activities();
-                echo implode(',',array_keys($course_activities)) . "</br>";
 
                 // activities to reset
                 $acttoreset = self::get_activities_to_reset($course->id);
@@ -293,23 +293,42 @@ class mod_completionreset_helper{
                 if ($acttoreset) {
                     // Gt criterias
                     $criterias = $DB->get_records_select('course_completion_criteria','course=:course AND moduleinstance IN (:cmids)',
-                                                         array('course'=>$course->id,'cmids'=>implode(',',$acttoreset)));
+                        array('course'=>$course->id,'cmids'=>implode(',',$acttoreset)));
                     foreach ($toreset as $info) {
+                        // Criteria
+                        $params = array();
+                        $params['course']   = $course->id;
+                        $params['userid']   = $info->userid;
+
                         // For each user
                         foreach ($acttoreset as $cmid) {
+                            // Get activity module
                             $activity = $course_activities[$cmid];
+
+                            // Reset course module completions
+
+                            $data = new stdClass();
+                            $data->userid           = $info->userid;
+                            $data->coursemoduleid   = $cmid;
+                            $data->viewed           = 0;
+                            $data->timemodified     = 0;
+                            $data->completionstate  = 0;
+                            $rdo = $DB->get_record('course_modules_completion',array('coursemoduleid' => $cmid,'userid' => $info->userid));
+                            if ($rdo) {
+                            $data->id = $rdo->id;
+                            $DB->update_record('course_modules_completion',$data);
+                            }
+
+                            //COMPLETION_NOT_VIEWED
+                            //$completion->update_state($activity,COMPLETION_NOT_VIEWED,$info->userid);
 
                             // Clear criteria
                             if ($criterias) {
-                                $params = array();
-                                $params['course']   = $course->id;
-                                $params['userid']   = $info->userid;
                                 foreach($criterias as $rec){
                                     $params['criteriaid'] = $rec->id;
                                     $DB->delete_records('course_completion_crit_compl', $params);
                                 }
                             }//if_criterias
-
 
                             // Reset activity
                             switch($activity->modname){
@@ -327,39 +346,60 @@ class mod_completionreset_helper{
                             //deletes its grades.
                             self::force_gradebook_clear($activity,$info->userid);
 
-                            // Clear course completion
-                            $DB->delete_records('course_completions', array('course' => $course->id,'userid'=>$info->userid));
 
-                            // Reset course module completions
-                            // Last one because is going to clean the course completion cache connected with the user
-                            $data = new stdClass();
-                            $data->userid           = $info->userid;
-                            $data->coursemoduleid   = $cmid;
-                            $data->viewed           = 0;
-                            $data->timemodified     = 0;
-                            $data->completionstate  = 0;
-                            $rdo = $DB->get_record('course_modules_completion',array('coursemoduleid' => $cmid,'userid' => $info->userid));
-                            if ($rdo) {
-                                $data->id = $rdo->id;
-                            }else {
-                                $data->id = $DB->insert_record('course_modules_completion',$data);
-                            }
-                            // Update the status via completion core
-                            $completion->internal_set_data($activity,$data);
+                            // Reset time completion
+                            self::reset_time_completion($activity->course,$info->userid);
+
+                            // Reset completion cache
+                            self::reset_completion_cache($activity->course,$info->userid);
                         }//for_Activities_to_reset
+
+                        unset($params['criteriaid']);
+                        $DB->delete_records('completionreset_users',$params);
                     }//for_users
                 }//if_activities_to_reset
             }//if_toreset
-
-            // Commit
-            $trans->allow_commit();
         }catch (Exception $ex) {
             // Rollback
-            $trans->rollback($ex);
+            //$trans->rollback($ex);
 
             throw $ex;
         }//try_catch
     }//perform_reset
+
+    private static function reset_completion_cache($course,$user) {
+        /* Variables */
+        $completioncache = null;
+
+        try {
+            $completioncache = cache::make('core', 'completion');
+
+            // reset modinfo for user (no need to call rebuild_course_cache())
+            get_fast_modinfo($course, $user, true);
+            // Remove another user's completion cache for this course.
+            $completioncache->delete($user . '_' . $course);
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//reset_completion_cache
+
+    private static function reset_time_completion($course,$user) {
+        /* Variables */
+        global $DB;
+        $rdo = null;
+
+        try {
+            // Get instance
+            $rdo = $DB->get_record('course_completions',array('userid' => $user,'course' => $course));
+            $rdo->timecompleted = null;
+            $rdo->reaggregate   = 0;
+
+            // Reset completion
+            $DB->update_record('course_completions',$rdo);
+        }catch (Exception $ex) {
+            throw $ex;
+        }
+    }//reset_time_completion
 
     private static function get_activities_to_reset($courseid) {
         /* Variables */
@@ -410,9 +450,6 @@ class mod_completionreset_helper{
         $itemids        = null;
         $itemids_string = null;
 
-        // Start transaction
-        $trans = $DB->start_delegated_transaction();
-
 		try {
 		    // Criteria
             $params = array();
@@ -460,10 +497,6 @@ class mod_completionreset_helper{
 	//Reset a lesson
 	static function clear_lesson($cm,$userid){
 	    global $DB;
-	    $trans = null;
-
-	    // Start transaction
-        $trans = $DB->start_delegated_transaction();
 
 		try {
             $DB->delete_records('lesson_timer', array('lessonid'=>$cm->instance,'userid'=>$userid));
@@ -476,13 +509,7 @@ class mod_completionreset_helper{
             //the assignment dont make this easy
             $lesson = $DB->get_record('lesson',array('id'=>$cm->instance));
             lesson_update_grades($lesson, $userid);
-
-            // Commit
-            $trans->allow_commit();
         }catch (Exception $ex) {
-		    // Rollback
-            $trans->rollback($ex);
-
 		    throw $ex;
         }//try_catch
 	}
@@ -501,10 +528,6 @@ class mod_completionreset_helper{
      */
 	static function clear_quiz($cm,$userid){
 		global $CFG,$DB;
-		$trans  = null;
-
-		// Start transaction
-        $trans = $DB->start_delegated_transaction();
 
 		try {
             require_once($CFG->libdir . '/questionlib.php');
@@ -527,12 +550,7 @@ class mod_completionreset_helper{
             //update gradebook
             $quiz = $DB->get_record('quiz',array('id'=>$cm->instance));
             quiz_update_grades($quiz, $userid);
-
-            // Commit
-            $trans->allow_commit();
         }catch (Exception $ex) {
-		    // Rolback
-            $trans->rollback($ex);
 		    throw $ex;
         }//try_Catch
 	}
@@ -540,10 +558,7 @@ class mod_completionreset_helper{
 	//Reset a scorm
 	static function clear_scorm($cm,$userid){
 		global $DB,$CFG;
-		$trans  = null;
 
-		// Start transaction
-        $trans = $DB->start_delegated_transaction();
 		try {
             $scorm = $DB->get_record('scorm',array('id'=>$cm->instance));
             $attempts = $DB->get_records('scorm_scoes_track', array('userid' => $userid, 'scormid' => $scorm->id));
@@ -553,13 +568,7 @@ class mod_completionreset_helper{
                     scorm_delete_attempt($userid, $scorm, $attempt->attempt);
                 }
             }
-
-            // Allow commit
-            $trans->allow_commit();
         }catch (Exception $ex) {
-		    // Rollback
-            $trans->rollback($ex);
-
 		    throw $ex;
         }//try_catch
 	}
@@ -567,23 +576,13 @@ class mod_completionreset_helper{
 	//Reset an assignmnet
 	static function clear_assign($cm,$userid){
         global $DB;
-        $trans = null;
-
-        // Start transaction
-        $trans = $DB->start_delegated_transaction();
 
         try {
             $course = $DB->get_record('course', array('id'=>$cm->course), '*', MUST_EXIST);
             $context = context_module::instance($cm->id);
             $assignment = new resettable_assign($context, $cm, $course);
             $assignment->reset_single_user($userid);
-
-            // Commit
-            $trans->allow_commit();
         }catch (Exception $ex) {
-            // Rollback
-            $trans->rollback($ex);
-
             throw $ex;
         }//try_catch
 	}
