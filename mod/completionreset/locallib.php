@@ -391,11 +391,11 @@ class mod_completionreset_helper{
         try {
             // Get instance
             $rdo = $DB->get_record('course_completions',array('userid' => $user,'course' => $course));
-            $rdo->timecompleted = null;
-            $rdo->reaggregate   = 0;
 
             // Reset completion
             if ($rdo) {
+                $rdo->timecompleted = null;
+                $rdo->reaggregate   = 0;
                 $DB->update_record('course_completions',$rdo);
             }
         }catch (Exception $ex) {
