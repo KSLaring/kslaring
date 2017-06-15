@@ -351,7 +351,7 @@ $string['jobroleexcel'] = 'Jobbrolle';
 
 $string['participantslistsummary'] = 'Sammendrag av deltakerliste';
 $string['participantslistinstructors'] = 'Instruktørliste';
-$string['participantslistcoordinators'] = 'Participants_List_Coordinators_';
+$string['participantslistcoordinators'] = 'Koordinatorliste';
 
 $string['filter'] = 'Filter';
 $string['content'] = 'Innhold';
@@ -374,5 +374,5 @@ $string['singleactivity']       = 'Enkeltelementsformat';
 $string['whitepaper']           = 'white paper';
 $string['topics']               = 'Emneformat';
 $string['grid']                 = 'Rutenettformat';
-$string['weeks']                = 'ukeformat';
-$string['social']               = 'sosialt format';
+$string['weeks']                = 'Ukeformat';
+$string['social']               = 'Sosialt format';
