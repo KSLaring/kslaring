@@ -897,7 +897,7 @@ class resettable_assign extends assign {
             if($submissions){
                 foreach($submissions as $submission){
                     // Delete files associated with this assignment.
-                    foreach ($this->get_submission_plugins as $plugin) {
+                    foreach ($this->get_submission_plugins() as $plugin) {
                         $fileareas = array();
                         $plugincomponent = $plugin->get_subtype() . '_' . $plugin->get_type();
                         $fileareas = $plugin->get_file_areas();
@@ -906,7 +906,7 @@ class resettable_assign extends assign {
                         }
                     }
 
-                    foreach ($this->get_feedback_plugins as $plugin) {
+                    foreach ($this->get_feedback_plugins() as $plugin) {
                         $fileareas = array();
                         $plugincomponent = $plugin->get_subtype() . '_' . $plugin->get_type();
                         $fileareas = $plugin->get_file_areas();
