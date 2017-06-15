@@ -491,14 +491,14 @@ $string['exit_unwait']          = 'Ventelisteoppføringen dn har blitt slettet';
 
 $string['mapped_with']          = 'Mappet med TARDIS';
 
-$string['crontask']             = 'Report manager cron task';
+$string['crontask']             = 'Rapportgenerator cron-oppgave';
 
-$string['user_report']              = 'User report';
-$string['user_report_link']         = 'User overview report';
-$string['user_return_to_selection'] = 'Return to user report selection page';
-$string['rpt_gender']               = 'Gender';
-$string['rpt_female']               = 'Woman';
-$string['rpt_male']                 = 'Man';
-$string['rpt_produce']              = 'Produced by';
-$string['rpt_enrolled']             = 'Enrolled date';
-$string['rpt_days']                 = 'Number of days';
+$string['user_report']              = 'Brukerrapport';
+$string['user_report_link']         = 'Brukeroversiktsrapport';
+$string['user_return_to_selection'] = 'Gå tilbake til valg for brukerrapport';
+$string['rpt_gender']               = 'Kjønn';
+$string['rpt_female']               = 'Kvinne';
+$string['rpt_male']                 = 'Mann';
+$string['rpt_produce']              = 'Produsert av';
+$string['rpt_enrolled']             = 'Påmeldtdato';
+$string['rpt_days']                 = 'Antall dager';
