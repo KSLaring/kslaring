@@ -306,7 +306,6 @@ class mod_completionreset_helper{
                             $activity = $course_activities[$cmid];
 
                             // Reset course module completions
-
                             $data = new stdClass();
                             $data->userid           = $info->userid;
                             $data->coursemoduleid   = $cmid;
@@ -498,14 +497,39 @@ class mod_completionreset_helper{
 	
 	//Reset a lesson
 	static function clear_lesson($cm,$userid){
-	    global $DB;
+	    global  $DB;
+	    $manager = null;
+
 
 		try {
-            $DB->delete_records('lesson_timer', array('lessonid'=>$cm->instance,'userid'=>$userid));
-            $DB->delete_records('lesson_high_scores', array('lessonid'=>$cm->instance,'userid'=>$userid));
-            $DB->delete_records('lesson_grades', array('lessonid'=>$cm->instance,'userid'=>$userid));
-            $DB->delete_records('lesson_attempts', array('lessonid'=>$cm->instance,'userid'=>$userid));
-            $DB->delete_records('lesson_branch', array('lessonid'=>$cm->instance,'userid'=>$userid));
+		    // Get manager
+		    $manager = $DB->get_manager();
+
+		    // Check first the table
+            // lesson_timer
+            if ($manager->table_exists('lesson_timer')) {
+                $DB->delete_records('lesson_timer', array('lessonid'=>$cm->instance,'userid'=>$userid));
+            }//lesson_timer
+
+            // lesson_high_scores
+            if ($manager->table_exists('lesson_high_scores')) {
+                $DB->delete_records('lesson_high_scores', array('lessonid'=>$cm->instance,'userid'=>$userid));
+            }//id_lesson_high_scores
+
+            // lesson_grades
+            if ($manager->table_exists('lesson_grades')) {
+                $DB->delete_records('lesson_grades', array('lessonid'=>$cm->instance,'userid'=>$userid));
+            }//if_lesson_grades
+
+            // lesson_attempts
+            if ($manager->table_exists('lesson_attempts')) {
+                $DB->delete_records('lesson_attempts', array('lessonid'=>$cm->instance,'userid'=>$userid));
+            }//_lesson_attempts
+
+            // lesson_branch
+            if ($manager->table_exists('lesson_branch')) {
+                $DB->delete_records('lesson_branch', array('lessonid'=>$cm->instance,'userid'=>$userid));
+            }//if_lesson_branch
 
             //update gradebook ---- this doesn't work
             //the assignment dont make this easy
