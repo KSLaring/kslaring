@@ -296,73 +296,73 @@ $string['username'] = 'brukernavn';
 $string['useremail'] = 'e-post';
 $string['usercompetance'] = 'Kompetanse';
 
-$string['producer'] = 'Producer';
-$string['levelone'] = 'Level one';
+$string['producer'] = 'Produsent';
+$string['levelone'] = 'Nivå 1';
 $string['kommune']  = 'Kommune';
-$string['sector'] = 'Sector';
-$string['coordinator'] = 'Coordinator';
-$string['spots'] = 'Available seats';
-$string['prices'] = 'Prices';
-$string['instructors'] = 'Instructors';
-$string['students'] = 'Students';
-$string['waitinglist'] = 'Waitinglist';
-$string['completed'] = 'Completed';
-$string['visible'] = 'Visibility';
-$string['expiration'] = 'Expiration';
+$string['sector'] = 'Sektor';
+$string['coordinator'] = 'Koordinator';
+$string['spots'] = 'Ledige plasser';
+$string['prices'] = 'Priser';
+$string['instructors'] = 'Instruktører';
+$string['students'] = 'Studenter';
+$string['waitinglist'] = 'Venteliste';
+$string['completed'] = 'Fullført';
+$string['visible'] = 'Synlighet';
+$string['expiration'] = 'Utløper';
 
-$string['courselong'] = 'Course fullname';
-$string['courseshort'] = 'Course shortname';
+$string['courselong'] = 'Kursets fulle navn';
+$string['courseshort'] = 'Kursets kortnavn';
 $string['courseformat'] = 'Format';
-$string['internalprice'] = 'Internal price';
-$string['externalprice'] = 'External price';
-$string['nexttab'] = 'Click the next tab to see all the raw data';
-$string['from'] = 'From';
-$string['to'] = 'To';
-$string['fromto'] = 'From - To';
-$string['dates'] = 'Dates';
-$string['coursecoordinator'] = 'Coordinator';
-$string['numberofdays'] = 'Number of days';
+$string['internalprice'] = 'Intern pris';
+$string['externalprice'] = 'Ekstern pris';
+$string['nexttab'] = 'Klikk neste fane for å se alle rådata';
+$string['from'] = 'Fra';
+$string['to'] = 'Til';
+$string['fromto'] = 'Fra - Til';
+$string['dates'] = 'Datoer';
+$string['coursecoordinator'] = 'Koordinator';
+$string['numberofdays'] = 'Antall dager';
 
 $string['yes'] = 'Ja';
 $string['no'] = 'Nei';
 
-$string['instructorname'] = 'Instructor name';
-$string['coordinatorname'] = 'Coordinator name';
-$string['coursename'] = 'Course name';
+$string['instructorname'] = 'Instruktørens navn';
+$string['coordinatorname'] = 'Koordinators navn';
+$string['coursename'] = 'Kursets navn';
 
-$string['userworkplace'] = 'Workplace';
-$string['userjobrole'] = 'Job Role';
+$string['userworkplace'] = 'Arbeidssted';
+$string['userjobrole'] = 'Jobbrolle';
 
 $string['noresults'] = 'Ingen resultater';
 
 $string['summaryrptexcel'] = 'Oversikts Rapport';
-$string['coordinatorexcel'] = 'Coordinator Report';
-$string['instructorexcel'] = 'Instructor Report';
-$string['categoryexcel'] = 'Category';
-$string['courseexcel'] = 'Course';
-$string['fromexcel'] = 'From';
-$string['toexcel'] = 'To';
-$string['courseexcel'] = 'Course';
-$string['fullnameexcel'] = 'Users Fullname';
-$string['usernameexcel'] = 'Username';
-$string['emailexcel'] = 'Email';
-$string['workplaceexcel'] = 'Workplace';
-$string['jobroleexcel'] = 'Jobrole';
+$string['coordinatorexcel'] = 'Koordinatorrapport';
+$string['instructorexcel'] = 'Instruktørrapport';
+$string['categoryexcel'] = 'Kategori';
+$string['courseexcel'] = 'Kurs';
+$string['fromexcel'] = 'Fra';
+$string['toexcel'] = 'Til';
+$string['courseexcel'] = 'Kurs';
+$string['fullnameexcel'] = 'Brukerens fulle navn';
+$string['usernameexcel'] = 'Brukernavn';
+$string['emailexcel'] = 'Epost';
+$string['workplaceexcel'] = 'Arbeidssted';
+$string['jobroleexcel'] = 'Jobbrolle';
 
-$string['participantslistsummary'] = 'Participants_List_Summary_';
-$string['participantslistinstructors'] = 'Participants_List_Instructors_';
-$string['participantslistcoordinators'] = 'Participants_List_Coordinators_';
+$string['participantslistsummary'] = 'Deltakerliste_sammendrag_';
+$string['participantslistinstructors'] = 'Deltakerliste_instruktører_';
+$string['participantslistcoordinators'] = 'Deltakerliste_koordinatorer_';
 
-$string['filter'] = 'Filter';
-$string['content'] = 'Content';
+$string['filter'] = 'Filtrer';
+$string['content'] = 'Innhold';
 
-$string['courselocation'] = 'Course Location';
+$string['courselocation'] = 'Kurssted';
 
-$string['download_one_location'] = 'Download one location';
-$string['download_all_locations'] = 'Download all locations';
+$string['download_one_location'] = 'Last ned for et kurssted';
+$string['download_all_locations'] = 'Last ned for alle kurssteder';
 
-$string['alllocations'] = 'All_courses_in_';
-$string['onelocation'] = 'Courses_in_';
+$string['alllocations'] = 'Alle_kurs_på_';
+$string['onelocation'] = 'Kurs_på_';
 
 $string['classroom']            = 'Arrangementsformat';
 $string['classroom_frikomport'] = 'Enkelt arrangementsformat';
@@ -374,5 +374,5 @@ $string['singleactivity']       = 'Enkeltelementsformat';
 $string['whitepaper']           = 'white paper';
 $string['topics']               = 'Emneformat';
 $string['grid']                 = 'Rutenettformat';
-$string['weeks']                = 'weeks';
-$string['social']               = 'social';
+$string['weeks']                = 'Ukeformat';
+$string['social']               = 'Sosialt format';
