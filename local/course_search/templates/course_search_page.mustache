@@ -6,8 +6,11 @@
 
             <fieldset class="form-search">
                 <h4>{{{searchtitle}}}</h4>
-                <input id="course-search" name="course-search" type="text" class="input-large search-query">
-                <button type="submit" class="btn course-search-btn">{{{searchbtntext}}}</button>
+
+                <div class="input-append">
+                    <input id="course-search" name="course-search" type="text" class="input-small search-query">
+                    <button type="submit" class="btn course-search-btn">{{{searchbtntext}}}</button>
+                </div>
             </fieldset>
 
             {{> local_course_search/course_search_region_search}}

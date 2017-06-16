@@ -14,12 +14,14 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
             preselectedTagsAddedState = false,
             searcharearenderedstate = false,
             selectedCourseTags = [],
-            courses = [],
+            courses = {},
+            courseids = [],
             userid = 0,
             $catalogarea = null,
             $searcharea = null,
             $coursesearchform = null,
             $resultarea = null,
+            $navtabs = null,
             $tagpreselectarea = null,
             $formsearch = null,
             $tagarea = null,
@@ -100,6 +102,11 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                     } else {
                         $resultarea.append(html);
                     }
+
+                    $navtabs = $('.nav-tabs').eq(0);
+                    // $navtabs.on('click', handleTabChange);
+                    $('a[data-toggle="tab"]').on('shown', handleTabChange);
+
                     updateCourseDisplay();
                 });
         };
@@ -230,7 +237,7 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                     });
             }
 
-            updateCourses();
+            filterCourses();
             updateCourseDisplay();
         };
 
@@ -281,7 +288,7 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
             }
 
             if ($parent.data('type') === 'course') {
-                updateCourses();
+                filterCourses();
             }
             updateCourseDisplay();
         };
@@ -389,7 +396,7 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
             $ele.remove();
 
             if ($ele.data('type') === 'course') {
-                updateCourses();
+                filterCourses();
             } else if ($ele.data('type') === 'display') {
                 updateCourseDisplay();
             }
@@ -445,7 +452,7 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                     });
             }
 
-            updateCourses();
+            filterCourses();
         };
 
         var getSelectedSearchText = function () {
@@ -465,6 +472,24 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
             });
 
             return searchItems;
+        };
+
+        var getSelectedCourseTagsGrouped = function () {
+            var checkeditems,
+                searchItemsObj = {};
+
+            checkeditems = $coursesearchform.find('label').has(':checked');
+            checkeditems.each(function () {
+                var $item = $(this);
+                if ($item.data('type') === 'course') {
+                    if (!searchItemsObj.hasOwnProperty($item.data('group'))) {
+                        searchItemsObj[$item.data('group')] = [];
+                    }
+                    searchItemsObj[$item.data('group')].push($item.data('group') + '-' + $item.data('name'));
+                }
+            });
+
+            return searchItemsObj;
         };
 
         var getPreselectedCourseTagObjects = function () {
@@ -608,11 +633,111 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
         /**
          * Walk all course items in the course data object and collect the ids of the matching courses.
          * Check if any of the selected search criteria match, if one matches add the id to the show list.
+         * The rules for matches are:
+         * _ OR the matches within one tag group
+         * _ AND the group matches, the freetext and the date
+         *
+         * Then walk the course nodes in the display area and set the display status.
+         */
+        var filterCourses = function () {
+            var selectedCourseTags = getSelectedCourseTags(),
+                selectedCourseTagsGrouped = getSelectedCourseTagsGrouped(),
+                searchText = getSelectedSearchText(),
+                fromtoDates = getSelectedFromToDates(), // array with the [from, to] dates
+                hasTextSearch = (searchText !== ''),
+                courseIDsToShow = [],
+                courseIDsFiltered = cloneArray(courseids),
+                filtered = [],
+                thecourse;
+
+            // Check if the course dates match the chosen dates.
+            if (fromtoDates.from !== null || fromtoDates.to !== null) {
+                filtered = courseIDsFiltered.filter(function (id) {
+                    thecourse = courses[id];
+                    if (fromtoDates.from !== null && fromtoDates.to !== null) {
+                        if (thecourse.sortdate >= fromtoDates.from && thecourse.sortdate <= fromtoDates.to) {
+                            return true;
+                        }
+                    } else if (fromtoDates.from !== null) {
+                        if (thecourse.sortdate >= fromtoDates.from) {
+                            return true;
+                        }
+                    } else if (fromtoDates.to !== null) {
+                        if (thecourse.sortdate <= fromtoDates.to) {
+                            return true;
+                        }
+                    } else {
+                        return false;
+                    }
+                });
+
+                if (filtered.length) {
+                    courseIDsFiltered = cloneArray(filtered);
+                    filtered = [];
+                }
+            }
+
+            // Check if the text index contains the search string.
+            if (hasTextSearch) {
+                filtered = courseIDsFiltered.filter(function (id) {
+                    thecourse = courses[id];
+                    return (thecourse.hasOwnProperty('alltext') && thecourse.alltext &&
+                    thecourse.alltext.indexOf(searchText) !== -1);
+                });
+
+                if (filtered.length) {
+                    courseIDsFiltered = cloneArray(filtered);
+                    filtered = [];
+                }
+            }
+
+            // Filter the tags. Within a tag group use OR, between the tag groups AND.
+            Object.keys(selectedCourseTagsGrouped).forEach(function (key) {
+                filtered = courseIDsFiltered.filter(function (id) {
+                    // Use OR - any group tag will be positive.
+                    var found = false;
+                    selectedCourseTagsGrouped[key].forEach(function (item) {
+                        if (courses[id].tagcollection.indexOf(item) !== -1) {
+                            found = true;
+                        }
+                    });
+
+                    return found;
+                });
+
+                // Use AND - reduce the tag group to the found courses for the next tag group.
+                if (filtered.length) {
+                    courseIDsFiltered = cloneArray(filtered);
+                    filtered = [];
+                }
+            });
+
+            // If tags are selected but no courses match then set the id list to -1.
+            if (!courseIDsFiltered.length) {
+                courseIDsFiltered.push(-1);
+            }
+
+            showHideCourses(courseIDsFiltered);
+        };
+
+        /**
+         * Clone an array
+         *
+         * @param inArray
+         * @returns {Array}
+         */
+        var cloneArray = function (inArray) {
+            return inArray.slice(0);
+        };
+
+        /**
+         * Walk all course items in the course data object and collect the ids of the matching courses.
+         * Check if any of the selected search criteria match, if one matches add the id to the show list.
          *
          * Then walk the course nodes in the display area and set the display status.
          *
          */
-        var updateCourses = function () {
+        var filterCourses_o = function () {
             var selectedCourseTags = getSelectedCourseTags(),
                 searchText = getSelectedSearchText(),
                 fromtoDates = getSelectedFromToDates(), // array with the [from, to] dates
@@ -692,25 +817,25 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
             if (courseIDsToShow.length) {
                 // If first item is -1 then hide all courses.
                 if (courseIDsToShow[0] === -1) {
-                    courses.forEach(function (item) {
-                        $coursecards.find('#coursecarditem-' + item.id).addClass(hideitemClass);
-                        $courselist.find('#courselistitem-' + item.id).addClass(hideitemClass);
+                    courseids.forEach(function (item) {
+                        $coursecards.find('#coursecarditem-' + item).addClass(hideitemClass);
+                        $courselist.find('#courselistitem-' + item).addClass(hideitemClass);
                     });
                 } else {
-                    courses.forEach(function (item) {
-                        if (courseIDsToShow.indexOf(item.id) !== -1) {
-                            $coursecards.find('#coursecarditem-' + item.id).removeClass(hideitemClass);
-                            $courselist.find('#courselistitem-' + item.id).removeClass(hideitemClass);
+                    courseids.forEach(function (item) {
+                        if (courseIDsToShow.indexOf(item) !== -1) {
+                            $coursecards.find('#coursecarditem-' + item).removeClass(hideitemClass);
+                            $courselist.find('#courselistitem-' + item).removeClass(hideitemClass);
                         } else {
-                            $coursecards.find('#coursecarditem-' + item.id).addClass(hideitemClass);
-                            $courselist.find('#courselistitem-' + item.id).addClass(hideitemClass);
+                            $coursecards.find('#coursecarditem-' + item).addClass(hideitemClass);
+                            $courselist.find('#courselistitem-' + item).addClass(hideitemClass);
                         }
                     });
                 }
             } else {
-                courses.forEach(function (item) {
-                    $coursecards.find('#coursecarditem-' + item.id).removeClass(hideitemClass);
-                    $courselist.find('#courselistitem-' + item.id).removeClass(hideitemClass);
+                courseids.forEach(function (item) {
+                    $coursecards.find('#coursecarditem-' + item).removeClass(hideitemClass);
+                    $courselist.find('#courselistitem-' + item).removeClass(hideitemClass);
                 });
             }
         };
@@ -757,6 +882,30 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
 
                 $resultarea.toggleClass('section-hidden');
                 $tagpreselectarea.toggleClass('section-hidden');
+            }
+        };
+
+        /**
+         * Handle the cards/list tab change event.
+         *
+         * When the cards are shown disable the »Show course tags« checkbox.
+         *
+         * @param e The event object
+         */
+        var handleTabChange = function (e) {
+            var target = $(e.target).attr("href"),
+                $showtagscheckbox = $coursesearchform.find('.display').find('[data-group="tags"]'),
+                $input = $showtagscheckbox.find('input');
+
+            if (target === '#tabcards') {
+                $showtagscheckbox.addClass('disabled');
+                if ($input.is(":checked")) {
+                    $input.trigger('click');
+                }
+                $input.attr('disabled', 'disabled');
+            } else if (target === '#tablist') {
+                $showtagscheckbox.removeClass('disabled');
+                $input.removeAttr('disabled');
             }
         };
 
@@ -815,7 +964,12 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                 var coursedata = JSON.parse(response.coursedata);
                 courses = coursedata.courses;
 
-                renderDisplayArea(coursedata);
+                courseids = Object.keys(courses);
+                renderDisplayArea({
+                    'courses': courseids.map(function (k) {
+                        return courses[k];
+                    })
+                });
 
                 // And now get the course tags.
                 get_all_course_tags();

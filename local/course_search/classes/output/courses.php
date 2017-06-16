@@ -89,7 +89,7 @@ class courses implements \renderable, \templatable {
     /**
      * Get the courses to show in the result area.
      *
-     * @return array The cours collection
+     * @return array The course collection, indexed by courseid
      */
     protected function get_coursecollection() {
         // Load the fixture for development.
@@ -113,7 +113,9 @@ class courses implements \renderable, \templatable {
                 if (!in_array($course->id, $preselectedcourseids)) {
                     continue;
                 }
-                $this->coursecollection[] = $this->get_one_course($course, $sortcounter);
+
+                // Save the courses indexed by course id.
+                $this->coursecollection[$course->id] = $this->get_one_course($course, $sortcounter);
                 $sortcounter++;
             }
         }
