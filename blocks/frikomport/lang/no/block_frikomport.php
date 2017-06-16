@@ -60,8 +60,8 @@ $string['nwaitlist']        = 'Venteliste';
 $string['ncompcourses']     = 'Fullførte kurs';
 $string['nstatistics']      = 'Statistikk';
 
-$string['summaryrpt']       = 'Course summary report';
-$string['instructorrpt']    = 'Course Instructor report';
-$string['coordinatorrpt']   = 'Course Coordinator report';
+$string['summaryrpt']       = 'Kursoversiktsrapport';
+$string['instructorrpt']    = 'Kursrapport instruktører';
+$string['coordinatorrpt']   = 'Kursrapport koordinatorer';
 
-$string['exceldl'] = 'Reports';
+$string['exceldl'] = 'Rapporter';
