@@ -307,11 +307,13 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                 group = $ele.data('group');
 
                 // Hack to speed up. Add provider as a data property.
-                if (group === 'municipality' || group === 'region') {
-                    displaygroup = 'provider';
-                } else {
-                    displaygroup = group;
-                }
+                // Don't use for testing.
+                // if (group === 'municipality' || group === 'region') {
+                //     displaygroup = 'provider';
+                // } else {
+                //     displaygroup = group;
+                // }
+                displaygroup = group;
 
                 $group = $coursesearchform.find('fieldset[data-group="' + displaygroup + '"]');
                 tagcontext = $.extend({}, tagContextObj, {
