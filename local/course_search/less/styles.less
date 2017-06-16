@@ -388,3 +388,15 @@
     background-repeat: no-repeat;
     padding-left: 30px;
 }
+
+// Hide the provider meta groups for testing.
+#course-search-form {
+    [data-group="provider"] {
+        display: none;
+    }
+}
+#tag-preselect-area {
+    div.group-box.has-subcategories:first-of-type {
+        display: none;
+    }
+}

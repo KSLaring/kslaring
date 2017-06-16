@@ -237,3 +237,9 @@
   background-repeat: no-repeat;
   padding-left: 30px;
 }
+#course-search-form [data-group="provider"] {
+  display: none;
+}
+#tag-preselect-area div.group-box.has-subcategories:first-of-type {
+  display: none;
+}
