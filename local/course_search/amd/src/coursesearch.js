@@ -640,15 +640,21 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
          * Then walk the course nodes in the display area and set the display status.
          */
         var filterCourses = function () {
-            var selectedCourseTags = getSelectedCourseTags(),
-                selectedCourseTagsGrouped = getSelectedCourseTagsGrouped(),
+            var selectedCourseTagsGrouped = getSelectedCourseTagsGrouped(),
                 searchText = getSelectedSearchText(),
                 fromtoDates = getSelectedFromToDates(), // array with the [from, to] dates
                 hasTextSearch = (searchText !== ''),
-                courseIDsToShow = [],
                 courseIDsFiltered = cloneArray(courseids),
                 filtered = [],
-                thecourse;
+                thecourse,
+                foundany = false;
+
+            // If no search criterion is set show all courses.
+            if (!Object.keys(selectedCourseTagsGrouped).length && '' === searchText &&
+                fromtoDates.from === null && fromtoDates.to === null) {
+                showHideCourses(courseIDsFiltered);
+                return;
+            }
 
             // Check if the course dates match the chosen dates.
             if (fromtoDates.from !== null || fromtoDates.to !== null) {
@@ -672,6 +678,7 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                 });
 
                 if (filtered.length) {
+                    foundany = true;
                     courseIDsFiltered = cloneArray(filtered);
                     filtered = [];
                 }
@@ -686,6 +693,7 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                 });
 
                 if (filtered.length) {
+                    foundany = true;
                     courseIDsFiltered = cloneArray(filtered);
                     filtered = [];
                 }
@@ -705,16 +713,17 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                     return found;
                 });
 
-                // Use AND - reduce the tag group to the found courses for the next tag group.
+                // Use AND - reduce the found courses list to the found courses for the next tag group.
                 if (filtered.length) {
+                    foundany = true;
                     courseIDsFiltered = cloneArray(filtered);
                     filtered = [];
                 }
             });
 
             // If tags are selected but no courses match then set the id list to -1.
-            if (!courseIDsFiltered.length) {
-                courseIDsFiltered.push(-1);
+            if (!foundany) {
+                courseIDsFiltered = [-1];
             }
 
             showHideCourses(courseIDsFiltered);
