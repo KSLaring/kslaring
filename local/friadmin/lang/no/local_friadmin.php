@@ -286,7 +286,7 @@ $string['coordinatorheading']   = 'Kurskoordinator rapport';
 $string['biggerthanto']     = 'Den valgte fra-datoen kan ikke være større enn den valgte til-datoen';
 $string['smallerthanfrom']  = 'Den valgte til-datoen kan ikke være mindre enn den valgte fra-datoen';
 $string['biggerthannow']    = 'Den valgte datoen kan ikke være senere enn datoen i dag';
-$string['morethantwoyears'] = 'Forskjellen mellom datoene kan ikke vøre større enn 2 år';
+$string['morethantwoyears'] = 'Forskjellen mellom datoene kan ikke være større enn 2 år';
 
 $string['header_instructorsfilter'] = 'Instruktør filter';
 $string['header_coordinatorfilter'] = 'Koordinator filter';
