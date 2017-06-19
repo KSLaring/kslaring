@@ -76,7 +76,7 @@ class FELLESDATA_CRON {
             //self::import_fellesdata($plugin,$dblog);
 
             // Users accounts synchornization
-            //self::users_fs_synchronization($plugin,$dblog);
+            self::users_fs_synchronization($plugin,$dblog);
 
             // Companies synchornization
             //self::companies_fs_synchronization($plugin,$fstExecution,$dblog);
@@ -86,7 +86,7 @@ class FELLESDATA_CRON {
 
             // Competence synchronization
             if (!$fstExecution) {
-                //self::competence_synchronization($plugin,$dblog);
+                self::competence_synchronization($plugin,$dblog);
             }//if_fstExecution_competence
 
             // Log
