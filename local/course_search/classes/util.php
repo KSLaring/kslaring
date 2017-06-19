@@ -228,7 +228,9 @@ class util {
             )
         );
 
-        $groups = array_merge(array($provider), $others);
+        // Don't show providers for testing.
+        //$groups = array_merge(array($provider), $others);
+        $groups = $others;
 
         return $groups;
     }
