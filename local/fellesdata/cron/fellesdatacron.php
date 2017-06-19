@@ -70,19 +70,19 @@ class FELLESDATA_CRON {
             }//fstExecution_tounmap
 
             // Import KS
-            //self::import_ks($plugin,$dblog);
+            self::import_ks($plugin,$dblog);
 
             // Import fellesdata
-            //self::import_fellesdata($plugin,$dblog);
+            self::import_fellesdata($plugin,$dblog);
 
             // Users accounts synchornization
             self::users_fs_synchronization($plugin,$dblog);
 
             // Companies synchornization
-            //self::companies_fs_synchronization($plugin,$fstExecution,$dblog);
+            self::companies_fs_synchronization($plugin,$fstExecution,$dblog);
 
             // Job roles to map
-            //self::jobroles_fs_to_map($plugin,$dblog);
+            self::jobroles_fs_to_map($plugin,$dblog);
 
             // Competence synchronization
             if (!$fstExecution) {
@@ -1194,7 +1194,7 @@ class FELLESDATA_CRON {
 
             // To avoid problems timeout
             if (isset($SESSION->manual) && ($SESSION->manual)) {
-                $limit          = 500;
+                $limit          = 100;
             }//if_session_manul
 
             // Log
@@ -1217,23 +1217,23 @@ class FELLESDATA_CRON {
                 $total = $DB->count_records('fs_imp_users',array('imported' => '0'));
 
                 if ($total) {
-                    //for ($i=0;$i<=$total;$i=$i+$limit) {
-                    // Get users accounts
-                    list($lstusers,$rdousers) = FSKS_USERS::get_users_accounts($industry,$start,$limit);
+                    for ($i=0;$i<=$total;$i=$i+$limit) {
+                        // Get users accounts
+                        list($lstusers,$rdousers) = FSKS_USERS::get_users_accounts($industry,$start,$limit);
 
-                    // Call web service
-                    $response = self::process_ks_service($plugin,KS_SYNC_USER_ACCOUNT,array('usersAccounts' => $lstusers));
+                        // Call web service
+                        $response = self::process_ks_service($plugin,KS_SYNC_USER_ACCOUNT,array('usersAccounts' => $lstusers));
 
-                    if ($response) {
-                        if ($response['error'] == '200') {
-                            // Synchronize users accounts FS
-                            FSKS_USERS::synchronize_users_fs($rdousers,$response['usersAccounts']);
-                        }else {
-                            // Log
-                            $dblog .= "Error WS: " . $response['message'] . "\n" ."\n";
-                        }//if_no_error
-                    }//if_response
-                    //}//for
+                        if ($response) {
+                            if ($response['error'] == '200') {
+                                // Synchronize users accounts FS
+                                FSKS_USERS::synchronize_users_fs($rdousers,$response['usersAccounts']);
+                            }else {
+                                // Log
+                                $dblog .= "Error WS: " . $response['message'] . "\n" ."\n";
+                            }//if_no_error
+                        }//if_response
+                    }//for
                 }//if_total
             }//if_synchronization
 
