@@ -543,10 +543,11 @@ class FS_MAPPING {
                         $name = $instance->name;
                     }//if_org_enhet_over
 
-                    $fsCompanies[$instance->id] = $name;
+                    $fsCompanies[$instance->id] = $name . '(' . $instance->id. ')';
                 }
             }//if_Rdo
 
+            asort($fsCompanies);
             return $fsCompanies;
         }catch (Exception $ex) {
             throw $ex;
