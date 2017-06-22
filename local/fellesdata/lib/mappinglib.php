@@ -1617,7 +1617,6 @@ class FS_MAPPING {
             /* Execute  */
             $rdo = $DB->get_record_sql($sql,$params);
             if ($rdo) {
-                echo "HOLA ";
                 return $rdo->total;
             }else {
                 return 0;
