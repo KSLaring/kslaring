@@ -152,6 +152,11 @@ class courses implements \renderable, \templatable {
                 }
             }
             $deadline = \course_page::deadline_course($course->id);
+            if ($deadline) {
+                $deadline = userdate($deadline, '%d.%m.%Y');
+            } else {
+                $deadline = '';
+            }
             if (!empty($formatoptions['course_location'])) {
                 $locationid = (int)$formatoptions['course_location']->value;
                 $location = \course_page::get_location_name($locationid);
