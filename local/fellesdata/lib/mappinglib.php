@@ -543,7 +543,7 @@ class FS_MAPPING {
                         $name = $instance->name;
                     }//if_org_enhet_over
 
-                    $fsCompanies[$instance->id] = $name . '(' . $instance->id. ')';
+                    $fsCompanies[$instance->id] = $name;
                 }
             }//if_Rdo
 
