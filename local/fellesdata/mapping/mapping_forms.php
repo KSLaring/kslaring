@@ -113,13 +113,16 @@ class organization_map_form extends moodleform {
         list($level,$pattern,$toMatch,$total) = $this->_customdata;
 
         /* Get how many remains to map */
-        $remain = $total - count($toMatch);
+        $tomap = new stdClass();
+        $tomap->of = count($toMatch);
+        $tomap->total = $total;
+        //$remain = $total - count($toMatch);
 
         $form->addElement('html','<div class="matching_process_title">');
-            if ($remain) {
-                $titleRemain = get_string('remain_match','local_fellesdata',$remain);
+            //if ($remain) {
+                $titleRemain = get_string('remain_match','local_fellesdata',$tomap);
                 $titleLeft .= '. ' . $titleRemain;
-            }//if_remain
+            //}//if_remain
 
             /* Title        */
             $form->addElement('html','<div class="area_left title_matching ">');
@@ -189,7 +192,7 @@ class organization_map_form extends moodleform {
                         $options   = array();
                         $index  = 'new';
                         $options[$index] = $form->createElement('radio', $refFS,'',get_string('new_comp','local_fellesdata'),$index);
-                        $options[$index]->setValue($index);
+                        $options[$index]->setValue(0);
                         $grp = $form->addElement('group', 'grp', null, $options,null , false);
 
                         /* Match Options  */

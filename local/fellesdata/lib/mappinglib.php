@@ -889,17 +889,15 @@ class FS_MAPPING {
                 /* Get Possible Match   */
                 if (isset($data->$refFS)) {
                     $possibleMatch = $data->$refFS;
-                    if ($possibleMatch) {
-                        if ($possibleMatch == 'new') {
-                            self::NewMapFSCompany($fsCompany,$data->le);
-                        }else if ($possibleMatch == 'no_sure') {
-                            $notIn["'" . $fsCompany->fscompany . "'"] = "'" . $fsCompany->fscompany . "'";
-                        }else {
-                            /* Mapping between FSand KS */
-                            $infoMatch = explode('#KS#',$data->$refFS);
-                            $match = $fsCompany->matches[$infoMatch[1]];
-                            self::MapFSCompany($fsCompany,$match,$data->le);
-                        }//if_possible:matches
+                    if ($possibleMatch == 0) {
+                        self::NewMapFSCompany($fsCompany,$data->le);
+                    }else if ($possibleMatch == 'no_sure') {
+                        $notIn["'" . $fsCompany->fscompany . "'"] = "'" . $fsCompany->fscompany . "'";
+                    }else {
+                        /* Mapping between FSand KS */
+                        $infoMatch = explode('#KS#',$data->$refFS);
+                        $match = $fsCompany->matches[$infoMatch[1]];
+                        self::MapFSCompany($fsCompany,$match,$data->le);
                     }//if_possibleMatch
                 }
             }//fs_company
