@@ -1567,8 +1567,11 @@ class FS_MAPPING {
 
             /* Get Level    */
             switch ($level) {
+                case FS_LE_1:
+                    $params['level'] = $plugin->map_one;
+                    break;
                 case FS_LE_2:
-                    $params['level'] = $plugin->map_two;;
+                    $params['level'] = $plugin->map_two;
                     break;
                 case FS_LE_5;
                     $params['level'] = $plugin->map_three;
@@ -1579,7 +1582,7 @@ class FS_MAPPING {
             }//level
 
             /* SQL Instruction  */
-            $sql = " SELECT DISTINCT count(fs_imp.id) as 'total'
+            $sql = " SELECT count(DISTINCT  fs_imp.id) as 'total'
                      FROM			{fs_imp_company}  fs_imp
                         LEFT JOIN	{fs_company}	  fs	  ON fs.companyid = fs_imp.org_enhet_id
                      WHERE	fs_imp.imported  = :imported
