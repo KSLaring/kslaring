@@ -56,6 +56,7 @@ foreach ($withParent as $key => $name) {
 
 /* FS Without Company */
 $noParent   = FS_MAPPING::FindFSCompanies_WithoutParent($level,null);
+asort($noParent);
 foreach ($noParent as $key => $name) {
     /* Info Company */
     $infoCompany            = new stdClass;

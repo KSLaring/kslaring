@@ -547,7 +547,6 @@ class FS_MAPPING {
                 }
             }//if_Rdo
 
-            asort($fsCompanies);
             return $fsCompanies;
         }catch (Exception $ex) {
             throw $ex;
