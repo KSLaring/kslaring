@@ -1579,7 +1579,7 @@ class FS_MAPPING {
             }//level
 
             /* SQL Instruction  */
-            $sql = " SELECT DISTINCT count(fs_imp.id) as 'total'
+            $sql = " SELECT count(DISTINCT  fs_imp.id) as 'total'
                      FROM			{fs_imp_company}  fs_imp
                         LEFT JOIN	{fs_company}	  fs	  ON fs.companyid = fs_imp.org_enhet_id
                      WHERE	fs_imp.imported  = :imported
@@ -1589,6 +1589,7 @@ class FS_MAPPING {
 
             // Add notIn criteria
             if ($notIn) {
+                echo "NOT IN : " . $notIn . "</br>";
                 $sql .= " AND fs_imp.org_enhet_id NOT IN ($notIn) ";
             }//if_notIn
 
