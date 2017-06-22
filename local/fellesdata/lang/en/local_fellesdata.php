@@ -55,7 +55,7 @@ $string['level_map']            = 'Level to map';
 $string['pattern']              = 'Sector';
 $string['pattern_help']         = 'For example: Schoole. It ill mean that you are going to map all companies that belong to the school sector. The name of company will contain school';
 $string['to_match']             = 'To Match';
-$string['remain_match']         = '{$a} Remaining to map';
+$string['remain_match']         = '{$a->of}/{$a->total} to map';
 $string['possible_matches']     = 'Possible Matches';
 
 $string['no_match']             = 'No Sure';

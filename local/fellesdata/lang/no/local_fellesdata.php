@@ -55,7 +55,8 @@ $string['level_map']            = 'Nivå (0-1-2-3) som skal mappes';
 $string['pattern']              = 'Tekstmønster';
 $string['pattern_help']         = 'For eksempel "Skole". Det betyr at du vil mappe alle org-elementer som hører til f.eks. "Skole og oppvekst".';
 $string['to_match']             = 'Å mappe fra TARDIS';
-$string['remain_match']         = '{$a} igjen å mappe';
+$string['remain_match_old']         = '{$a} igjen å mappe';
+$string['remain_match']         = '{$a->of}/{$a->total} å mappe';
 $string['possible_matches']     = 'Mulige treff i KS Læring';
 
 $string['no_match']             = 'Ikke sikker';
