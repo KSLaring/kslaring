@@ -75,6 +75,7 @@ $totalnotIn = 0;
 if (($SESSION->notIn) && count($SESSION->notIn)) {
     $notIn = implode(',',$SESSION->notIn);
     $totalnotIn = count($SESSION->notIn);
+    echo "HOLA";
 }
 
 list($fsToMap,$total) = FS_MAPPING::FSCompaniesToMap($level,$pattern,$notIn,$start,$step);
