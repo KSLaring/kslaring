@@ -1567,8 +1567,11 @@ class FS_MAPPING {
 
             /* Get Level    */
             switch ($level) {
+                case FS_LE_1:
+                    $params['level'] = $plugin->map_one;
+                    break;
                 case FS_LE_2:
-                    $params['level'] = $plugin->map_two;;
+                    $params['level'] = $plugin->map_two;
                     break;
                 case FS_LE_5;
                     $params['level'] = $plugin->map_three;
@@ -1589,7 +1592,6 @@ class FS_MAPPING {
 
             // Add notIn criteria
             if ($notIn) {
-                echo "NOT IN : " . $notIn . "</br>";
                 $sql .= " AND fs_imp.org_enhet_id NOT IN ($notIn) ";
             }//if_notIn
 
@@ -1618,8 +1620,6 @@ class FS_MAPPING {
             /* Execute  */
             $rdo = $DB->get_record_sql($sql,$params);
             if ($rdo) {
-                echo $sql . "</br>";
-                echo "TOTAL FROM SQL:  " . $rdo->total . "</br>";
                 return $rdo->total;
             }else {
                 return 0;

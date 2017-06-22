@@ -76,8 +76,6 @@ if (($SESSION->notIn) && count($SESSION->notIn)) {
 }
 
 list($fsToMap,$total) = FS_MAPPING::FSCompaniesToMap($level,$pattern,$notIn,$start,$step);
-echo "TOTAL --> " . $total . "</br>";
-echo "TO MAP --> " . count($fsToMap) . "</br>";
 $form    = new organization_map_form(null,array($level,$pattern,$fsToMap,$total));
 if ($form->is_cancelled()) {
     unset($SESSION->FS_COMP);
