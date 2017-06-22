@@ -120,7 +120,7 @@ class organization_map_form extends moodleform {
 
         $form->addElement('html','<div class="matching_process_title">');
             //if ($remain) {
-                $titleRemain = " --> " . get_string('remain_match','local_fellesdata',$tomap);
+                $titleRemain = get_string('remain_match','local_fellesdata',$tomap);
                 $titleLeft .= '. ' . $titleRemain;
             //}//if_remain
 
