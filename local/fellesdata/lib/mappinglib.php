@@ -1592,7 +1592,6 @@ class FS_MAPPING {
                 $sql .= " AND fs_imp.org_enhet_id NOT IN ($notIn) ";
             }//if_notIn
 
-            echo $sql . "</br>";
             /* Sector */
             if ($sector) {
                 $sqlMatch = null;
@@ -1618,6 +1617,7 @@ class FS_MAPPING {
             /* Execute  */
             $rdo = $DB->get_record_sql($sql,$params);
             if ($rdo) {
+                echo "HOLA ";
                 return $rdo->total;
             }else {
                 return 0;
