@@ -1592,6 +1592,7 @@ class FS_MAPPING {
                 $sql .= " AND fs_imp.org_enhet_id NOT IN ($notIn) ";
             }//if_notIn
 
+            echo $sql . "</br>";
             /* Sector */
             if ($sector) {
                 $sqlMatch = null;
