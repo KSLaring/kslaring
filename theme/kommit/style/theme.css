@@ -1193,6 +1193,9 @@ body {
 .page-context-header {
   margin-top: 1em;
 }
+.used-region-side-post #block-region-side-post {
+  margin-left: 2.12765957%;
+}
 #page-footer {
   width: 100%;
   padding-bottom: 2.5em;
