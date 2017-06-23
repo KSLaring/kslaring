@@ -264,6 +264,7 @@ class organization_new_map_form extends moodleform {
 
             /* Companies No Parents */
             $achoices = FS_MAPPING::FindFSCompanies_WithoutParent($level,$addSearch,$parent);
+            asort($achoices);
             $form->addElement('html','<div class="sel_comp_right">');
                 $form->addElement('select','acompanies','',$achoices,'multiple size="15"');
                 $form->addElement('text','acompanies_searchtext',get_string('search'),'id="acompanies_searchtext"');

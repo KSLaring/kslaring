@@ -577,7 +577,11 @@ class FS_MAPPING {
             $lstParents[0] = get_string('sel_parent','local_fellesdata');
             /* Search Criteria  */
             $params          = array();
-            $params['hierarchylevel'] =  ($level - 1);
+            if ($level != FS_LE_1) {
+                $params['hierarchylevel'] =  ($level - 1);
+            }else if ($level == FS_LE_1) {
+                $params['hierarchylevel'] =  1;
+            }
 
             if ($level == FS_LE_2) {
                 /* Plugin Info      */

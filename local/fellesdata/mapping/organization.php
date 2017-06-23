@@ -70,12 +70,13 @@ if (!isset($SESSION->notIn)) {
 }
 
 /* Get Companies to Map */
-$notIn = 0;
+$notIn      = 0;
 if (($SESSION->notIn) && count($SESSION->notIn)) {
     $notIn = implode(',',$SESSION->notIn);
 }
 
 list($fsToMap,$total) = FS_MAPPING::FSCompaniesToMap($level,$pattern,$notIn,$start,$step);
+asort($fsToMap);
 $form    = new organization_map_form(null,array($level,$pattern,$fsToMap,$total));
 if ($form->is_cancelled()) {
     unset($SESSION->FS_COMP);
