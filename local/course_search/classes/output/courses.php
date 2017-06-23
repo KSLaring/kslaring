@@ -72,6 +72,7 @@ class courses implements \renderable, \templatable {
             'userid' => is_object($USER) ? $USER->id : 0,
             'pagetitle' => get_string('pagetitle', 'local_course_search'),
             'searchtitle' => get_string('searchtitle', 'local_course_search'),
+            'freetextplaceholder' => get_string('freetextplaceholder', 'local_course_search'),
             'searchbtntext' => get_string('searchbtntext', 'local_course_search'),
             'toggleselection' => get_string('toggleselection', 'local_course_search'),
             'searchtags' => $searchtags,

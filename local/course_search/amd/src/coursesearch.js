@@ -20,6 +20,7 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
             $catalogarea = null,
             $searcharea = null,
             $coursesearchform = null,
+            $coursesearchfield = null,
             $resultarea = null,
             $navtabs = null,
             $tagpreselectarea = null,
@@ -424,6 +425,24 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                     $ele.parent('li').addClass('hidden');
                 }
             });
+
+            // Open all groups with found tags, hide those without.
+            if (filter !== '') {
+                $tagpreselectarea
+                    .find('.accordion-body')
+                    .each(function () {
+                        var ele = $(this);
+                        if (ele.has('li:not(.hidden)').length) {
+                            ele.collapse('show');
+                        } else {
+                            ele.collapse('hide');
+                        }
+                    });
+            } else {
+                $tagpreselectarea
+                    .find('.accordion-body')
+                    .collapse('hide');
+            }
         };
 
         var handleTextSearch = function (e) {
@@ -458,7 +477,7 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
         };
 
         var getSelectedSearchText = function () {
-            return $coursesearchform.find('#course-search').val().toLowerCase();
+            return $coursesearchfield.val().toLowerCase();
         };
 
         var getSelectedCourseTags = function () {
@@ -694,10 +713,12 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                     thecourse.alltext.indexOf(searchText) !== -1);
                 });
 
+                courseIDsFiltered = cloneArray(filtered);
                 if (filtered.length) {
                     foundany = true;
-                    courseIDsFiltered = cloneArray(filtered);
                     filtered = [];
+                } else {
+                    foundany = false;
                 }
             }
 
@@ -716,10 +737,12 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                 });
 
                 // Use AND - reduce the found courses list to the found courses for the next tag group.
+                courseIDsFiltered = cloneArray(filtered);
                 if (filtered.length) {
                     foundany = true;
-                    courseIDsFiltered = cloneArray(filtered);
                     filtered = [];
+                } else {
+                    foundany = false;
                 }
             });
 
@@ -739,81 +762,6 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
          */
         var cloneArray = function (inArray) {
             return inArray.slice(0);
-        };
-
-        /**
-         * Walk all course items in the course data object and collect the ids of the matching courses.
-         * Check if any of the selected search criteria match, if one matches add the id to the show list.
-         *
-         * Then walk the course nodes in the display area and set the display status.
-         *
-         */
-        var filterCourses_o = function () {
-            var selectedCourseTags = getSelectedCourseTags(),
-                searchText = getSelectedSearchText(),
-                fromtoDates = getSelectedFromToDates(), // array with the [from, to] dates
-                hasTextSearch = (searchText !== ''),
-                courseIDsToShow = [],
-                expectedmatches,
-                matchcounter,
-                i,
-                li,
-                j,
-                lj;
-
-            // Loop through all courses and collect the course ids of the courses to be shown.
-            // Show the courses only when all search criteria match. Therefore set expectedmatches
-            // as the number of matches a course must have to be shown.
-            // 1. get the number of selected course tags
-            // 2. add 1 if text search is active
-            // 3. add 1 if from/to date/s are set
-            expectedmatches = hasTextSearch ? selectedCourseTags.length + 1 : selectedCourseTags.length;
-            expectedmatches += fromtoDates.datesset ? 1 : 0;
-            for (i = 0, li = courses.length; i < li; i++) {
-                var thecourse = courses[i];
-                matchcounter = 0;
-
-                // Check if the text index contains the search string.
-                if (hasTextSearch) {
-                    if (thecourse.hasOwnProperty('alltext') && thecourse.alltext && thecourse.alltext.indexOf(searchText) !== -1) {
-                        matchcounter++;
-                    }
-                }
-
-                // Loop through all selected checkboxes.
-                for (j = 0, lj = selectedCourseTags.length; j < lj; j++) {
-                    // Check if the selected item is in the indexed tag collation.
-                    if (thecourse.tagcollection.indexOf(selectedCourseTags[j]) !== -1) {
-                        matchcounter++;
-                    }
-                }
-
-                // Check if the course dates match the chosen dates.
-                if (fromtoDates.from !== null && fromtoDates.to !== null) {
-                    if (thecourse.sortdate >= fromtoDates.from && thecourse.sortdate <= fromtoDates.to) {
-                        matchcounter++;
-                    }
-                } else if (fromtoDates.from !== null) {
-                    if (thecourse.sortdate >= fromtoDates.from) {
-                        matchcounter++;
-                    }
-                } else if (fromtoDates.to !== null) {
-                    if (thecourse.sortdate <= fromtoDates.to) {
-                        matchcounter++;
-                    }
-                }
-
-                if (matchcounter === expectedmatches) {
-                    courseIDsToShow.push(thecourse.id);
-                }
-            }
-
-            // If tags are selected but no courses match then set the id list to -1.
-            if (!courseIDsToShow.length && expectedmatches) {
-                courseIDsToShow.push(-1);
-            }
-
-            showHideCourses(courseIDsToShow);
         };
 
         /**
@@ -887,9 +835,28 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                     });
                 }
                 cookie.create(cookiename, taglist, 14);
+
+                // Remove all search criteria.
+                $coursesearchfield.blur();
+                $tagarea
+                    .find('.btn-tag')
+                    .each(function () {
+                        $(this).click();
+                    });
+
                 save_search_criteria(tagarray);
             } else {
                 showtagliststate = !showtagliststate;
+
+                // Remove all search criteria.
+                $coursesearchfield.blur();
+                $tagarea
+                    .find('.btn-tag')
+                    .each(function () {
+                        $(this).click();
+                    });
+
+                $coursesearchform.find('.fieldset-hidden').removeClass('fieldset-hidden');
 
                 $resultarea.toggleClass('section-hidden');
                 $tagpreselectarea.toggleClass('section-hidden');
@@ -1009,6 +976,10 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                 $resultarea.html('');
                 get_coursedata(false);
 
+                $coursesearchform.find('.tag-group')
+                    .not(':has(label.checkbox)')
+                    .addClass('fieldset-hidden');
+
                 $resultarea.toggleClass('section-hidden');
                 $tagpreselectarea.toggleClass('section-hidden');
             });
@@ -1081,6 +1052,7 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                 userid = parseInt($catalogarea.data('userid'), 10);
                 $searcharea = $('#search-area');
                 $coursesearchform = $('#course-search-form');
+                $coursesearchfield = $coursesearchform.find('#course-search');
                 $resultarea = $('#result-area');
                 $tagpreselectarea = $('#tag-preselect-area');
                 $tagarea = $('#tag-area');

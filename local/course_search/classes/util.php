@@ -186,6 +186,7 @@ class util {
             if (!in_array($grouptag->id, $providergrouptagids)) {
                 $onegroup = (object)array(
                     'type' => 'tag',
+                    'hidden' => null,
                     'groupid' => $groupid,
                     'group' => $group,
                     'title' => $grouptitle,
@@ -200,6 +201,11 @@ class util {
                         'groupid' => $grouptag->id,
                         'group' => $taggroup,
                     );
+                }
+
+                // If no tags for this group are preselected then don't show the group.
+                if (empty($onegroup->shown)) {
+                    $onegroup->hidden = true;
                 }
 
                 $others[] = $onegroup;
@@ -219,6 +225,7 @@ class util {
         $strdate = get_string('date', 'local_course_search');
         $others[] = (object)array(
             'type' => '',
+            'hidden' => null,
             'groupid' => 0,
             'group' => '',
             'title' => $strdate,

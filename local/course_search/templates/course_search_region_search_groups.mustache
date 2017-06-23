@@ -1,5 +1,6 @@
 {{^showdate}}
-    <fieldset class="{{#type}}{{{.}}}-group {{/type}}collapse-group" data-group="{{{group}}}">
+    <fieldset class="{{#type}}{{{.}}}-group {{/type}}collapse-group{{#hidden}} fieldset-hidden{{/hidden}}"
+              data-group="{{{group}}}">
         <h4>{{{title}}}</h4>
         <div class="tags">
             {{#shown}}

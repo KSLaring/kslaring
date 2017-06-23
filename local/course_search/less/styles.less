@@ -34,6 +34,8 @@
 @linkColor: @kommitBlueDark;
 @linkColorHover: darken(@linkColor, 15%);
 
+@mediumWidth: 768px;
+
 #page-course-search {
     #page-header {
         display: none;
@@ -100,11 +102,21 @@
 }
 
 #catalog-area {
+    margin-top: 1em;
     margin-bottom: 1em;
 }
 
 #search-area {
     min-height: 10em;
+
+    .form-switch-display {
+        border-bottom: 1px solid @grayLight2;
+        margin-bottom: .7em;
+    }
+
+    #switch-display {
+        margin: 0 0 .7em 0;
+    }
 
     input[type="text"] {
         width: 80%;
@@ -124,16 +136,29 @@
         }
     }
 
+    .fieldset-hidden {
+        display: none;
+    }
+
     #course-search {
         border-radius: 0;
         margin-bottom: .5em;
         max-width: 20em;
-        width: 50%;
+        width: 70%;
+
+        @media (min-width: @mediumWidth) and (max-width: 839px) {
+            width: 50%;
+        }
+        @media (min-width: 840px) and (max-width: 1100px) {
+            width: 60%;
+        }
     }
 
     .course-search-btn {
         border-radius: 0;
         margin-top: 0;
+        padding-top: .4em;
+        padding-bottom: .25em;
         vertical-align: top;
     }
 }
@@ -288,6 +313,10 @@
 }
 
 .course-cards {
+    &.unlist {
+        margin: 0 -1%;
+    }
+
     .course-card-item {
         background-color: @white;
         display: inline-block;
@@ -297,14 +326,14 @@
         vertical-align: top;
         width: 27%;
 
-        &:nth-of-type(3n) {
-            margin-right: 0;
-            //border-right: 1px solid #faa;
-        }
-        &:nth-of-type(3n+1) {
-            margin-left: 0;
-            //border-left: 1px solid #faa;
-        }
+        //&:nth-of-type(3n) {
+        //    margin-right: 0;
+        //    //border-right: 1px solid #faa;
+        //}
+        //&:nth-of-type(3n+1) {
+        //    margin-left: 0;
+        //    //border-left: 1px solid #faa;
+        //}
 
         &.hide-item {
             display: none;
@@ -390,11 +419,11 @@
 }
 
 // Hide the provider meta groups for testing.
-#course-search-form {
-    [data-group="provider"] {
-        display: none;
-    }
-}
+//#course-search-form {
+//    [data-group="provider"] {
+//        display: none;
+//    }
+//}
 #tag-preselect-area {
     div.group-box.has-subcategories:first-of-type {
         display: none;
