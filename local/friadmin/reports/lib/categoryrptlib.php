@@ -200,16 +200,20 @@ class friadminrpt
     public static function get_course_summary_data($data) {
         /* Variables */
         global $DB;
-        $rdo    = null;
-        $query  = null;
-        $params = null;
+        $rdo        = null;
+        $query      = null;
+        $params     = null;
+        $categories = null;
 
         try {
             // Search criteria
             $params = array();
-            $params['categoryid']   = $data->category;
             $params['from']         = $data->selsummaryfrom;
             $params['to']           = $data->selsummaryto;
+
+            // Get subcategories
+            $rdo        = $DB->get_record('course_categories',array('id' => $data->category));
+            $categories = str_replace('/',',','0' . $rdo->path);
 
             // SQL Instruction
             $query = " SELECT       c.id			    as 'courseid',			-- The course ID
@@ -279,7 +283,7 @@ class friadminrpt
                                                                           AND ri.archetype  = 'teacher'
                                      GROUP BY ct.instanceid
                                     ) csi ON csi.course = c.id
-                       WHERE 	 c.category = :categoryid
+                       WHERE 	 c.category IN ($categories)
                           AND   c.startdate BETWEEN :from AND :to
                        GROUP BY c.id 
                        ORDER BY c.fullname ";
@@ -411,11 +415,15 @@ class friadminrpt
         $extrasql   = null;
         $query      = null;
         $params     = null;
+        $categories = null;
 
         try {
             // Search criteria
             $params = array();
-            $params['category'] = $category;
+
+            // Get subcategories
+            $rdo        = $DB->get_record('course_categories',array('id' => $category));
+            $categories = str_replace('/',',','0' . $rdo->path);
 
             // Course criteria
             if ($course) {
@@ -443,7 +451,7 @@ class friadminrpt
 
                           -- Category
                           JOIN      {course_categories}       ca    ON  ca.id = c.category
-                                                                    AND ca.id = :category
+                                                                    AND ca.id IN ($categories)
                           -- Location
                           LEFT JOIN {course_format_options}   fo    ON  fo.courseid = c.id
                                                                     AND fo.name     = 'course_location'
@@ -495,11 +503,15 @@ class friadminrpt
         $joinuser       = null;
         $workplacesql   = null;
         $jobrolesql     = null;
+        $categories     = null;
 
         try {
             // Search criteria
             $params = Array();
-            $params['category'] = $data->category;
+
+            // Get subcategories
+            $rdo        = $DB->get_record('course_categories',array('id' => $data->category));
+            $categories = str_replace('/',',','0' . $rdo->path);
 
             // Course criteria
             if ($data->course) {
@@ -565,7 +577,7 @@ class friadminrpt
                         $joinuser
                         -- Category
                         JOIN	  {course_categories}		ca	ON  ca.id	      	= c.category
-                                                                AND ca.id 			= :category
+                                                                AND ca.id 			IN ($categories)
                         -- Location
                         LEFT JOIN {course_format_options}   fo  ON  fo.courseid   	= ct.instanceid
                                                                 AND fo.name       	= 'course_location'

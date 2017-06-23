@@ -47,7 +47,11 @@ $PAGE->set_context($contextsystem);
 $PAGE->requires->js('/local/friadmin/reports/js/report.js');
 
 // Capabilities!
-require_capability('local/friadmin:course_locations_manage', $contextsystem);
+if (!has_capability('local/friadmin:course_locations_manage',$contextsystem)) {
+    if (!local_friadmin_helper::CheckCapabilityFriAdmin()) {
+        print_error('nopermissions', 'error', '', 'block/frikomport:view');
+    }
+}
 
 // Form!
 $mform = new course_instructor_form(null);

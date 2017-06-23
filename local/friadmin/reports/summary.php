@@ -46,7 +46,11 @@ $PAGE->set_pagelayout('admin');
 $PAGE->set_context($contextsystem);
 
 // Capabilities!
-require_capability('local/friadmin:course_locations_manage', $contextsystem);
+if (!has_capability('local/friadmin:course_locations_manage',$contextsystem)) {
+    if (!local_friadmin_helper::CheckCapabilityFriAdmin()) {
+        print_error('nopermissions', 'error', '', 'block/frikomport:view');
+    }
+}
 
 // Form!
 $mform = new summary_form(null);
