@@ -56,6 +56,14 @@ if (!has_capability('local/friadmin:course_locations_manage',$contextsystem)) {
 $mform = new summary_form(null);
 $noresults = null;
 
+$cat = "/90";
+$path = '/21/55/56/90';
+
+$index = strpos($path,$cat);
+if ($index) {
+    $path = substr($path,$index);
+    echo $path;
+}
 if ($mform->is_cancelled()) {
     redirect($CFG->wwwroot);
 } else if ($fromform = $mform->get_data()) {

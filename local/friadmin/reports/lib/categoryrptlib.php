@@ -213,7 +213,14 @@ class friadminrpt
 
             // Get subcategories
             $rdo        = $DB->get_record('course_categories',array('id' => $data->category));
-            $categories = str_replace('/',',','0' . $rdo->path);
+            $categories = "/" . $data->category;
+            $index = strpos($rdo->path,$categories);
+            if ($index) {
+                $categories = substr($categories,$index);
+                $categories = str_replace('/',',','0' . $categories);
+            }else {
+                $categories = $data->category;
+            }
 
             // SQL Instruction
             $query = " SELECT       c.id			    as 'courseid',			-- The course ID
@@ -423,7 +430,14 @@ class friadminrpt
 
             // Get subcategories
             $rdo        = $DB->get_record('course_categories',array('id' => $category));
-            $categories = str_replace('/',',','0' . $rdo->path);
+            $categories = "/" . $category;
+            $index = strpos($rdo->path,$categories);
+            if ($index) {
+                $categories = substr($categories,$index);
+                $categories = str_replace('/',',','0' . $categories);
+            }else {
+                $categories = $category;
+            }
 
             // Course criteria
             if ($course) {
@@ -511,7 +525,14 @@ class friadminrpt
 
             // Get subcategories
             $rdo        = $DB->get_record('course_categories',array('id' => $data->category));
-            $categories = str_replace('/',',','0' . $rdo->path);
+            $categories = "/" . $data->category;
+            $index = strpos($rdo->path,$categories);
+            if ($index) {
+                $categories = substr($categories,$index);
+                $categories = str_replace('/',',','0' . $categories);
+            }else {
+                $categories = $data->category;
+            }
 
             // Course criteria
             if ($data->course) {
