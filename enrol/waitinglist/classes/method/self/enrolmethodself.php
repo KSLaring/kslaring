@@ -479,7 +479,7 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
                 $queue_entry->waitinglistid                 = $waitinglist->id;
                 $queue_entry->courseid                      = $waitinglist->courseid;
                 $queue_entry->userid                        = $USER->id;
-                $queue_entry->companyid                     = $data->level_3;
+                $queue_entry->companyid                     = (isset($data->level_3) ? $data->level_3 : null);
                 $queue_entry->methodtype                    = static::METHODTYPE;
                 if(!isset($data->enrolpassword)){$data->enrolpassword='';}
                 $queue_entry->{self::QFIELD_ENROLPASSWORD}  = $data->enrolpassword;
@@ -702,7 +702,7 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
         $redirect           = null;
         $ret                = null;
         $infoRequest        = null;
-
+        
 		$queueman= \enrol_waitinglist\queuemanager::get_by_course($waitinglist->courseid);
 		$qdetails = $queueman->get_user_queue_details(static::METHODTYPE);
         if ($waitinglist->{ENROL_WAITINGLIST_FIELD_MAXENROLMENTS}) {
@@ -775,7 +775,7 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
 
                 if ($form->is_cancelled()) {
                     $redirect = $CFG->wwwroot . '/index.php';
-                    
+
                     redirect($redirect);
                 }else if ($form->is_submitted()) {
                     $this->myManagers   = \Approval::managers_connected($USER->id,$infoRequest->companyid);
@@ -880,7 +880,7 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
                         $output = ob_get_clean();
 
                         $message =$OUTPUT->box($output);
-                        $ret = array(true,$message);                        
+                        $ret = array(true,$message);
                     }else {
                         $message = $OUTPUT->box($enrolstatus);
                         $company = \CompetenceManager::GetCompany_Name($data->level_3);

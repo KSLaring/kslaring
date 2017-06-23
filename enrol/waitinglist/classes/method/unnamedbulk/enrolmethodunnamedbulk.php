@@ -476,7 +476,7 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
                 $queue_entry->waitinglistid     = $waitinglist->id;
                 $queue_entry->courseid          = $waitinglist->courseid;
                 $queue_entry->userid            = $USER->id;
-                $queue_entry->companyid         = $data->level_3;
+                $queue_entry->companyid         = (isset($data->level_3) ? $data->level_3 : null);
                 $queue_entry->methodtype        = static::METHODTYPE;
                 $queue_entry->timecreated       = time();
                 $queue_entry->queueno           = 0;
@@ -709,7 +709,7 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
     public function enrol_page_hook(\stdClass $waitinglist, $flagged) {
         global $CFG, $OUTPUT, $USER,$DB;
 		$isInvoice = false;
-
+        
 		$queueman= \enrol_waitinglist\queuemanager::get_by_course($waitinglist->courseid);
 		$entryman= \enrol_waitinglist\entrymanager::get_by_course($waitinglist->courseid);
 		$entry = $entryman->get_entry_by_userid($USER->id,static::METHODTYPE);
