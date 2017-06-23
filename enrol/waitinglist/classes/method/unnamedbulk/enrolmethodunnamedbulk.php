@@ -476,7 +476,7 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
                 $queue_entry->waitinglistid     = $waitinglist->id;
                 $queue_entry->courseid          = $waitinglist->courseid;
                 $queue_entry->userid            = $USER->id;
-                $queue_entry->companyid         = $data->level_3;
+                $queue_entry->companyid         = (isset($data->level_3) ? $data->level_3 : null);
                 $queue_entry->methodtype        = static::METHODTYPE;
                 $queue_entry->timecreated       = time();
                 $queue_entry->queueno           = 0;

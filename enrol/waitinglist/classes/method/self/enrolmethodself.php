@@ -479,7 +479,7 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
                 $queue_entry->waitinglistid                 = $waitinglist->id;
                 $queue_entry->courseid                      = $waitinglist->courseid;
                 $queue_entry->userid                        = $USER->id;
-                $queue_entry->companyid                     = $data->level_3;
+                $queue_entry->companyid                     = (isset($data->level_3) ? $data->level_3 : null);
                 $queue_entry->methodtype                    = static::METHODTYPE;
                 if(!isset($data->enrolpassword)){$data->enrolpassword='';}
                 $queue_entry->{self::QFIELD_ENROLPASSWORD}  = $data->enrolpassword;

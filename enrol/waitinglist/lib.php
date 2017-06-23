@@ -489,7 +489,7 @@ class enrol_waitinglist_plugin extends enrol_plugin {
             parent::unenrol_user($instance,$userid);
 
             //remove from waiting list
-            $DB->delete_records(ENROL_WAITINGLIST_TABLE_QUEUE,array('userid'=>$userid));
+            $DB->delete_records(ENROL_WAITINGLIST_TABLE_QUEUE,array('userid'=>$userid,'courseid' => $instance->courseid,'waitinglistid' => $instance->id));
 
             /* Extra information */
             $user       = get_complete_user_data('id',$userid);
