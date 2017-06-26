@@ -252,7 +252,7 @@
   columns: 1em 3;
 }
 #tagFilter {
-  background-image: url('/local/playground/coursesearch/assets/searchicon.png');
+  background-image: url([[pix:local_course_search|searchicon]]);
   background-position: 5px 5px;
   background-repeat: no-repeat;
   padding-left: 30px;
