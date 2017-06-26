@@ -30,7 +30,74 @@ defined('MOODLE_INTERNAL') || die();
 
 class friadminrpt
 {
-    
+
+
+    /**
+     * Description
+     * Get all categories connected with manager
+     *
+     * @param       $user
+     *
+     * @return      null
+     * @throws      Exception
+     *
+     * @creationDate    26/06/2017
+     * @author          eFaktor     (fbv)
+     */
+    public static function get_my_categories($user) {
+        /* Variables */
+        global $DB;
+        $rdo    = null;
+        $sql    = null;
+        $params = null;
+        $lstcat = null;
+
+        try {
+            // First Element of the list
+            $lstcat[0] = get_string('selectone', 'local_friadmin');
+
+            // Search criteria
+            $params = array();
+            $params['user']     = $user;
+            $params['level']    = CONTEXT_COURSECAT;
+            $params['role']     = 'manager';
+
+            // Sql instruction based on if you are site admin or not
+            if (is_siteadmin()) {
+                // Sql Instruction
+                $sql = " SELECT  ca.id,
+                                 ca.name
+                         FROM    {course_categories} ca
+                         ORDER BY ca.name ";
+            }else {
+                // SQL Instruction
+                $sql = " SELECT	DISTINCT 
+                                  ca.id,
+                                  ca.name
+                         FROM	  {role_assignments}  ra
+                            JOIN  {role}			  r	  ON 	ra.roleid 		= r.id
+                                                          AND	r.archetype 	= :role
+                            JOIN  {context}			  ct  ON  ct.id 			= ra.contextid
+                                                          AND ct.contextlevel = :level
+                            JOIN  {course_categories} ca  ON	ca.id 			= ct.instanceid
+                         WHERE    ra.userid = :user
+                         ORDER BY ca.name ";
+            }//if_admin
+
+            // Execute
+            $rdo = $DB->get_records_sql($sql,$params);
+            if ($rdo) {
+                foreach ($rdo as $instance) {
+                    $lstcat[$instance->id] = $instance->name;
+                }//for_rdo
+            }//if_rdo
+
+            return $lstcat;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//get_my_categories
+
     /**
      * Description
      * Gets all the course-categories with courses connected to them and returns them in a single array

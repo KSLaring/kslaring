@@ -32,10 +32,11 @@ require_once("$CFG->libdir/formslib.php");
 
 class summary_form extends moodleform {
     public function definition() {
+        global $USER;
         $mform = $this->_form;
 
         // Calls a function that gets all the categories from the database.
-        $categorylist = friadminrpt::get_categories();
+        $categorylist = friadminrpt::get_my_categories($USER->id);
 
         // Category.
         $mform->addElement('select', 'category', get_string('category', 'local_friadmin'), $categorylist);
@@ -105,10 +106,11 @@ class summary_form extends moodleform {
 
 class course_instructor_form extends moodleform {
     public function definition() {
+        global $USER;
         $mform = $this->_form;
 
         // Calls a function that gets all the categories from the database.
-        $categorylist = friadminrpt::get_categories();
+        $categorylist = friadminrpt::get_my_categories($USER->id);
 
         // Calls a function that gets all the courses from the database.
         $courses = friadminrpt::get_courses();
@@ -160,11 +162,12 @@ class course_instructor_form extends moodleform {
 
 class course_coordinator_form extends moodleform {
     public function definition() {
+        global $USER;
 
         $mform = $this->_form;
 
         // Calls a function that gets all the categories from the database.
-        $categorylist = friadminrpt::get_categories();
+        $categorylist = friadminrpt::get_my_categories($USER->id);
 
         // Calls a function that gets all the courses from the database.
         $courses = friadminrpt::get_courses();
