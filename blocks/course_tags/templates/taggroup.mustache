@@ -62,7 +62,7 @@
 }}
 <div class="taggroup accordion-group" data-singleselect="{{{singleselect}}}">
     <div class="accordion-heading">
-        <a class="accordion-toggle" data-toggle="collapse" data-parent="#taggroup-accordion" href="#collapse{{{id}}}">
+        <a class="accordion-toggle" data-toggle="collapse" href="#collapse{{{id}}}">
             {{{groupname}}}
         </a>
     </div>
@@ -70,7 +70,7 @@
         <div class="accordion-inner">
             <ul class="unlist">
                 {{#tagset}}
-                    <li>
+                    <li data-tagname="{{{datatagname}}}">
                         {{{ischecked}}}
                         {{{name}}}
                     </li>

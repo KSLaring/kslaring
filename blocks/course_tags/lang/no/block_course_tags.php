@@ -51,3 +51,5 @@ $string['groupsortorder'] = 'Sorteringsrekkefølge for gruppetagger';
 $string['groupsortorder_desc'] = 'Endre sorteringsrekkefølge for gruppetagger. Du kan dra og slippe dem for å endre sorteringsrekkefølgen.';
 $string['waitdragdrop'] = 'Dra og slipp kan ta en liten stund før denne siden er initialisert...';
 $string['readydragdrop'] = '<b>Dra og slipp er nå klar til bruk.</b>';
+$string['filterbytagname'] = 'Filter tags ...';
+$string['showalsoselected'] = 'Show also selected tags';

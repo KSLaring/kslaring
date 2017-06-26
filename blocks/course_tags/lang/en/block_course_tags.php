@@ -53,3 +53,5 @@ $string['groupsortorder_desc'] = 'Change the group tag display order. You may dr
 in a new place to change the order.';
 $string['waitdragdrop'] = 'Drag & Drop may take a momemt until it is initialized in the page ...';
 $string['readydragdrop'] = 'it is initialized now.';
+$string['filterbytagname'] = 'Filter tags ...';
+$string['showalsoselected'] = 'Show also selected tags';

@@ -48,6 +48,16 @@
 }}
 <h2>{{{title}}}</h2>
 
+<form id="tag-filter-form" class="form-inline">
+    <input type="text" id="tag-filter" name="tag-filter" placeholder="{{#str}}filterbytagname, block_course_tags{{/str}}"
+           title="{{#str}}filterbytagname, block_course_tags{{/str}}">
+    &nbsp;
+    <label class="checkbox showalsoselected">
+        <input type="checkbox" id="showalsoselected-checkbox" checked="checked">
+        <span class="showalsoselected-text">{{#str}}showalsoselected, block_course_tags{{/str}}</span>
+      </label>
+</form>
+
 <div class="taggroups accordion" id="taggroup-accordion">
     {{{taggroups}}}
 </div>

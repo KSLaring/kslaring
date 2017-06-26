@@ -73,7 +73,8 @@ class settagspage implements templatable {
         $first = true;
         foreach ($grouptags as $id => $grouptag) {
             if ($first) {
-                $open = 'in';
+                //$open = 'in';
+                $open = '';
                 $first = false;
             } else {
                 $open = '';
@@ -109,6 +110,7 @@ class settagspage implements templatable {
                 $tagcollection->tagset[$onetag->id] = (object) array(
                         'id' => $onetag->id,
                         'name' => $onetag->rawname,
+                        'datatagname' => \core_text::strtolower($onetag->rawname),
                         'ischecked' => in_array($onetag->id, $coursetagids)
                 );
             }
@@ -165,6 +167,7 @@ class settagspage implements templatable {
                 'id' => $this->course->id,
                 'tagcollid' => $this->tagcollid,
                 'title' => get_string('settagstitle', 'block_course_tags'),
+                'filterbytagname' => get_string('filterbytagname', 'block_course_tags'),
                 'taggroups' => $taggroups,
                 'backurl' => $backurl->out(),
                 'backstr' => get_string('backstr', 'block_course_tags'),

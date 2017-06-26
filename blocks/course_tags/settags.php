@@ -49,6 +49,7 @@ $PAGE->set_title(get_string('settags', 'block_course_tags'));
 $PAGE->set_heading($course->shortname);
 
 $PAGE->requires->js_call_amd('block_course_tags/singleselect', 'init');
+$PAGE->requires->js_call_amd('block_course_tags/filtertags', 'init');
 
 /* @var block_course_tags_renderer $blockrenderer The block renderer. */
 $blockrenderer = $PAGE->get_renderer('block_course_tags');
