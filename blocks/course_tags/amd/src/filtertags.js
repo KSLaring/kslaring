@@ -5,6 +5,7 @@ define(['jquery', 'core/log', 'theme_bootstrapbase/bootstrap'], function ($, log
     log.debug('AMD block_course_tags/filtertags loaded');
 
     var $tagfilterform = null,
+        $tagfilter = null,
         $taggroups = null,
         $showalsoselectedcheckbox = null;
 
@@ -33,15 +34,13 @@ define(['jquery', 'core/log', 'theme_bootstrapbase/bootstrap'], function ($, log
         e.preventDefault();
     };
 
-    var handleTagFilterText = function (e) {
+    var handleTagFilterText = function () {
         var $input = null,
             filter = '',
             $tagLists = null,
             $tags = null;
 
-        e.preventDefault();
-
-        $input = $(e.currentTarget);
+        $input = $tagfilter;
         filter = $input.val().toLowerCase();
         $tagLists = $taggroups.find('.unlist');
         $tags = $tagLists.find('li');
@@ -96,12 +95,13 @@ define(['jquery', 'core/log', 'theme_bootstrapbase/bootstrap'], function ($, log
             log.debug('AMD block_course_tags/filtertags init');
 
             $tagfilterform = $('#tag-filter-form');
+            $tagfilter = $('#tag-filter');
             $taggroups = $('#taggroup-accordion');
             $showalsoselectedcheckbox = $('#showalsoselected-checkbox');
 
             $tagfilterform.on('submit', handleTagFilterForm);
             $tagfilterform.on('keyup', '#tag-filter', handleTagFilterText);
-            $showalsoselectedcheckbox.on('change', handleShowalsoselectedCheckbox);
+            $showalsoselectedcheckbox.on('change', handleTagFilterText);
 
             handleShowalsoselectedCheckbox();
         }
