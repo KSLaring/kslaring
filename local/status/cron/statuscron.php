@@ -80,16 +80,16 @@ class STATUS_CRON {
             echo "Industry --> " . $industry . "</br>";
 
             // Get competence from KS
-            self::competence_data($plugin,$industry,$dblog);
+            //self::competence_data($plugin,$industry,$dblog);
 
             // Get managers reporters from KS
-            self::managers_reporters($plugin,$industry,$dblog);
+            //self::managers_reporters($plugin,$industry,$dblog);
 
             // Import last status from fellesdata
             self::import_status($plugin,$dblog);
 
             // Syncronization
-            self::synchronization($plugin,$industry,$dblog);
+            //self::synchronization($plugin,$industry,$dblog);
 
             // Finish Log
             $dblog .= $time . ' (' . userdate(time(),'%d.%m.%Y %H:%M', 99, false) . ') - FINISH FELLESDATA STATUS CRON' . "\n\n";
@@ -1396,6 +1396,7 @@ class STATUS_CRON {
             // Build url end point
             $url = $plugin->fs_point . '/' . $service . '?fromDate=' . $from . '&toDate=' . $to;
 
+            echo $url;
             // Call web service
             $ch = curl_init($url);
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false );
