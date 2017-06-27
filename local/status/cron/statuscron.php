@@ -1427,7 +1427,7 @@ class STATUS_CRON {
             // Format data
             if ($response === false) {
                 // Send notification
-                FS_CRON::send_notifications_service($plugin,'STATUS',$service);
+                //FS_CRON::send_notifications_service($plugin,'STATUS',$service);
 
                 // Log
                 $dblog .=  ' ERROR RESPONSE STATUS - NULL OBJECT . ' . "\n";
@@ -1439,7 +1439,7 @@ class STATUS_CRON {
                 return null;
             }else if (isset($response->status) && $response->status != "200") {
                 // Send notification
-                FS_CRON::send_notifications_service($plugin,'STATUS',$service);
+                //FS_CRON::send_notifications_service($plugin,'STATUS',$service);
 
                 // Log
                 $dblog .=  ' ERROR RESPONSE STATUS . ' . "\n";
@@ -1452,7 +1452,7 @@ class STATUS_CRON {
                 $index = strpos($response,'html');
                 if ($index) {
                     // Send notification
-                    FS_CRON::send_notifications_service($plugin,'STATUS',$service);
+                    //FS_CRON::send_notifications_service($plugin,'STATUS',$service);
 
                     // Log
                     $dblog .=  ' ERROR RESPONSE STATUS . ' . "\n";
