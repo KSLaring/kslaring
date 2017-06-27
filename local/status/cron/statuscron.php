@@ -1412,6 +1412,8 @@ class STATUS_CRON {
             $response   = curl_exec( $ch );
             curl_close( $ch );
 
+            echo $ch . "</br>";
+
             // Save original file receive it
             $pathFile = $original . '/' . $service . '.txt';
             if (file_exists($pathFile)) {
