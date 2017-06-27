@@ -1423,7 +1423,7 @@ class STATUS_CRON {
             fwrite($responseFile,$response);
             fclose($responseFile);
 
-            echo $response . " --> " . $response . "</br>";
+            echo " THIS is the response --> " . $response . "</br>";
             // Format data
             if ($response === false) {
                 // Send notification
