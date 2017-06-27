@@ -1396,7 +1396,7 @@ class STATUS_CRON {
             // Build url end point
             $url = $plugin->fs_point . '/' . $service . '?fromDate=' . $from . '&toDate=' . $to;
 
-            echo $url;
+            echo $url . "</br>";
             // Call web service
             $ch = curl_init($url);
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false );
