@@ -1393,8 +1393,13 @@ class STATUS_CRON {
             $to     = gmdate('Y-m-d\TH:i:s\Z',$to);
             $from   = gmdate('Y-m-d\TH:i:s\Z',0);
 
+            $admin      = get_admin();
+            $date       = usergetdate($time, $admin->timezone);
+            $fromDate   = mktime(0, 0, 0, $date['mon'], $date['mday']- 2, $date['year']);
+            $fromDate   = gmdate('Y-m-d\TH:i:s\Z',$fromDate);
+
             // Build url end point
-            $url = $plugin->fs_point . '/' . $service . '?fromDate=' . $from . '&toDate=' . $to;
+            $url = $plugin->fs_point . '/' . $service . '?fromDate=' . $fromDate . '&toDate=' . $to;
 
             echo $url . "</br>";
             // Call web service
@@ -1408,8 +1413,14 @@ class STATUS_CRON {
                     'User-Agent: Moodle 1.0',
                     'Content-Type: application/json')
             );
+            curl_setopt($ch, CURLOPT_HEADER, true);
 
             $response   = curl_exec( $ch );
+
+            $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+            $header = substr($response, 0, $header_size);
+            $body = substr($response, $header_size);
+            
             curl_close( $ch );
 
             echo $ch . "</br>";
