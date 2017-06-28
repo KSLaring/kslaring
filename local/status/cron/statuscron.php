@@ -1420,7 +1420,7 @@ class STATUS_CRON {
             $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
             $header = substr($response, 0, $header_size);
             $body = substr($response, $header_size);
-            
+
             curl_close( $ch );
 
             echo $ch . "</br>";
