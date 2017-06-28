@@ -124,6 +124,7 @@ class util {
                                     'groupid' => 0,
                                     'group' => 'tags',
                                     'name' => $strshowtags,
+                                    'ishidden' => 1,
                                     'isselect' => 0,
                                     'checked' => 0
                                 ),

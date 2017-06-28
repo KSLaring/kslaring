@@ -2,7 +2,7 @@
     <h4>{{{title}}}</h4>
     {{#shown}}
         {{^isselect}}
-            <label class="checkbox" data-id="{{{id}}}" data-type="{{{type}}}" data-group="{{{group}}}" data-groupid="{{{groupid}}}"
+            <label class="checkbox{{#ishidden}} hidden{{/ishidden}}" data-id="{{{id}}}" data-type="{{{type}}}" data-group="{{{group}}}" data-groupid="{{{groupid}}}"
                    data-name="{{{name}}}">
                 <input type="checkbox"{{#checked}} checked="checked"{{/checked}} value="">
                 {{{name}}}

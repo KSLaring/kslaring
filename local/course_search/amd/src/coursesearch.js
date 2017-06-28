@@ -27,7 +27,7 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
             $formsearch = null,
             $tagarea = null,
             $selectedCourseTags = null,
-            $switchDisplay = null,
+            $switchDisplayBtn = null,
             preselecttagsloaded = false,
             hideitemClass = 'hide-item',
             cookiename = 'preselectedtags',
@@ -806,8 +806,16 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                 gl,
                 tl;
 
-            // Save the tag selection in the cookie.
+            // Change state to tag selection.
             if (showtagliststate) {
+                $switchDisplayBtn.text($switchDisplayBtn.data('changetoselection'));
+                if ($resultarea.find('[href="#tablist"]').hasClass('active')) {
+                    $coursesearchform
+                        .find('.display')
+                        .find('[data-group="tags"]')
+                        .removeClass('hidden');
+                }
+
                 $taggroups = $searcharea.find('.tag-group');
                 gl = $taggroups.length - 1;
                 if ($taggroups.length) {
@@ -847,6 +855,12 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                 save_search_criteria(tagarray);
             } else {
                 showtagliststate = !showtagliststate;
+                $switchDisplayBtn.text($switchDisplayBtn.data('changetoresults'));
+                console.log('showtagliststate', $coursesearchform.find('.display').find('[data-group="tags"]'));
+                $coursesearchform
+                    .find('.display')
+                    .find('[data-group="tags"]')
+                    .addClass('hidden');
 
                 // Remove all search criteria.
                 $coursesearchfield.blur();
@@ -876,14 +890,9 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                 $input = $showtagscheckbox.find('input');
 
             if (target === '#tabcards') {
-                $showtagscheckbox.addClass('disabled');
-                if ($input.is(":checked")) {
-                    $input.trigger('click');
-                }
-                $input.attr('disabled', 'disabled');
+                $showtagscheckbox.addClass('hidden');
             } else if (target === '#tablist') {
-                $showtagscheckbox.removeClass('disabled');
-                $input.removeAttr('disabled');
+                $showtagscheckbox.removeClass('hidden');
             }
         };
 
@@ -1058,7 +1067,7 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                 $tagarea = $('#tag-area');
                 $selectedCourseTags = $tagarea.find('.selected-tags');
                 $formsearch = $searcharea.find('.form-search');
-                $switchDisplay = $searcharea.find('#switch-display');
+                $switchDisplayBtn = $searcharea.find('#switch-display');
 
                 // Get the search data.
                 // $.getJSON("./course_search.json", function (data) {
@@ -1094,7 +1103,7 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                 $tagpreselectarea.on('change', '[type="checkbox"]', preselectedCheckboxChangeHandler);
                 $tagpreselectarea.on('keyup', '#tagFilter', handleTagFilterText);
                 $coursesearchform.on('submit', handleTextSearch);
-                $switchDisplay.on('click', handleToggleTagPreselectPage);
+                $switchDisplayBtn.on('click', handleToggleTagPreselectPage);
 
                 activateDatePicker();
 
