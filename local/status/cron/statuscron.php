@@ -1393,21 +1393,14 @@ class STATUS_CRON {
             $to     = gmdate('Y-m-d\TH:i:s\Z',$to);
             $from   = gmdate('Y-m-d\TH:i:s\Z',0);
 
-            $admin      = get_admin();
-            $date       = usergetdate($time, $admin->timezone);
-            $fromDate   = mktime(0, 0, 0, $date['mon'], $date['mday']- 2, $date['year']);
-            $fromDate   = gmdate('Y-m-d\TH:i:s\Z',$fromDate);
-
             // Build url end point
-            $url = $plugin->fs_point . '/' . $service . '?fromDate=' . $fromDate . '&toDate=' . $to;
-            $urlTradis = $plugin->fs_point . '/' . $service . '?fromDate=' . $fromDate . '&toDate=' . $to;
-            $urlTradis = trim($urlTradis);
+            $url = $plugin->fs_point . '/' . $service . '?fromDate=' . $from . '&toDate=' . $to;
+            $url = trim($url);
 
-            echo $url . "</br>";
-            echo $urlTradis . "</br></br>----</br></br>";
+            echo $url . "</br></br>----</br></br>";
 
             // Call web service
-            $ch = curl_init($urlTradis);
+            $ch = curl_init($url);
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false );
             curl_setopt($ch, CURLOPT_SSL_VERIFYHOST,2 );
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true );
@@ -1426,7 +1419,7 @@ class STATUS_CRON {
 
             curl_close( $ch );
 
-            echo $ch . "</br>";
+            echo "---> HEADER --> " . $header . "</br>";
 
             // Save original file receive it
             $pathFile = $original . '/' . $service . '.txt';
