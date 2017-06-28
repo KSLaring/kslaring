@@ -39,7 +39,7 @@ class FELLESDATA_CRON {
     /* PUBLIC */
     /**********/
 
-    public static function cron_test($plugin,$fstExecution) {
+    public static function cron($plugin,$fstExecution) {
         /* Variables    */
         global $SESSION;
         global $CFG;
@@ -1059,7 +1059,6 @@ class FELLESDATA_CRON {
             $urlTradis = $pluginInfo->fs_point . '/' . $service . '?fromDate=' . $fromDate . '&toDate=' . $toDate;
             $urlTradis = trim($urlTradis);
 
-            echo $urlTradis . "</br>";
             // Call web service
             $ch = curl_init($urlTradis);
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false );

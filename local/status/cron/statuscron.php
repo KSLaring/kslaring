@@ -1400,10 +1400,14 @@ class STATUS_CRON {
 
             // Build url end point
             $url = $plugin->fs_point . '/' . $service . '?fromDate=' . $fromDate . '&toDate=' . $to;
+            $urlTradis = $plugin->fs_point . '/' . $service . '?fromDate=' . $fromDate . '&toDate=' . $to;
+            $urlTradis = trim($urlTradis);
 
             echo $url . "</br>";
+            echo $urlTradis . "</br></br>----</br></br>";
+
             // Call web service
-            $ch = curl_init($url);
+            $ch = curl_init($urlTradis);
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false );
             curl_setopt($ch, CURLOPT_SSL_VERIFYHOST,2 );
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true );
@@ -1413,7 +1417,6 @@ class STATUS_CRON {
                     'User-Agent: Moodle 1.0',
                     'Content-Type: application/json')
             );
-            curl_setopt($ch, CURLOPT_HEADER, true);
 
             $response   = curl_exec( $ch );
 
