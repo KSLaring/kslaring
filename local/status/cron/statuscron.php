@@ -77,19 +77,17 @@ class STATUS_CRON {
             // Get industry code
             $industry = STATUS::get_industry_code($plugin->ks_muni);
 
-            echo "Industry --> " . $industry . "</br>";
-
             // Get competence from KS
-            //self::competence_data($plugin,$industry,$dblog);
+            self::competence_data($plugin,$industry,$dblog);
 
             // Get managers reporters from KS
-            //self::managers_reporters($plugin,$industry,$dblog);
+            self::managers_reporters($plugin,$industry,$dblog);
 
             // Import last status from fellesdata
             self::import_status($plugin,$dblog);
 
             // Syncronization
-            //self::synchronization($plugin,$industry,$dblog);
+            self::synchronization($plugin,$industry,$dblog);
 
             // Finish Log
             $dblog .= $time . ' (' . userdate(time(),'%d.%m.%Y %H:%M', 99, false) . ') - FINISH FELLESDATA STATUS CRON' . "\n\n";
@@ -1397,8 +1395,6 @@ class STATUS_CRON {
             $url = $plugin->fs_point . '/' . $service . '?fromDate=' . $from . '&toDate=' . $to;
             $url = trim($url);
 
-            echo $url . "</br></br>----</br></br>";
-
             // Call web service
             $ch = curl_init($url);
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false );
@@ -1412,14 +1408,7 @@ class STATUS_CRON {
             );
 
             $response   = curl_exec( $ch );
-
-            $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-            $header = substr($response, 0, $header_size);
-            $body = substr($response, $header_size);
-
             curl_close( $ch );
-
-            echo "---> HEADER --> " . $header . "</br>";
 
             // Save original file receive it
             $pathFile = $original . '/' . $service . '.txt';
@@ -1432,11 +1421,10 @@ class STATUS_CRON {
             fwrite($responseFile,$response);
             fclose($responseFile);
 
-            echo " THIS is the response --> " . $response . "</br>";
             // Format data
             if ($response === false) {
                 // Send notification
-                //FS_CRON::send_notifications_service($plugin,'STATUS',$service);
+                FS_CRON::send_notifications_service($plugin,'STATUS',$service);
 
                 // Log
                 $dblog .=  ' ERROR RESPONSE STATUS - NULL OBJECT . ' . "\n";
@@ -1448,7 +1436,7 @@ class STATUS_CRON {
                 return null;
             }else if (isset($response->status) && $response->status != "200") {
                 // Send notification
-                //FS_CRON::send_notifications_service($plugin,'STATUS',$service);
+                FS_CRON::send_notifications_service($plugin,'STATUS',$service);
 
                 // Log
                 $dblog .=  ' ERROR RESPONSE STATUS . ' . "\n";
@@ -1461,7 +1449,7 @@ class STATUS_CRON {
                 $index = strpos($response,'html');
                 if ($index) {
                     // Send notification
-                    //FS_CRON::send_notifications_service($plugin,'STATUS',$service);
+                    FS_CRON::send_notifications_service($plugin,'STATUS',$service);
 
                     // Log
                     $dblog .=  ' ERROR RESPONSE STATUS . ' . "\n";
