@@ -77,8 +77,6 @@ class STATUS_CRON {
             // Get industry code
             $industry = STATUS::get_industry_code($plugin->ks_muni);
 
-            echo "Industry --> " . $industry . "</br>";
-
             // Get competence from KS
             self::competence_data($plugin,$industry,$dblog);
 
@@ -1395,6 +1393,7 @@ class STATUS_CRON {
 
             // Build url end point
             $url = $plugin->fs_point . '/' . $service . '?fromDate=' . $from . '&toDate=' . $to;
+            $url = trim($url);
 
             // Call web service
             $ch = curl_init($url);
