@@ -52,4 +52,4 @@ $string['groupsortorder_desc'] = 'Endre sorteringsrekkefølge for gruppetagger. 
 $string['waitdragdrop'] = 'Dra og slipp kan ta en liten stund før denne siden er initialisert...';
 $string['readydragdrop'] = '<b>Dra og slipp er nå klar til bruk.</b>';
 $string['filterbytagname'] = 'Filtrer tagger ...';
-$string['showalsoselected'] = 'Vis bare taggede elementer';
+$string['showalsoselected'] = 'Vis taggede elementer';
