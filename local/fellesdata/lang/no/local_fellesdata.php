@@ -169,13 +169,13 @@ $string['nav_unconnected']  = 'Manuelle org-elementer';
 $string['unconnected']      = 'Manuelle';
 $string['sel_level']        = 'Nivå';
 
-$string['no_mapped'] = 'Ikke mappet ennå';
+$string['no_mapped'] = 'Ikke mappet med TARDIS';
 $string['to_delete'] = 'Skal slettes fra KS Læring';
 
-$string['status']       = 'Get last status';
-$string['day']          = 'Day to get last status';
-$string['stweekly']     = 'Weekly';
-$string['stmonthly']    = 'Monthly';
+$string['status']       = 'Hent siste status';
+$string['day']          = 'Antall dager til siste status';
+$string['stweekly']     = 'Ukentlig';
+$string['stmonthly']    = 'Månedlig';
 
 $string['error_response_subject']           = ' {$a}: Integrasjon TARDIS - FEILMELDING';
 $string['error_response_status_subject']    = ' {$a}: Integrasjon STATUS TARDIS - FEILMELDING';
