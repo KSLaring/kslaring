@@ -40,6 +40,9 @@ class STATUS_CRON {
             // Get managers reporters from KS
             self::managers_reporters($plugin,$industry,$dblog);
 
+            // Repair connections
+            self::repair_connections($dblog);
+
             // Import last status from fellesdata
             self::import_status($plugin,$dblog);
 
@@ -83,8 +86,11 @@ class STATUS_CRON {
             // Get managers reporters from KS
             //self::managers_reporters($plugin,$industry,$dblog);
 
+            // Repair connections
+            self::repair_connections($dblog);
+
             // Import last status from fellesdata
-            self::import_status($plugin,$dblog);
+            //self::import_status($plugin,$dblog);
 
             // Syncronization
             //self::synchronization($plugin,$industry,$dblog);
@@ -92,6 +98,8 @@ class STATUS_CRON {
             // Finish Log
             $dblog .= $time . ' (' . userdate(time(),'%d.%m.%Y %H:%M', 99, false) . ') - FINISH FELLESDATA STATUS CRON' . "\n\n";
             error_log($dblog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
+
+            echo $dblog;
         }catch (Exception $ex) {
             // Finish log - error
             $dblog .= "ERROR: " . "\n";
@@ -260,6 +268,86 @@ class STATUS_CRON {
             throw $ex;
         }//try_catch
     }//synchronization
+
+    /**
+     * Description
+     * Repair all missing connections
+     *
+     * @param           $dblog
+     * @throws          Exception
+     *
+     * @creationDate    03/07/2017
+     * @author          eFaktor     (fbv)
+     */
+    private static function repair_connections(&$dblog) {
+        /* Variables */
+        global $DB;
+        $connections = null;
+
+        try {
+            // Log
+            $dblog .= ' START REPAIR CONNECTIONS STATUS. ' . "\n";
+
+            // Log
+            $dblog .= ' GET MISSING CONNECTIONS STATUS. ' . "\n";
+
+            // Get connections missed
+            $connections = self::get_connections_missing();
+
+            // Add connection
+            if ($connections) {
+                // Log
+                $dblog .= ' ADD CONNECTION MISSED STATUS. ' . "\n";
+
+                foreach ($connections as $connection) {
+                    $DB->insert_record('ksfs_company',$connection);
+                }
+            }//if_connections
+
+            // Log
+            $dblog .= ' FINISH REPAIR CONNECTIONS STATUS. ' . "\n";
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//repair_connections
+
+    /**
+     * Description
+     * Get connections that are missing
+     *
+     * @return          array|null
+     * @throws          Exception
+     *
+     * @creationDate    03/07/2017
+     * @author          eFaktor     (fbv)
+     */
+    private static function get_connections_missing() {
+        /* Variables */
+        global $DB;
+        $rdo = null;
+        $sql = null;
+
+        try {
+            // SQL Instruction
+            $sql = " SELECT	      fs.companyid as 'fscompany',
+                                  ks.companyid as 'kscompany'
+                     FROM		  {fs_company}	  fs
+                        JOIN	  {ks_company}	  ks   ON   ks.name			= fs.name
+                        LEFT JOIN {ksfs_company}  ksfs ON   ksfs.fscompany 	= fs.companyid 
+                                                       AND  ksfs.kscompany  = ks.companyid
+                     WHERE 	      ksfs.id IS NULL
+                          AND     fs.synchronized = 1
+                     ORDER BY     ks.companyid,fs.companyid ";
+
+            // Execute
+            $rdo = $DB->get_records_sql($sql);
+
+            return $rdo;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//get_connections_missing
+
 
     /**
      * Description
