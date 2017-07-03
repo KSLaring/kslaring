@@ -1268,7 +1268,13 @@ class STATUS {
         $params         = null;
         $newcompanies   = null;
         $levels         = null;
+        $params         = null;
+
         try {
+            // Search criteria
+            $params = array();
+            $params['del'] = ACT_DELETE;
+
             // Get levels
             $levels = $plugin->map_two . "," . $plugin->map_three;
 
@@ -1279,6 +1285,7 @@ class STATUS {
                         LEFT JOIN	{fs_company}		fs		ON fs.companyid = fs_imp.ORG_ENHET_ID
                      WHERE 	        fs.id IS NULL
                         AND         fs_imp.org_nivaa IN ($levels) 
+                        AND         fs_imp.action != :del
                      LIMIT 0,5 ";
 
             // Execute
