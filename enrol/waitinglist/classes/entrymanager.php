@@ -330,24 +330,34 @@ class entrymanager  {
      */
 	 public function get_listtotal_by_method($methodtype){
 		global $DB;
-		 $record = $DB->get_record_sql("SELECT SUM(seats) as seatcount FROM {".static::CTABLE."} WHERE courseid = " . 
+		 $record = $DB->get_record_sql("SELECT SUM(seats) as seatcount FROM {".static::CTABLE."} WHERE courseid = " .
 		 	$this->courseid . " AND waitinglistid = " . $this->waitinglist->id . 
 		 	" AND " . $this->get_methodtype_condition($methodtype));
 		 return $record ? $record->seatcount : 0;
 	}
 
-     /**
+    /**
+     * Description
      * count confirmed seats irrespective of methodtype
      *
-     * 
-     * @return bool|string true if on list, else false if not.
+     * @return      bool|string true if on list, else false if not
+     * @throws      \Exception
+     *
+     * @updateDate  04/07/2017
+     * @auhtor      eFaktor     (fbv)
      */
 	 public function get_confirmed_listtotal(){
-		global $DB;
-		 $record = $DB->get_record_sql("SELECT SUM(confirmedseats) as seatcount FROM {".static::CTABLE."} WHERE courseid = " . 
-		 	$this->courseid . " AND waitinglistid = " . $this->waitinglist->id);
-		 return $record ? $record->seatcount : 0;
-	}
+         /* Variables */
+         global $DB;
+
+         try {
+             $record = $DB->get_record_sql("SELECT SUM(allocseats) as seatcount FROM {".static::CTABLE."} WHERE courseid = " .
+                 $this->courseid . " AND waitinglistid = " . $this->waitinglist->id);
+             return $record ? $record->seatcount : 0;
+         }catch (\Exception $ex) {
+             throw $ex;
+         }//try_catch
+	}//get_confirmed_listtotal
 	
 	
 	
