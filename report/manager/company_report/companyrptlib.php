@@ -1693,10 +1693,8 @@ class CompanyReport {
                 if ($outcome->completed) {
                     $completed = $outcome->completed;
                     foreach ($completed as $course) {
-                        $col = 0;
-
                         $ts = strtotime($outcome->expiration  . ' month', $course->completed);
-                        if ($ts < time()) {
+                        if ($ts <= time()) {
                             $bg_color = '#f2dede';
                             $state = get_string('outcome_course_expired','local_tracker_manager');
                         }else {
@@ -1812,13 +1810,13 @@ class CompanyReport {
 
                     /* State    */
                     $col = $col + 6;
-                    $my_xls->write($row, $col, get_string('outcome_course_started','local_tracker_manager'),array('size'=>12, 'name'=>'Arial','bg_color'=>$bg_color,'align'=>'center','v_align'=>'center'));
+                    $my_xls->write($row, $col, get_string('outcome_course_finished','local_tracker_manager'),array('size'=>12, 'name'=>'Arial','bg_color'=>$bg_color,'align'=>'center','v_align'=>'center'));
                     $my_xls->merge_cells($row,$col,$row,$col+2);
                     $my_xls->set_row($row,20);
 
                     /* Completion   */
                     $col = $col + 3;
-                    $my_xls->write($row, $col, ' - ',array('size'=>12, 'name'=>'Arial','bg_color'=>$bg_color,'align'=>'center','v_align'=>'center'));
+                    $my_xls->write($row, $col, userdate($course->completed,'%d.%m.%Y', 99, false),array('size'=>12, 'name'=>'Arial','bg_color'=>$bg_color,'align'=>'center','v_align'=>'center'));
                     $my_xls->merge_cells($row,$col,$row,$col+2);
                     $my_xls->set_row($row,20);
 

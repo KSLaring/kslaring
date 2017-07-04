@@ -1617,7 +1617,8 @@ EOT;
         // Get the current course nodes and extract the course node collection
         // The current course has only one collection, can be fetched with "last".
         // $thiscourse_navigation = $course_navigation->get("currentcourse");
-        $thiscourse_navigation = clone($course_navigation->get("currentcourse"));
+        $course_navigation_clone = clone($course_navigation);
+        $thiscourse_navigation   = $course_navigation_clone->get("currentcourse");
 
         // Return null if the currentcourse has no navigation items.
         if (empty($thiscourse_navigation->children)) {
