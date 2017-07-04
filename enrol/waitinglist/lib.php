@@ -1126,34 +1126,48 @@ class enrol_waitinglist_plugin extends enrol_plugin {
         }//try_catch
     }//check_approval
 
-	 /**
+    /**
+     * Description
      * Get the vacancy count for this waiting list
      * We need remove enrolments and confirmations from maxenrolments
      *
-     * @param stdClass waitinglist instance/db entry
-     * @return int seats available
+     * @param   stdClass $instance      waitinglist
+     * @return           int|null       seats available
+     * @throws           Exception
+     *
+     * @updateDate  04/07/2017
      */
 	public function get_vacancy_count($instance){
+	    /* Variables */
 		global $DB;
-		$count = $DB->count_records('user_enrolments', array('enrolid' => $instance->id));
-		$entryman= \enrol_waitinglist\entrymanager::get_by_course($instance->courseid);
-		$confirmedlistcount = $entryman->get_confirmed_listtotal();
+        $entryman = null;
+        $confirmedlistcount = null;
+        $vacancies = null;
 
-        /**
-         * @updateDate  19/02/2016
-         * @author      eFaktor     (fbv)
-         *
-         * Description
-         * If the max enrolments is set to 0, it means unlimited.
-         */
-        if ($instance->{ENROL_WAITINGLIST_FIELD_MAXENROLMENTS}) {
-            $vacancies = $instance->{ENROL_WAITINGLIST_FIELD_MAXENROLMENTS} - $count - $confirmedlistcount;
-            if($vacancies < 0){$vacancies=0;}
-        }else {
-            $vacancies = 1;
-        }
+        try {
+            //$count = $DB->count_records('user_enrolments', array('enrolid' => $instance->id));
+            // Get seats assigned
+            $entryman           = \enrol_waitinglist\entrymanager::get_by_course($instance->courseid);
+            $confirmedlistcount = $entryman->get_confirmed_listtotal();
 
-		return $vacancies;
+            /**
+             * @updateDate  19/02/2016
+             * @author      eFaktor     (fbv)
+             *
+             * Description
+             * If the max enrolments is set to 0, it means unlimited.
+             */
+            if ($instance->{ENROL_WAITINGLIST_FIELD_MAXENROLMENTS}) {
+                $vacancies = $instance->{ENROL_WAITINGLIST_FIELD_MAXENROLMENTS} - $confirmedlistcount;
+                if($vacancies < 0){$vacancies=0;}
+            }else {
+                $vacancies = 1;
+            }
+
+            return $vacancies;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
 	}
 	
 	
