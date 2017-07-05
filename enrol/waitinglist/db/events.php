@@ -21,6 +21,11 @@
  * @category event
  * @copyright 2015 Justin Hunt {@link http://poodll.com}
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ *
+ * @updateDate      06/07/2017
+ * @author          eFaktor     (fbv)
+ *
+ * Add event enrol_instance_update
  */
 
 defined('MOODLE_INTERNAL') || die();
@@ -39,5 +44,9 @@ $observers = array(
     array(
         'eventname'   => '\core\event\course_deleted',
         'callback'    => 'enrol_waitinglist_observer::course_deleted',
+    ),
+    array(
+        'eventname'   => '\core\event\enrol_instance_updated',
+        'callback'    => 'enrol_waitinglist_observer::enrol_instance_updated',
     ),
 );

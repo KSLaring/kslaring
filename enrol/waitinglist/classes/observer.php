@@ -53,8 +53,26 @@ class enrol_waitinglist_observer{
         $waitinglist = enrol_get_plugin('waitinglist');
 		$waitinglist->handle_enrol($event->courseid, $event->relateduserid);
 		return true;
-    
     }
+
+    /**
+     * Description
+     * Triggered via enrol_instance_updated
+     *
+     * @param       \core\event\enrol_instance_updated $event
+     * @return      bool
+     *
+     * @creationDate    06/07/2017
+     * @author          eFaktor     (fbv)
+     */
+    public static function enrol_instance_updated(\core\event\enrol_instance_updated $event) {
+
+        $waitinglist = enrol_get_plugin('waitinglist');
+        $waitinglist->handle_enrolupdated($event->courseid,$event->objectid);
+
+        return true;
+
+    }//enrol_instance_updated
 
     /**
      * Triggered via user_enrolment_deleted event.

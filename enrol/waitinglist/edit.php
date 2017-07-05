@@ -147,6 +147,21 @@ if ($mform->is_cancelled()) {
 
         $DB->update_record('enrol', $instance);
 
+        // Update seats
+
+        /**
+         * Instance have been update
+         * So, check all users waiting for a seat
+         * Users with entry no confirmed yet
+         *
+         * @updateDate  06/07/2017
+         * @author      eFaktor     (fbv)
+         */
+        $queueman = \enrol_waitinglist\queuemanager::get_by_course_workspace($course->id);
+        if ($queueman->qentries) {
+            \core\event\enrol_instance_updated::create_from_record($instance)->trigger();
+        }//if_Entries
+
         // Use standard API to update instance status.
         if ($instance->status != $data->status) {
             $instance = $DB->get_record('enrol', array('id'=>$instance->id));
