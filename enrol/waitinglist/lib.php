@@ -1082,16 +1082,18 @@ class enrol_waitinglist_plugin extends enrol_plugin {
 
                                 if ($sendNotification) {
                                     $myManagers = \Approval::get_managers($instance->userid);
+                                    $infoMail = new stdClass();
+                                    $infoMail->approvalid   = $instance->id;
+                                    $infoMail->course       = $instance->fullname;
+                                    $infoMail->price        = $instance->price;
+                                    $infoMail->arguments    = $instance->arguments;
+                                    $infoMail->managers = \Approval::add_approval_entry_manager($myManagers,$waitingInstance->id,$waitingInstance->courseid);
 
                                     if (array_key_exists($instance->userid,$myManagers)) {
                                         $instance->action = APPROVED_ACTION;
-                                        \Approval::apply_action_from_manager($instance);
+                                        $infoManager  = \Approval::get_request_manager($infoMail->managers[$instance->userid],$instance->userid);
+                                        \Approval::apply_action_from_manager($instance,$infoManager);
                                     }else {
-                                        $infoMail = new stdClass();
-                                        $infoMail->approvalid   = $instance->id;
-                                        $infoMail->course       = $instance->fullname;
-                                        $infoMail->price        = $instance->price;
-                                        $infoMail->arguments    = $instance->arguments;
                                         /* Approve Link */
                                         $lnkApprove = $CFG->wwwroot . '/enrol/waitinglist/approval/action.php/' . $instance->token . '/' . $instance->approve;
                                         $infoMail->approve = $lnkApprove;
@@ -1182,6 +1184,109 @@ class enrol_waitinglist_plugin extends enrol_plugin {
 	public function handle_enrol($courseid,$userid){
         return true;
 	}
+
+    /**
+     * Description
+     * Update all users that are waiting in the queue, after the enrol instance has been update
+     *
+     * @param       integer $courseid
+     * @param       integer $enrolid
+     *
+     * @throws              Exception
+     *
+     * @creationDate    06/07/2017
+     * @author          eFaktor     (fbv)
+     */
+	public function handle_enrolupdated($courseid,$enrolid) {
+	    /* Variables */
+	    global $DB;
+	    $trans      = null;
+	    $role       = null;
+	    $entry      = null;
+        $entryman   = null;
+        $queueman   = null;
+        $vacancies  = null;
+        $instance   = null;
+        $plugin     = null;
+        $vacancies  = null;
+        $update     = null;
+
+	    // Start transaction
+        $trans = $DB->start_delegated_transaction();
+
+	    try {
+	        // Plugin info
+            $plugin = enrol_get_plugin('waitinglist');
+
+	        // Get role student
+            $role = $DB->get_record('role',array('archetype' => 'student'));
+
+            // Enrol Instance
+            $instance = $DB->get_record('enrol',array('id' => $enrolid,'courseid' => $courseid));
+
+            // queue manager
+            $queueman = \enrol_waitinglist\queuemanager::get_by_course_workspace($courseid);
+            // Entry manager
+            $entryman = \enrol_waitinglist\entrymanager::get_by_course($courseid);
+
+            // Entries to update. Entries in the waiting list to update
+            if ($queueman->qentries) {
+                foreach ($queueman->qentries as $entry) {
+                    // Calculate vacancies
+                    if ($instance->{ENROL_WAITINGLIST_FIELD_MAXENROLMENTS}) {
+                        $vacancies    = $instance->{ENROL_WAITINGLIST_FIELD_MAXENROLMENTS} - $entryman->GetOcuppaiedSeats_NotConnectedUser($entry->userid,$entry->courseid,$instance->id);
+                    }
+
+                    if ($instance->{ENROL_WAITINGLIST_FIELD_MAXENROLMENTS}) {
+                        if ($vacancies) {
+                            if ($vacancies >= $entry->seats) {
+                                $entry->offqueue		= 1;
+                                $entry->queueno			= \enrol_waitinglist\queuemanager::OFFQ;
+                                $entry->allocseats		= $entry->seats;
+                                $entry->confirmedseats	= $entry->seats -1;
+                                $entry->enroledseats    = 1;
+                            }else {
+                                $entry->offqueue		= 0;
+                                $entry->queueno			= \enrol_waitinglist\queuemanager::get_maxq_no($instance->id) + 1;
+                                $entry->allocseats		= $vacancies;
+                                $entry->confirmedseats	= $vacancies-1;
+                                $entry->enroledseats    = 1;
+                            }
+
+                            // If the entry has to be updated
+                            $update = true;
+                        }//if_vacancies
+                    }else {
+                        // Unlimitted
+                        $entry->offqueue		= 1;
+                        $entry->queueno			= \enrol_waitinglist\queuemanager::OFFQ;
+                        $entry->allocseats		= $entry->seats;
+                        $entry->confirmedseats	= $entry->seats -1;
+                        $entry->enroledseats    = 1;
+
+                        // If the entry has to be updated
+                        $update = true;
+                    }
+
+                    // Update entry && enroll user
+                    if ($update) {
+                        // Update entry
+                        $DB->update_record(\enrol_waitinglist\entrymanager::CTABLE, $entry);
+                        // Enroll user
+                        $plugin->enrol_user($instance,$entry->userid,$role->id);
+                    }//if_update
+                }//for_Each_Entry
+            }//if_entries
+
+	        // Commit
+            $trans->allow_commit();
+        }catch (Exception $ex) {
+	        // Rollback
+            $trans->rollback($ex);
+
+	        throw $ex;
+        }//try_catch
+    }//handle_enrolupdated
 
     /**
      * @param           $courseid
@@ -1295,7 +1400,6 @@ class enrol_waitinglist_plugin extends enrol_plugin {
             throw $ex;
         }//try_vcathc
 	}
-
 
     /**
      * @param           $courseid
