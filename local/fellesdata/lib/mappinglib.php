@@ -399,7 +399,8 @@ class FS_MAPPING {
             $params['synchronized'] = 0;
 
             /* SQL Instruction */
-            $sql = " SELECT	fs.id,
+            $sql = " SELECT	DISTINCT 
+                            fs.id,
                             fs.name
                      FROM	{fs_company} fs
                      WHERE	fs.parent       = :parent
@@ -495,7 +496,8 @@ class FS_MAPPING {
             }//level
 
             // SQL Instruction
-            $sql = " SELECT	      fs.id,
+            $sql = " SELECT	 DISTINCT 
+                                  fs.id,
                                   fs.fs_parent,
                                   fs.name,
                                   fs_granpa.ORG_NIVAA 		as 'parentnivaa',
