@@ -1290,9 +1290,11 @@ class STATUS {
 
             // Execute
             $rdo = $DB->get_records_sql($sql);
-            foreach ($rdo as $instance) {
-                $newcompanies[$instance->id] = $instance->org_navn;
-            }//for_rdo
+            if ($rdo) {
+                foreach ($rdo as $instance) {
+                    $newcompanies[$instance->id] = $instance->org_navn;
+                }//for_rdo
+            }//if_Rdo
 
             return $newcompanies;
         }catch (Exception $ex) {

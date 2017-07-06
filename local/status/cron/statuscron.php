@@ -812,23 +812,25 @@ class STATUS_CRON {
                     // get to delete
                     $todelete = STATUS::competence_to_delete_ks($start,$limit);
 
-                    // Params web service
-                    $params = array();
-                    $params['competence'] = $todelete;
+                    if ($todelete) {
+                        // Params web service
+                        $params = array();
+                        $params['competence'] = $todelete;
 
-                    // Call service
-                    $response = self::process_service($plugin,WS_DEL_COMPETENCE,$params);
+                        // Call service
+                        $response = self::process_service($plugin,WS_DEL_COMPETENCE,$params);
 
-                    if ($response) {
-                        if ($response['error'] == '200') {
-                            STATUS::synchronize_competence_deleted($response['deleted']);
+                        if ($response) {
+                            if ($response['error'] == '200') {
+                                STATUS::synchronize_competence_deleted($response['deleted']);
+                            }else {
+                                // Log
+                                $dblog .= "Error WS: " . $response['message'] . "\n" ."\n";
+                            }//if_no_error
                         }else {
-                            // Log
-                            $dblog .= "Error WS: " . $response['message'] . "\n" ."\n";
-                        }//if_no_error
-                    }else {
-                        $dblog .= ' RESPONSE NOT VALID' . "\n";
-                    }//if_else_response
+                            $dblog .= ' RESPONSE NOT VALID' . "\n";
+                        }//if_else_response
+                    }
                 }//for
             }//if_total
 
