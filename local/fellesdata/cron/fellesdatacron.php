@@ -93,6 +93,10 @@ class FELLESDATA_CRON {
             $dblog .= $time . ' (' . userdate(time(),'%d.%m.%Y %H:%M', 99, false) . ') - FINISH FELLESDATA CRON' . "\n\n";
             error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
         }catch (Exception $ex) {
+            // Send error notification
+            FS_CRON::send_notification_error_process($plugin,'TARDIS');
+            FS_CRON::deactivate_cron('fellesdata');
+
             // Finish log - error
             $dblog .= "ERROR: " . "\n";
             $dblog .= $ex->getTraceAsString() . "\n" ."\n";

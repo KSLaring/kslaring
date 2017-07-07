@@ -11,7 +11,7 @@
  *
  */
 
-$plugin->version    =  '2017070300';         /* The plugin current version (DATE: YYYYMMDDXX) */
+$plugin->version    =  '2017070700';         /* The plugin current version (DATE: YYYYMMDDXX) */
 $plugin->component  =  'local_status';
 
 /* Dependencies */
