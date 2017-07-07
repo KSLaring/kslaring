@@ -1260,7 +1260,7 @@ class STATUS {
      * @creationDate    05/03/2017
      * @author          eFaktor     (fbv)
      */
-    public static function get_new_fs_organizations($plugin) {
+    private static function get_new_fs_organizations($plugin) {
         /* Variables */
         global $DB;
         $sql            = null;

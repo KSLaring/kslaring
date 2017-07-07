@@ -33,7 +33,7 @@ try {
     $plugin = get_config('local_fellesdata');
 
     // Call cron
-    $companies = \STATUS::get_new_fs_organizations($plugin);
+    \STATUS_CRON::test($plugin);
 }catch (Exception $ex) {
     throw $ex;
 }//try_catch

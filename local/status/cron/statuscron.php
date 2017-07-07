@@ -81,16 +81,16 @@ class STATUS_CRON {
             $industry = STATUS::get_industry_code($plugin->ks_muni);
 
             // Get competence from KS
-            //self::competence_data($plugin,$industry,$dblog);
+            self::competence_data($plugin,$industry,$dblog);
 
             // Get managers reporters from KS
-            //self::managers_reporters($plugin,$industry,$dblog);
+            self::managers_reporters($plugin,$industry,$dblog);
 
             // Repair connections
             self::repair_connections($dblog);
 
             // Import last status from fellesdata
-            //self::import_status($plugin,$dblog);
+            self::import_status($plugin,$dblog);
 
             // Syncronization
             //self::synchronization($plugin,$industry,$dblog);
@@ -370,19 +370,19 @@ class STATUS_CRON {
             $dblog .= ' START Import STATUS. ' . "\n";
 
             // Import FS Users
-            self::import_status_users($plugin,$dblog);
+            //self::import_status_users($plugin,$dblog);
 
             // Import FS Companies
             self::import_status_orgstructure($plugin,$dblog);
 
             // Import FS Job roles
-            self::import_status_jobroles($plugin,$dblog);
+            //self::import_status_jobroles($plugin,$dblog);
 
             // Import FS User Competence
-            self::import_status_managers_reporters($plugin,$dblog);
+            //self::import_status_managers_reporters($plugin,$dblog);
 
             // Import FS User Competence JR
-            self::import_status_user_competence($plugin,$dblog);
+            //self::import_status_user_competence($plugin,$dblog);
 
             // Log
             $dblog .= ' FINISH Import STATUS. ' . "\n";
