@@ -2714,6 +2714,7 @@ class FS {
         /* Variables */
         global $DB;
         $sql = null;
+        $in  = null;
 
         switch ($type) {
             case IMP_USERS:
@@ -2742,7 +2743,8 @@ class FS {
                 // Execute
                 $rdo = $DB->get_records_sql($sql);
                 if ($rdo) {
-                    $sql = " DELETE FROM {fs_imp_company} WHERE id IN (array_keys($rdo)) ";
+                    $in = implode(',',array_keys($rdo));
+                    $sql = " DELETE FROM {fs_imp_company} WHERE id IN ($in) ";
                     $DB->execute($sql);
                 }
 
