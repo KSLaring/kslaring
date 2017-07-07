@@ -1289,9 +1289,7 @@ class STATUS {
                      LIMIT 0,5 ";
 
             // Execute
-            echo $sql . "</br>";
-            echo "LEVELS --> " . $levels . "</br>";
-            $rdo = $DB->get_records_sql($sql);
+            $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 foreach ($rdo as $instance) {
                     $newcompanies[$instance->id] = $instance->org_navn;
