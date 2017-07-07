@@ -2728,6 +2728,24 @@ class FS {
                 $DB->execute($sql);
                 //$DB->delete_records('fs_imp_company');
 
+                // Find repeat companies and deleted
+                $sql = " SELECT	  fs.id,
+                                  fs.ORG_NIVAA,
+                                  fs.org_enhet_id
+                         FROM	  {fs_imp_company}	fs 
+                            -- FIND REPEAT
+                            JOIN  {fs_imp_company}	fs_rep 	ON  fs_rep.ORG_NIVAA 	= fs.ORG_NIVAA
+                                                            AND fs_rep.org_enhet_id = fs.org_enhet_id
+                                                            AND	fs_rep.imported     = 1
+                         WHERE	  fs.imported = 0
+                         ORDER BY fs.ORG_NIVAA,fs.org_enhet_id ";
+                // Execute
+                $rdo = $DB->get_records_sql($sql);
+                if ($rdo) {
+                    $sql = " DELETE FROM {fs_imp_company} WHERE id IN (array_keys($rdo)) ";
+                    $DB->execute($sql);
+                }
+
                 break;
 
             case IMP_JOBROLES:
