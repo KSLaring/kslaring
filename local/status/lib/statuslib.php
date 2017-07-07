@@ -1273,7 +1273,7 @@ class STATUS {
         try {
             // Search criteria
             $params = array();
-            $params['del'] = ACT_DELETE;
+            $params['del'] = DELETE;
 
             // Get levels
             $levels = $plugin->map_two . "," . $plugin->map_three;
