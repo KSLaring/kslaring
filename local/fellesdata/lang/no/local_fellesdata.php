@@ -181,6 +181,6 @@ $string['error_response_subject']           = ' {$a}: Integrasjon TARDIS - FEILM
 $string['error_response_status_subject']    = ' {$a}: Integrasjon STATUS TARDIS - FEILMELDING';
 $string['error_reponse_body']               = ' <p>Vi vil gjerne informere deg om at det har oppstått et problem i oppkoblingen med <strong>TARDIS</strong>-tjenestene.</p> 
                                                 <p>Prosessen <strong>{$a}</strong> har mottatt en ugyldig respons</p> ';
-$string['error_process_subject'] = '{$a->SITE}: {$a->type} Integration - ERROR ';
-$string['error_process_body']    = '<p>We would like to inform you, that there has been a problem during the integration between {$a} and KS.</p>
-                                    <p>So, the {$a} cron has been de-activated meanwhile the problem is being fixed.Please contact the Weblogin support for assistance.</p>';
+$string['error_process_subject'] = '{$a->SITE}: {$a->type} TARDIS - FEIL ';
+$string['error_process_body']    = '<p>Vi vil gjerne informere deg om at det har oppstått et problem i TARDIS-integrasjonen mellom  {$a} og KS Læring.</p>
+                                    <p>Vi har derfor deaktivert cron-jobben {$a}, slik at du kan aktivere den igjen når problemet er løst. Vennligst kontakt Weblogin-support for hjelp.</p>';
