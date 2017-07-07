@@ -114,6 +114,38 @@ class FS_CRON {
     }//can_run
 
     /**
+     * @param       String  $pluginname
+     * @throws              Exception
+     *
+     * @creationDate    07/07/2017
+     * @author          eFaktor     (fbv)
+     */
+    public static function deactivate_cron($pluginname) {
+        /* Variables */
+        global $DB;
+        $rdo    = null;
+        $sql    = null;
+        $params = null;
+
+        try {
+            // Get instance connected with
+            $sql = " SELECT id,
+                            disabled
+                     FROM 	{task_scheduled}
+                     WHERE   component like '%$pluginname%' ";
+
+            // Execute
+            $rdo = $DB->get_record_sql($sql);
+            if ($rdo) {
+                $rdo->disabled = 1;
+                $DB->update_record('task_scheduled',$rdo);
+            }//if_rdo
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//deactivate_cron
+
+    /**
      * Description
      * Send notifications
      *
@@ -179,6 +211,71 @@ class FS_CRON {
             throw $ex;
         }//try_catch
     }//send_notifications_service
+
+    /**
+     * Description
+     * Send a notification when has been detected an error during the integration
+     *
+     * @param       object  $plugin
+     * @param       string  $type
+     *
+     * @throws              Exception
+     *
+     * @creationDate    07/06/2017
+     * @author          eFaktor     (fbv)
+     */
+    public static function send_notification_error_process($plugin,$type) {
+        /* Variables */
+        global $SITE;
+        $infouser   = null;
+        $admin      = null;
+        $notifyto   = null;
+        $strsubject = null;
+        $strbody    = null;
+
+        try {
+            // admin
+            $admin = get_admin();
+
+            // Get people to send notifications
+            if ($plugin->suspicious_notify) {
+                $notifyto = explode(',',$plugin->suspicious_notify);
+            }//if_suspicious
+
+            // None to notify then send to the admin site
+            if (!$notifyto) {
+                $notifyto = array();
+                $notifyto[] = $admin->email;
+            }//if_notify
+
+            // All notifications with the right language
+            foreach ($notifyto as $to) {
+                // Clean variables
+                $strsubject = null;
+                $strbody    = null;
+
+                $infouser = get_complete_user_data('email',$to);
+                if (!$infouser) {
+                    $admin->email   = $to;
+                    $infouser       = $admin;
+                }//if_indoUser
+
+                // Subject
+                $a = new stdClass();
+                $a->SITE = $SITE->shortname;
+                $a->type = $type;
+                $strsubject = (string)new lang_string('error_process_subject','local_fellesdata',$a,$infouser->lang);
+
+                // Body
+                $strbody = (string)new lang_string('error_process_body','local_fellesdata',$type,$infouser->lang);
+
+                // Send notification
+                email_to_user($infouser, $SITE->shortname, $strsubject, $strbody, $strbody);
+            }//for_notifiy
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//send_notification_error_process
 
     /***********/
     /* PRIVATE */
