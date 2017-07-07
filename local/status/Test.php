@@ -33,7 +33,23 @@ try {
     $plugin = get_config('local_fellesdata');
 
     // Call cron
-    \STATUS_CRON::test($plugin);
+    //\STATUS_CRON::test($plugin);
+
+    $sql = " SELECT	  fs.id
+                         FROM	  {fs_imp_company}	fs 
+                            -- FIND REPEAT
+                            JOIN  {fs_imp_company}	fs_rep 	ON  fs_rep.ORG_NIVAA 	= fs.ORG_NIVAA
+                                                            AND fs_rep.org_enhet_id = fs.org_enhet_id
+                                                            AND	fs_rep.imported     = 1
+                         WHERE	  fs.imported = 0
+                         ORDER BY fs.ORG_NIVAA,fs.org_enhet_id ";
+    // Execute
+    global $DB;
+    $rdo = $DB->get_records_sql($sql);
+
+    if ($rdo) {
+        echo implode(',',array_keys($rdo));
+    }
 }catch (Exception $ex) {
     throw $ex;
 }//try_catch
