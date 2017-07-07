@@ -739,6 +739,9 @@ class FELLESDATA_CRON {
 
                         self::save_temporary_fs($content,IMP_COMPANIES);
                     }///if_suspicous_path
+
+                    // Clean repeat companies
+                    FS::clean_repeat_companies();
                 }else {
                     // Log
                     $dblog .= 'FILE DOES NOT EXIST ' . "\n";

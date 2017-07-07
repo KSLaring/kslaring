@@ -2714,7 +2714,6 @@ class FS {
         /* Variables */
         global $DB;
         $sql = null;
-        $in  = null;
 
         switch ($type) {
             case IMP_USERS:
@@ -2728,25 +2727,6 @@ class FS {
                 $sql = " DELETE FROM {fs_imp_company} WHERE org_nivaa = $plugin->map_three";
                 $DB->execute($sql);
                 //$DB->delete_records('fs_imp_company');
-
-                // Find repeat companies and deleted
-                $sql = " SELECT	  fs.id,
-                                  fs.ORG_NIVAA,
-                                  fs.org_enhet_id
-                         FROM	  {fs_imp_company}	fs 
-                            -- FIND REPEAT
-                            JOIN  {fs_imp_company}	fs_rep 	ON  fs_rep.ORG_NIVAA 	= fs.ORG_NIVAA
-                                                            AND fs_rep.org_enhet_id = fs.org_enhet_id
-                                                            AND	fs_rep.imported     = 1
-                         WHERE	  fs.imported = 0
-                         ORDER BY fs.ORG_NIVAA,fs.org_enhet_id ";
-                // Execute
-                $rdo = $DB->get_records_sql($sql);
-                if ($rdo) {
-                    $in = implode(',',array_keys($rdo));
-                    $sql = " DELETE FROM {fs_imp_company} WHERE id IN ($in) ";
-                    $DB->execute($sql);
-                }
 
                 break;
 
@@ -2769,6 +2749,46 @@ class FS {
                 break;
         }//type
     }//clean_temporary_fellesdata
+
+    /**
+     * Description
+     * Clean repeat companies
+     *
+     * @throws Exception
+     *
+     * @creationDate    07/07/2017
+     * @author          eFaktor     (fbv)
+     */
+    public static function clean_repeat_companies() {
+        /* Variables    */
+        global  $DB;
+        $rdo    = null;
+        $sql    = null;
+        $in     = null;
+
+        try {
+            // Find repeat companies and deleted
+            $sql = " SELECT	  fs.id,
+                              fs.ORG_NIVAA,
+                              fs.org_enhet_id
+                     FROM	  {fs_imp_company}	fs 
+                        -- FIND REPEAT
+                        JOIN  {fs_imp_company}	fs_rep 	ON  fs_rep.ORG_NIVAA 	= fs.ORG_NIVAA
+                                                        AND fs_rep.org_enhet_id = fs.org_enhet_id
+                                                        AND	fs_rep.imported     = 1
+                     WHERE	  fs.imported = 0
+                     ORDER BY fs.ORG_NIVAA,fs.org_enhet_id ";
+            // Execute
+            $rdo = $DB->get_records_sql($sql);
+            if ($rdo) {
+                $in = implode(',',array_keys($rdo));
+                $sql = " DELETE FROM {fs_imp_company} WHERE id IN ($in) ";
+                $DB->execute($sql);
+            }//if_rdo
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//clean_repeat_companies
 
     /***********/
     /* PRIVATE */

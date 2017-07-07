@@ -511,6 +511,9 @@ class STATUS_CRON {
                             FS::backup_temporary_fellesdata(IMP_COMPANIES);
                         }//if_status
                     }//if_max_imp
+
+                    // Clean repeat companies
+                    FS::clean_repeat_companies();
                 }else {
                     $dblog .= ' FILE DOES NOT EXIST ' . "\n";
                 }//if_exists
