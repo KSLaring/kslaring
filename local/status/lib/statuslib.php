@@ -1260,7 +1260,7 @@ class STATUS {
      * @creationDate    05/03/2017
      * @author          eFaktor     (fbv)
      */
-    private static function get_new_fs_organizations($plugin) {
+    public static function get_new_fs_organizations($plugin) {
         /* Variables */
         global $DB;
         $sql            = null;
@@ -1289,6 +1289,8 @@ class STATUS {
                      LIMIT 0,5 ";
 
             // Execute
+            echo $sql . "</br>";
+            echo "LEVELS --> " . $levels . "</br>";
             $rdo = $DB->get_records_sql($sql);
             if ($rdo) {
                 foreach ($rdo as $instance) {
