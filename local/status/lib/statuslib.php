@@ -1273,7 +1273,7 @@ class STATUS {
         try {
             // Search criteria
             $params = array();
-            $params['del'] = ACT_DELETE;
+            $params['del'] = DELETE;
 
             // Get levels
             $levels = $plugin->map_two . "," . $plugin->map_three;
@@ -1289,7 +1289,7 @@ class STATUS {
                      LIMIT 0,5 ";
 
             // Execute
-            $rdo = $DB->get_records_sql($sql);
+            $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 foreach ($rdo as $instance) {
                     $newcompanies[$instance->id] = $instance->org_navn;
