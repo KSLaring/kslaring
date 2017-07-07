@@ -370,19 +370,19 @@ class STATUS_CRON {
             $dblog .= ' START Import STATUS. ' . "\n";
 
             // Import FS Users
-            //self::import_status_users($plugin,$dblog);
+            self::import_status_users($plugin,$dblog);
 
             // Import FS Companies
             self::import_status_orgstructure($plugin,$dblog);
 
             // Import FS Job roles
-            //self::import_status_jobroles($plugin,$dblog);
+            self::import_status_jobroles($plugin,$dblog);
 
             // Import FS User Competence
-            //self::import_status_managers_reporters($plugin,$dblog);
+            self::import_status_managers_reporters($plugin,$dblog);
 
             // Import FS User Competence JR
-            //self::import_status_user_competence($plugin,$dblog);
+            self::import_status_user_competence($plugin,$dblog);
 
             // Log
             $dblog .= ' FINISH Import STATUS. ' . "\n";
