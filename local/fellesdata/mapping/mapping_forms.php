@@ -1,10 +1,25 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 /**
  * Fellesdata Integration - Mapping Forms
  *
  * @package         local/fellesdata
  * @subpackage      mapping
  * @copyright       2014        eFaktor {@link http://www.efaktor.no}
+ * @license         http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
  * @creationDate    04/02/2016
  * @author          eFaktor     (fbv)
@@ -136,7 +151,7 @@ class organization_map_form extends moodleform {
         $form->addElement('html','</div>');//matching_process
 
         /* Add data to Map  */
-        $this->MatchOrganization($toMatch,$form);
+        $this->MatchOrganization($toMatch,$form,$level);
 
         /* Level */
         $form->addElement('hidden','le');
@@ -159,7 +174,7 @@ class organization_map_form extends moodleform {
      * Description
      * To map companies
      */
-    function MatchOrganization($fsToMap,&$form) {
+    function MatchOrganization($fsToMap,&$form,$level) {
         /* Variables    */
         $refFS      = null;
         $refKS      = null;
@@ -181,18 +196,20 @@ class organization_map_form extends moodleform {
 
                     /* Possible Matches */
                     $form->addElement('html','<div class="area_right">');
+                        if ($level != 1) {
+                            /* Option new company */
+                            $options   = array();
+                            $index  = 'new';
+                            $options[$index] = $form->createElement('radio', $refFS,'',get_string('new_comp','local_fellesdata'),$index);
+                            $options[$index]->setValue(0);
+                            $grp = $form->addElement('group', 'grp', null, $options,null , false);
+                        }
+
                         /* Not Sure Option  */
                         $options    = array();
                         $index      = 'no_sure';
                         $options[$index] = $form->createElement('radio', $refFS,'',get_string('no_match','local_fellesdata'),$index);
                         $options[$index]->setValue($index);
-                        $grp = $form->addElement('group', 'grp', null, $options,null , false);
-
-                        /* Option new company */
-                        $options   = array();
-                        $index  = 'new';
-                        $options[$index] = $form->createElement('radio', $refFS,'',get_string('new_comp','local_fellesdata'),$index);
-                        $options[$index]->setValue(0);
                         $grp = $form->addElement('group', 'grp', null, $options,null , false);
 
                         /* Match Options  */
