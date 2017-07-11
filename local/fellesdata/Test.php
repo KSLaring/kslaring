@@ -48,7 +48,12 @@ try {
             FELLESDATA_CRON::cron_manual(true,$option);
         }
     }else {
-        echo " --> " . FS_CRON::can_run();
+        // Get parameters service
+        $toDate     = mktime(1, 60, 0, date("m"), date("d"), date("Y"));
+        $toDate     = gmdate('Y-m-d\TH:i:s\Z',$toDate);
+
+        echo $toDate . "</br>";
+        //echo " --> " . FS_CRON::can_run();
     }
 }catch (Exception $ex) {
     throw $ex;

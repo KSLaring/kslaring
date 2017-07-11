@@ -97,7 +97,7 @@ class STATUS_CRON {
             self::import_status($plugin,$dblog);
 
             // Syncronization
-            self::synchronization($plugin,$industry,$dblog);
+            //self::synchronization($plugin,$industry,$dblog);
 
             // Finish Log
             $dblog .= $time . ' (' . userdate(time(),'%d.%m.%Y %H:%M', 99, false) . ') - FINISH FELLESDATA STATUS CRON' . "\n\n";
