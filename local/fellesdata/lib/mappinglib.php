@@ -1,10 +1,25 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 /**
  * Fellesdata Integration Mapping - Library
  *
  * @package         local/fellesdata
  * @subpackage      lib
  * @copyright       2014        eFaktor {@link http://www.efaktor.no}
+ * @license         http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
  * @creationDate    08/02/2016
  * @author          eFaktor     (fbv)
@@ -845,12 +860,12 @@ class FS_MAPPING {
         $plugin         = null;
 
         try {
-            /* Plugin Info      */
+            // Plugin info
             $plugin     = get_config('local_fellesdata');
 
-            /* Get Companies to Map */
+            // Get Companies to Map
             $fsCompanies = self::GetFSCompaniesToMap($plugin,$level,$sector,$notIn,$start,$length);
-            /* Get Total    */
+            // Get Total
             $total = self::GetTotalFSCompaniesToMap($plugin,$level,$sector,$notIn);
 
             return array($fsCompanies,$total);
@@ -882,29 +897,31 @@ class FS_MAPPING {
         $notIn          = array();
 
         try {
-            /* Check Not In */
+            // Check not in
             if (isset($SESSION->notIn)) {
                 $notIn = $SESSION->notIn;
             }//notIn
 
-            /* Companies to map */
+            // Companies to map
             foreach ($toMap as $fsCompany) {
-                /* Reference    */
+                // Reference
                 $refFS = 'FS_' . $fsCompany->fscompany;
 
-                /* Get Possible Match   */
+                // Get Possible Match
                 if (isset($data->$refFS)) {
                     $possibleMatch = $data->$refFS;
-                    if ($possibleMatch == 0) {
-                        self::NewMapFSCompany($fsCompany,$data->le);
+
+                    if ($possibleMatch == '0') {
+                       self::NewMapFSCompany($fsCompany,$data->le);
                     }else if ($possibleMatch == 'no_sure') {
-                        $notIn["'" . $fsCompany->fscompany . "'"] = "'" . $fsCompany->fscompany . "'";
+                       $notIn["'" . $fsCompany->fscompany . "'"] = "'" . $fsCompany->fscompany . "'";
                     }else {
-                        /* Mapping between FSand KS */
+                        // Mapping between FSand KS
                         $infoMatch = explode('#KS#',$data->$refFS);
                         $match = $fsCompany->matches[$infoMatch[1]];
                         self::MapFSCompany($fsCompany,$match,$data->le);
                     }//if_possibleMatch
+
                 }
             }//fs_company
 
@@ -1145,7 +1162,7 @@ class FS_MAPPING {
                 $infoCompany->fs_parent     = ($fsCompany->fs_parent ? $fsCompany->fs_parent : 0);
                 $infoCompany->parent        = 0;
                 $infoCompany->level         = $level;
-                $infoCompany->privat        = 0;
+                $infoCompany->privat        = $fsCompany->privat;
                 /* Invoice Data */
                 $infoCompany->ansvar        = $fsCompany->ansvar;
                 $infoCompany->tjeneste      = $fsCompany->tjeneste;
@@ -1228,7 +1245,7 @@ class FS_MAPPING {
                 $infoCompany->fs_parent     = ($fsCompany->fs_parent ? $fsCompany->fs_parent : 0);
                 $infoCompany->parent        = $ksCompany->parent;
                 /* Invoice Data */
-                $infoCompany->privat        = 0;
+                $infoCompany->privat        = $fsCompany->privat;
                 $infoCompany->ansvar        = $fsCompany->ansvar;
                 $infoCompany->tjeneste      = $fsCompany->tjeneste;
                 $infoCompany->adresse1      = $fsCompany->adresse1;
