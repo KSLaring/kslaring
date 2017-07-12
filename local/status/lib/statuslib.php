@@ -198,9 +198,9 @@ class STATUS {
     public static function total_competence_to_delete_ks() {
         /* Variables */
         global $DB;
-        $sql    = null;
-        $rdo    = null;
-        $params = null;
+        $sql        = null;
+        $rdo        = null;
+        $params     = null;
 
         try {
             //Search criteria
@@ -258,6 +258,8 @@ class STATUS {
         $sql        = null;
         $rdo        = null;
         $params     = null;
+        $todelete   = array();
+        $info       = null;
 
         try {
             //Search criteria
@@ -297,11 +299,18 @@ class STATUS {
             $dblog = $sql . "\n\n";
 
             if ($rdo) {
+                foreach ($rdo as $instance) {
+                    $info->user = $instance->user;
+                    $info->companies = $instance->companies;
+                    $info->keys = $instance->keys;
+
+                    $todelete[$instance->user] = $info;
+                }
                 $dblog .= " YES " . "\n";
             }
             error_log($dblog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
 
-            return $rdo;
+            return $todelete;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
