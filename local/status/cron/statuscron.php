@@ -836,6 +836,8 @@ class STATUS_CRON {
                     // get to delete
                     $todelete = STATUS::competence_to_delete_ks($start,$limit);
 
+                    echo "</br>" . $todelete . "</br>";
+                    
                     if ($todelete) {
                         // Params web service
                         $params = array();
