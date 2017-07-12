@@ -55,9 +55,15 @@ class block_course_tags extends block_base {
     public function get_content() {
         global $CFG, $COURSE, $USER, $SCRIPT, $OUTPUT;
 
+        if ($this->content !== null) {
+            return $this->content;
+        }
+
+        $this->content = new stdClass;
+        $this->content->text = '';
+        $this->content->footer = '';
+
         if (empty($CFG->usetags)) {
-            $this->content = new stdClass();
-            $this->content->text = '';
             if ($this->page->user_is_editing()) {
                 $this->content->text = get_string('disabledtags', 'block_course_tags');
             }
@@ -80,21 +86,17 @@ class block_course_tags extends block_base {
             $ctx = $parentcontext->id;
         }
 
+        // Check if the user has the capability.
+        if (!has_capability('block/course_tags:view', $coursecontext)) {
+            return $this->content;
+        }
+
         // Get the defined course tag collection.
         $tagcollid = core_tag_area::get_collection('core', 'course');
 
-        if ($this->content !== null) {
-            return $this->content;
-        }
-
         if (empty($this->instance)) {
-            $this->content = '';
             return $this->content;
         }
-
-        $this->content = new stdClass;
-        $this->content->text = '';
-        $this->content->footer = '';
 
         // Get the group tags.
         $value = get_config('', 'block_course_tags_groupsortorder');
@@ -105,15 +107,15 @@ class block_course_tags extends block_base {
         foreach ($grouptags as $id => $grouptag) {
             $tagmetagroup = new \local_tag\output\tagmetagroup($tagcollid, $grouptag, $ctx);
             $this->content->text .= $OUTPUT->render_from_template('local_tag/tagmetagroup',
-                    $tagmetagroup->export_for_template($OUTPUT));
+                $tagmetagroup->export_for_template($OUTPUT));
         }
 
         // Show the link to the course tags settings page.
-        if (has_capability('moodle/tag:edit', $coursecontext)) {
+        if (has_capability('block/course_tags:edit', $coursecontext)) {
             $urlparams = array(
-                    'id' => $COURSE->id,
-                    'tagcollid' => $tagcollid,
-                    'ctx' => $ctx
+                'id' => $COURSE->id,
+                'tagcollid' => $tagcollid,
+                'ctx' => $ctx
             );
             $url = new moodle_url('/blocks/course_tags/settags.php', $urlparams);
             $strlink = get_string('settagslinktext', 'block_course_tags');

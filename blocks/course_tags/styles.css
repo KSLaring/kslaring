@@ -14,6 +14,9 @@
 #page-blocks-course_tags-settags #region-main {
   margin-bottom: 1em;
 }
+#page-blocks-course_tags-settags #tag-filter-form .showalsoselected input[type="checkbox"] {
+  float: none;
+}
 #page-blocks-course_tags-settags #taggroup-accordion .unlist li {
   margin-bottom: .5em;
 }

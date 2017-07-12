@@ -15,7 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Definition of the course serach fulltext indexing scheduled tasks.
+ * Definition of the course search fulltext indexing scheduled tasks.
  *
  * @package         local
  * @subpackage      course_search
@@ -31,7 +31,7 @@ $tasks = array(
         'classname' => 'local_course_search\task\cron_task',
         'blocking' => 0,
         'minute' => '*',
-        'hour' => '*',
+        'hour' => '*/1',
         'day' => '*',
         'month' => '*',
         'dayofweek' => '*'

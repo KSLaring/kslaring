@@ -45,8 +45,8 @@ class tagischecked extends \core\output\inplace_editable {
      * @param \stdClass|core_tag_tag $tag
      */
     public function __construct($tag, $courseid) {
-        $editable = has_capability('moodle/tag:manage', context_system::instance());
-        $value = (int) (bool) $tag->ischecked;
+        $editable = has_capability('block/course_tags:edit', \context_course::instance($courseid));
+        $value = (int)(bool)$tag->ischecked;
 
         parent::__construct('block_course_tags', 'tagischecked-' . $courseid, $tag->id, $editable, $value, $value);
         $this->set_type_toggle();
@@ -57,7 +57,7 @@ class tagischecked extends \core\output\inplace_editable {
      *
      * @param \renderer_base $output
      *
-     * @return \stdClass
+     * @return array
      */
     public function export_for_template(\renderer_base $output) {
         if ($this->value) {
@@ -81,10 +81,10 @@ class tagischecked extends \core\output\inplace_editable {
      * @return \self
      */
     public static function update($itemtype, $itemid, $newvalue) {
-        require_capability('moodle/tag:manage', context_system::instance());
+        $courseid = (int)explode('-', $itemtype)[1];
+        require_capability('block/course_tags:edit', \context_course::instance($courseid));
         $tag = core_tag_tag::get($itemid, '*', MUST_EXIST);
         // Get the course id from the itemtype, the id is the number behind the dash: "tagischecked-2".
-        $courseid = (int) explode('-', $itemtype)[1];
         $tag->ischecked = clean_param($newvalue, PARAM_BOOL);
 
         if ($tag->ischecked) {
