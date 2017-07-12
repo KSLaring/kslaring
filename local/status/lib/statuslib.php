@@ -784,7 +784,7 @@ class STATUS {
                         JOIN  {ks_company}		ks_pa	ON 	ks_pa.companyid     = fk.kscompany
                         JOIN  {fs_imp_company}	fs_imp 	ON 	fs_imp.org_enhet_id = fs.companyid
                      WHERE 	  fs_imp.action 	= :action
-                        AND	  fs_imp.imported = :imported ";
+                        AND	  fs_imp.imported   = :imported ";
 
             // Execute
             $rdo = $DB->get_records_sql($sql,$params,$start,$limit);

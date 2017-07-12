@@ -50,16 +50,16 @@ class STATUS_CRON {
             $industry = STATUS::get_industry_code($plugin->ks_muni);
 
             // Get competence from KS
-            //self::competence_data($plugin,$industry,$dblog);
+            self::competence_data($plugin,$industry,$dblog);
 
             // Get managers reporters from KS
-            //self::managers_reporters($plugin,$industry,$dblog);
+            self::managers_reporters($plugin,$industry,$dblog);
 
             // Repair connections
-            //self::repair_connections($dblog);
+            self::repair_connections($dblog);
 
             // Import last status from fellesdata
-            //self::import_status($plugin,$dblog);
+            self::import_status($plugin,$dblog);
 
             // Syncronization
             self::synchronization($plugin,$industry,$dblog);
@@ -261,25 +261,25 @@ class STATUS_CRON {
             self::sync_status_users_accounts($plugin,$industry,$dblog);
             
             // Synchronization FS Companies
-            //self::sync_status_fs_organizations($plugin,$dblog);
+            self::sync_status_fs_organizations($plugin,$dblog);
 
             // Synchronization FS Job roles
-            //self::sync_status_fs_jobroles($plugin,$dblog);
+            self::sync_status_fs_jobroles($plugin,$dblog);
             
             // Synchronization FS Managers/Reporters to delete
             // Managers
-            //self::sync_status_delete_managers_reporters($plugin,MANAGERS,$dblog);
+            self::sync_status_delete_managers_reporters($plugin,MANAGERS,$dblog);
             // Reporters
-            //self::sync_status_delete_managers_reporters($plugin,REPORTERS,$dblog);
+            self::sync_status_delete_managers_reporters($plugin,REPORTERS,$dblog);
 
             // Synchronization FS Managers/Reporters
-            //self::sync_status_managers_reporters($plugin,$dblog);
+            self::sync_status_managers_reporters($plugin,$dblog);
 
             // Synchronization FS User Competence to Delete
-            //self::sync_status_delete_competence($plugin,$dblog);
+            self::sync_status_delete_competence($plugin,$dblog);
 
             // Synchronization FS User Competence
-            //self::sync_status_competence($plugin,$dblog);
+            self::sync_status_competence($plugin,$dblog);
 
             // Log
             $dblog .= ' FINISH Synchronization STATUS. ' . "\n";
@@ -1004,10 +1004,10 @@ class STATUS_CRON {
             $dblog .= ' START Users Accounts (STATUS) . ' . "\n";
 
             // First users to delete
-            //self::sync_status_users_accounts_deleted($plugin,$industry,$dblog);
+            self::sync_status_users_accounts_deleted($plugin,$industry,$dblog);
 
             // New users accounts
-            //self::sync_status_new_users_accounts($plugin,$industry,$dblog);
+            self::sync_status_new_users_accounts($plugin,$industry,$dblog);
 
             // Existing users accounts
             self::sync_status_existing_users_accounts($plugin,$industry,$dblog);
