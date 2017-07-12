@@ -830,6 +830,8 @@ class STATUS_CRON {
             // Get total to delete
             $total = STATUS::total_competence_to_delete_ks();
             if ($total) {
+                $dblog .= ' TOTAL : ' . $total . '\n';
+
                 for ($i=0;$i<=$total;$i=$i+$limit) {
                     // get to delete
                     $todelete = STATUS::competence_to_delete_ks($start,$limit);
@@ -840,18 +842,18 @@ class STATUS_CRON {
                         $params['competence'] = $todelete;
 
                         // Call service
-                        $response = self::process_service($plugin,WS_DEL_COMPETENCE,$params);
+                        //$response = self::process_service($plugin,WS_DEL_COMPETENCE,$params);
 
-                        if ($response) {
-                            if ($response['error'] == '200') {
-                                STATUS::synchronize_competence_deleted($response['deleted']);
-                            }else {
+                        //if ($response) {
+                        //    if ($response['error'] == '200') {
+                        //        STATUS::synchronize_competence_deleted($response['deleted']);
+                        //    }else {
                                 // Log
-                                $dblog .= "Error WS: " . $response['message'] . "\n" ."\n";
-                            }//if_no_error
-                        }else {
-                            $dblog .= ' RESPONSE NOT VALID' . "\n";
-                        }//if_else_response
+                        //        $dblog .= "Error WS: " . $response['message'] . "\n" ."\n";
+                        //    }//if_no_error
+                        //}else {
+                        //    $dblog .= ' RESPONSE NOT VALID' . "\n";
+                        //}//if_else_response
                     }
                 }//for
             }//if_total

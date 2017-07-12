@@ -293,6 +293,14 @@ class STATUS {
             // Execute
             $rdo = $DB->get_records_sql($sql,$params,$start,$limit);
 
+            global $CFG;
+            $dblog = $sql . "\n\n";
+
+            if ($rdo) {
+                $dblog .= " YES " . "\n";
+            }
+            error_log($dblog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
+
             return $rdo;
         }catch (Exception $ex) {
             throw $ex;
