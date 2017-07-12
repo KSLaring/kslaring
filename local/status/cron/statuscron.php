@@ -50,16 +50,16 @@ class STATUS_CRON {
             $industry = STATUS::get_industry_code($plugin->ks_muni);
 
             // Get competence from KS
-            self::competence_data($plugin,$industry,$dblog);
+            //self::competence_data($plugin,$industry,$dblog);
 
             // Get managers reporters from KS
-            self::managers_reporters($plugin,$industry,$dblog);
+            //self::managers_reporters($plugin,$industry,$dblog);
 
             // Repair connections
-            self::repair_connections($dblog);
+            //self::repair_connections($dblog);
 
             // Import last status from fellesdata
-            self::import_status($plugin,$dblog);
+            //self::import_status($plugin,$dblog);
 
             // Syncronization
             self::synchronization($plugin,$industry,$dblog);
@@ -1004,13 +1004,13 @@ class STATUS_CRON {
             $dblog .= ' START Users Accounts (STATUS) . ' . "\n";
 
             // First users to delete
-            self::sync_status_users_accounts_deleted($plugin,$industry,$dblog);
+            //self::sync_status_users_accounts_deleted($plugin,$industry,$dblog);
 
             // New users accounts
             //self::sync_status_new_users_accounts($plugin,$industry,$dblog);
 
             // Existing users accounts
-            //self::sync_status_existing_users_accounts($plugin,$industry,$dblog);
+            self::sync_status_existing_users_accounts($plugin,$industry,$dblog);
 
             // Log
             $dblog .= ' FINISH Users Accounts (STATUS) . ' . "\n";
