@@ -300,6 +300,7 @@ class STATUS {
 
             if ($rdo) {
                 foreach ($rdo as $instance) {
+                    $info = new stdClass();
                     $info->user = $instance->user;
                     $info->companies = $instance->companies;
                     $info->keys = $instance->keys;
