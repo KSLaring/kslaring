@@ -1207,7 +1207,7 @@ class local_wsks_external extends external_api {
                                                           'keys'        => $keys));
         **/
         $competence = new external_value(PARAM_TEXT,'{"user" : xxxx, "companies": zzz, "keys": yyyy}');
-        return new external_function_parameters(array('competence'=> new external_multiple_structure($competence)));
+        return new external_function_parameters(array('competence'=> $competence));
     }//ws_delete_competence_parameters
 
     /**
