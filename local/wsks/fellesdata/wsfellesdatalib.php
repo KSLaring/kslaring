@@ -785,7 +785,7 @@ class WS_FELLESDATA {
      * Description
      * Delete competence data
      * 
-     * @param           array $competence
+     * @param           string $competence
      * @param           array $result
      *
      * @throws                Exception
@@ -801,23 +801,48 @@ class WS_FELLESDATA {
         $instance   = null;
         $info       = null;
         $keys       = null;
-        
+        $dir        = null;
+        $file       = null;
+        $path       = null;
+        $content    = null;
+
         try {
             // Log
             $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START DELETE COMPETENCE DATA . ' . "\n";
 
-           // Delete competence
-            if ($competence) {
-                foreach ($competence as $info) {
-                    // Convert to object
-                    $instance = (Object)$info;
+            // Save file
+            $dir = $CFG->dataroot . '/fellesdata';
+            if (!file_exists($dir)) {
+                mkdir($dir);
+            }
 
+            // File
+            $path = $dir . '/delete_competence.txt';
+
+            // Clean old data
+            if ($path) {
+                unlink($path);
+            }
+            // Save new data
+            $file = fopen($path,'w');
+            fwrite($file,$competence);
+            fclose($file);
+
+            // Delete competence
+            if (file_exists($path)) {
+                // Get content
+                $content   = file_get_contents($path);
+                $content   = json_decode($content);
+
+                // Delete records
+                foreach ($content as $instance) {
                     // Delete competence
                     $sql = " DELETE 
                              FROM   {user_info_competence_data} 
                              WHERE  userid = :user 
                                 AND companyid IN ($instance->companies) ";
 
+                    // Execute
                     $rdo = $DB->execute($sql,array('user' => $instance->user));
                     if ($rdo) {
                         if ($keys) {
@@ -826,8 +851,8 @@ class WS_FELLESDATA {
                             $keys = $instance->keys;
                         }
                     }//if_rdo
-                }//for_competence
-            }//if_competence
+                }//for_each_content
+            }//if_file
 
             $result['deleted'] = $keys;
 
