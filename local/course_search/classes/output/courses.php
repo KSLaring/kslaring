@@ -70,7 +70,6 @@ class courses implements \renderable, \templatable {
 
         $data = (object)array(
             'userid' => is_object($USER) ? $USER->id : 0,
-            'pagetitle' => get_string('pagetitle', 'local_course_search'),
             'searchtitle' => get_string('searchtitle', 'local_course_search'),
             'changetoselection' => get_string('changetoselection', 'local_course_search'),
             'changetoresults' => get_string('changetoresults', 'local_course_search'),

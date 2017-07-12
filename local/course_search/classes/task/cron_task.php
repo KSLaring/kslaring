@@ -62,17 +62,6 @@ class cron_task extends \core\task\scheduled_task {
     protected function course_search_cron() {
         global $CFG, $USER, $DB, $PAGE;
         $indexrecord = null;
-        //$sql = 'SELECT
-        //	id,
-        //	fullname,
-        //	shortname,
-        //	summary,
-        //	summaryformat
-        //FROM
-        //	{course}
-        //WHERE
-        //	visible = 1
-        //	AND category != 0';
         $sql = 'SELECT
         	id,
         	fullname,
