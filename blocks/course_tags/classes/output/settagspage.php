@@ -71,13 +71,11 @@ class settagspage implements templatable {
 
         // Get all tags related to the group tags and list them.
         $first = true;
+        $open = null;
         foreach ($grouptags as $id => $grouptag) {
             if ($first) {
                 //$open = 'in';
-                $open = '';
                 $first = false;
-            } else {
-                $open = '';
             }
 
             $metagrouptags = \local_tag\collection::get_group_tags($tagcollid, $grouptag->id, 1, false, 0,

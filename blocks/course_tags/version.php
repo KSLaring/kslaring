@@ -25,7 +25,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = 2017062601;              // The current plugin version (Date: YYYYMMDDXX).
+$plugin->version = 2017071200;              // The current plugin version (Date: YYYYMMDDXX).
 $plugin->release = "3.1.0 (Build: 2016122000)"; // User-friendly version number.
 $plugin->maturity = MATURITY_STABLE;
 $plugin->component = 'block_course_tags';   // Full name of the plugin (used for diagnostics).

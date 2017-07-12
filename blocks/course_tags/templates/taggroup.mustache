@@ -62,11 +62,11 @@
 }}
 <div class="taggroup accordion-group" data-singleselect="{{{singleselect}}}">
     <div class="accordion-heading">
-        <a class="accordion-toggle" data-toggle="collapse" href="#collapse{{{id}}}">
+        <a class="accordion-toggle" data-toggle="collapse" data-parent="#taggroup-accordion" href="#collapse{{{id}}}">
             {{{groupname}}}
         </a>
     </div>
-    <div id="collapse{{{id}}}" class="accordion-body collapse {{{open}}}">
+    <div id="collapse{{{id}}}" class="accordion-body collapse{{#open}} {{{.}}}{{/open}}">
         <div class="accordion-inner">
             <ul class="unlist">
                 {{#tagset}}

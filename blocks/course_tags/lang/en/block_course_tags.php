@@ -40,8 +40,10 @@ $string['tagcollection_help'] = 'Select tag collection to display tags from. If 
 $string['taggeditemscontext'] = 'Tagged items context';
 $string['taggeditemscontext_help'] =
         'You can limit the tag cloud to the tags that are present in the current course category, course or module';
-$string['tags:addinstance'] = 'Add a new tags block';
-$string['tags:myaddinstance'] = 'Add a new tags block to Dashboard';
+$string['course_tags:addinstance'] = 'Add a new course tags block';
+$string['course_tags:myaddinstance'] = 'Add a new course tags block to Dashboard';
+$string['course_tags:view'] = 'View the block';
+$string['course_tags:edit'] = 'Edit the tags';
 
 $string['settags'] = 'Set the course tags';
 $string['settagslinktext'] = 'Edit course tags';
@@ -54,4 +56,4 @@ in a new place to change the order.';
 $string['waitdragdrop'] = 'Drag & Drop may take a momemt until it is initialized in the page ...';
 $string['readydragdrop'] = 'it is initialized now.';
 $string['filterbytagname'] = 'Filter tags ...';
-$string['showalsoselected'] = 'Show also selected tags';
+$string['showalsoselected'] = 'Show selected tags';
