@@ -246,7 +246,7 @@ class STATUS {
      * @param           $start
      * @param           $limit
      * 
-     * @return          array|null
+     * @return          array|string
      * @throws          Exception
      * 
      * @creationDate    28/02/2017
@@ -258,8 +258,7 @@ class STATUS {
         $sql        = null;
         $rdo        = null;
         $params     = null;
-        $todelete   = array();
-        $info       = null;
+        $todelete   = null;
 
         try {
             //Search criteria
@@ -294,22 +293,10 @@ class STATUS {
             
             // Execute
             $rdo = $DB->get_records_sql($sql,$params,$start,$limit);
-
-            global $CFG;
-            $dblog = $sql . "\n\n";
-
             if ($rdo) {
-                foreach ($rdo as $instance) {
-                    $info = new stdClass();
-                    $info->user = $instance->user;
-                    $info->companies = $instance->companies;
-                    $info->keys = $instance->keys;
-
-                    $todelete[$instance->user] = $info;
-                }
-                $dblog .= " YES " . "\n";
+                $todelete = json_encode($rdo);
             }
-            error_log($dblog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
+
 
             return $todelete;
         }catch (Exception $ex) {
