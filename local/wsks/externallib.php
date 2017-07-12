@@ -1196,6 +1196,7 @@ class local_wsks_external extends external_api {
      * @author          eFaktor     (fbv)
      */
     public static function ws_delete_competence_parameters() {
+        /**
         $user       = new external_value(PARAM_INT,'Users id');
         $companies  = new external_value(PARAM_TEXT,'Companies');
         $keys       = new external_value(PARAM_TEXT,'keys');
@@ -1204,7 +1205,8 @@ class local_wsks_external extends external_api {
         $competence = new external_single_structure(array('user'        => $user,
                                                           'companies'   => $companies,
                                                           'keys'        => $keys));
-
+        **/
+        $competence = new external_value(PARAM_TEXT,'{"user" : xxxx, "companies": zzz, "keys": yyyy}');
         return new external_function_parameters(array('competence'=> new external_multiple_structure($competence)));
     }//ws_delete_competence_parameters
 
