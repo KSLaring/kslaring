@@ -258,7 +258,7 @@ class STATUS_CRON {
             $dblog .= ' START Synchronization STATUS. ' . "\n";
 
             // Synchronization FS Users
-            //self::sync_status_users_accounts($plugin,$industry,$dblog);
+            self::sync_status_users_accounts($plugin,$industry,$dblog);
             
             // Synchronization FS Companies
             //self::sync_status_fs_organizations($plugin,$dblog);
@@ -276,7 +276,7 @@ class STATUS_CRON {
             //self::sync_status_managers_reporters($plugin,$dblog);
 
             // Synchronization FS User Competence to Delete
-            self::sync_status_delete_competence($plugin,$dblog);
+            //self::sync_status_delete_competence($plugin,$dblog);
 
             // Synchronization FS User Competence
             //self::sync_status_competence($plugin,$dblog);
@@ -836,8 +836,6 @@ class STATUS_CRON {
                     // get to delete
                     $todelete = STATUS::competence_to_delete_ks($start,$limit);
 
-                    echo "</br>" . $todelete . "</br>";
-                    
                     if ($todelete) {
                         // Params web service
                         $params = array();
@@ -1009,10 +1007,10 @@ class STATUS_CRON {
             self::sync_status_users_accounts_deleted($plugin,$industry,$dblog);
 
             // New users accounts
-            self::sync_status_new_users_accounts($plugin,$industry,$dblog);
+            //self::sync_status_new_users_accounts($plugin,$industry,$dblog);
 
             // Existing users accounts
-            self::sync_status_existing_users_accounts($plugin,$industry,$dblog);
+            //self::sync_status_existing_users_accounts($plugin,$industry,$dblog);
 
             // Log
             $dblog .= ' FINISH Users Accounts (STATUS) . ' . "\n";
