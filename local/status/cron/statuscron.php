@@ -258,28 +258,28 @@ class STATUS_CRON {
             $dblog .= ' START Synchronization STATUS. ' . "\n";
 
             // Synchronization FS Users
-            self::sync_status_users_accounts($plugin,$industry,$dblog);
+            //self::sync_status_users_accounts($plugin,$industry,$dblog);
             
             // Synchronization FS Companies
-            self::sync_status_fs_organizations($plugin,$dblog);
+            //self::sync_status_fs_organizations($plugin,$dblog);
 
             // Synchronization FS Job roles
-            self::sync_status_fs_jobroles($plugin,$dblog);
+            //self::sync_status_fs_jobroles($plugin,$dblog);
             
             // Synchronization FS Managers/Reporters to delete
             // Managers
-            self::sync_status_delete_managers_reporters($plugin,MANAGERS,$dblog);
+            //self::sync_status_delete_managers_reporters($plugin,MANAGERS,$dblog);
             // Reporters
-            self::sync_status_delete_managers_reporters($plugin,REPORTERS,$dblog);
+            //self::sync_status_delete_managers_reporters($plugin,REPORTERS,$dblog);
 
             // Synchronization FS Managers/Reporters
-            self::sync_status_managers_reporters($plugin,$dblog);
+            //self::sync_status_managers_reporters($plugin,$dblog);
 
             // Synchronization FS User Competence to Delete
             self::sync_status_delete_competence($plugin,$dblog);
 
             // Synchronization FS User Competence
-            self::sync_status_competence($plugin,$dblog);
+            //self::sync_status_competence($plugin,$dblog);
 
             // Log
             $dblog .= ' FINISH Synchronization STATUS. ' . "\n";

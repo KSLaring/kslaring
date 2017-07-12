@@ -209,7 +209,7 @@ class STATUS {
             $params['action']   = STATUS;
 
             // SQL Instruction
-            $sql = " SELECT		count(*) as 'total'
+            $sql = " SELECT		count(DISTINCT uic.username) as 'total'
                      FROM	    {fs_imp_users_jr}	  		fs
                         JOIN    {user}              		u       ON  u.idnumber 			= fs.fodselsnr
                                                                     AND u.deleted  			= 0
@@ -266,9 +266,10 @@ class STATUS {
             $params['action']   = STATUS;
 
             // SQL Instruction
-            $sql = " SELECT		uic.userid as 'user',
-                                uic.companies,
-                                uic.ids as 'keys'
+            $sql = " SELECT		DISTINCT
+                                  uic.userid as 'user',
+                                  uic.companies,
+                                  uic.ids as 'keys'
                      FROM	    {fs_imp_users_jr}	  		fs
                         JOIN    {user}              		u       ON  u.idnumber 			= fs.fodselsnr
                                                                     AND u.deleted  			= 0
