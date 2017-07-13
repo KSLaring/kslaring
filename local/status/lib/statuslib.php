@@ -198,9 +198,9 @@ class STATUS {
     public static function total_competence_to_delete_ks() {
         /* Variables */
         global $DB;
-        $sql    = null;
-        $rdo    = null;
-        $params = null;
+        $sql        = null;
+        $rdo        = null;
+        $params     = null;
 
         try {
             //Search criteria
@@ -209,7 +209,7 @@ class STATUS {
             $params['action']   = STATUS;
 
             // SQL Instruction
-            $sql = " SELECT		count(*) as 'total'
+            $sql = " SELECT		count(DISTINCT uic.username) as 'total'
                      FROM	    {fs_imp_users_jr}	  		fs
                         JOIN    {user}              		u       ON  u.idnumber 			= fs.fodselsnr
                                                                     AND u.deleted  			= 0
@@ -246,7 +246,7 @@ class STATUS {
      * @param           $start
      * @param           $limit
      * 
-     * @return          array|null
+     * @return          array|string
      * @throws          Exception
      * 
      * @creationDate    28/02/2017
@@ -258,6 +258,7 @@ class STATUS {
         $sql        = null;
         $rdo        = null;
         $params     = null;
+        $todelete   = null;
 
         try {
             //Search criteria
@@ -266,9 +267,10 @@ class STATUS {
             $params['action']   = STATUS;
 
             // SQL Instruction
-            $sql = " SELECT		uic.userid as 'user',
-                                uic.companies,
-                                uic.ids as 'keys'
+            $sql = " SELECT		DISTINCT
+                                  uic.userid as 'user',
+                                  uic.companies,
+                                  uic.ids as 'keys'
                      FROM	    {fs_imp_users_jr}	  		fs
                         JOIN    {user}              		u       ON  u.idnumber 			= fs.fodselsnr
                                                                     AND u.deleted  			= 0
@@ -291,8 +293,12 @@ class STATUS {
             
             // Execute
             $rdo = $DB->get_records_sql($sql,$params,$start,$limit);
+            if ($rdo) {
+                $todelete = json_encode($rdo);
+            }
 
-            return $rdo;
+
+            return $todelete;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -778,7 +784,7 @@ class STATUS {
                         JOIN  {ks_company}		ks_pa	ON 	ks_pa.companyid     = fk.kscompany
                         JOIN  {fs_imp_company}	fs_imp 	ON 	fs_imp.org_enhet_id = fs.companyid
                      WHERE 	  fs_imp.action 	= :action
-                        AND	  fs_imp.imported = :imported ";
+                        AND	  fs_imp.imported   = :imported ";
 
             // Execute
             $rdo = $DB->get_records_sql($sql,$params,$start,$limit);

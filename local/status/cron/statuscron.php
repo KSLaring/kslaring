@@ -100,16 +100,16 @@ class STATUS_CRON {
             $industry = STATUS::get_industry_code($plugin->ks_muni);
 
             // Get competence from KS
-            self::competence_data($plugin,$industry,$dblog);
+            //self::competence_data($plugin,$industry,$dblog);
 
             // Get managers reporters from KS
-            self::managers_reporters($plugin,$industry,$dblog);
+            //self::managers_reporters($plugin,$industry,$dblog);
 
             // Repair connections
-            self::repair_connections($dblog);
+            //self::repair_connections($dblog);
 
             // Import last status from fellesdata
-            self::import_status($plugin,$dblog);
+            //self::import_status($plugin,$dblog);
 
             // Syncronization
             self::synchronization($plugin,$industry,$dblog);
