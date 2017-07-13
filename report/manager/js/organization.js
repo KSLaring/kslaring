@@ -80,6 +80,11 @@ var level_structure = {
      * @constructor
      */
     init : function() {
+        document.cookie = "level0=0";
+        document.cookie = "level1=0";
+        document.cookie = "level2=0";
+        document.cookie = "level3=0";
+
         /* Level Zero  */
         this.levelZero.on('change', this.Activate_LevelOne, this);
 
@@ -105,6 +110,11 @@ var level_structure = {
         var parent  = this.levelZero.get('value');
         var level   = 1;
 
+        document.cookie = "level0" + "=" + this.levelZero.get('value');
+        document.cookie = "level1=0";
+        document.cookie = "level2=0";
+        document.cookie = "level3=0";
+
         //  Trigger an ajax search after a delay.
         this.cancel_timeout();
         this.timeoutid  = Y.later(this.querydelay * 1000, e, function(obj){obj.send_query(false,parent,level)}, this);
@@ -113,6 +123,11 @@ var level_structure = {
     Activate_LevelTwo : function(e) {
         var parent      = this.levelOne.get('value');
         var level       = 2;
+
+        document.cookie = "level0=" + this.levelZero.get('value');
+        document.cookie = "level1=" + this.levelOne.get('value');
+        document.cookie = "level2=0";
+        document.cookie = "level3=0";
 
         //  Trigger an ajax search after a delay.
         this.cancel_timeout();
@@ -123,12 +138,22 @@ var level_structure = {
         var parent  = this.levelTwo.get('value');
         var level   = 3;
 
+        document.cookie = "level0="  + this.levelZero.get('value');
+        document.cookie = "level1="  + this.levelOne.get('value');
+        document.cookie = "level2="  + this.levelTwo.get('value');
+        document.cookie = "level3=0";
+
         //  Trigger an ajax search after a delay.
         this.cancel_timeout();
         this.timeoutid = Y.later(this.querydelay * 1000, e, function(obj){obj.send_query(false,parent,level)}, this);
     },
 
     Load_Employees : function (e) {
+        document.cookie = "level0="  + this.levelZero.get('value');
+        document.cookie = "level1="  + this.levelOne.get('value');
+        document.cookie = "level2="  + this.levelTwo.get('value');
+        document.cookie = "level3="  + this.levelThree.get('value');
+
         //  Trigger an ajax search after a delay.
         this.cancel_timeout();
         this.timeoutid = Y.later(this.querydelay * 1000, e, function(obj){obj.send_query_employees(false)}, this);
