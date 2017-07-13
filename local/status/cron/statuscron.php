@@ -830,8 +830,6 @@ class STATUS_CRON {
             // Get total to delete
             $total = STATUS::total_competence_to_delete_ks();
             if ($total) {
-                $dblog .= ' TOTAL : ' . $total . '\n';
-
                 for ($i=0;$i<=$total;$i=$i+$limit) {
                     // get to delete
                     $todelete = STATUS::competence_to_delete_ks($start,$limit);

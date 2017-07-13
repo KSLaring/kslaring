@@ -761,9 +761,9 @@ class STATUS {
 
             // SQL Instruction
             $sql = " SELECT	DISTINCT 
-                              fs.companyid                          as 'fsid',
-                              fk.kscompany                          as 'ksid',
-                              TRIM(fs.name)                         as 'name',
+                              fs.companyid                                      as 'fsid',
+                              fk.kscompany                                      as 'ksid',
+                              IF(fs.level > 1,TRIM(fs.name), TRIM(ks_pa.name))  as 'name',
                               fs.level,
                               fs.parent,
                               ks_pa.industrycode                    as 'industry',
