@@ -42,7 +42,7 @@ require_once($CFG->dirroot.'/'.$CFG->admin.'/user/lib.php');
 require_once('company_report_form.php');
 require_once('user_selector_form.php');
 
-/* Params */
+// Params
 $show_advanced  = optional_param('advanced',0,PARAM_INT);
 $format         = optional_param('format','',PARAM_ALPHA);
 $return_url     = new moodle_url('/report/manager/index.php');
@@ -59,13 +59,14 @@ if (!isset($SESSION->bulk_users)) {
 
 require_login();
 
-/* Start the page */
+// Start page
 $site_context = context_system::instance();
 $IsReporter = CompetenceManager::IsReporter($USER->id);
 if (!$IsReporter) {
     require_capability('report/manager:viewlevel4', $site_context,$USER->id);
 }
 
+// Security
 if (empty($CFG->loginhttps)) {
     $secure_www_root = $CFG->wwwroot;
 } else {
@@ -84,12 +85,12 @@ $PAGE->set_heading($SITE->fullname);
 $PAGE->navbar->add(get_string('report_manager','local_tracker_manager'),$return_url);
 $PAGE->navbar->add(get_string('company_report_link','report_manager'),$url);
 
-/* My Hierarchy */
+// My hierarchy
 $my_hierarchy = CompetenceManager::get_MyHierarchyLevel($USER->id,$site_context,$IsReporter,0);
 
-/* Create the user filter   */
+// User filer
 $user_filter = new company_report_filtering(null,$url,null);
-/* Set My Companies         */
+// Set my comapnies
 if ($my_hierarchy->competence) {
     if ($IsReporter) {
         $myLevelThree = null;
@@ -109,7 +110,8 @@ if ($my_hierarchy->competence) {
 }else {
     $user_filter->set_MyCompanies(null);
 }
-/* Selector User Form   */
+
+// Selector user form
 $selector_users = new manager_company_user_selector_form(null,CompanyReport::GetSelection_Filter($user_filter));
 if ($data = $selector_users->get_data()) {
     if (!empty($data->addall)) {
@@ -154,11 +156,17 @@ if ($data = $selector_users->get_data()) {
     $selector_users = new manager_company_user_selector_form(null, CompanyReport::GetSelection_Filter($user_filter));
 }//if_selectorUsers_getData
 
-/* Show Form */
+// Show form
 $form = new manager_company_report_form(null,array($my_hierarchy,$show_advanced,$IsReporter));
 $out = '';
 
 if ($form->is_cancelled()) {
+    // clean cookies
+    setcookie('level0',0);
+    setcookie('level1',0);
+    setcookie('level2',0);
+    setcookie('level3',0);
+
     unset($SESSION->selection);
 
     $_POST = array();
@@ -166,17 +174,17 @@ if ($form->is_cancelled()) {
 
     redirect($return_url);
 }else if($data = $form->get_data()) {
-    /* Get Data */
+    // Get data
     $data_form = (Array)$data;
 
-    /* Get the users that have been selected    */
+    // Get the users that have been selected
     if (!$SESSION->bulk_users) {
         CompanyReport::AddAll_SelectionFilter($user_filter);
     }//if_sesion_users_bulk
 
     $users_lst = $SESSION->bulk_users;
 
-    /* Get Company Tracker Info */
+    // Company tracker info
     $company = new stdClass();
     $company->levelZero     = $data_form[COMPANY_STRUCTURE_LEVEL . '0'];
     $company->levelOne      = $data_form[COMPANY_STRUCTURE_LEVEL . '1'];
@@ -185,7 +193,7 @@ if ($form->is_cancelled()) {
 
     $companyTracker = CompanyReport::Get_CompanyTracker($company,$users_lst);
 
-    /* Keep selection data --> when it returns to the main page */
+    // Keep selection data --> when it returns to the main page
     $SESSION->selection = array();
     $SESSION->selection[COMPANY_STRUCTURE_LEVEL . '0']   = (isset($data_form[COMPANY_STRUCTURE_LEVEL . '0']) ? $data_form[COMPANY_STRUCTURE_LEVEL . '0'] : 0);
     $SESSION->selection[COMPANY_STRUCTURE_LEVEL . '1']   = (isset($data_form[COMPANY_STRUCTURE_LEVEL . '1']) ? $data_form[COMPANY_STRUCTURE_LEVEL . '1'] : 0);
@@ -206,25 +214,26 @@ if ($form->is_cancelled()) {
     $SESSION->bulk_users = array();
 }//if_else
 
-/* Print Header */
+// Header
 echo $OUTPUT->header();
 
 if (!empty($out)) {
-    /* Print Title */
+    // Print report
     echo $out;
 }else {
-    /* Print tabs at the top */
+    // Print tabs at the top
     $current_tab = 'manager_reports';
     $show_roles = 1;
     require('../tabs.php');
 
+    // Advanced filter
     if ($show_advanced) {
         $out  = html_writer::start_tag('div',array('class' => 'advance_set_rpt'));
         $out .= html_writer::link(new moodle_url('/report/manager/company_report/company_report.php',array('advanced' => '0')),get_string('hideadvancedsettings'));
         $out .= html_writer::end_tag('div'); //div_expiration
         echo $out;
 
-        /* Add the filters  */
+        // Add filters
         $user_filter->display_add();
         $user_filter->display_active();
         flush();
@@ -239,10 +248,9 @@ if (!empty($out)) {
 
     $form->display();
 
-    /* Initialise Organization Structure    */
+    // Initialise Organization Structure
     CompetenceManager::Init_Organization_Structure(COMPANY_STRUCTURE_LEVEL,null,null,0,null,false);
 }//if_else
 
-
-/* Print Footer */
+// Footer
 echo $OUTPUT->footer();
