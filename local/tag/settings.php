@@ -40,9 +40,6 @@ if ($hassiteconfig) {
     $settings->add(new admin_setting_configtext('tag_metaoptionsingleselect',
             get_string('metaoptionsingleselect', 'local_tag'),
             get_string('metaoptionsingleselect_desc', 'local_tag'), 'Meta_option_singleselect'));
-    $settings->add(new admin_setting_configtext('tag_metaoptionprovider',
-        get_string('metaoptionprovider', 'local_tag'),
-        get_string('metaoptionprovider_desc', 'local_tag'), 'Meta_option_provider'));
 
     $ADMIN->add(
             'appearance',

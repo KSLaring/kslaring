@@ -38,10 +38,6 @@ $string['metaoptionprefix_desc'] = 'Set the prefix that shall be used for all op
 $string['metaoptionsingleselect'] = 'Meta singleselect tag';
 $string['metaoptionsingleselect_desc'] = 'Set the single select tag name used to specify group tags 
 where only one item can be selected, like »Meta_option_singleselect«';
-$string['metaoptionprovider'] = 'Meta provider tag';
-$string['metaoptionprovider_desc'] = 'Set the provider tag name used to combine meta_group tags displayed together in one secton 
-in the course search, like »Meta_option_provider«. Please add provider tag to the meta_group tags to combine them.';
-
 $string['editgrouptags_title'] = 'Edit group tags';
 $string['waitdragdrop'] = 'Drag & Drop may take a momemt until it is initialized in the page ...';
 $string['readydragdrop'] = 'it is initialized now.';
