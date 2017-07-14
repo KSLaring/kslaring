@@ -22,7 +22,7 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-define('REPORT_CUSTOMSQL_MAX_RECORDS', 5000);
+define('REPORT_CUSTOMSQL_MAX_RECORDS', 100000);
 define('REPORT_CUSTOMSQL_START_OF_WEEK', 6); // Saturday.
 
 function report_customsql_execute_query($sql, $params = null,
