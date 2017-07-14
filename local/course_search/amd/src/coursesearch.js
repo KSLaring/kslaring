@@ -1,10 +1,10 @@
 /*global require: false, define: false, M: true, console: false */
-define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates', 'local_course_search/cookie', 'theme_bootstrapbase/bootstrap'],
-    function ($, notification, log, ajax, templates, cookie) {
+define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates', 'theme_bootstrapbase/bootstrap'],
+    function ($, notification, log, ajax, templates) {
         "use strict";
 
         // Add the jQuery object globaly or debugging.
-        window.$ = $;
+        // window.$ = $;
 
         log.debug('AMD module loaded.');
 
@@ -25,15 +25,12 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
             $navtabs = null,
             $tagpreselectarea = null,
             $formsearch = null,
+            $selectsort = null,
             $tagarea = null,
             $selectedCourseTags = null,
             $switchDisplayBtn = null,
             preselecttagsloaded = false,
             hideitemClass = 'hide-item',
-            cookiename = 'preselectedtags',
-            // The preselected tags are sotored in a cookie. The tag ids are sepaarated by commy,
-            // the sections are separated by »|«.
-            preselectedtags = '433,430,431,16,39,108,196,268,352|449,452,450,453|458,459|460,462,463',
             tagContextObj = {id: 0, type: null, group: null, name: null},
             activityContextObj = {id: 0, type: null, group: null, name: null, sort: null, pretext: null, posttext: null, remove: 0},
             col2sortfieldmap = {
@@ -53,47 +50,25 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                 'location': 'course_location'
             };
 
-        var grepselectedCourseTags = function (data) {
-            var groups = data.tags.groups,
-                found;
-
-            if (groups.length) {
-                groups.forEach(function (val) {
-                    found = $.grep(val.shown, function (item) {
-                        return (item.checked === 1);
-                    });
-
-                    if (found.length) {
-                        selectedCourseTags = $.merge(selectedCourseTags, found);
-                    }
-                });
-
-                renderselectedCourseTags({selectedCourseTags: selectedCourseTags});
-            }
-        };
-
-        var renderselectedCourseTags = function (context) {
+        /**
+         * Render a search tag item with a template with the given data.
+         *
+         * @param {Array} $where The jQuery node to which the tag shall be appended
+         * @param {Array|object} context The data for the template
+         */
+        var renderSearchTagItem = function ($where, context) {
             templates
-                .render('local_course_search/course_search_selected_tags', context)
+                .render('local_course_search/course_search_region_search_groups_item', context)
                 .done(function (html) {
-                    $tagarea.append(html);
-                    $selectedCourseTags = $tagarea.find('.selected-tags');
+                    $where.append(html);
                 });
         };
 
-        var renderSearchArea = function (context) {
-            templates
-                .render('local_course_search/course_search_region_search', context)
-                .done(function (html) {
-                    $formsearch.after(html);
-
-                    searcharearenderedstate = true;
-
-                    activateDatePicker();
-                    // addPreselectedTags();
-                });
-        };
-
+        /**
+         * Render the display area with a template with the given data.
+         *
+         * @param {Array|object} context The data for the template
+         */
         var renderDisplayArea = function (context) {
             templates
                 .render('local_course_search/course_search_result_area', context)
@@ -105,13 +80,17 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                     }
 
                     $navtabs = $('.nav-tabs').eq(0);
-                    // $navtabs.on('click', handleTabChange);
-                    $('a[data-toggle="tab"]').on('shown', handleTabChange);
+                    $('a[data-toggle="tab"]').on('shown', tabChangeHandler);
 
                     updateCourseDisplay();
                 });
         };
 
+        /**
+         * Render the tag preselection area with a template with the given data.
+         *
+         * @param {Array|object} context The data for the template
+         */
         var renderTagPreselectArea = function (context) {
             templates
                 .render('local_course_search/course_search_tag_preselect_area', context)
@@ -121,113 +100,138 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                     preselecttagsloaded = true;
 
                     setCheckboxForPreselectedTags();
-                    // addPreselectedTags();
                 });
         };
 
-        var addPreselectedTags = function () {
-            if (preselectedTagsAddedState) {
-                return;
-            }
-
-            if (!preselecttagsloaded) {
-                return;
-            }
-
-            var tags = cookie.read(cookiename),
+        /**
+         * Handle the click on the »Select interests« button.
+         *
+         * Hide the result area and show the tag preselect area.
+         */
+        var toggleTagPreselectPageHandler = function () {
+            var taglist = '',
                 tagarray = [],
-                tagarrayextracted = [],
-                $taggroups = null;
+                $taggroups = null,
+                gl,
+                tl;
 
-            // Create an array of arrays from the cookie data.
-            if (tags !== null) {
-                tagarray = tags.split('|');
-                tagarray.forEach(function (ele) {
-                    tagarrayextracted.push(ele.split(','));
-                });
+            // Change state to tag selection.
+            if (showtagliststate) {
+                $switchDisplayBtn.text($switchDisplayBtn.data('changetoselection'));
+                if ($resultarea.find('[href="#tablist"]').hasClass('active')) {
+                    $coursesearchform
+                        .find('.display')
+                        .find('[data-group="tags"]')
+                        .removeClass('hidden');
+                }
 
                 $taggroups = $searcharea.find('.tag-group');
+                gl = $taggroups.length - 1;
                 if ($taggroups.length) {
                     $taggroups.each(function (i) {
                         var $group = $(this),
-                            $onetag = null,
-                            tagcontext = {};
+                            $tags = null;
 
-                        tagarrayextracted[i].forEach(function (ele) {
-                            $onetag = $tagpreselectarea.find('[data-id="' + ele + '"]');
-                            if ($onetag.length) {
-                                $onetag.prop('checked', true);
-                                tagcontext = $.extend({}, tagContextObj, {
-                                    id: $onetag.data('id'),
-                                    type: $onetag.data('type'),
-                                    group: $onetag.data('group'),
-                                    name: $onetag.data('name')
-                                });
+                        $tags = $group.find('.checkbox');
 
-                                renderSearchTagItem($group, tagcontext);
-                            }
-                        });
+                        tl = $tags.length - 1;
+                        if ($tags.length) {
+                            $tags.each(function (j) {
+                                taglist += $(this).data('id');
+                                tagarray.push($(this).data('id'));
+
+                                if (j < tl) {
+                                    taglist += ',';
+                                }
+                            });
+                        }
+
+                        if (i < gl) {
+                            taglist += '|';
+                        }
                     });
                 }
+
+                // Remove all search criteria.
+                $coursesearchfield.blur();
+                $tagarea
+                    .find('.btn-tag')
+                    .each(function () {
+                        $(this).click();
+                    });
+
+                save_search_criteria(tagarray);
+            } else {
+                showtagliststate = !showtagliststate;
+                $switchDisplayBtn.text($switchDisplayBtn.data('changetoresults'));
+                $coursesearchform
+                    .find('.display')
+                    .find('[data-group="tags"]')
+                    .addClass('hidden');
+
+                // Remove all search criteria.
+                $coursesearchfield.blur();
+                $tagarea
+                    .find('.btn-tag')
+                    .each(function () {
+                        $(this).click();
+                    });
+
+                $coursesearchform.find('.fieldset-hidden').removeClass('fieldset-hidden');
+
+                $resultarea.toggleClass('section-hidden');
+                $tagpreselectarea.toggleClass('section-hidden');
             }
-
-            preselectedTagsAddedState = true;
         };
 
+        /**
+         * Handle the cards/list tab change event.
+         *
+         * When the cards are shown disable the »Show course tags« checkbox.
+         *
+         * @param {object} e The event object
+         */
+        var tabChangeHandler = function (e) {
+            var target = $(e.target).attr("href"),
+                $showtagscheckbox = $coursesearchform.find('.display').find('[data-group="tags"]'),
+                $input = $showtagscheckbox.find('input');
 
-        var renderSearchTagItem = function ($where, context) {
-            templates
-                .render('local_course_search/course_search_region_search_groups_item', context)
-                .done(function (html) {
-                    $where.append(html);
-                });
+            if (target === '#tabcards') {
+                $showtagscheckbox.addClass('hidden');
+            } else if (target === '#tablist') {
+                $showtagscheckbox.removeClass('hidden');
+            }
         };
 
-        var activateDatePicker = function () {
-            // Bootstrap 2.x datepicker https://github.com/uxsolutions/bootstrap-datepicker/tree/1.5.
-            require(['local_course_search/Xloader'], function () {
-                $("#date-from").datepicker({
-                    format: "dd.mm.yyyy",
-                    calendarWeeks: true,
-                    todayHighlight: true,
-                    clearBtn: true,
-                    autoclose: true
-                }).on("changeDate", function (e) {
-                    dateChangeHandler(e);
-                });
-                $("#date-to").datepicker({
-                    format: "dd.mm.yyyy",
-                    calendarWeeks: true,
-                    todayHighlight: true,
-                    clearBtn: true,
-                    autoclose: true
-                }).on("changeDate", function (e) {
-                    dateChangeHandler(e);
-                });
-            });
-        };
-
+        /**
+         * Handle the date picker »changeDate« events.
+         *
+         * @param {object} e The jQuery event object
+         */
         var dateChangeHandler = function (e) {
             var $ele = $(e.target),
                 $parent = $ele.parents('.date'),
                 dateEuro = e.format("yyyymmdd"),
                 dateUser = e.format("dd.mm.yyyy"),
-                $relatedTag = null,
                 activityContext = $.extend({}, activityContextObj, {
                     type: $parent.data('type'),
                     group: $parent.data('group'),
                     name: $parent.data('name'),
                     posttext: " " + dateUser
                 });
+
+            // Set the value of the related hidden field to the euro formatted date
+            // which is returned form the date picker. Internally used because the tag date property is formated this way.
             $ele.siblings('input[type="hidden"]').eq(0).val(dateEuro);
 
             // Remove or add the related tag in the selected tag list depending on the checked status.
             // Remove an eventually existing tag.
-            $relatedTag = $tagarea
+            $tagarea
                 .find('button')
                 .filter('[data-name="' + $parent.data('name') + '"]')
                 .parent('li')
                 .remove();
+
             if (dateUser === "") {
                 activityContext.remove = 1;
             } else {
@@ -242,6 +246,19 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
             updateCourseDisplay();
         };
 
+        /**
+         * Handle the change event on checkboxes in the search area.
+         *
+         * When the tag checkbox is changed
+         * _ if the tag's state is checked
+         *     _ uncheck
+         *     _ remove the related tag top right
+         *     _ change the course filtering
+         * _ if the tag's state is unchecked
+         *     _ check
+         *     _ add the related tag top right
+         *     _ change the course filtering
+         */
         var checkboxChangeHandler = function () {
             var $ele = $(this),
                 $parent = $ele.parent(),
@@ -263,7 +280,7 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                     .remove();
                 activityContext.remove = 1;
             } else if ($parent.data('group') === 'sort') {
-                // If the sort changed then remove the exisiting sort tag and add the new.
+                // If the sort changed then remove the existing sort tag and add the new.
                 $relatedTag = $tagarea
                     .find('button')
                     .filter('[data-group="sort"]')
@@ -274,7 +291,7 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                 activityContext.sort = $parent.data('sort');
                 activityContext.name = M.str.local_course_search.sortby + " " +
                     M.str.local_friadmin[sortstrmapping[activityContext.sort]];
-                console.log($ele, $parent);
+
                 templates
                     .render('local_course_search/course_search_selected_tags_item', activityContext)
                     .done(function (html) {
@@ -291,9 +308,110 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
             if ($parent.data('type') === 'course') {
                 filterCourses();
             }
+
             updateCourseDisplay();
         };
 
+        /**
+         * Handle the change event for the sort select popup menu to sort the course by columns.
+         */
+        var sortSelectHandler = function () {
+            sortSelect();
+        };
+
+        /**
+         * Process the column sort.
+         *
+         * Use a hidden checkbox to trigger the sort. Change the data of the hidden checkbox to the selected option.
+         * With the hidden checkbox the central checkbox event system can be used to handle the sorting.
+         */
+        var sortSelect = function () {
+            var $selected = $selectsort.find("option:selected").eq(0),
+                $relatedCheckboxLabel = $selectsort.siblings('.hidden').eq(0),
+                selecteditem = $selected.val().toLowerCase();
+
+            if (sortbystate === selecteditem) {
+                return;
+            } else {
+                sortbystate = selecteditem;
+            }
+
+            $relatedCheckboxLabel.data('sort', selecteditem);
+            $relatedCheckboxLabel
+                .find('input')
+                .trigger('change');
+        };
+
+        /**
+         * Handle the click event on the course list column titles to change the table sort.
+         *
+         * @param {object} e The jQuery event object
+         */
+        var colTitleClickHandler = function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            var $target = $(e.target),
+                $relatedCheckboxLabel = $selectsort.siblings('.hidden').eq(0),
+                sortwhat = $target.data('sort');
+
+            if (sortbystate === sortwhat) {
+                sortascstate = !sortascstate;
+                $searcharea.find('[data-group="sortdesc"]').find('input').click();
+            } else {
+                sortbystate = sortwhat;
+            }
+
+            $selectsort.val(sortwhat);
+
+            $relatedCheckboxLabel.data('sort', sortwhat);
+            $relatedCheckboxLabel
+                .find('input')
+                .trigger('change');
+        };
+
+        /**
+         * Handle the click event on the tags top right.
+         *
+         * Remove the tag and change the state of the related element in the search tag area.
+         */
+        var selectedTagClickHandler = function () {
+            var $ele = $(this);
+
+            // Change the state of the related element in the serach area.
+            if ($ele.data('group') === 'searchquery') {
+                $coursesearchform.find('.search-query').val('');
+            } else if ($ele.data('group') === 'date-from') {
+                $("#date-from").datepicker('update', '');
+                $("#date-from-eurodate").val('');
+            } else if ($ele.data('group') === 'date-to') {
+                $("#date-to").datepicker('update', '');
+                $("#date-to-eurodate").val('');
+            } else if ($ele.data('group') === 'sort') {
+                $selectsort.val('name');
+            } else {
+                $searcharea
+                    .find('label')
+                    .filter('[data-name="' + $ele.data('name') + '"]')
+                    .find('input').prop('checked', false);
+            }
+
+            // Remove the top right tag.
+            $ele.remove();
+
+            // Start the related action.
+            if ($ele.data('group') === 'sort') {
+                sortSelectHandler();
+            } else if ($ele.data('type') === 'course') {
+                filterCourses();
+            } else if ($ele.data('type') === 'display') {
+                updateCourseDisplay();
+            }
+        };
+
+        /**
+         * Handle the change event on the checkboxes in the tag preselect area.
+         */
         var preselectedCheckboxChangeHandler = function () {
             var $ele = $(this),
                 checked = $ele.is(":checked"),
@@ -306,14 +424,6 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                 $coursesearchform.find('[data-id="' + $ele.data('id') + '"]').remove();
             } else {
                 group = $ele.data('group');
-
-                // Hack to speed up. Add provider as a data property.
-                // Don't use for testing.
-                // if (group === 'municipality' || group === 'region') {
-                //     displaygroup = 'provider';
-                // } else {
-                //     displaygroup = group;
-                // }
                 displaygroup = group;
 
                 $group = $coursesearchform.find('fieldset[data-group="' + displaygroup + '"]');
@@ -328,89 +438,16 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
             }
         };
 
-        var sortSelectHandler = function () {
-            var $ele = $(this),
-                $selected = $ele.find("option:selected").eq(0),
-                $relatedCheckboxLabel = $ele.siblings('.hidden').eq(0),
-                selecteditem = '';
-
-            selecteditem = $selected.val().toLowerCase();
-
-            if (sortbystate === selecteditem) {
-                return;
-            } else {
-                sortbystate = selecteditem;
-            }
-
-            $relatedCheckboxLabel.data('sort', selecteditem);
-            $relatedCheckboxLabel
-                .find('input')
-                .trigger('change');
-        };
-
-        var colTitleClickHandler = function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            var $target = $(e.target),
-                $selectSort = $searcharea.find('#select-sort'),
-                $selectSortOptions = $selectSort.find('option'),
-                $relatedCheckboxLabel = $selectSort.siblings('.hidden').eq(0),
-                sortwhat = '';
-
-            sortwhat = $target.data('sort');
-
-            if (sortbystate === sortwhat) {
-                sortascstate = !sortascstate;
-                $searcharea.find('[data-group="sortdesc"]').find('input').click();
-            } else {
-                sortbystate = sortwhat;
-            }
-
-            $selectSortOptions.find(':selected').prop('selected', false);
-            $selectSortOptions.filter(function () {
-                return ($(this).val() === sortwhat); // To select the related option
-            }).prop('selected', true);
-
-            $relatedCheckboxLabel.data('sort', sortwhat);
-            $relatedCheckboxLabel
-                .find('input')
-                .trigger('change');
-        };
-
-        var selectedTagClickHandler = function () {
-            var $ele = $(this);
-
-            if ($ele.data('group') === 'searchquery') {
-                $coursesearchform.find('.search-query').val('');
-            } else if ($ele.data('group') === 'date-from') {
-                $("#date-from").datepicker('update', '');
-                $("#date-from-eurodate").val('');
-            } else if ($ele.data('group') === 'date-to') {
-                $("#date-to").datepicker('update', '');
-                $("#date-to-eurodate").val('');
-            } else {
-                $searcharea
-                    .find('label')
-                    .filter('[data-name="' + $ele.data('name') + '"]')
-                    .find('input').prop('checked', false);
-            }
-
-            $ele.remove();
-
-            if ($ele.data('type') === 'course') {
-                filterCourses();
-            } else if ($ele.data('type') === 'display') {
-                updateCourseDisplay();
-            }
-        };
-
-        var handleTagFilterText = function (e) {
+        /**
+         * Handle the keyup event of the search text field.
+         *
+         * Filter the tags by name that contains the enterd text.
+         */
+        var tagFilterTextHandler = function (e) {
             var $input = null,
                 filter = '',
                 $tagLists = null,
                 $tags = null;
-
 
             $input = $(e.currentTarget);
             filter = $input.val().toLowerCase();
@@ -445,7 +482,10 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
             }
         };
 
-        var handleTextSearch = function (e) {
+        /**
+         * Handle the submit event on the course search form.
+         */
+        var textSearchHandler = function (e) {
             var $form = $(this),
                 text,
                 activityContext;
@@ -476,25 +516,20 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
             filterCourses();
         };
 
+        /**
+         * Get the selected tag search text.
+         *
+         * @returns {string} The entered text
+         */
         var getSelectedSearchText = function () {
             return $coursesearchfield.val().toLowerCase();
         };
 
-        var getSelectedCourseTags = function () {
-            var checkeditems,
-                searchItems = [];
-
-            checkeditems = $coursesearchform.find('label').has(':checked');
-            checkeditems.each(function () {
-                var $item = $(this);
-                if ($item.data('type') === 'course') {
-                    searchItems.push($item.data('group') + '-' + $item.data('name'));
-                }
-            });
-
-            return searchItems;
-        };
-
+        /**
+         * Collect the selected search criteria in an object by group.
+         *
+         * @returns {object} The search items
+         */
         var getSelectedCourseTagsGrouped = function () {
             var checkeditems,
                 searchItemsObj = {};
@@ -503,9 +538,11 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
             checkeditems.each(function () {
                 var $item = $(this);
                 if ($item.data('type') === 'course') {
+                    // Add an empty group if not present.
                     if (!searchItemsObj.hasOwnProperty($item.data('group'))) {
                         searchItemsObj[$item.data('group')] = [];
                     }
+                    // Add the item to the group.
                     searchItemsObj[$item.data('group')].push($item.data('group') + '-' + $item.data('name'));
                 }
             });
@@ -513,6 +550,11 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
             return searchItemsObj;
         };
 
+        /**
+         * Get the preselected tags in the course search area.
+         *
+         * @returns {Array} The tag collection
+         */
         var getPreselectedCourseTagObjects = function () {
             var checkeditems,
                 searchItems = [];
@@ -534,11 +576,15 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
             return searchItems;
         };
 
+        /**
+         * Get the date object form the date selector.
+         *
+         * @returns {Object} The selected dates
+         */
         var getSelectedFromToDates = function () {
             var dates = {
                     from: null,
-                    to: null,
-                    datesset: false
+                    to: null
                 },
                 date;
 
@@ -546,19 +592,22 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
             date = $("#date-from-eurodate").val();
             if (date !== "") {
                 dates.from = date;
-                dates.datesset = true;
             }
 
             // Check and set the to date.
             date = $("#date-to-eurodate").val();
             if (date !== "") {
                 dates.to = date;
-                dates.datesset = true;
             }
 
             return dates;
         };
 
+        /**
+         * Get the selected tags that influence the course display.
+         *
+         * @returns {Array} The selected display tags collection
+         */
         var getSelectedDisplayTags = function () {
             var checkeditems,
                 displayItems = [];
@@ -578,18 +627,6 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
             return displayItems;
         };
 
-        var getPreselectedTags = function () {
-            var checkeditems,
-                searchItems = [];
-
-            checkeditems = $tagpreselectarea.find('input:checked');
-            checkeditems.each(function () {
-                searchItems.push($(this).data('id'));
-            });
-
-            return searchItems;
-        };
-
         /**
          * Sort the displayed courses.
          *
@@ -602,6 +639,7 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                 what = 'name',
                 $coltitle = null;
 
+            // The sort function for the course sort, compare on the defined data attribute.
             var sortFkt = function (a, b) {
                 if (sortascstate) {
                     return ($(b).data(col2sortfieldmap[what])) < ($(a).data(col2sortfieldmap[what])) ? 1 : -1;
@@ -755,19 +793,9 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
         };
 
         /**
-         * Clone an array
-         *
-         * @param inArray
-         * @returns {Array}
-         */
-        var cloneArray = function (inArray) {
-            return inArray.slice(0);
-        };
-
-        /**
          * Set the visibility of the courses in the cards and list view.
          *
-         * @param courseIDsToShow The list of course ids to show
+         * @param {Array} courseIDsToShow The list of course ids to show
          */
         var showHideCourses = function (courseIDsToShow) {
             var $coursecards = $resultarea.find('.course-cards'),
@@ -799,144 +827,9 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
             }
         };
 
-        var handleToggleTagPreselectPage = function () {
-            var taglist = '',
-                tagarray = [],
-                $taggroups = null,
-                gl,
-                tl;
-
-            // Change state to tag selection.
-            if (showtagliststate) {
-                $switchDisplayBtn.text($switchDisplayBtn.data('changetoselection'));
-                if ($resultarea.find('[href="#tablist"]').hasClass('active')) {
-                    $coursesearchform
-                        .find('.display')
-                        .find('[data-group="tags"]')
-                        .removeClass('hidden');
-                }
-
-                $taggroups = $searcharea.find('.tag-group');
-                gl = $taggroups.length - 1;
-                if ($taggroups.length) {
-                    $taggroups.each(function (i) {
-                        var $group = $(this),
-                            $tags = null;
-
-                        $tags = $group.find('.checkbox');
-
-                        tl = $tags.length - 1;
-                        if ($tags.length) {
-                            $tags.each(function (j) {
-                                taglist += $(this).data('id');
-                                tagarray.push($(this).data('id'));
-
-                                if (j < tl) {
-                                    taglist += ',';
-                                }
-                            });
-                        }
-
-                        if (i < gl) {
-                            taglist += '|';
-                        }
-                    });
-                }
-                cookie.create(cookiename, taglist, 14);
-
-                // Remove all search criteria.
-                $coursesearchfield.blur();
-                $tagarea
-                    .find('.btn-tag')
-                    .each(function () {
-                        $(this).click();
-                    });
-
-                save_search_criteria(tagarray);
-            } else {
-                showtagliststate = !showtagliststate;
-                $switchDisplayBtn.text($switchDisplayBtn.data('changetoresults'));
-                console.log('showtagliststate', $coursesearchform.find('.display').find('[data-group="tags"]'));
-                $coursesearchform
-                    .find('.display')
-                    .find('[data-group="tags"]')
-                    .addClass('hidden');
-
-                // Remove all search criteria.
-                $coursesearchfield.blur();
-                $tagarea
-                    .find('.btn-tag')
-                    .each(function () {
-                        $(this).click();
-                    });
-
-                $coursesearchform.find('.fieldset-hidden').removeClass('fieldset-hidden');
-
-                $resultarea.toggleClass('section-hidden');
-                $tagpreselectarea.toggleClass('section-hidden');
-            }
-        };
-
         /**
-         * Handle the cards/list tab change event.
-         *
-         * When the cards are shown disable the »Show course tags« checkbox.
-         *
-         * @param e The event object
+         * Get the course data for the user viewable courses via ajax.
          */
-        var handleTabChange = function (e) {
-            var target = $(e.target).attr("href"),
-                $showtagscheckbox = $coursesearchform.find('.display').find('[data-group="tags"]'),
-                $input = $showtagscheckbox.find('input');
-
-            if (target === '#tabcards') {
-                $showtagscheckbox.addClass('hidden');
-            } else if (target === '#tablist') {
-                $showtagscheckbox.removeClass('hidden');
-            }
-        };
-
-        /**
-         * Collect all texts from the course title and summary and the tag names into one text string
-         * to speed up the text and the tag filter.
-         *
-         * add
-         * {array} tagcollection as [{group}-{name}]
-         * {string} textcollection as tagnames + coursename + coursesummary
-         *
-         * @param {array} data
-         * @returns {array} the extended data
-         */
-        var indexCourseData_o = function (data) {
-            var taglist = [],
-                tagcollection = [],
-                courseids = [];
-
-            // Collect all text.
-            $.each(data, function (i, item) {
-                taglist = [];
-                tagcollection = [];
-
-                courseids.push(item.id);
-
-                // Collect all tag names.
-                $.each(item.tags, function (i, tag) {
-                    tagcollection.push(tag.group + '-' + tag.name);
-                    taglist.push(tag.name);
-                });
-
-                // Collect the tag names and the course name and summary.
-                item.tagcollection = tagcollection;
-                item.alltext = taglist.join(',');
-                item.alltext += ' ' + item.name + ' ' + item.summary;
-                item.alltext = item.alltext.toLowerCase();
-            });
-
-            data.courseids = courseids;
-
-            return data;
-        };
-
         var get_coursedata = function () {
             $.when(
                 ajax.call([
@@ -951,6 +844,8 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                 var coursedata = JSON.parse(response.coursedata);
                 courses = coursedata.courses;
 
+                // Create an array with the courses from the »courses« object.
+                // This has the courseid as keys and needs to be converted into an array of objects.
                 courseids = Object.keys(courses);
                 renderDisplayArea({
                     'courses': courseids.map(function (k) {
@@ -963,6 +858,11 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
             });
         };
 
+        /**
+         * Save the user preselected tags via ajax.
+         *
+         * @param {Array} tagarray The array with the selected tag ids
+         */
         var save_search_criteria = function (tagarray) {
             var data = {
                 sesskey: M.cfg.sesskey,
@@ -981,7 +881,6 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                 var result = JSON.parse(response.result);
                 showtagliststate = !showtagliststate;
 
-                // window.location.reload(true);
                 $resultarea.html('');
                 get_coursedata(false);
 
@@ -995,7 +894,7 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
         };
 
         /**
-         * Get the user search criteria.
+         * Get the user search criteria via ajax.
          */
         var get_user_search_criteria = function () {
             $.when(
@@ -1015,9 +914,10 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
         };
 
         /**
-         * Get the user search criteria.
+         * Get all course tags for the preselect area via ajax.
          */
         var get_all_course_tags = function () {
+            // When the tag preselect area is rendered the first time preselecttagsloaded is set to true.
             if (preselecttagsloaded) {
                 return;
             }
@@ -1038,6 +938,9 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
             });
         };
 
+        /**
+         * Set the checked atttribute on the checkboxes for the preselected tags.
+         */
         var setCheckboxForPreselectedTags = function () {
             var preselectedtags = getPreselectedCourseTagObjects();
 
@@ -1048,13 +951,52 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
             });
         };
 
+        /**
+         * Activate the dat picker plugin.
+         *
+         * Load the code for the date picker and initialize the from and to date pickers.
+         * Set the event handler for the »changeDate« events.
+         */
+        var activateDatePicker = function () {
+            // Bootstrap 2.x datepicker https://github.com/uxsolutions/bootstrap-datepicker/tree/1.5.
+            require(['local_course_search/Xloader'], function () {
+                $("#date-from").datepicker({
+                    format: "dd.mm.yyyy",
+                    calendarWeeks: true,
+                    todayHighlight: true,
+                    clearBtn: true,
+                    autoclose: true
+                }).on("changeDate", function (e) {
+                    dateChangeHandler(e);
+                });
+                $("#date-to").datepicker({
+                    format: "dd.mm.yyyy",
+                    calendarWeeks: true,
+                    todayHighlight: true,
+                    clearBtn: true,
+                    autoclose: true
+                }).on("changeDate", function (e) {
+                    dateChangeHandler(e);
+                });
+            });
+        };
+
+        /**
+         * Clone an array
+         *
+         * @param {Array} inArray
+         * @returns {Array}
+         */
+        var cloneArray = function (inArray) {
+            return inArray.slice(0);
+        };
+
+        /**
+         * Initialize function, called with the PHP requires->js_call_amd command.
+         */
         return {
             init: function () {
                 log.debug('AMD module init.');
-
-                if (cookie.read(cookiename) === null) {
-                    cookie.create(cookiename, preselectedtags);
-                }
 
                 // Get the relevant DOM elements.
                 $catalogarea = $('#catalog-area');
@@ -1067,47 +1009,24 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                 $tagarea = $('#tag-area');
                 $selectedCourseTags = $tagarea.find('.selected-tags');
                 $formsearch = $searcharea.find('.form-search');
+                $selectsort = $searcharea.find('#select-sort');
                 $switchDisplayBtn = $searcharea.find('#switch-display');
 
-                // Get the search data.
-                // $.getJSON("./course_search.json", function (data) {
-                //     log.debug(data);
-                //
-                //     grepselectedCourseTags(data);
-                //     renderSearchArea(data);
-                // }).fail(notification.exception);
-
-                // Get the course data.
-                // $.getJSON("./courses.json", function (data) {
-                //     log.debug(data);
-                //
-                //     courses = indexCourseData(data.courses);
-                //     data.baseurl = M.cfg.wwwroot;
-                //     renderDisplayArea(data);
-                // }).fail(notification.exception);
+                // Fetch the course data.
                 get_coursedata();
-
-                // Get all available tags.
-                // $.getJSON("./fixtures/tags.json", function (response) {
-                //     log.debug('tags.json loaded');
-                //
-                //     renderTagPreselectArea(response);
-                // }).fail(notification.exception);
-                // get_all_course_tags();
 
                 // Set the event handlers.
                 $searcharea.on('change', '[type="checkbox"]', checkboxChangeHandler);
-                $searcharea.on('change', 'select', sortSelectHandler);
+                $searcharea.on('change', '#select-sort', sortSelectHandler);
                 $resultarea.on('click', 'th.coltitle', colTitleClickHandler);
                 $tagarea.on('click', 'button', selectedTagClickHandler);
                 $tagpreselectarea.on('change', '[type="checkbox"]', preselectedCheckboxChangeHandler);
-                $tagpreselectarea.on('keyup', '#tagFilter', handleTagFilterText);
-                $coursesearchform.on('submit', handleTextSearch);
-                $switchDisplayBtn.on('click', handleToggleTagPreselectPage);
+                $tagpreselectarea.on('keyup', '#tagFilter', tagFilterTextHandler);
+                $coursesearchform.on('submit', textSearchHandler);
+                $switchDisplayBtn.on('click', toggleTagPreselectPageHandler);
 
+                // Inititialize the datepicker plugin.
                 activateDatePicker();
-
-                // get_user_search_criteria();
             }
         };
     }

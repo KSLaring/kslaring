@@ -150,7 +150,6 @@ class util {
 
         $savedtagsids = array();
         $groups = array();
-        $others = array();
 
         // Get the tag ids from the saved tags table.
         $savedtags = $DB->get_records('local_course_search_presel', array('user' => $userid));
@@ -160,16 +159,7 @@ class util {
             }
         }
 
-        list($tagcollid, $metaprefix, $grouptags, $providergrouptagids) = self::get_groups_data();
-
-        $groupname = get_string('provider', 'local_course_search');
-        $provider = (object)array(
-            'type' => 'tag',
-            'groupid' => 0,
-            'group' => \core_text::strtolower($groupname),
-            'title' => $groupname,
-            'shown' => array()
-        );
+        list($tagcollid, $metaprefix, $grouptags) = self::get_groups_data();
 
         // Get all tags related to the group tags and prepare the tag group data.
         foreach ($grouptags as $id => $grouptag) {
@@ -183,48 +173,36 @@ class util {
             $group = $taggroup;
             $groupid = $grouptag->id;
             $grouptitle = $groupname;
-            // If the group is related to the providers set the provider group info.
-            if (!in_array($grouptag->id, $providergrouptagids)) {
-                $onegroup = (object)array(
-                    'type' => 'tag',
-                    'hidden' => null,
-                    'groupid' => $groupid,
-                    'group' => $group,
-                    'title' => $grouptitle,
-                    'shown' => array()
+
+            $onegroup = (object)array(
+                'type' => 'tag',
+                'hidden' => null,
+                'groupid' => $groupid,
+                'group' => $group,
+                'title' => $grouptitle,
+                'shown' => array()
+            );
+
+            foreach ($metagrouptags as $tagid => $onetag) {
+                $onegroup->shown[] = (object)array(
+                    'id' => $onetag->id,
+                    'name' => $onetag->rawname,
+                    'type' => 'course',
+                    'groupid' => $grouptag->id,
+                    'group' => $taggroup,
                 );
-
-                foreach ($metagrouptags as $tagid => $onetag) {
-                    $onegroup->shown[] = (object)array(
-                        'id' => $onetag->id,
-                        'name' => $onetag->rawname,
-                        'type' => 'course',
-                        'groupid' => $grouptag->id,
-                        'group' => $taggroup,
-                    );
-                }
-
-                // If no tags for this group are preselected then don't show the group.
-                if (empty($onegroup->shown)) {
-                    $onegroup->hidden = true;
-                }
-
-                $others[] = $onegroup;
-            } else {
-                foreach ($metagrouptags as $tagid => $onetag) {
-                    $provider->shown[] = (object)array(
-                        'id' => $onetag->id,
-                        'name' => $onetag->rawname,
-                        'type' => 'course',
-                        'groupid' => $grouptag->id,
-                        'group' => $taggroup,
-                    );
-                }
             }
+
+            // If no tags for this group are preselected then don't show the group.
+            if (empty($onegroup->shown)) {
+                $onegroup->hidden = true;
+            }
+
+            $groups[] = $onegroup;
         }
 
         $strdate = get_string('date', 'local_course_search');
-        $others[] = (object)array(
+        $groups[] = (object)array(
             'type' => '',
             'hidden' => null,
             'groupid' => 0,
@@ -235,10 +213,6 @@ class util {
                 'title' => $strdate
             )
         );
-
-        // Don't show providers for testing.
-        //$groups = array_merge(array($provider), $others);
-        $groups = $others;
 
         return $groups;
     }
@@ -252,12 +226,6 @@ class util {
         global $DB;
 
         $taglist = (object)array(
-            'provider' => (object)array(
-                'type' => 'provider',
-                'title' => get_string('preselectprovider', 'local_course_search'),
-                'hassubcategories' => 1,
-                'subcategories' => array()
-            ),
             'others' => (object)array(
                 'type' => 'others',
                 'title' => get_string('preselectothers', 'local_course_search'),
@@ -266,9 +234,8 @@ class util {
             )
         );
 
-        list($tagcollid, $metaprefix, $grouptags, $providergrouptagids) = self::get_groups_data();
+        list($tagcollid, $metaprefix, $grouptags) = self::get_groups_data();
 
-        $providersubcategories = array();
         $otherssubcategories = array();
 
         // Get all tags related to the group tags and prepare the tag group data.
@@ -293,15 +260,9 @@ class util {
                 );
             }
 
-            if (in_array($grouptag->id, $providergrouptagids)) {
-                $providersubcategories[] = $onegroup;
-            } else {
-                $otherssubcategories[] = $onegroup;
-            }
-
+            $otherssubcategories[] = $onegroup;
         }
 
-        $taglist->provider->subcategories = $providersubcategories;
         $taglist->others->subcategories = $otherssubcategories;
 
         return (object)array(
@@ -347,9 +308,9 @@ class util {
     }
 
     /**
-     * Get the the grouptags and the provider group tag ids.
+     * Get the the grouptags.
      *
-     * @return array the grouptags and the provider group tag ids
+     * @return array the grouptags
      */
     protected static function get_groups_data() {
         $tagcollid = \core_tag_area::get_collection('core', 'course');
@@ -359,15 +320,7 @@ class util {
         $value = get_config('', 'block_course_tags_groupsortorder');
         $order = explode(' ', $value);
         $grouptags = \local_tag\collection::get_meta_tags($tagcollid, \local_tag\tag::get_meta_group_prefix(), $order);
-        $providergroups = \local_tag\collection::get_meta_tags($tagcollid, \local_tag\tag::get_meta_option_provider());
-        $providergrouptagids = array();
-        if (!empty($providergroups)) {
-            $providergroupsobj = array_shift($providergroups);
-            $providergrouptags = \local_tag\collection::get_group_tags($tagcollid, $providergroupsobj->id, 1, false,
-                0, '', $metaprefix, '');
-            $providergrouptagids = array_keys($providergrouptags);
-        }
 
-        return array($tagcollid, $metaprefix, $grouptags, $providergrouptagids);
+        return array($tagcollid, $metaprefix, $grouptags);
     }
 }
