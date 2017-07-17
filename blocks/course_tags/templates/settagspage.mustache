@@ -46,7 +46,7 @@
         "debugoutput": ""
     }
 }}
-<h2>{{{title}}}</h2>
+{{#title}}<h2>{{{title}}}</h2>{{/title}}
 
 <form id="tag-filter-form" class="form-inline">
     <input type="text" id="tag-filter" name="tag-filter" placeholder="{{#str}}filterbytagname, block_course_tags{{/str}}"
@@ -62,7 +62,7 @@
     {{{taggroups}}}
 </div>
 
-<a class="backlink" href="{{{backurl}}}">{{{backstr}}}</a>
+{{#backstr}}<a class="backlink" href="{{{backurl}}}">{{{backstr}}}</a>{{/backstr}}
 
 {{#debugoutput}}
     <pre>{{.}}</pre>

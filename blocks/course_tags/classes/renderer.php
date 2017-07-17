@@ -68,8 +68,9 @@ class block_course_tags_renderer extends plugin_renderer_base {
      *
      * @return string
      */
-    public function settags_page($course, $tagcollid, $ctx) {
+    public function settags_page($course, $tagcollid, $ctx, $showtagsonly = false) {
         $settagspage = new \block_course_tags\output\settagspage($course, $tagcollid, $ctx);
+        $settagspage->show_tags_only($showtagsonly);
 
         return $this->render_from_template('block_course_tags/settagspage', $settagspage->export_for_template($this));
     }

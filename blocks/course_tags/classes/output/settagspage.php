@@ -52,6 +52,9 @@ class settagspage implements templatable {
     /** @var string $debug Debug information. */
     protected $debug = '';
 
+    /** @var bool $showtagsonly Show only the tags. */
+    protected $showtagsonly = false;
+
     /**
      * Constructor
      *
@@ -140,6 +143,15 @@ class settagspage implements templatable {
     }
 
     /**
+     * Set the state for the backurl - if true it is shown (default), if flase it is not shown.
+     *
+     * @param bool $state The state for the backurl
+     */
+    public function show_tags_only($state) {
+        $this->showtagsonly = $state;
+    }
+
+    /**
      * Export this data so it can be used as the context for a mustache template.
      *
      * @param renderer_base $output The base renderer object
@@ -148,7 +160,16 @@ class settagspage implements templatable {
      */
     public function export_for_template(renderer_base $output) {
         /* @var block_course_tags_renderer $output The renderer */
-        $backurl = new moodle_url('/course/view.php', array('id' => $this->course->id));
+        $titlestr = null;
+        $backstr = null;
+        $backurl = null;
+
+        if (!$this->showtagsonly) {
+            $titlestr = get_string('settagstitle', 'block_course_tags');
+            $backstr = get_string('backstr', 'block_course_tags');
+            $backurlobj = new moodle_url('/course/view.php', array('id' => $this->course->id));
+            $backurl = $backurlobj->out();
+        }
         $taggroups = '';
 
         foreach ($this->taggroups as $group) {
@@ -164,11 +185,11 @@ class settagspage implements templatable {
         return (object) array(
                 'id' => $this->course->id,
                 'tagcollid' => $this->tagcollid,
-                'title' => get_string('settagstitle', 'block_course_tags'),
+                'title' => $titlestr,
                 'filterbytagname' => get_string('filterbytagname', 'block_course_tags'),
                 'taggroups' => $taggroups,
-                'backurl' => $backurl->out(),
-                'backstr' => get_string('backstr', 'block_course_tags'),
+                'backurl' => $backurl,
+                'backstr' => $backstr,
                 'debugoutput' => $this->debug
         );
     }

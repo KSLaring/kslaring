@@ -71,6 +71,10 @@ class block_course_tags extends block_base {
             return $this->content;
         }
 
+        if (empty($this->instance)) {
+            return $this->content;
+        }
+
         // Set the context to the course context.
         $ctx = 0;
         $parentcontext = context::instance_by_id($this->instance->parentcontextid);
@@ -93,10 +97,6 @@ class block_course_tags extends block_base {
 
         // Get the defined course tag collection.
         $tagcollid = core_tag_area::get_collection('core', 'course');
-
-        if (empty($this->instance)) {
-            return $this->content;
-        }
 
         // Get the group tags.
         $value = get_config('', 'block_course_tags_groupsortorder');
