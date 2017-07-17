@@ -94,6 +94,7 @@ $string['coursetemplate_result']        = 'Kurset er opprettet -
 id: <strong>{$a->id}</strong>, kortnavn: "<strong>{$a->shortname}</strong>",
 Fullt navn: "<strong>{$a->fullname}</strong>".';
 $string['coursetemplate_error']         = 'Kurset kunne ikke opprettes.';
+$string['coursetemplate_tags']          = 'Kurs tags';
 
 $string['mysettings_title']                 = 'Mine innstillinger';
 $string['seltemplcategory']                 = 'Velg din lokale kursmalkategori...';

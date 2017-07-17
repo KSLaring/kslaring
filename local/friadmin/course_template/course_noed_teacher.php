@@ -42,7 +42,7 @@ $addSearch      = optional_param('addselect_searchtext', '', PARAM_RAW);
 $removeSearch   = optional_param('removeselect_searchtext', '', PARAM_RAW);
 $contextCourse  = context_course::instance($courseId);
 $url            = new moodle_url('/local/friadmin/course_template/course_noed_teacher.php',array('id' => $courseId,'ct' => $courseTemplate));
-$returnUrl      = new moodle_url('/local/friadmin/course_template/course_template.php',array('id' => $courseId));
+$returnUrl      = new moodle_url('/local/friadmin/course_template/course_tags.php',array('id' => $courseId));
 
 $course         = get_course($courseId);
 $strTitle       = get_string('coursetemplate_title', 'local_friadmin');

@@ -96,6 +96,7 @@ $string['coursetemplate_result']        = 'The course has been created -
 id: <strong>{$a->id}</strong>, shortname: "<strong>{$a->shortname}</strong>",
 fullname: "<strong>{$a->fullname}</strong>".';
 $string['coursetemplate_error']         = 'Course could not be created.';
+$string['coursetemplate_tags']          = 'Course tags';
 
 $string['mysettings_title']                 = 'My settings';
 $string['seltemplcategory']                 = 'Select course template category ...';

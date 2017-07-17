@@ -33,12 +33,13 @@
  */
 defined('MOODLE_INTERNAL') || die;
 
-$plugin->version = 2017062600;       /* The current plugin version (Date: YYYYMMDDXX)  */
+$plugin->version = 2017071700;       /* The current plugin version (Date: YYYYMMDDXX)  */
 $plugin->requires = 2014051205;       /* Requires this Moodle version                   */
 $plugin->component = 'local_friadmin'; /* Full name of the plugin (used for diagnostics) */
 
 /* Dependencies */
 $plugin->dependencies = array('block_frikomport' => 2016081700,
     'block_fri_course_list' => 2016030700,
+    'block_course_tags' => 2017071700,
     'enrol_waitinglist' => 2016081700
 );
