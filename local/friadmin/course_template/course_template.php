@@ -18,12 +18,11 @@
  *
  * @package         local
  * @subpackage      friadmin/course_template
- * @copyright       2014        eFaktor {@link http://www.efaktor.no}
+ * @copyright       2014 eFaktor {@link http://www.efaktor.no}
  * @license         http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
  * @creationDate    07/01/2016
  * @author          eFaktor     (fbv)
- *
  */
 
 require_once('../../../config.php');
@@ -39,7 +38,7 @@ $contextCourse  = context_course::instance($courseId);
 $url            = new moodle_url('/local/friadmin/course_template/course_template.php',array('id' => $courseId));
 
 $strTitle       = get_string('coursetemplate_title', 'local_friadmin');
-$strSubTitle    = get_string('course_enrolment', 'local_friadmin');
+$strSubTitle    = get_string('coursetemplate_last', 'local_friadmin');
 
 $PAGE->set_url($url);
 $PAGE->set_context($contextCourse);

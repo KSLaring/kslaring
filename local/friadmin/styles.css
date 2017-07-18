@@ -80,6 +80,9 @@ body #region-main #mform-coursefilter:not(.unresponsive) .femptylabel .fitemtitl
 #page-local-friadmin-course_template-course_tags #region-main {
   margin-bottom: 1em;
 }
+#page-local-friadmin-course_template-course_tags #tag-filter-form {
+  margin-bottom: 1em;
+}
 #page-local-friadmin-course_template-course_tags #tag-filter-form .showalsoselected input[type="checkbox"] {
   float: none;
 }
