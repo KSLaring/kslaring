@@ -895,6 +895,13 @@ var level_structure = {
                 if (this.levelTwo.get('value') != 0) {
                     Y.one('#id_btn-add_item3').removeAttribute('disabled');
                 }
+                
+                // If TARDIS mapped then hide the »Add« button.
+                if (this.tardis_two == 1 || this.tardis_three == 1) {
+                    Y.one('#id_btn-add_item3').setStyle('display', 'none');
+                } else {
+                    Y.one('#id_btn-add_item3').setStyle('display', 'inline-block');
+                }
 
                 if (this.levelThree.get('value') == 0) {
                     Y.one('#id_btn-managers_selected3').setAttribute('disabled','disabled');
@@ -922,12 +929,6 @@ var level_structure = {
                         this.mapped_three.removeClass('label_mapped_display');
                         this.mapped_three.addClass('label_mapped_hidden');
                     }//tardis
-                    // If TARDIS mapped then hide the »Add« button.
-                    if (this.tardis_two == 1 || this.tardis_three == 1) {
-                        Y.one('#id_btn-add_item3').setStyle('display', 'none');
-                    } else {
-                        Y.one('#id_btn-add_item3').setStyle('display', 'inline-block');
-                    }
                 }//levelThree
             }else {
                 if (this.levelThree.get('value') != 0) {
