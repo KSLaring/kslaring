@@ -701,6 +701,7 @@ var level_structure = {
                     Y.one('#id_btn-add_item3').removeAttribute('disabled');
                     if (this.tardis_two == 1) {
                         Y.one('#id_btn-add_item2').setStyle('display', 'none');
+                        Y.one('#id_btn-add_item3').setStyle('display', 'none');
                         Y.one('#id_btn-rename_selected2').setAttribute('disabled','disabled');
                         Y.one('#id_btn-delete_selected2').setAttribute('disabled','disabled');
                         Y.one('#id_btn-move_selected2').setAttribute('disabled','disabled');
@@ -708,6 +709,7 @@ var level_structure = {
                         this.mapped_two.addClass('label_mapped_display');
                     }else {
                         Y.one('#id_btn-add_item2').setStyle('display', 'inline-block');
+                        Y.one('#id_btn-add_item3').setStyle('display', 'inline-block');
                         Y.one('#id_btn-rename_selected2').removeAttribute('disabled');
                         Y.one('#id_btn-delete_selected2').removeAttribute('disabled');
                         Y.one('#id_btn-move_selected2').removeAttribute('disabled');
@@ -854,7 +856,7 @@ var level_structure = {
                 }
 
                 // If TARDIS mapped then hide the »Add« button.
-                if (this.tardis_two == 1 || this.tardis_three == 1) {
+                if (this.tardis_two == 1) {
                     Y.one('#id_btn-add_item2').setStyle('display', 'none');
                     Y.one('#id_btn-add_item3').setStyle('display', 'none');
                 } else {
