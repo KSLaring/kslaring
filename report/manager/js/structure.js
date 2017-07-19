@@ -700,6 +700,7 @@ var level_structure = {
                     Y.one('#id_btn-reporters_selected2').removeAttribute('disabled');
                     Y.one('#id_btn-add_item3').removeAttribute('disabled');
                     if (this.tardis_two == 1) {
+                        Y.one('#id_btn-add_item2').setStyle('display', 'none');
                         Y.one('#id_btn-rename_selected2').setAttribute('disabled','disabled');
                         Y.one('#id_btn-delete_selected2').setAttribute('disabled','disabled');
                         Y.one('#id_btn-move_selected2').setAttribute('disabled','disabled');
@@ -729,6 +730,7 @@ var level_structure = {
                     Y.one('#id_btn-delete_employees3').removeAttribute('disabled');
                     Y.one('#id_btn-delete_all_employees3').removeAttribute('disabled');
                     if (this.tardis_three == 1) {
+                        Y.one('#id_btn-add_item3').setStyle('display', 'none');
                         Y.one('#id_btn-rename_selected3').setAttribute('disabled','disabled');
                         Y.one('#id_btn-delete_selected3').setAttribute('disabled','disabled');
                         Y.one('#id_btn-move_selected3').setAttribute('disabled','disabled');
