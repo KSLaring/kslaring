@@ -27,10 +27,10 @@ class Competence {
      *
      * @param           string  $inUsers    Users id - list
      * @param           int     $level      Level hierarchy
-     * 
+     *
      * @return          array|null
      * @throws          Exception
-     * 
+     *
      * @creationDate    09/08/2016
      * @author          eFaktor     (fbv)
      */
@@ -46,7 +46,7 @@ class Competence {
             // Search Criteria
             $params = array();
             $params['level'] = $level;
-            
+
             // SQL Instruction
             $sql = " SELECT	  uic.id,
                               uic.userid,
@@ -55,7 +55,7 @@ class Competence {
                         JOIN  {report_gen_companydata}	co	ON co.id = uic.companyid
                     WHERE	  uic.userid IN ($inUsers)
                         AND	  uic.level = :level ";
-            
+
             // Execute
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
@@ -1542,7 +1542,7 @@ class Competence {
             $infoMail->user     = fullname($user);
             $infoMail->site     = $SITE->shortname;
             $infoMail->employee = $myCompany;
-            
+
             // Reject Link
             $lnkReject  = $CFG->wwwroot . '/user/profile/field/competence/actions/reject.php/' . $infoCompetenceData->token . '/' . $manager->id;
             $strReject  = (string)new lang_string('reject_lnk','profilefield_competence',null,$userManager->lang);
@@ -2003,9 +2003,10 @@ class Competence {
                                                                                          'class'=>'iconsmall')),
                                                                   array('title'=>get_string('btn_edit_users','profilefield_competence')));
                                 }else {
-                                    $content .=  html_writer::empty_tag('img', array('src'=>$OUTPUT->pix_url('t/edit'),
-                                                                        'alt'=>get_string('btn_edit_users','profilefield_competence'),
-                                                                        'class'=>'iconsmall'));
+                                    //$content .=  html_writer::empty_tag('img', array('src'=>$OUTPUT->pix_url('t/edit'),
+                                    //                                    'alt'=>get_string('btn_edit_users','profilefield_competence'),
+                                    //                                    'class'=>'iconsmall'));
+                                    $content .= '';
                                 }//if_editable
                             $content .= html_writer::end_div();//col_zero
 
@@ -2020,9 +2021,10 @@ class Competence {
                                                                                          'class'=>'iconsmall')),
                                                                   array('title'=>get_string('lnk_delete','profilefield_competence')));
                                 }else {
-                                    $content .= html_writer::empty_tag('img', array('src'=>$OUTPUT->pix_url('t/delete'),
-                                                                       'alt'=>get_string('lnk_delete','profilefield_competence'),
-                                                                       'class'=>'iconsmall'));
+                                    //$content .= html_writer::empty_tag('img', array('src'=>$OUTPUT->pix_url('t/delete'),
+                                    //                                   'alt'=>get_string('lnk_delete','profilefield_competence'),
+                                    //                                   'class'=>'iconsmall'));
+                                    $content .= '';
                                 }//if_editable
                             $content .= html_writer::end_div();//col_zero
                         $content .= html_writer::end_div();//competence_table_row
