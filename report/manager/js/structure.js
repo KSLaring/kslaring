@@ -730,7 +730,6 @@ var level_structure = {
                     Y.one('#id_btn-delete_employees3').removeAttribute('disabled');
                     Y.one('#id_btn-delete_all_employees3').removeAttribute('disabled');
                     if (this.tardis_three == 1) {
-                        Y.one('#id_btn-add_item3').setStyle('display', 'none');
                         Y.one('#id_btn-rename_selected3').setAttribute('disabled','disabled');
                         Y.one('#id_btn-delete_selected3').setAttribute('disabled','disabled');
                         Y.one('#id_btn-move_selected3').setAttribute('disabled','disabled');
@@ -743,6 +742,10 @@ var level_structure = {
                         this.mapped_three.removeClass('label_mapped_display');
                         this.mapped_three.addClass('label_mapped_hidden');
                     }//tardis
+                    // If TARDIS mapped then hide the »Add« button.
+                    if (this.tardis_two == 1 || this.tardis_three == 1) {
+                        Y.one('#id_btn-add_item3').setStyle('display', 'none');
+                    }
                 }//levelThree
             }
         }//ifbtnActions
