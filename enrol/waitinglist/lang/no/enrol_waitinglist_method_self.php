@@ -31,9 +31,9 @@ I øyeblikket er du nummer {$a->queueno} på ventelisten.
 
 Du kan sjekke her hvor du er på ventelisten:  {$a->courseurl}';
 $string['self_queuewarning_label'] ='Dette kurset er allerede fullt.';
-$string['self_queuewarning'] = 'Dersom du fortsetter vil du bli plassert på ventelisten. Du vil automatisk bli varslet når det blir ledige plasser. 
+$string['self_queuewarning'] = 'Dersom du fortsetter vil du bli plassert på ventelisten. Du vil automatisk rykke opp når det blir ledige plasser. 
 
-	Du er nå nummer: {$a} på ventelisten.';
+	Det er i øyeblikket {$a} på ventelisten.';
 
 $string['cannot_unenrol_date']    = 'Beklager, du kan ikke melde deg av kurset etter avmeldingsfristen';
 $string['unenrolenddate']         = 'Avmeldingsfrist';
