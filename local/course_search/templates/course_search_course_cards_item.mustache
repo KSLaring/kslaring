@@ -1,0 +1,15 @@
+<li id="coursecarditem-{{{id}}}" class="course-card-item" data-name="{{{name}}}" data-sortorder="{{{sortorder}}}"
+    data-sortdate="{{{sortdate}}}" data-availnumber="{{{availnumber}}}" data-deadline="{{{deadline}}}"
+    data-municipality="{{{municipality}}}" data-location="{{{location}}}">
+    <a href="{{{link}}}">
+        {{#img}}
+            <div class="course-img">
+                <img src="{{{.}}}" alt="" class="img-responsive">
+            </div>
+        {{/img}}
+        <div class="course-desc">
+            <h4 class="course-title">{{{name}}}</h4>
+            <div class="course-summary">{{{summary}}}</div>
+        </div>
+    </a>
+</li>

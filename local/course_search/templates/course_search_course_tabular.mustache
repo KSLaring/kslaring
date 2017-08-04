@@ -1,0 +1,25 @@
+<table id="course-list" class="course-list tags-hidden">
+    <thead>
+    <tr>
+        <th>
+            <table>
+                <thead>
+                <tr class="course-list-col-titles">
+                    <th class="c0 coltitle sortasc" data-group="sort" data-sort="name">{{#str}}course_name, local_friadmin{{/str}}</th>
+                    <th class="c1 coltitle" data-group="sort" data-sort="date">{{#str}}course_date, local_friadmin{{/str}}</th>
+                    <th class="c2 coltitle" data-group="sort" data-sort="availseats">{{#str}}course_seats, local_friadmin{{/str}}</th>
+                    <th class="c3 coltitle" data-group="sort" data-sort="deadline">{{#str}}course_deadline, local_friadmin{{/str}}</th>
+                    <th class="c4 coltitle" data-group="sort" data-sort="municipality">{{#str}}course_municipality, local_friadmin{{/str}}</th>
+                    <th class="c5 coltitle" data-group="sort" data-sort="location">{{#str}}course_location, local_friadmin{{/str}}</th>
+                </tr>
+                </thead>
+            </table>
+        </th>
+    </tr>
+    </thead>
+    <tbody>
+    {{#courses}}
+        {{> local_course_search/course_search_course_tabular_row}}
+    {{/courses}}
+    </tbody>
+</table>

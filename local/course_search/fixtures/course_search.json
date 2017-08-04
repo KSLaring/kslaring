@@ -1,0 +1,76 @@
+{
+  "searchtags": {
+    "groups": [
+      {
+        "type": "tag",
+        "group": "provider",
+        "groupid": 1,
+        "title": "Provider",
+        "shown": []
+      },
+      {
+        "type": "tag",
+        "group": "topics",
+        "groupid": 2,
+        "title": "Topics",
+        "shown": []
+      },
+      {
+        "type": "tag",
+        "group": "audience",
+        "groupid": 3,
+        "title": "Audience",
+        "shown": []
+      },
+      {
+        "type": "tag",
+        "group": "type",
+        "groupid": 4,
+        "title": "Type",
+        "shown": [],
+        "showdate": {
+          "title": "Date"
+        }
+      }
+    ],
+    "diplayoptions": [
+      {
+        "type": "display",
+        "group": "display",
+        "title": "Display options",
+        "shown": [
+          {
+            "type": "display",
+            "group": "sort",
+            "name": "Sort by",
+            "sort": "name",
+            "isselect": 1,
+            "elementitems": [
+              "name",
+              "date",
+              "availseats",
+              "deadline",
+              "municipality",
+              "location"
+            ],
+            "checked": 1
+          },
+          {
+            "type": "display",
+            "group": "sortdesc",
+            "name": "Sort descending",
+            "isselect": 0,
+            "checked": 0
+          },
+          {
+            "type": "display",
+            "group": "tags",
+            "name": "Show course tags",
+            "isselect": 0,
+            "checked": 0
+          }
+        ]
+      }
+    ]
+  }
+}
