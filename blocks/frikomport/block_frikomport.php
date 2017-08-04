@@ -170,7 +170,6 @@ class block_frikomport extends block_base {
             redirect($url);
         }
 
-
         $menumanager = new block_frikomport_menu_manager();
         $nodes = $menumanager->get_nodes();
 
