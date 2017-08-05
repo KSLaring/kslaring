@@ -1,0 +1,59 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template local_tag/tagsourscelist
+
+    Displays the tags not in a group list prepared for darg&drop.
+
+    Classes/IDs required for JS:
+    * #draggableItemList-0 Defines the item list
+
+    Data attributes required for JS:
+    * none
+
+    Context variables required for this template:
+    * title string The tag list title
+    * tagset array The group tags
+    ** id int The tag id
+    ** name string The tag name
+
+    Example context (json):
+    {
+        "title": "Tags in no group",
+        "tagset": [
+            {
+                "id": "l0p1",
+                "name": "Nulla dapibus"
+            },
+            {
+                "id": "l0p2",
+                "name": "Quisque interdum"
+            },
+            {
+                "id": "l0p3",
+                "name": "Sed sit amet"
+            }
+        ]
+    }
+}}
+<div class="itemlist-wrapper clearfix">
+    <h4>{{{title}}}</h4>
+
+    <ul id="draggableItemList-0" class="itemList list-unstyled">
+        {{#tagset}}<li id="tagid-{{{id}}}" class="item ui-sortable">{{#pix}}i/move_2d{{/pix}} {{{name}}}</li>{{/tagset}}
+    </ul>
+</div>

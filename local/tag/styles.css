@@ -1,0 +1,57 @@
+#page-admin-local-tag-edit_group_tags .itemList {
+    border: 1px solid #ccc;
+    margin: 0 0 1.5em;
+    padding: .5em;
+}
+
+#page-admin-local-tag-edit_group_tags .itemList .item {
+    border: 1px solid #ccc;
+    list-style-type: none;
+    list-style-image: none;
+    padding: .5em;
+}
+
+#page-admin-local-tag-edit_group_tags .itemList.dd-initialized .item {
+    cursor: move;
+}
+
+#page-admin-local-tag-edit_group_tags .itemList.dd-initialized.ui-sortable-disabled .item {
+    cursor: inherit;
+}
+
+#page-admin-local-tag-edit_group_tags .itemList .ui-sortable-helper {
+    background-color: #eee;
+}
+
+#page-admin-local-tag-edit_group_tags .itemList .selected {
+    background-color: #eee;
+}
+
+body#page-admin-local-tag-edit_group_tags > .ui-sortable-helper,
+body#page-admin-local-tag-edit_group_tags > .ui-sortable-helper > li {
+    background-color: #eee;
+    border: 1px solid #ddd;
+    box-sizing: border-box;
+    cursor: move;
+    display: block !important;
+    line-height: 1.5;
+    list-style-type: none;
+    list-style-image: none;
+    min-height: 2.5em;
+    padding: .5em;
+}
+
+#page-admin-local-tag-edit_group_tags .accordion-inner .itemList {
+    border: 0;
+    margin-bottom: 0;
+    padding: 0;
+}
+
+#page-admin-local-tag-edit_group_tags .accordion-toggle.mx-content-hover {
+    background-color: #ddd;
+}
+
+#page-admin-local-tag-edit_group_tags #filter-tags,
+#page-admin-local-tag-edit_group_tags #add-tags {
+    margin-top: 1em;
+}
