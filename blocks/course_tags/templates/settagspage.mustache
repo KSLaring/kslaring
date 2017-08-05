@@ -1,0 +1,69 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template block_course_tags/settagspage
+
+    Displays the course tags with inline editing to change the tag selection.
+
+    Classes required for JS:
+    * .taggroups The taggroups container is used as the event delelgate
+    * .inplaceeditable The inplaceeditable elements to watch
+
+    Data attributes required for JS:
+    * none
+
+    Context variables required for this template:
+    * id int The course id
+    * tagcollid int The tag collection id
+    * title string The page title
+    * taggroups string The HTML for the rendered tag collection
+    * backurl string The link back to the course page
+    * backstr string The link text
+    * debugoutput string Some eventually set debug information
+
+    Example context (json):
+    {
+        "id": 2,
+        "tagcollid": 3,
+        "title": "Set the tags for the course",
+        "taggroups": "show taggroups here ...",
+        "backurl": "/course/view.php?id=2",
+        "backstr": "Back to course",
+        "debugoutput": ""
+    }
+}}
+{{#title}}<h2>{{{title}}}</h2>{{/title}}
+
+<form id="tag-filter-form" class="form-inline">
+    <input type="text" id="tag-filter" name="tag-filter" placeholder="{{#str}}filterbytagname, block_course_tags{{/str}}"
+           title="{{#str}}filterbytagname, block_course_tags{{/str}}">
+    &nbsp;
+    <label class="checkbox showalsoselected">
+        <input type="checkbox" id="showalsoselected-checkbox" checked="checked">
+        <span class="showalsoselected-text">{{#str}}showalsoselected, block_course_tags{{/str}}</span>
+      </label>
+</form>
+
+<div class="taggroups accordion" id="taggroup-accordion">
+    {{{taggroups}}}
+</div>
+
+{{#backstr}}<a class="backlink" href="{{{backurl}}}">{{{backstr}}}</a>{{/backstr}}
+
+{{#debugoutput}}
+    <pre>{{.}}</pre>
+{{/debugoutput}}
