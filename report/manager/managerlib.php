@@ -1551,10 +1551,7 @@ class CompetenceManager {
         $levelOne       = null;
         $levelTwo       = null;
         $levelThree     = null;
-        $inZero         = array();
-        $inOne          = 0;
-        $inTwo          = 0;
-        $inThree        = 0;
+        $merge          = null;
 
         try {
             // Search criteria
@@ -1624,42 +1621,29 @@ class CompetenceManager {
 
                     // Add competence
                     $myCompetence[$instance->levelzero] = $infoHierarchy;
-
-                    // In level zero
-                    if ($instance->levelzero) {
-                        $inZero[] = $instance->levelzero;
-                    }
-
-                    // In level one
-                    if ($infoHierarchy->levelOne) {
-                        if ($inOne) {
-                            $inOne .= ',' . $instance->levelone;
-                        }else {
-                            $inOne = $instance->levelone;
-                        }
-                    }
-
-                    // In level two
-                    if ($infoHierarchy->levelTwo) {
-                        if ($inTwo) {
-                            $inTwo .= ',' . $instance->leveltwo;
-                        }else {
-                            $inTwo = $instance->leveltwo;
-                        }
-                    }
-
-                    // In level three
-                    if ($infoHierarchy->levelThree) {
-                        if ($inThree) {
-                            $inThree .= ',' . $instance->levelthree;
-                        }else {
-                            $inThree = $instance->levelthree;
-                        }
-                    }
                 }//for_rdo
             }//if_rdo
 
-            self::Get_ManagerCompetence($myCompetence,$userId,$inZero,$inOne,$inTwo,$inThree);
+            // Add manager competence
+            $myCompetenceManager = self::Get_ManagerCompetence($userId);
+            if ($myCompetenceManager) {
+                if ($myCompetence) {
+                    $inzero = array_keys($myCompetence);
+                }
+                foreach ($myCompetenceManager as $competence) {
+                    if (in_array($competence->levelZero,$inzero)) {
+                        $merge = $myCompetence[$competence->levelZero];
+                        // Merge Level One
+                        $merge->levelOne    = array_merge($merge->levelOne,$competence->levelOne);
+                        // Merge Level Two
+                        $merge->levelTwo    = array_merge($merge->levelTwo,$competence->levelTwo);
+                        // Merge Level Three
+                        $merge->levelThree  = array_merge($merge->levelThree,$competence->levelThree);
+                    }else {
+                        $myCompetence[$competence->levelZero] = $competence;
+                    }
+                }
+            }
 
             return $myCompetence;
         }catch (Exception $ex) {
@@ -1668,22 +1652,21 @@ class CompetenceManager {
     }//Get_MyReporterCompetence
 
     /**
-     * @param       $myCompetence
-     * @param       $userId
-     * @param       $inZero
-     * @param       $inOne
-     * @param       $inTwo
-     * @param       $inThree
+     * @param           $userId
      *
-     * @throws Exception
+     * @return          array
+     * @throws          Exception
      *
      * @creationDate    03/10/2016
+     * @author          eFaktor     (fbv)
+     *
+     * @updateDate      14/08/2017
      * @author          eFaktor     (fbv)
      *
      * Description
      * Get competence for managers
      */
-    private static function Get_ManagerCompetence(&$myCompetence,$userId,$inZero,$inOne,$inTwo,$inThree) {
+    private static function Get_ManagerCompetence($userId) {
         /* Variables */
         global $DB;
         $infoHierarchy  = null;
@@ -1693,17 +1676,12 @@ class CompetenceManager {
         $levelOne       = null;
         $levelTwo       = null;
         $levelThree     = null;
+        $myCompetenceManager   = array();
 
         try {
             // Search criteria
             $params = array();
             $params['user']  = $userId;
-
-            if ($inZero) {
-                $inZero = implode(',',$inZero);
-            }else {
-                $inZero =  0;
-            }
 
             // SQl instruction
             $sql = " SELECT re.levelzero as 'levelzero',
@@ -1768,9 +1746,11 @@ class CompetenceManager {
                     $infoHierarchy->level      = $instance->hierarchylevel;
 
                     // Add competence
-                    $myCompetence[$instance->levelzero] = $infoHierarchy;
+                    $myCompetenceManager[$instance->levelzero] = $infoHierarchy;
                 }
             }//if_rdo
+
+            return $myCompetenceManager;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
