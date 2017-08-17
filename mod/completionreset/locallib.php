@@ -258,11 +258,6 @@ class mod_completionreset_helper{
         $criteria   = null;
         $data       = null;
 
-
-
-        // Strat transaction
-        //$trans = $DB->start_delegated_transaction();
-
         try {
             if (!$resetusers) {
                 // Current user
@@ -291,9 +286,6 @@ class mod_completionreset_helper{
                 $acttoreset = self::get_activities_to_reset($course->id);
 
                 if ($acttoreset) {
-                    // Gt criterias
-                    $criterias = $DB->get_records_select('course_completion_criteria','course=:course AND moduleinstance IN (:cmids)',
-                        array('course'=>$course->id,'cmids'=>implode(',',$acttoreset)));
                     foreach ($toreset as $info) {
                         // Criteria
                         $params = array();
@@ -306,28 +298,21 @@ class mod_completionreset_helper{
                             $activity = $course_activities[$cmid];
 
                             // Reset course module completions
-                            $data = new stdClass();
-                            $data->userid           = $info->userid;
-                            $data->coursemoduleid   = $cmid;
-                            $data->viewed           = 0;
-                            $data->timemodified     = 0;
-                            $data->completionstate  = 0;
                             $rdo = $DB->get_record('course_modules_completion',array('coursemoduleid' => $cmid,'userid' => $info->userid));
                             if ($rdo) {
-                                $data->id = $rdo->id;
-                                $DB->update_record('course_modules_completion',$data);
+                                $DB->delete_records('course_modules_completion',array('id' => $rdo->id));
                             }
 
-                            //COMPLETION_NOT_VIEWED
-                            //$completion->update_state($activity,COMPLETION_NOT_VIEWED,$info->userid);
-
                             // Clear criteria
-                            if ($criterias) {
-                                foreach($criterias as $rec){
-                                    $params['criteriaid'] = $rec->id;
-                                    $DB->delete_records('course_completion_crit_compl', $params);
-                                }
-                            }//if_criterias
+                            $criteria = $DB->get_record('course_completion_criteria',
+                                array('course'=>$course->id,'moduleinstance'=>$cmid));
+                            if ($criteria) {
+                                $params['criteriaid'] = $criteria->id;
+                                $DB->delete_records('course_completion_crit_compl', $params);
+                            }
+
+                            // Reset completion cache
+                            self::reset_completion_cache($activity->course,$info->userid);
 
                             // Reset activity
                             switch($activity->modname){
@@ -345,12 +330,11 @@ class mod_completionreset_helper{
                             //deletes its grades.
                             self::force_gradebook_clear($activity,$info->userid);
 
+                            // Reset completion cache
+                            self::reset_completion_cache($activity->course,$info->userid);
 
                             // Reset time completion
                             self::reset_time_completion($activity->course,$info->userid);
-
-                            // Reset completion cache
-                            self::reset_completion_cache($activity->course,$info->userid);
                         }//for_Activities_to_reset
 
                         unset($params['criteriaid']);
@@ -395,6 +379,7 @@ class mod_completionreset_helper{
             if ($rdo) {
                 $rdo->timecompleted = null;
                 $rdo->reaggregate   = 0;
+                $rdo->timestarted   = 0;
                 $DB->update_record('course_completions',$rdo);
             }
         }catch (Exception $ex) {
@@ -469,11 +454,19 @@ class mod_completionreset_helper{
             if($itemids){
                 $itemids_string = implode(',',$itemids);
                 $DB->delete_records_select('grade_grades','userid = :userid AND itemid IN ('.$itemids_string .')', $params);
+                $DB->delete_records_select('grade_grades_history','userid = :userid AND itemid IN ('.$itemids_string .')',$params);
             }
 
-            //delete all history
+            // Delete grade course
+            $rec = $DB->get_record('grade_items', array('courseid'=>$activity->course,'itemtype'=>'course'));
+            if($rec){
+                $itemids = array();
+                $itemids[] = $rec->id;
+            }
             if($itemids){
-                $DB->delete_records_select('grade_grades_history','userid = :userid AND itemid IN ('.$itemids_string .')',$params);
+                $itemids_string = implode(',',$itemids);
+                $DB->delete_records_select('grade_grades','userid = :userid AND itemid IN ('.$itemids_string .')', $params);
+                $DB->delete_records_select('grade_grades_history','userid = :userid AND itemid IN ('.$itemids_string .')', $params);
             }
         }catch (Exception $ex) {
 		    throw $ex;
