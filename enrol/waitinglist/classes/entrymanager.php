@@ -181,6 +181,7 @@ class entrymanager  {
 		}//try_catch
 	}//get_confirmed_entries
 
+
 	/**
 	 * Description
 	 * Get workplaces connected with user
@@ -609,8 +610,8 @@ class entrymanager  {
 			$params['wait']		= $waitingId;
 
 			/* SQL Instruction */
-			$sql = " SELECT SUM(confirmedseats) as 'confirm',
-								SUM(enroledseats) as 'enrol'
+			$sql = " SELECT     SUM(confirmedseats) as 'confirm',
+							    SUM(enroledseats) as 'enrol'
 					 	 FROM	{enrol_waitinglist_queue}
 					 	 WHERE	courseid 		 = :course
 							AND	waitinglistid	 = :wait
