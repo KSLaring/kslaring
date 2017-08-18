@@ -181,6 +181,7 @@ class entrymanager  {
 		}//try_catch
 	}//get_confirmed_entries
 
+
 	/**
 	 * Description
 	 * Get workplaces connected with user

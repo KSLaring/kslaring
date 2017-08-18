@@ -215,7 +215,8 @@ class queuemanager  {
 						LEFT JOIN	{report_gen_companydata}	co	ON co.id = eq.companyid
 					 WHERE 	eq.courseid 		= :course
 						AND	eq.waitinglistid 	= :wait
-						AND eq.offqueue 		= :queue";
+						AND eq.offqueue 		= :queue
+					 ORDER BY eq.queueno ";
 
 			// Execute
 			$entries = $DB->get_records_sql($sql,$params);

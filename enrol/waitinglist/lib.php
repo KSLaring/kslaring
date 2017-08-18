@@ -1200,25 +1200,26 @@ class enrol_waitinglist_plugin extends enrol_plugin {
 	public function handle_enrolupdated($courseid,$enrolid) {
 	    /* Variables */
 	    global $DB;
-	    $trans      = null;
-	    $role       = null;
-	    $entry      = null;
-        $entryman   = null;
-        $queueman   = null;
-        $vacancies  = null;
-        $instance   = null;
-        $plugin     = null;
-        $vacancies  = null;
-        $update     = null;
+	    $trans              = null;
+	    $role               = null;
+	    $entry              = null;
+        $entryman           = null;
+        $queueman           = null;
+        $vacancies          = null;
+        $instance           = null;
+        $plugin             = null;
+        $vacancies          = null;
+        $updatetoenrol      = null;
+        $enrolled           = 0;
 
 	    // Start transaction
         $trans = $DB->start_delegated_transaction();
 
-	    try {
-	        // Plugin info
+        try {
+            // Plugin info
             $plugin = enrol_get_plugin('waitinglist');
 
-	        // Get role student
+            // Get role student
             $role = $DB->get_record('role',array('archetype' => 'student'));
 
             // Enrol Instance
@@ -1232,6 +1233,9 @@ class enrol_waitinglist_plugin extends enrol_plugin {
             // Entries to update. Entries in the waiting list to update
             if ($queueman->qentries) {
                 foreach ($queueman->qentries as $entry) {
+                    $vacancies      = 0;
+                    $updatetoenrol  = false;
+
                     // Calculate vacancies
                     if ($instance->{ENROL_WAITINGLIST_FIELD_MAXENROLMENTS}) {
                         $vacancies    = $instance->{ENROL_WAITINGLIST_FIELD_MAXENROLMENTS} - $entryman->GetOcuppaiedSeats_NotConnectedUser($entry->userid,$entry->courseid,$instance->id);
@@ -1245,16 +1249,15 @@ class enrol_waitinglist_plugin extends enrol_plugin {
                                 $entry->allocseats		= $entry->seats;
                                 $entry->confirmedseats	= $entry->seats -1;
                                 $entry->enroledseats    = 1;
-                            }else {
-                                $entry->offqueue		= 0;
-                                $entry->queueno			= \enrol_waitinglist\queuemanager::get_maxq_no($instance->id) + 1;
-                                $entry->allocseats		= $vacancies;
-                                $entry->confirmedseats	= $vacancies-1;
-                                $entry->enroledseats    = 1;
-                            }
+                                $updatetoenrol          = true;
 
-                            // If the entry has to be updated
-                            $update = true;
+                            }else {
+                                $entry->queueno		= $entry->queueno - $enrolled;
+                                $updatetoenrol      = false;
+                            }
+                        }else {
+                            $entry->queueno		    = $entry->queueno - $enrolled;
+                            $updatetoenrol          = false;
                         }//if_vacancies
                     }else {
                         // Unlimitted
@@ -1263,28 +1266,26 @@ class enrol_waitinglist_plugin extends enrol_plugin {
                         $entry->allocseats		= $entry->seats;
                         $entry->confirmedseats	= $entry->seats -1;
                         $entry->enroledseats    = 1;
-
-                        // If the entry has to be updated
-                        $update = true;
+                        $updatetoenrol          = true;
                     }
 
                     // Update entry && enroll user
-                    if ($update) {
-                        // Update entry
-                        $DB->update_record(\enrol_waitinglist\entrymanager::CTABLE, $entry);
-                        // Enroll user
+                    $DB->update_record(\enrol_waitinglist\entrymanager::CTABLE, $entry);
+                    // Enroll user
+                    if ($updatetoenrol) {
+                        $enrolled ++;
                         $plugin->enrol_user($instance,$entry->userid,$role->id);
-                    }//if_update
+                    }
                 }//for_Each_Entry
             }//if_entries
 
-	        // Commit
+            // Commit
             $trans->allow_commit();
         }catch (Exception $ex) {
-	        // Rollback
+            // Rollback
             $trans->rollback($ex);
 
-	        throw $ex;
+            throw $ex;
         }//try_catch
     }//handle_enrolupdated
 
