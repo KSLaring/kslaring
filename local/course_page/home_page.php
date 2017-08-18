@@ -48,6 +48,11 @@ $PAGE->set_context($context);
 $PAGE->set_title($course->shortname . ': ' . get_string('home_page', 'local_course_page'));
 $PAGE->set_pagelayout('coursehomepage');
 
+// Clean cookies
+setcookie('homepage_changed',0);
+setcookie('ratings_changed',0);
+setcookie('participant_changed',0);
+
 if (!isset($USER->editing)) {
     $USER->editing = 0;
 }//user_editing

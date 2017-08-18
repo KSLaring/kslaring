@@ -397,6 +397,9 @@ class format_elearning_frikomport extends format_base {
      * Remove page video
      */
     public function create_edit_form_elements(&$mform, $forsection = false) {
+        /* Variables */
+        global $PAGE;
+
         //$elements = parent::create_edit_form_elements($mform, $forsection);
 
         $elements = array();
@@ -405,6 +408,10 @@ class format_elearning_frikomport extends format_base {
         } else {
             $options = $this->course_format_options(true);
         }
+
+        // Initialize javascripts
+        $PAGE->requires->js(new moodle_url('/local/course_page/yui/formatopt.js'));
+
         foreach ($options as $optionname => $option) {
             switch ($optionname) {
                 case 'homepage':
@@ -494,9 +501,7 @@ class format_elearning_frikomport extends format_base {
      * Add the 'ratings' option format
      */
     public function update_course_format_options($data, $oldcourse = null) {
-
-        global $DB;
-
+        /* Variables */
         global $DB, $delete;
 
         $data = (array)$data;
@@ -505,21 +510,25 @@ class format_elearning_frikomport extends format_base {
         foreach ($options as $key => $unused) {
             switch ($key) {
                 case 'homepage':
-                    if (isset($data['homepage']) && $data['homepage']) {
-                        $data[$key] = 1;
-                    } else {
-                        $data[$key] = 0;
-                    }
-                    //if_homepage
+                    if (isset($_COOKIE['homepage_changed']) && $_COOKIE['homepage_changed']) {
+                        if (isset($data['homepage']) && $data['homepage']) {
+                            $data[$key] = 1;
+                        } else {
+                            $data[$key] = 0;
+                        }
+                        setcookie('homepage_changed',0);
+                    }//homepage_changed
 
                     break;
                 case 'ratings':
-                    if (isset($data['ratings']) && $data['ratings']) {
-                        $data[$key] = 1;
-                    } else {
-                        $data[$key] = 0;
-                    }
-                    //if_homepage
+                    if (isset($_COOKIE['ratings_changed']) && $_COOKIE['ratings_changed']) {
+                        if (isset($data['ratings']) && $data['ratings']) {
+                            $data[$key] = 1;
+                        } else {
+                            $data[$key] = 0;
+                        }
+                        setcookie('ratings_changed',0);
+                    }//ratings_changed
 
                     break;
                 case 'homesummary':
