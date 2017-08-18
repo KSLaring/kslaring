@@ -704,7 +704,7 @@ class format_classroom extends format_base {
                 'homevisible' => array(
                     'label' => get_string('home_visible', 'local_course_page'),
                     'default' => 1,
-                    'element_type' => 'checkbox',
+                    'element_type' => 'select',
                 ),
                 'homesummary' => array(
                     'label' => 'homesummary',
@@ -877,6 +877,9 @@ class format_classroom extends format_base {
      * Remove pagevideo
      */
     public function create_edit_form_elements(&$mform, $forsection = false) {
+        /* Variables */
+        global $PAGE;
+
         //$elements = parent::create_edit_form_elements($mform, $forsection);
 
         $elements = array();
@@ -885,6 +888,10 @@ class format_classroom extends format_base {
         } else {
             $options = $this->course_format_options(true);
         }
+
+        // Initialize javascripts
+        $PAGE->requires->js(new moodle_url('/local/course_page/yui/formatopt.js'));
+        course_page::init_locations_sector();
 
         course_page::init_locations_sector();
 
@@ -1000,32 +1007,38 @@ class format_classroom extends format_base {
         foreach ($options as $key => $unused) {
             switch ($key) {
                 case 'homepage':
-                    if (isset($data['homepage']) && $data['homepage']) {
-                        $data[$key] = 1;
-                    } else {
-                        $data[$key] = 0;
-                    }
-                    //if_homepage
+                    if (isset($_COOKIE['homepage_changed']) && $_COOKIE['homepage_changed']) {
+                        if (isset($data['homepage']) && $data['homepage']) {
+                            $data[$key] = 1;
+                        } else {
+                            $data[$key] = 0;
+                        }
+                        setcookie('homepage_changed',0);
+                    }//homepage_changed
 
                     break;
 
                 case 'ratings':
-                    if (isset($data['ratings']) && $data['ratings']) {
-                        $data[$key] = 1;
-                    } else {
-                        $data[$key] = 0;
-                    }
-                    //if_homepage
+                    if (isset($_COOKIE['ratings_changed']) && $_COOKIE['ratings_changed']) {
+                        if (isset($data['ratings']) && $data['ratings']) {
+                            $data[$key] = 1;
+                        } else {
+                            $data[$key] = 0;
+                        }
+                        setcookie('ratings_changed',0);
+                    }//ratings_changed
 
                     break;
 
                 case 'participant':
-                    if (isset($data['participant']) && $data['participant']) {
-                        $data[$key] = 1;
-                    } else {
-                        $data[$key] = 0;
-                    }
-                    //if_homepage
+                    if (isset($_COOKIE['participant_changed']) && $_COOKIE['participant_changed']) {
+                        if (isset($data['participant']) && $data['participant']) {
+                            $data[$key] = 1;
+                        } else {
+                            $data[$key] = 0;
+                        }
+                        setcookie('participant_changed',0);
+                    }//participant_changed
 
                     break;
 

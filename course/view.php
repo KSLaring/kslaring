@@ -28,6 +28,10 @@
      */
     $start_from_home = optional_param('start',0,PARAM_INT);
 
+    // Clean cookies
+    setcookie('homepage_changed',0);
+    setcookie('ratings_changed',0);
+    setcookie('participant_changed',0);
 
     $params = array();
     if (!empty($name)) {
