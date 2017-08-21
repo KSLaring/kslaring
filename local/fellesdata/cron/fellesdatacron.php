@@ -53,7 +53,7 @@ class FELLESDATA_CRON {
     /* PUBLIC */
     /**********/
 
-    public static function cron($plugin,$fstExecution) {
+    public static function cron_old($plugin,$fstExecution) {
         /* Variables    */
         global $SESSION;
         global $CFG;
