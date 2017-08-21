@@ -634,10 +634,10 @@ class FELLESDATA_CRON {
             $dblog .= 'START Import FS Users ' . "\n";
 
             // Call web service
-            $fsResponse = self::process_tradis_service($plugin,TRADIS_FS_USERS,$dblog);
+            //$fsResponse = self::process_tradis_service($plugin,TRADIS_FS_USERS,$dblog);
 
             // Import data into temporary tables
-            if ($fsResponse) {
+            //if ($fsResponse) {
                 // Clean temporary table
                 FS::clean_temporary_fellesdata(IMP_USERS);
 
@@ -680,7 +680,7 @@ class FELLESDATA_CRON {
                     // Log
                     $dblog .= 'FILE DOES NOT EXIST ' . "\n";
                 }//if_exists
-            }//if_fsResponse
+            //}//if_fsResponse
 
             // Log
             $dblog .= 'FINISH Import FS Users ' . "\n";
