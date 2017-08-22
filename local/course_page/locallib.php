@@ -1960,6 +1960,7 @@ class course_page  {
                             JOIN	{report_gen_company_relation}	rg_cr	ON rg_cr.companyid 	= rgc.id
                             JOIN	{course_locations}			    cl		ON cl.levelone 		= rg_cr.parentid
                                                                             AND cl.id IN ($locations)
+                         WHERE      rgc.hierarchylevel = 2
                          ORDER BY	rgc.industrycode, rgc.name ";
 
                 // Execute
