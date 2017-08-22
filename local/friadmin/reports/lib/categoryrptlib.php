@@ -658,10 +658,12 @@ class friadminrpt
                                   ca.name       as 'category',
                                   c.format      as 'courseformat',
                                   co.name       as 'levelone',
+                                  c.startdate,
                                   cl.name		as 'location',
+                                  fo2.value		as 'sector',
                                   fo1.value		as 'fromto',
                                   c.visible		as 'visibility'
-                     FROM		  mdl_course				c
+                     FROM		  {course}				    c
                         -- Coordinators
                         JOIN	  {context}				    ct	ON  ct.instanceid 	= c.id
                         JOIN 	  {role_assignments}		ra	ON  ra.contextid	= ct.id
@@ -680,6 +682,9 @@ class friadminrpt
                         -- From/to (time)
                         LEFT JOIN {course_format_options}   fo1 ON  fo1.courseid 	= ct.instanceid
                                                                 AND fo1.name      	= 'time' 
+                        -- Format options -- Sector (Level two)
+                        LEFT JOIN {course_format_options}	fo2	ON 	fo2.courseid  = c.id
+                                                                AND fo2.name 	  = 'course_sector'
                         -- Jobroles
                         $jobrolesql
                         -- Workplace
@@ -2477,6 +2482,8 @@ class friadminrpt
         $strcoordinatorname = null;
         $strfromto          = null;
         $strvisibility      = null;
+        $strstartdate       = null;
+        $strsector          = null;
         $h                  = null;
         $w                  = null;
         $ws                 = null;
@@ -2492,6 +2499,8 @@ class friadminrpt
             $strnumberdays      = get_string('numberofdays', 'local_friadmin');
             $strfromto          = get_string('fromto', 'local_friadmin');
             $strvisibility      = get_string('visible', 'local_friadmin');
+            $strstartdate       = get_string('startdate');
+            $strsector          = get_string('sector', 'local_friadmin');
 
             // Height row
             $h = 20;
@@ -2550,6 +2559,19 @@ class friadminrpt
             $myxls->set_row($row, $h);
             $myxls->set_column($col,$col,$ws);
 
+            // Sector.
+            $col ++;
+            $myxls->write($row, $col, $strsector, array(
+                'size' => 12,
+                'name' => 'Arial',
+                'bold' => '1',
+                'bg_color' => '#efefef',
+                'text_wrap' => true,
+                'v_align' => 'left'));
+            $myxls->merge_cells($row, $col, $row, $col);
+            $myxls->set_row($row, $h);
+            $myxls->set_column($col,$col,$w);
+
             // Levelone.
             $col ++;
             $myxls->write($row, $col, $strlevelone, array(
@@ -2575,6 +2597,19 @@ class friadminrpt
             $myxls->merge_cells($row, $col, $row, $col);
             $myxls->set_row($row, $h);
             $myxls->set_column($col,$col,$w);
+
+            // Start date.
+            $col ++;
+            $myxls->write($row, $col, $strstartdate, array(
+                'size' => 12,
+                'name' => 'Arial',
+                'bold' => '1',
+                'bg_color' => '#efefef',
+                'text_wrap' => true,
+                'v_align' => 'left'));
+            $myxls->merge_cells($row, $col, $row, $col);
+            $myxls->set_row($row, $h);
+            $myxls->set_column($col,$col,$ws);
 
             // Number of days.
             $col ++;
@@ -2656,6 +2691,13 @@ class friadminrpt
             $ws = 15;
 
             foreach ($coursedata as $course) {
+                // Sectors
+                if ($course->sector) {
+                    $mysectors .= self::get_sectors($course->sector);
+                } else {
+                    $mysectors = '';
+                }
+
                 // Get coordinator
                 $coordinator = self::get_coordinator($course->id);
 
@@ -2688,6 +2730,13 @@ class friadminrpt
                 $myxls->set_row($row, $h);
                 $myxls->set_column($col,$col,$ws);
 
+                // Sectors.
+                $col ++;
+                $myxls->write($row, $col, $mysectors, array('size' => 12, 'name' => 'Arial', 'text_wrap' => true, 'v_align' => 'left'));
+                $myxls->merge_cells($row, $col, $row, $col);
+                $myxls->set_row($row, $h);
+                $myxls->set_column($col,$col,$w);
+
                 // Levelone.
                 $col ++;
                 $myxls->write($row, $col, $course->levelone, array('size' => 12, 'name' => 'Arial', 'text_wrap' => true, 'v_align' => 'left'));
@@ -2701,6 +2750,14 @@ class friadminrpt
                 $myxls->merge_cells($row, $col, $row, $col);
                 $myxls->set_row($row, $h);
                 $myxls->set_column($col,$col,$w);
+
+                // Start date
+                $col ++;
+                $startdate = userdate($course->startdate, '%d.%m.%Y', 99, false);
+                $myxls->write($row, $col, $startdate, array('size' => 12, 'name' => 'Arial', 'text_wrap' => true,'v_align' => 'left'));
+                $myxls->merge_cells($row, $col, $row, $col);
+                $myxls->set_row($row,$h);
+                $myxls->set_column($col,$col,$ws);
 
                 // Number of days.
                 $col ++;
