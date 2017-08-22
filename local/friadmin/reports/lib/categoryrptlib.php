@@ -2693,7 +2693,7 @@ class friadminrpt
             foreach ($coursedata as $course) {
                 // Sectors
                 if ($course->sector) {
-                    $mysectors .= self::get_sectors($course->sector) . " - " . $course->sector;
+                    $mysectors .= self::get_sectors($course->sector);
                 } else {
                     $mysectors = '';
                 }
@@ -2709,7 +2709,7 @@ class friadminrpt
 
                 // Course fullname.
                 $col ++;
-                $myxls->write($row, $col, $course->id . ' - ' . $course->coursename, array('size' => 12, 'name' => 'Arial', 'text_wrap' => true, 'v_align' => 'left'));
+                $myxls->write($row, $col,$course->coursename, array('size' => 12, 'name' => 'Arial', 'text_wrap' => true, 'v_align' => 'left'));
                 $myxls->merge_cells($row, $col, $row, $col);
                 $myxls->set_row($row, $h);
                 $myxls->set_column($col,$col,$w);
