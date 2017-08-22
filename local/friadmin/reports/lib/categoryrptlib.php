@@ -1458,16 +1458,16 @@ class friadminrpt
         global $DB;
         $rdo = null;     // Used to query the database.
 
-        $query = "SELECT GROUP_CONCAT(DISTINCT cd.name ORDER BY cd.name SEPARATOR ',') as 'sectors'
-                  FROM 	{report_gen_companydata} cd
-                  WHERE   id IN (:sector)
-	                AND hierarchylevel = 2";
+
 
         try {
-            $params = array();
-            $params['sector'] = $sector;
+            // SQL Instruction
+            $query = "SELECT GROUP_CONCAT(DISTINCT cd.name ORDER BY cd.name SEPARATOR ',') as 'sectors'
+                      FROM 	{report_gen_companydata} cd
+                      WHERE cd.id IN ($sector)
+	                    AND cd.hierarchylevel = 2";
 
-            $rdo = $DB->get_record_sql($query, $params);
+            $rdo = $DB->get_record_sql($query);
 
             if ($rdo) {
                 return $rdo->sectors;
