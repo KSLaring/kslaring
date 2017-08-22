@@ -2366,7 +2366,7 @@ class friadminrpt
 
                 // Course fullname.
                 $col ++;
-                $myxls->write($row, $col, $course->coursename, array('size' => 12, 'name' => 'Arial', 'text_wrap' => true, 'v_align' => 'left'));
+                $myxls->write($row, $col, $course->courseid . ' - ' . $course->coursename, array('size' => 12, 'name' => 'Arial', 'text_wrap' => true, 'v_align' => 'left'));
                 $myxls->merge_cells($row, $col, $row, $col);
                 $myxls->set_row($row, $h);
                 $myxls->set_column($col,$col,$w);
