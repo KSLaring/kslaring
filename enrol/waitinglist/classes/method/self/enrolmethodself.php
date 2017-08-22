@@ -708,7 +708,8 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
         $enrolstatus        = null;
         $enrol              = null;
         $params             = null;
-        
+        $onlist             = null;
+
 		$queueman= \enrol_waitinglist\queuemanager::get_by_course($waitinglist->courseid);
 		$qdetails = $queueman->get_user_queue_details(static::METHODTYPE);
         if ($waitinglist->{ENROL_WAITINGLIST_FIELD_MAXENROLMENTS}) {
@@ -758,6 +759,7 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
             $toConfirm      = null;
             $remainder      = null;
             $infoRequest    = null;
+            $enrolstatus    = true;
 
             if ($waitinglist->{ENROL_WAITINGLIST_FIELD_APPROVAL} == APPROVAL_REQUIRED) {
                 $remainder          = \Approval::get_notification_sent($USER->id,$waitinglist->courseid);
@@ -871,10 +873,11 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
 
                                 $redirect       = new \moodle_url('/enrol/waitinglist/approval/info.php',$params);
                                 redirect($redirect);
-                            }//Approval_method
+                            }//Approval_metho
                         }//if_enrolstatus
                     }//if_form
 
+                    //begin the output
                     /**
                      * @updateDate  14/09/2016
                      * @author      eFaktor     (fbv)
@@ -892,30 +895,29 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
                             $message =$OUTPUT->box($output);
                             $ret = array(true,$message);
                         }else {
-                            $message = $OUTPUT->box($enrolstatus);
-                            $rdo = $DB->get_record('enrol_waitinglist_queue',array('waitinglistid' => $waitinglist->id,
-                                'courseid' => $waitinglist->courseid,
-                                'userid' => $USER->id));
-                            // Get position
-                            if ($rdo) {
-                                if ($rdo->queueno) {
-                                    $qdetails->queueposition = $rdo->queueno;
-                                }else {
-                                    $qdetails->queueposition = 0;
-                                }
-                            }//if_rdo
-                            $qdetails->queuetotal ++;
 
-                            $redirect = $CFG->wwwroot . '/index.php';
-                            $out = '<div>';
-                            $out .= '<p>' . get_string('yourqueuedetails','enrol_waitinglist', $qdetails) .'</p>';
-                            $out .= '<a href="' . $redirect . '"><button>' . get_string('continue') . '</button></a>';
-                            $out .= '</div>';
+                           $rdo = $DB->get_record('enrol_waitinglist_queue',array('waitinglistid' => $waitinglist->id,
+                               'courseid' => $waitinglist->courseid,
+                               'userid' => $USER->id));
+                           // Get position
+                           if ($rdo) {
+                               if ($rdo->queueno) {
+                                   $qdetails->queueposition = $rdo->queueno;
+                               }else {
+                                   $qdetails->queueposition = 0;
+                               }
+                           }//if_rdo
+                           $qdetails->queuetotal ++;
 
-                            $ret = array(true,$out);
+                           $redirect = $CFG->wwwroot . '/index.php';
+                           $out = '<div>';
+                           $out .= '<p>' . get_string('yourqueuedetails','enrol_waitinglist', $qdetails) .'</p>';
+                           $out .= '<a href="' . $redirect . '"><button>' . get_string('continue') . '</button></a>';
+                           $out .= '</div>';
+
+                           $ret = array(true,$out);
                         }//if_onlist
                     }else {
-                        $message = $OUTPUT->box($enrolstatus);
                         $company = \CompetenceManager::GetCompany_Name($data->level_3);
 
                         $redirect = $CFG->wwwroot . '/index.php';
