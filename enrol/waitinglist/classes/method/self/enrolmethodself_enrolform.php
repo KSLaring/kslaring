@@ -30,7 +30,7 @@
  * Add Invoice information option
  */
 namespace enrol_waitinglist\method\self;
-
+global $CFG;
 require_once($CFG->libdir.'/formslib.php');
 
 class enrolmethodself_enrolform extends \moodleform {
@@ -43,7 +43,7 @@ class enrolmethodself_enrolform extends \moodleform {
      * @return string form identifier
      */
     protected function get_form_identifier() {
-		list( $waitinglist,$method,$listtotal) = $this->_customdata;
+        list( $waitinglist,$method,$listtotal,$confirmed,$remainder) = $this->_customdata;
         $formid = $method->id.'_'.get_class($this);
         return $formid;
     }
@@ -51,7 +51,7 @@ class enrolmethodself_enrolform extends \moodleform {
     public function definition() {
         global $USER;
         $mform = $this->_form;
-        list( $waitinglist,$method,$listtotal,$confirmed,$remainder) = $this->_customdata;
+        list($waitinglist,$method,$listtotal,$confirmed,$remainder,$onlist) = $this->_customdata;
         $this->method = $method;
         $plugin = enrol_get_plugin('waitinglist');
 
@@ -66,6 +66,7 @@ class enrolmethodself_enrolform extends \moodleform {
 
             $this->add_action_buttons(true, get_string('continue'));
         }else {
+
             /**
              * @updateDate  02/12/2015
              * @author      eFaktor     (fbv)
@@ -91,13 +92,13 @@ class enrolmethodself_enrolform extends \moodleform {
                 /**
                  * @updateDate  13/09/2016
                  * @author      eFaktor     (fbv)
-                 * 
+                 *
                  * Description
                  * Add selector companies
-                 * 
+                 *
                  * @updateDate  26/0972016
                  * @author      eFaktor     (fbv)
-                 * 
+                 *
                  * Description
                  * Add selectors company depends on option from method
                  */
@@ -112,7 +113,6 @@ class enrolmethodself_enrolform extends \moodleform {
                         $this->Add_CompanyLevel($i,$this->_form,$myCompetence,$waitinglist->{ENROL_WAITINGLIST_FIELD_APPROVAL});
                     }//for_levels
                 }
-
 
                 /**
                  * @updateDate  28/10/2015
@@ -139,7 +139,6 @@ class enrolmethodself_enrolform extends \moodleform {
                  * Add approval data
                  */
                 if ($waitinglist->{ENROL_WAITINGLIST_FIELD_APPROVAL} == APPROVAL_REQUIRED) {
-                    global $PAGE;
                     \Approval::add_elements_form($mform);
                 }//if_approval
 
@@ -154,8 +153,12 @@ class enrolmethodself_enrolform extends \moodleform {
                 $mform->addElement('html','</div>');
 
                 $this->add_action_buttons(true, get_string('continue'));
-            }//if_vacancies
+            }//if_confirmed
         }
+
+        $mform->addElement('hidden', 'onlist');
+        $mform->setType('onlist', PARAM_INT);
+        $mform->setDefault('onlist', $onlist);
 
         $mform->addElement('hidden', 'id');
         $mform->setType('id', PARAM_INT);

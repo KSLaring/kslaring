@@ -895,6 +895,19 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
                                 //if this is a new enrol form submission, process it
                                 $this->waitlistrequest_unnamedbulk($waitinglist, $data);
 
+                                /**
+                                 * @updateDate  28/10/2015
+                                 * @author      eFaktor     (fbv)
+                                 *
+                                 * Description
+                                 * Save Invoice Information
+                                 */
+                                if (enrol_get_plugin('invoice')) {
+                                    if ($waitinglist->{ENROL_WAITINGLIST_FIELD_INVOICE}) {
+                                        \Invoices::activate_enrol_invoice($USER->id,$waitinglist->courseid,$waitinglist->id);
+                                    }//if_invoice_info
+                                }
+
                                 if ($waitinglist->{ENROL_WAITINGLIST_FIELD_APPROVAL} == APPROVAL_REQUIRED) {
                                     $params = array();
                                     $params['id']   = $USER->id;
@@ -908,20 +921,7 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
 
                                     $redirect       = new \moodle_url('/enrol/waitinglist/approval/info.php',$params);
                                     redirect($redirect);
-                                }else {
-                                    /**
-                                     * @updateDate  28/10/2015
-                                     * @author      eFaktor     (fbv)
-                                     *
-                                     * Description
-                                     * Save Invoice Information
-                                     */
-                                    if (enrol_get_plugin('invoice')) {
-                                        if ($waitinglist->{ENROL_WAITINGLIST_FIELD_INVOICE}) {
-                                            \Invoices::activate_enrol_invoice($USER->id,$waitinglist->courseid,$waitinglist->id);
-                                        }//if_invoice_info
-                                    }
-                                }
+                                }//if_approval
                             }//if_entry
 
                             //in the case that the user has updated their entry, we
@@ -950,7 +950,7 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
                                     }
                                 }
 
-                            }
+                            }//if_actiontaken
 
                             //Send the user on somewhere
                             $continueurl = new \moodle_url('/enrol/waitinglist/edit_enrolform.php',
@@ -985,7 +985,14 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
                     }else {
                         $message = $OUTPUT->box($enrolstatus);
                         $company = \CompetenceManager::GetCompany_Name($data->level_3);
-                        $ret = array(false,get_string('not_managers_company','enrol_waitinglist',$company));
+
+                        $redirect = $CFG->wwwroot . '/index.php';
+                        $out = '<div>';
+                        $out .= '<p>' . get_string('not_managers_company','enrol_waitinglist',$company) .'</p>';
+                        $out .= '<a href="' . $redirect . '"><button>' . get_string('continue') . '</button></a>';
+                        $out .= '</div>';
+
+                        $ret = array(false,$out);
                     }
                 }
             }//if_reminder

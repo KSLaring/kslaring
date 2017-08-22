@@ -379,14 +379,14 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
                 if (!$rdo = $DB->get_records('user_info_competence_data',array('level' => 3,'userid' =>$USER->id),'id')) {
                     $urlProfile = new \moodle_url('/user/profile/field/competence/competence.php',array('id' => $USER->id));
                     $lnkProfile = "<a href='". $urlProfile . "'>". get_string('profile') . "</a>";
-                    return get_string('no_competence','enrol_waitinglist',$lnkProfile);
+                    return array(false,get_string('no_competence','enrol_waitinglist',$lnkProfile));
                 }
             }
 
             $entryman =  \enrol_waitinglist\entrymanager::get_by_course($waitinglist->courseid);
             $entry = $entryman->get_entry_by_userid($USER->id);
             if($entry && $entry->methodtype!=static::METHODTYPE){
-                return get_string('onlyoneenrolmethodallowed', 'enrol_waitinglist');
+                return array(false,get_string('onlyoneenrolmethodallowed', 'enrol_waitinglist'));
             }
 
             //checking the queue (db calls)
@@ -403,7 +403,7 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
                     $count = $queueman->get_listtotal_by_method(static::METHODTYPE);
                     if ($count >= $this->{self::MFIELD_MAXENROLLED}) {
                         // Bad luck, no more self enrolments here.
-                        return get_string('noroomonlist', 'enrol_waitinglist');
+                        return array(false,get_string('noroomonlist', 'enrol_waitinglist'));
                     }
                 }
 
@@ -416,21 +416,21 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
                     if (!cohort_is_member($this->{self::MFIELD_COHORTONLY}, $USER->id)) {
                         $cohort = $DB->get_record('cohort', array('id' => $this->{self::MFIELD_COHORTONLY}));
                         if (!$cohort) {
-                            return null;
+                            return array(false,get_string('canntenrol', 'enrol_self'));
                         }
                         $a = format_string($cohort->name, true, array('context' => \context::instance_by_id($cohort->contextid)));
-                        return markdown_to_html(get_string('cohortnonmemberinfo', 'enrol_self', $a));
+                        return array(false,markdown_to_html(get_string('cohortnonmemberinfo', 'enrol_self', $a)));
                     }
                 }
             }
 
             //basic waitinglist and plugin checks (no db calls)
             if (!$this->is_active()) {
-                return get_string('canntenrol', 'enrol_self');
+                return array(false,get_string('canntenrol', 'enrol_self'));
             }
 
 
-            return true;
+            return array(true,null);
         }catch (\Exception $ex) {
             throw $ex;
         }
@@ -697,35 +697,43 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
      * Selector company. Check managers.
      */
     public function enrol_page_hook(\stdClass $waitinglist, $flagged) {
-        global $CFG, $OUTPUT, $USER,$SESSION;
+        /* Variables */
+        global $CFG, $OUTPUT, $USER,$DB;
         $isInvoice          = false;
         $redirect           = null;
         $ret                = null;
         $infoRequest        = null;
-        
+        $toConfirm          = null;
+        $confirm            = null;
+        $enrolstatus        = null;
+        $enrol              = null;
+        $params             = null;
+        $onlist             = null;
+
 		$queueman= \enrol_waitinglist\queuemanager::get_by_course($waitinglist->courseid);
 		$qdetails = $queueman->get_user_queue_details(static::METHODTYPE);
         if ($waitinglist->{ENROL_WAITINGLIST_FIELD_MAXENROLMENTS}) {
             if($qdetails->queueposition > 0 && $qdetails->offqueue == 0){
                 $enrolstatus = get_string('yourqueuedetails','enrol_waitinglist', $qdetails);
+                $enrol       = false;
             }else{
                 //if user is flagged as cant be a new enrol, then just exit
                 if($flagged){
                     return array(false,'');
                 }
-                $enrolstatus = $this->can_enrol($waitinglist,true);
+                list($enrol,$enrolstatus) = $this->can_enrol($waitinglist,true);
             }
         }else {
             //if user is flagged as cant be a new enrol, then just exit
             if($flagged){
                 return array(false,'');
             }
-            $enrolstatus = $this->can_enrol($waitinglist,true);
+            list($enrol,$enrolstatus) = $this->can_enrol($waitinglist,true);
         }
 
 
         // Don't show enrolment instance form, if user can't enrol using it.
-        if (true === $enrolstatus) {
+        if ($enrol) {
             /**
              * To initialize the organization structure
              */
@@ -747,9 +755,11 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
             $plugin         = enrol_get_plugin('waitinglist');
             $vacancies      = $plugin->get_vacancy_count($waitinglist);
             $confirm        = optional_param('confirm', 0, PARAM_INT);
+            $onlist         = optional_param('onlist', 0, PARAM_INT);
             $toConfirm      = null;
             $remainder      = null;
             $infoRequest    = null;
+            $enrolstatus    = true;
 
             if ($waitinglist->{ENROL_WAITINGLIST_FIELD_APPROVAL} == APPROVAL_REQUIRED) {
                 $remainder          = \Approval::get_notification_sent($USER->id,$waitinglist->courseid);
@@ -763,7 +773,8 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
                     $toConfirm = false;
                 }else {
                     if (!$vacancies) {
-                        $toConfirm  =  true;
+                        $onlist     = true;
+                        $toConfirm  = true;
                     }else {
                         $toConfirm  =  false;
                     }
@@ -793,13 +804,13 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
                 $ret = array(true,$message);
             }else {
                 if ($toConfirm) {
-                    $form = new enrolmethodself_enrolform(NULL, array($waitinglist,$this,$listtotal,true,null));
+                    $form = new enrolmethodself_enrolform(NULL, array($waitinglist,$this,$listtotal,true,null,$onlist));
 
                     if ($form->is_cancelled()) {
                         $redirect = $CFG->wwwroot . '/index.php';
                         redirect($redirect);
                     }else if ($form->is_submitted()) {
-                        $form = new enrolmethodself_enrolform(NULL, array($waitinglist,$this,$listtotal,false,null));
+                        $form = new enrolmethodself_enrolform(NULL, array($waitinglist,$this,$listtotal,false,null,$onlist));
                     }
 
                     //begin the output
@@ -809,7 +820,7 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
                     $message =$OUTPUT->box($output);
                     $ret = array(true,$message);
                 }else {
-                    $form = new enrolmethodself_enrolform(NULL, array($waitinglist,$this,$listtotal,false,null));
+                    $form = new enrolmethodself_enrolform(NULL, array($waitinglist,$this,$listtotal,false,null,$onlist));
 
                     if ($form->is_cancelled()) {
                         $redirect = $CFG->wwwroot . '/index.php';
@@ -836,7 +847,20 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
                         if ($enrolstatus) {
                             $this->waitlistrequest_self($waitinglist, $data);
 
-                            if ($waitinglist->{ENROL_WAITINGLIST_FIELD_APPROVAL} == APPROVAL_REQUIRED) {
+                            /**
+                             * @updateDate  28/10/2015
+                             * @author      eFaktor     (fbv)
+                             *
+                             * Description
+                             * Save Invoice Information
+                             */
+                            if (enrol_get_plugin('invoice')) {
+                                if ($waitinglist->{ENROL_WAITINGLIST_FIELD_INVOICE}) {
+                                    \Invoices::activate_enrol_invoice($USER->id,$waitinglist->courseid,$waitinglist->id);
+                                }//if_invoice_info
+                            }//if_enrol_invoice
+
+                            if (($waitinglist->{ENROL_WAITINGLIST_FIELD_APPROVAL} == APPROVAL_REQUIRED)) {
                                 $params = array();
                                 $params['id']   = $USER->id;
                                 $params['co']   = $waitinglist->courseid;
@@ -849,50 +873,68 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
 
                                 $redirect       = new \moodle_url('/enrol/waitinglist/approval/info.php',$params);
                                 redirect($redirect);
-                            }else {
-                                /**
-                                 * @updateDate  28/10/2015
-                                 * @author      eFaktor     (fbv)
-                                 *
-                                 * Description
-                                 * Save Invoice Information
-                                 */
-                                if (enrol_get_plugin('invoice')) {
-                                    if ($waitinglist->{ENROL_WAITINGLIST_FIELD_INVOICE}) {
-                                        \Invoices::activate_enrol_invoice($USER->id,$waitinglist->courseid,$waitinglist->id);
-                                    }//if_invoice_info
-                                }//if_enrol_invoice
-                            }//Approval_method
+                            }//Approval_metho
                         }//if_enrolstatus
                     }//if_form
 
+                    //begin the output
                     /**
                      * @updateDate  14/09/2016
                      * @author      eFaktor     (fbv)
-                     * 
+                     *
                      * Description
                      * If the user can enroll --> Enrolled
                      * Cannot enroll --> Message
                      */
                     if ($enrolstatus) {
-                        ob_start();
-                        $form->display();
-                        $output = ob_get_clean();
+                        if (!$onlist) {
+                            ob_start();
+                            $form->display();
+                            $output = ob_get_clean();
 
-                        $message =$OUTPUT->box($output);
-                        $ret = array(true,$message);
+                            $message =$OUTPUT->box($output);
+                            $ret = array(true,$message);
+                        }else {
+
+                           $rdo = $DB->get_record('enrol_waitinglist_queue',array('waitinglistid' => $waitinglist->id,
+                               'courseid' => $waitinglist->courseid,
+                               'userid' => $USER->id));
+                           // Get position
+                           if ($rdo) {
+                               if ($rdo->queueno) {
+                                   $qdetails->queueposition = $rdo->queueno;
+                               }else {
+                                   $qdetails->queueposition = 0;
+                               }
+                           }//if_rdo
+                           $qdetails->queuetotal ++;
+
+                           $redirect = $CFG->wwwroot . '/index.php';
+                           $out = '<div>';
+                           $out .= '<p>' . get_string('yourqueuedetails','enrol_waitinglist', $qdetails) .'</p>';
+                           $out .= '<a href="' . $redirect . '"><button>' . get_string('continue') . '</button></a>';
+                           $out .= '</div>';
+
+                           $ret = array(true,$out);
+                        }//if_onlist
                     }else {
-                        $message = $OUTPUT->box($enrolstatus);
                         $company = \CompetenceManager::GetCompany_Name($data->level_3);
-                        $ret = array(false,get_string('not_managers_company','enrol_waitinglist',$company));
-                    }
+
+                        $redirect = $CFG->wwwroot . '/index.php';
+                        $out = '<div>';
+                        $out .= '<p>' . get_string('not_managers_company','enrol_waitinglist',$company) .'</p>';
+                        $out .= '<a href="' . $redirect . '"><button>' . get_string('continue') . '</button></a>';
+                        $out .= '</div>';
+
+                        $ret = array(false,$out);
+                    }//if_enrolstatus
                 }//if_toConfirm
-            }//if_else
+            }//if_remainder
         } else {
             $message = $OUTPUT->box($enrolstatus);
 			$ret = array(false,$message);
         }
 
         return $ret;
-    }
+    }//enrol_page_hook
 }

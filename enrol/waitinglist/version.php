@@ -24,7 +24,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2017070410;        // The current plugin version (Date: YYYYMMDDXX)
+$plugin->version   = 2017082200;        // The current plugin version (Date: YYYYMMDDXX)
 $plugin->requires  = 2014050800;        // Requires this Moodle version
 $plugin->component = 'enrol_waitinglist';    // Full name of the plugin (used for diagnostics)
 
