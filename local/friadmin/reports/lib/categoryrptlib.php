@@ -1536,7 +1536,7 @@ class friadminrpt
      */
     private static function add_participants_header_excel(&$myxls, $coursesdata) {
         // Variables.
-        GLOBAL $SESSION;
+        global $SESSION;
         $col                = 0;
         $row                = 0;
         $strcoursefull      = null;
@@ -1588,21 +1588,6 @@ class friadminrpt
             $strdates           = get_string('dates', 'local_friadmin');
             $strnumberdays      = get_string('numberofdays', 'local_friadmin');
             $strcoursecoordinator = get_string('coursecoordinator', 'local_friadmin');
-
-            // Get max dates
-            $SESSION->maxdates  = null;
-            if ($coursesdata) {
-                foreach ($coursesdata as $coursevalue) {
-                    $fromtodates = explode(",", $coursevalue->fromto);
-                    if ($maxdates < count($fromtodates)) {
-                        $maxdates = count($fromtodates);
-                    }
-                }
-            }else {
-                $maxdates = 1;
-            }
-            $SESSION->maxdates = $maxdates;
-
 
             // Height row
             $h = 28;
@@ -1725,24 +1710,6 @@ class friadminrpt
             $myxls->merge_cells($row, $col, $row, $col);
             $myxls->set_row($row, $h);
             $myxls->set_column($col,$col,$w);
-
-            // Course dates.
-            $col ++;
-            $i = 1;
-            while ($i <= $maxdates) {
-                $myxls->write($row, $col, $strdates . $i, array(
-                    'size' => 12,
-                    'name' => 'Arial',
-                    'bold' => '1',
-                    'bg_color' => '#efefef',
-                    'text_wrap' => true,
-                    'v_align' => 'left'));
-                $myxls->merge_cells($row, $col, $row, $col);
-                $myxls->set_row($row, $h);
-                $myxls->set_column($col,$col,$ws);
-                $col ++;
-                $i ++;
-            }
 
             // Number of days.
             $myxls->write($row, $col, $strnumberdays, array(
@@ -1908,7 +1875,6 @@ class friadminrpt
      * @author          eFaktor     (fbv)
      */
     private static function add_participants_content_excel($coursedata, $myxls, &$row) {
-        GLOBAL $SESSION;
         // Variables.
         $i              = null;
         $col            = 0;
@@ -1917,7 +1883,6 @@ class friadminrpt
         $setRow         = null;
         $strUser        = null;
         $completion     = null;
-        $maxdates       = null;
         $mysectors      = null;
         $fromtodates    = null;
         $coordinator    = null;
@@ -1934,9 +1899,6 @@ class friadminrpt
             $ws = 15;
 
             foreach ($coursedata as $course) {
-                // Extract From/To
-                $fromtodates = explode(",", $course->fromto);
-
                 // Extract sectors
                 if ($course->sector) {
                     $mysectors .= self::get_sectors($course->sector);
@@ -2011,35 +1973,8 @@ class friadminrpt
                 $myxls->set_row($row,$h);
                 $myxls->set_column($col,$col,$w);
 
-                // Dates.
-                $col ++;
-                if ($fromtodates) {
-                    $i = 0;
-                    // Loop that sets the dates into the excel if there are any dates.
-                    foreach ($fromtodates as $date) {
-                        // If the date is not empty.
-                        if ($date != '') {
-                            $myxls->write($row, $col, $date, array('size' => 12, 'name' => 'Arial', 'text_wrap' => true, 'v_align' => 'top'));
-                            $myxls->merge_cells($row, $col, $row, $col);
-                            $myxls->set_row($row,$h);
-                            $myxls->set_column($col,$col,$ws);
-                            $col ++;
-                            $i++;
-                        }
-                    }
-
-                    // Creates emtpy cells in excel up to the max amount of dates found.
-                    while ($i < $SESSION->maxdates) {
-                        $myxls->write($row, $col, '', array('size' => 12, 'name' => 'Arial', 'text_wrap' => true, 'v_align' => 'top'));
-                        $myxls->merge_cells($row, $col, $row, $col);
-                        $myxls->set_row($row,$h);
-                        $myxls->set_column($col,$col,$ws);
-                        $col ++;
-                        $i++;
-                    }
-                }
-
                 // Number of days.
+                $fromtodates = explode(",", $course->fromto);
                 $numberdays = ($course->fromto ? count($fromtodates) : 0);
                 $myxls->write($row, $col, $numberdays, array('size' => 12, 'name' => 'Arial', 'text_wrap' => true,'v_align' => 'left'));
                 $myxls->merge_cells($row, $col, $row, $col);
