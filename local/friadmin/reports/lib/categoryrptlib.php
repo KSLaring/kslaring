@@ -294,7 +294,8 @@ class friadminrpt
                                     c.fullname 		    as 'coursefull', 		-- Course full name
                                     c.shortname 	    as 'courseshort', 		-- Course short name
                                     c.format 		    as 'courseformat', 	    -- Course format,
-                                    c.visible		    as 'visibility',	    -- Course visibility								--
+                                    c.visible		    as 'visibility',	    -- Course visibility	
+                                    c.startdate,								-- Start date 							--
                                     ca.name 		    as 'category', 		    -- Category Name
                                     mu.name				as 'levelone',			-- Municipality (Level One)
                                     l1.name				as 'location',			-- Course location,
@@ -1555,37 +1556,37 @@ class friadminrpt
         $strwaiting         = null;
         $strcompleted       = null;
         $strvisibility      = null;
+        $strstartdate       = null;
         $strfromto          = null;
-        $strdates           = null;
         $strnumberdays      = null;
         $fromtodates        = null;
-        $maxdates           = null;
         $h                  = null;
         $w                  = null;
 
 
         try {
             // Headers
-            $strcoursefull      = get_string('courselong', 'local_friadmin');
-            $strcourseshort     = get_string('courseshort', 'local_friadmin');
-            $strcourseformat    = get_string('courseformat', 'local_friadmin');
-            $strproducer        = get_string('producer', 'local_friadmin');
-            $strlevelone        = get_string('kommune', 'local_friadmin');
-            $strsector          = get_string('sector', 'local_friadmin');
-            $strlocation        = get_string('usercourse_location','local_friadmin');
-            $strcategory        = get_string('category', 'local_friadmin');
-            $strexpiration      = get_string('expiration', 'local_friadmin');
-            $strspots           = get_string('spots', 'local_friadmin');
-            $strinternalprice   = get_string('internalprice', 'local_friadmin');
-            $strexternalprice   = get_string('externalprice', 'local_friadmin');
-            $strinstructors     = get_string('instructors', 'local_friadmin');
-            $strstudents        = get_string('students', 'local_friadmin');
-            $strwaiting         = get_string('waitinglist', 'local_friadmin');
-            $strcompleted       = get_string('completed', 'local_friadmin');
-            $strvisibility      = get_string('visible', 'local_friadmin');
-            $strfromto          = get_string('fromto', 'local_friadmin');
-            $strnumberdays      = get_string('numberofdays', 'local_friadmin');
-            $strcoursecoordinator = get_string('coursecoordinator', 'local_friadmin');
+            $strcoursefull          = get_string('courselong', 'local_friadmin');
+            $strcourseshort         = get_string('courseshort', 'local_friadmin');
+            $strcourseformat        = get_string('courseformat', 'local_friadmin');
+            $strproducer            = get_string('producer', 'local_friadmin');
+            $strlevelone            = get_string('kommune', 'local_friadmin');
+            $strsector              = get_string('sector', 'local_friadmin');
+            $strlocation            = get_string('usercourse_location','local_friadmin');
+            $strcategory            = get_string('category', 'local_friadmin');
+            $strexpiration          = get_string('expiration', 'local_friadmin');
+            $strspots               = get_string('spots', 'local_friadmin');
+            $strinternalprice       = get_string('internalprice', 'local_friadmin');
+            $strexternalprice       = get_string('externalprice', 'local_friadmin');
+            $strinstructors         = get_string('instructors', 'local_friadmin');
+            $strstudents            = get_string('students', 'local_friadmin');
+            $strwaiting             = get_string('waitinglist', 'local_friadmin');
+            $strcompleted           = get_string('completed', 'local_friadmin');
+            $strvisibility          = get_string('visible', 'local_friadmin');
+            $strfromto              = get_string('fromto', 'local_friadmin');
+            $strnumberdays          = get_string('numberofdays', 'local_friadmin');
+            $strcoursecoordinator   = get_string('coursecoordinator', 'local_friadmin');
+            $strstartdate           = get_string('startdate');
 
             // Height row
             $h = 28;
@@ -1708,6 +1709,19 @@ class friadminrpt
             $myxls->merge_cells($row, $col, $row, $col);
             $myxls->set_row($row, $h);
             $myxls->set_column($col,$col,$w);
+
+            // Start date
+            $col ++;
+            $myxls->write($row, $col, $strstartdate, array(
+                'size' => 12,
+                'name' => 'Arial',
+                'bold' => '1',
+                'bg_color' => '#efefef',
+                'text_wrap' => true,
+                'v_align' => 'left'));
+            $myxls->merge_cells($row, $col, $row, $col);
+            $myxls->set_row($row, $h);
+            $myxls->set_column($col,$col,$ws);
 
             // Number of days.
             $col ++;
@@ -1971,6 +1985,14 @@ class friadminrpt
                 $myxls->merge_cells($row, $col, $row, $col);
                 $myxls->set_row($row,$h);
                 $myxls->set_column($col,$col,$w);
+
+                // Start date
+                $col ++;
+                $startdate = userdate($course->startdate, '%d.%m.%Y', 99, false);
+                $myxls->write($row, $col, $startdate, array('size' => 12, 'name' => 'Arial', 'text_wrap' => true,'v_align' => 'left'));
+                $myxls->merge_cells($row, $col, $row, $col);
+                $myxls->set_row($row,$h);
+                $myxls->set_column($col,$col,$ws);
 
                 // Number of days.
                 $col ++;
