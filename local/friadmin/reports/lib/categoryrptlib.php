@@ -1536,7 +1536,6 @@ class friadminrpt
      */
     private static function add_participants_header_excel(&$myxls, $coursesdata) {
         // Variables.
-        global $SESSION;
         $col                = 0;
         $row                = 0;
         $strcoursefull      = null;
@@ -1711,6 +1710,7 @@ class friadminrpt
             $myxls->set_column($col,$col,$w);
 
             // Number of days.
+            $col ++;
             $myxls->write($row, $col, $strnumberdays, array(
                 'size' => 12,
                 'name' => 'Arial',
@@ -1973,6 +1973,7 @@ class friadminrpt
                 $myxls->set_column($col,$col,$w);
 
                 // Number of days.
+                $col ++;
                 $fromtodates = explode(",", $course->fromto);
                 $numberdays = ($course->fromto ? count($fromtodates) : 0);
                 $myxls->write($row, $col, $numberdays, array('size' => 12, 'name' => 'Arial', 'text_wrap' => true,'v_align' => 'left'));
@@ -2107,7 +2108,6 @@ class friadminrpt
             $strfromto          = get_string('fromto', 'local_friadmin');
             $strvisibility      = get_string('visible', 'local_friadmin');
 
-
             // Height row
             $h = 20;
             // Width colum
@@ -2205,6 +2205,7 @@ class friadminrpt
             $myxls->set_column($col,$col,$w);
 
             // Number of days.
+            $col ++;
             $myxls->write($row, $col, $strnumberdays, array(
                 'size' => 12,
                 'name' => 'Arial',
@@ -2217,6 +2218,7 @@ class friadminrpt
             $myxls->set_column($col,$col,$ws);
 
             // Fromto.
+            $col ++;
             $myxls->write($row, $col, $strfromto, array(
                 'size' => 12,
                 'name' => 'Arial',
@@ -2338,6 +2340,7 @@ class friadminrpt
                 $myxls->set_column($col,$col,$w);
 
                 // Number of days.
+                $col ++;
                 $fromtodates = explode(",", $course->fromto);
                 $numberdays = ($course->fromto ? count($fromtodates) : 0);
                 $myxls->write($row, $col, $numberdays, array('size' => 12, 'name' => 'Arial', 'text_wrap' => true,'v_align' => 'left'));
@@ -2346,6 +2349,7 @@ class friadminrpt
                 $myxls->set_column($col,$col,$ws);
 
                 // Fromto.
+                $col ++;
                 $myxls->write($row, $col, $course->fromto, array('size' => 12, 'name' => 'Arial', 'text_wrap' => true, 'v_align' => 'top'));
                 $myxls->merge_cells($row, $col, $row, $col);
                 $myxls->set_row($row, $h);
