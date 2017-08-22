@@ -2350,9 +2350,9 @@ class friadminrpt
             foreach ($coursedata as $course) {
                 // Sector
                 if ($course->sector) {
-                    $mysectors .= self::get_sectors($course->sector);
+                    $mysectors = self::get_sectors($course->sector) . ' - ' . $course->sector;
                 } else {
-                    $mysectors = '';
+                    $mysectors .= '';
                 }
 
                 // Coordinator
