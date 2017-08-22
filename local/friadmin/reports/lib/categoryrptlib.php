@@ -2012,7 +2012,8 @@ class friadminrpt
 
                 // Instructors.
                 $col ++;
-                $myxls->write($row, $col, $course->instructors, array('size' => 12, 'name' => 'Arial', 'text_wrap' => true,'v_align' => 'left'));
+                $instructors = ($course->instructors ? $course->instructors : 0);
+                $myxls->write($row, $col, $instructors, array('size' => 12, 'name' => 'Arial', 'text_wrap' => true,'v_align' => 'left'));
                 $myxls->merge_cells($row, $col, $row, $col);
                 $myxls->set_row($row,$h);
                 $myxls->set_column($col,$col,$ws);
@@ -2020,21 +2021,21 @@ class friadminrpt
 
                 // Students.
                 $col ++;
-                $myxls->write($row, $col, $course->students, array('size' => 12, 'name' => 'Arial', 'text_wrap' => true,'v_align' => 'left'));
+                $myxls->write($row, $col, ($course->students ? $course->students : 0), array('size' => 12, 'name' => 'Arial', 'text_wrap' => true,'v_align' => 'left'));
                 $myxls->merge_cells($row, $col, $row, $col);
                 $myxls->set_row($row,$h);
                 $myxls->set_column($col,$col,$ws);
 
                 // Waiting.
                 $col ++;
-                $myxls->write($row, $col, $course->waiting, array('size' => 12, 'name' => 'Arial', 'text_wrap' => true,'v_align' => 'left'));
+                $myxls->write($row, $col, ($course->waiting ? $course->waiting :0), array('size' => 12, 'name' => 'Arial', 'text_wrap' => true,'v_align' => 'left'));
                 $myxls->merge_cells($row, $col, $row, $col);
                 $myxls->set_row($row,$h);
                 $myxls->set_column($col,$col,$ws);
 
                 // Completed.
                 $col ++;
-                $myxls->write($row, $col, $course->completed, array('size' => 12, 'name' => 'Arial', 'text_wrap' => true,'v_align' => 'left'));
+                $myxls->write($row, $col, ($course->completed ? $course->completed : 0), array('size' => 12, 'name' => 'Arial', 'text_wrap' => true,'v_align' => 'left'));
                 $myxls->merge_cells($row, $col, $row, $col);
                 $myxls->set_row($row,$h);
                 $myxls->set_column($col,$col,$ws);
