@@ -797,10 +797,10 @@ class FELLESDATA_CRON {
             $dblog .= ' START Import FS JOB ROLES . ' . "\n";
 
             // Call web service
-            $fsResponse = self::process_tradis_service($plugin,TRADIS_FS_JOBROLES,$dblog);
+            //$fsResponse = self::process_tradis_service($plugin,TRADIS_FS_JOBROLES,$dblog);
 
             // Import data into temporary tables
-            if ($fsResponse) {
+            //if ($fsResponse) {
                 // Clean temporary table
                 FS::clean_temporary_fellesdata(IMP_JOBROLES);
 
@@ -842,7 +842,7 @@ class FELLESDATA_CRON {
                     // Log
                     $dblog .= 'FILE DOES NOT EXIST ' . "\n";
                 }//if_exists
-            }//if_fsResponse
+            //}//if_fsResponse
 
             // Log
             $dblog .= ' FINISH Import FS JOB ROLES . ' . "\n";
