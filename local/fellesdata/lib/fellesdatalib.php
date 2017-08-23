@@ -2721,6 +2721,8 @@ class FS {
 
             // Each line file
             foreach($data as $key=>$line) {
+                echo "LINE : " . $line . "</br>";
+
                 $lineContent    = json_decode($line);
 
                 // Get New Entry
@@ -2737,6 +2739,8 @@ class FS {
                                 $newEntry = $lineContent->newRecord;
                                 $newEntry->action   = 0;
                                 $newEntry->imported = 0;
+
+                                echo "STILLINGSTEKST --> " . $newEntry->STILLINGSTEKST . "</br>";
 
                                 break;
 
@@ -3052,6 +3056,7 @@ class FS {
             // Commit
             $trans->allow_commit();
         }catch (Exception $ex) {
+
             // Rollback
             $trans->rollback($ex);
 

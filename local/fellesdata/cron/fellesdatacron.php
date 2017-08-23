@@ -53,7 +53,7 @@ class FELLESDATA_CRON {
     /* PUBLIC */
     /**********/
 
-    public static function cron($plugin,$fstExecution) {
+    public static function cron_old($plugin,$fstExecution) {
         /* Variables    */
         global $SESSION;
         global $CFG;
@@ -544,14 +544,14 @@ class FELLESDATA_CRON {
             $total = count($content);
 
             // Split the process if it is too big
-            if ($total > MAX_IMP_FS) {
-                for($i=0;$i<=$total;$i=$i+MAX_IMP_FS) {
-                    $data = array_slice($content,$i,MAX_IMP_FS,true);
+            //if ($total > MAX_IMP_FS) {
+                //for($i=0;$i<=$total;$i=$i+MAX_IMP_FS) {
+                    $data = array_slice($content,0,10,true);
                     FS::save_temporary_fellesdata($data,$type);
-                }
-            }else {
-                FS::save_temporary_fellesdata($content,$type);
-            }//if_max_imp
+                //}
+            //}else {
+            //    FS::save_temporary_fellesdata($content,$type);
+            //}//if_max_imp
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -791,43 +791,26 @@ class FELLESDATA_CRON {
         $pathFile   = null;
         $content    = null;
         $fsResponse = null;
-        
+
         try {
             // Log
             $dblog .= ' START Import FS JOB ROLES . ' . "\n";
-            
+
             // Call web service
-            $fsResponse = self::process_tradis_service($plugin,TRADIS_FS_JOBROLES,$dblog);
+            //$fsResponse = self::process_tradis_service($plugin,TRADIS_FS_JOBROLES,$dblog);
 
             // Import data into temporary tables
-            if ($fsResponse) {
-                // Clean temporary table
-                FS::clean_temporary_fellesdata(IMP_JOBROLES);
+            //if ($fsResponse) {
+            // Clean temporary table
+            FS::clean_temporary_fellesdata(IMP_JOBROLES);
 
-                // Open file
-                $pathFile = $CFG->dataroot . '/fellesdata/' . TRADIS_FS_JOBROLES . '.txt';
-                if (file_exists($pathFile)) {
-                    //Get last changes
-                    // First check if is a suspicious file
-                    if ($plugin->suspicious_path) {
-                        if (!suspicious::check_for_suspicious_data(TRADIS_FS_JOBROLES,$pathFile)) {
-                            // Get content
-                            $content = file_get_contents($pathFile);
-                            if (strpos(chr(13),$content)) {
-                                $content = explode(chr(13),$content);
-                            }else {
-                                $content = file($pathFile);
-                            }
-                            self::save_temporary_fs($content,IMP_JOBROLES);
-                        }else {
-                            // Mark file as suspicious
-                            $suspiciousPath = suspicious::mark_suspicious_file(TRADIS_FS_JOBROLES,$plugin);
-
-                            // Move file to the right folder
-                            copy($pathFile,$suspiciousPath);
-                            unlink($pathFile);
-                        }//if_suspicious
-                    }else {
+            // Open file
+            $pathFile = $CFG->dataroot . '/fellesdata/' . TRADIS_FS_JOBROLES . '.txt';
+            if (file_exists($pathFile)) {
+                //Get last changes
+                // First check if is a suspicious file
+                if ($plugin->suspicious_path) {
+                    if (!suspicious::check_for_suspicious_data(TRADIS_FS_JOBROLES,$pathFile)) {
                         // Get content
                         $content = file_get_contents($pathFile);
                         if (strpos(chr(13),$content)) {
@@ -835,14 +818,31 @@ class FELLESDATA_CRON {
                         }else {
                             $content = file($pathFile);
                         }
-
                         self::save_temporary_fs($content,IMP_JOBROLES);
-                    }//if_suspicious_path
+                    }else {
+                        // Mark file as suspicious
+                        $suspiciousPath = suspicious::mark_suspicious_file(TRADIS_FS_JOBROLES,$plugin);
+
+                        // Move file to the right folder
+                        copy($pathFile,$suspiciousPath);
+                        unlink($pathFile);
+                    }//if_suspicious
                 }else {
-                    // Log
-                    $dblog .= 'FILE DOES NOT EXIST ' . "\n";
-                }//if_exists
-            }//if_fsResponse
+                    // Get content
+                    $content = file_get_contents($pathFile);
+                    if (strpos(chr(13),$content)) {
+                        $content = explode(chr(13),$content);
+                    }else {
+                        $content = file($pathFile);
+                    }
+
+                    self::save_temporary_fs($content,IMP_JOBROLES);
+                }//if_suspicious_path
+            }else {
+                // Log
+                $dblog .= 'FILE DOES NOT EXIST ' . "\n";
+            }//if_exists
+            //}//if_fsResponse
 
             // Log
             $dblog .= ' FINISH Import FS JOB ROLES . ' . "\n";
