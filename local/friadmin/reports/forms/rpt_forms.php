@@ -32,18 +32,19 @@ require_once("$CFG->libdir/formslib.php");
 
 class summary_form extends moodleform {
     public function definition() {
-        global $USER;
         $mform = $this->_form;
+        list($mycategories,$parent) = $this->_customdata;
 
-        // Calls a function that gets all the categories from the database.
-        $categorylist = friadminrpt::get_my_categories($USER->id);
+        // Parent Category name
+        $mform->addElement('text','parent',get_string('cat_selected','local_friadmin'),'readonly size=100 style="border:0px;outline:0 none;"');
+        $mform->setType('parent',PARAM_TEXT);
+        $mform->setDefault('parent', '');
+        $mform->addRule('parent', get_string('cat_required','local_friadmin'), 'required');
 
-        // Category.
+        // Category selector
+        $categorylist = friadminrpt::get_my_categories_by_depth($mycategories,1,$parent);
         $mform->addElement('select', 'category', get_string('category', 'local_friadmin'), $categorylist);
-        $mform->addRule('category', null, 'required');
         $mform->setDefault('category', $categorylist[0]);
-        $mform->addRule('category', get_string('required'), 'required', 'nonzero', 'client');
-        $mform->addRule('category', get_string('required'), 'nonzero', null, 'client');
 
         // From.
         $mform->addElement('date_selector', 'selsummaryfrom', get_string('summaryfrom', 'local_friadmin'),
@@ -55,8 +56,20 @@ class summary_form extends moodleform {
             array('optional' => false));
         $mform->addRule('selsummaryto', null, 'required');
 
-        // Download.
-        $this->add_action_buttons(false, get_string('download', 'local_friadmin'));
+        // Buttons
+        $buttons = array();
+        $buttons[] = $mform->createElement('submit','submitbutton',get_string('download', 'local_friadmin'));
+        $buttons[] = $mform->createElement('button','submitbutton2',get_string('clean', 'local_friadmin'));
+        $buttons[] = $mform->createElement('cancel');
+
+        $mform->addGroup($buttons, 'buttonar', '', array(' '), false);
+        $mform->setType('buttonar', PARAM_RAW);
+        $mform->closeHeaderBefore('buttonar');
+
+        // Parent Category id
+        $mform->addElement('text','parentcat',null,'style=visibility:hidden;height:0px;');
+        $mform->setType('parentcat',PARAM_INT);
+        $mform->setDefault('parentcat',0);
     }
 
     public function validation($data, $files) {
@@ -90,7 +103,7 @@ class summary_form extends moodleform {
         }
 
         // Checks the data.
-        if ($data['selsummaryfrom'] > $date) {
+       if ($data['selsummaryfrom'] > $date) {
             // Not bigger than the present day
             $errors['selsummaryfrom'] = get_string('biggerthannow', 'local_friadmin');
         }else if ($data['selsummaryfrom'] > $data['selsummaryto']){
@@ -99,6 +112,7 @@ class summary_form extends moodleform {
         }else if ($todaterounded - $fromdaterounded > $twoyearsrounded) {
             $errors['selsummaryfrom'] = get_string('morethantwoyears', 'local_friadmin');
         }
+
 
         return $errors;
     }
@@ -109,19 +123,21 @@ class course_instructor_form extends moodleform {
         global $USER;
         $mform = $this->_form;
 
-        // Calls a function that gets all the categories from the database.
-        $categorylist = friadminrpt::get_my_categories($USER->id);
+        list($mycategories,$parent) = $this->_customdata;
 
-        // Calls a function that gets all the courses from the database.
-        $courses = friadminrpt::get_courses();
+        // Parent Category name
+        $mform->addElement('text','parent',get_string('cat_selected','local_friadmin'),'readonly size=100 style="border:0px;outline:0 none;"');
+        $mform->setType('parent',PARAM_TEXT);
+        $mform->setDefault('parent', '');
+        $mform->addRule('parent', get_string('cat_required','local_friadmin'), 'required');
 
         // Category.
+        $categorylist = friadminrpt::get_my_categories_by_depth($mycategories,1,$parent);
         $mform->addElement('select', 'category', get_string('category', 'local_friadmin'), $categorylist);
-        $mform->addRule('category', null, 'required');
-        $mform->addRule('category', get_string('required'), 'required', 'nonzero', 'client');
-        $mform->addRule('category', get_string('required'), 'nonzero', null, 'client');
 
         // Course.
+        $courses = array();
+        $courses[0] = get_string('selectone', 'local_friadmin');
         $mform->addElement('select', 'course', get_string('course', 'local_friadmin'), $courses);
 
         // Header.
@@ -148,8 +164,21 @@ class course_instructor_form extends moodleform {
         $mform->addElement('text', 'userjobrole', get_string('userjobrole', 'local_friadmin'));
         $mform->setType('userjobrole', PARAM_TEXT);
 
-        // Download button.
-        $this->add_action_buttons(false, get_string('download', 'local_friadmin'));
+        // Buttons
+        $buttons = array();
+        $buttons[] = $mform->createElement('submit','submitbutton',get_string('download', 'local_friadmin'));
+        $buttons[] = $mform->createElement('button','submitbutton2',get_string('clean', 'local_friadmin'));
+        $buttons[] = $mform->createElement('cancel');
+
+        $mform->addGroup($buttons, 'buttonar', '', array(' '), false);
+        $mform->setType('buttonar', PARAM_RAW);
+        $mform->closeHeaderBefore('buttonar');
+
+
+        // Parent Category id
+        $mform->addElement('text','parentcat',null,'style=visibility:hidden;height:0px;');
+        $mform->setType('parentcat',PARAM_INT);
+        $mform->setDefault('parentcat',0);
     }
 
     public function validation($data, $files) {
@@ -162,23 +191,22 @@ class course_instructor_form extends moodleform {
 
 class course_coordinator_form extends moodleform {
     public function definition() {
-        global $USER;
-
         $mform = $this->_form;
+        list($mycategories,$parent) = $this->_customdata;
 
-        // Calls a function that gets all the categories from the database.
-        $categorylist = friadminrpt::get_my_categories($USER->id);
-
-        // Calls a function that gets all the courses from the database.
-        $courses = friadminrpt::get_courses();
+        // Parent Category name
+        $mform->addElement('text','parent',get_string('cat_selected','local_friadmin'),'readonly size=100 style="border:0px;outline:0 none;"');
+        $mform->setType('parent',PARAM_TEXT);
+        $mform->setDefault('parent', '');
+        $mform->addRule('parent', get_string('cat_required','local_friadmin'), 'required');
 
         // Category.
+        $categorylist = friadminrpt::get_my_categories_by_depth($mycategories,1,$parent);
         $mform->addElement('select', 'category', get_string('category', 'local_friadmin'), $categorylist);
-        $mform->addRule('category', null, 'required');
-        $mform->addRule('category', get_string('required'), 'required', 'nonzero', 'client');
-        $mform->addRule('category', get_string('required'), 'nonzero', null, 'client');
 
         // Course.
+        $courses = array();
+        $courses[0] = get_string('selectone', 'local_friadmin');
         $mform->addElement('select', 'course', get_string('course', 'local_friadmin'), $courses);
 
         // Header.
@@ -205,8 +233,21 @@ class course_coordinator_form extends moodleform {
         $mform->addElement('text', 'userjobrole', get_string('userjobrole', 'local_friadmin'));
         $mform->setType('userjobrole', PARAM_TEXT);
 
-        // Download button.
-        $this->add_action_buttons(false, get_string('download', 'local_friadmin'));
+        // Buttons
+        $buttons = array();
+        $buttons[] = $mform->createElement('submit','submitbutton',get_string('download', 'local_friadmin'));
+        $buttons[] = $mform->createElement('button','submitbutton2',get_string('clean', 'local_friadmin'));
+        $buttons[] = $mform->createElement('cancel');
+
+        $mform->addGroup($buttons, 'buttonar', '', array(' '), false);
+        $mform->setType('buttonar', PARAM_RAW);
+        $mform->closeHeaderBefore('buttonar');
+
+
+        // Parent Category id
+        $mform->addElement('text','parentcat',null,'style=visibility:hidden;height:0px;');
+        $mform->setType('parentcat',PARAM_INT);
+        $mform->setDefault('parentcat',0);
     }
 
     public function validation($data, $files) {

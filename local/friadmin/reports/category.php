@@ -14,14 +14,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 /**
- * Friadmin - Category reports (Courses search)
+ * Friadmin - Category reports (Get subcategories)
  *
  * @package         local/friadmin
  * @subpackage      reports
  * @copyright       2012        eFaktor {@link http://www.efaktor.no}
  * @license         http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
- * @creationDate    01/04/2017  (nas)
+ * @creationDate    28/08/2017  (nas)
  * @author          eFaktor
  *
  */
@@ -33,15 +33,15 @@ require_once('lib/categoryrptlib.php');
 global $PAGE,$USER;
 
 // Params
-$category = required_param('category', PARAM_INT);
-$categories     = null;
+$parent         = optional_param('parent', 0,PARAM_INT);
 $json           = array();
 $data           = null;
 $info           = null;
-$lstcourses     = null;
-$course         = null;
+$lstcategories  = null;
+$category       = null;
+$categories     = array();
 $context        = context_system::instance();
-$url            = new moodle_url('/local/friadmin/reports/courses.php');
+$url            = new moodle_url('/local/friadmin/reports/category.php');
 
 // Set page
 $PAGE->set_context($context);
@@ -51,26 +51,37 @@ $PAGE->set_url($url);
 require_login();
 require_sesskey();
 
-// Get subcategories
-$category   = "/" . $category . "/";
-$categories = friadminrpt::get_subcategories_by_cat($category);
+// Get categories
+// Categories connected with the user
+$mycategories   = friadminrpt::get_my_categories_by_context($USER->id);
 
-// Get courses connected with
-$courselst = friadminrpt::get_courses_by_cat($categories);
+//Categories / Subcategories
+if ($parent) {
+    // Subcateogries connected with the parent
+    $lstcategories = friadminrpt::get_my_categories_by_depth($mycategories,null,$parent);
+}else {
+    // Categories first level
+    $lstcategories = friadminrpt::get_my_categories_by_depth($mycategories,1,null);
+}//if_parent
 
-$data   = array('mycourses' => array());
-$courses = array();
+// set data to send javascript
+$data   = array('categories' => array(),'parentcat' => null);
+if ($lstcategories) {
 
-// Extract data to send
-if ($courselst) {
-    foreach ($courselst as $id => $course) {
+    foreach ($lstcategories as $id => $category) {
         $info       = new stdClass();
         $info->id   = $id;
-        $info->name = $course;
-        
-        $data['mycourses'][$info->id] = $info;
+        $info->name = $category;
+
+        $data['categories'][$info->id] = $info;
     }
-}//if_courses_lst
+}//if_lstcategories
+
+// Parent info
+$parentcat = new stdClass();
+$parentcat->id      = $parent;
+$parentcat->name    = ($parent ? friadminrpt::get_category_name($parent) : '');
+$data['parentcat']  = $parentcat;
 
 // Send data
 $json[] = $data;

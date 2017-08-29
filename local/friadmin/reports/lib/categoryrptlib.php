@@ -28,63 +28,145 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-class friadminrpt
-{
-
+class friadminrpt {
+    /**********/
+    /* PUBLIC */
+    /**********/
 
     /**
      * Description
-     * Get all categories connected with manager
+     * Initialize javascript that is going to be used
      *
-     * @param       $user
+     * @param           $parent
+     * @param           $category
+     * @param           $course
      *
-     * @return      null
-     * @throws      Exception
+     * @throws          Exception
      *
-     * @creationDate    26/06/2017
+     * @creationDate    29/08/2017
      * @author          eFaktor     (fbv)
      */
-    public static function get_my_categories($user) {
+    public static function ini_data_reports($parent,$category,$course) {
+        /* Variables */
+        global $PAGE;
+        $name       = null;
+        $path       = null;
+        $requires   = null;
+        $jsmodule   = null;
+
+        try {
+            // Initialise variables
+            $name       = 'data_rpt';
+            $path       = '/local/friadmin/reports/js/reports.js';
+            $requires   = array('node', 'event-custom', 'datasource', 'json', 'moodle-core-notification');
+
+            // Initialise js module
+            $jsmodule = array('name'        => $name,
+                              'fullpath'    => $path,
+                              'requires'    => $requires
+            );
+
+            // Javascript
+            $PAGE->requires->js_init_call('M.core_user.init_data_report',
+                array($parent,$category,$course),
+                false,
+                $jsmodule
+            );
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//ini_data_reports
+
+    /**
+     * @param           $cat
+     *
+     * @return          mixed|null
+     * @throws          Exception
+     *
+     * @creationDate    28/08/2017
+     * @author          eFaktor     (fbv)
+     */
+    public static function get_subcategories_by_cat($cat) {
         /* Variables */
         global $DB;
         $rdo    = null;
         $sql    = null;
+        $subcat = null;
         $params = null;
-        $lstcat = null;
+
+        try {
+            // Search criteria
+            $params = array();
+            $params['cat'] = $cat;
+
+            // SQL Instruction
+            $sql = " SELECT	GROUP_CONCAT(DISTINCT ca.id ORDER BY ca.id SEPARATOR ',') as 'category'
+                     FROM	{course_categories}	ca
+                     WHERE	LOCATE(:cat,ca.path) ";
+
+            // Execute
+            $rdo = $DB->get_record_sql($sql,$params);
+            if ($rdo) {
+                if ($rdo->category) {
+                    $subcat = $rdo->category;
+                }//if_rdo_category
+            }//if_rdo
+
+            return $subcat;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//get_subcategories_by_cat
+
+    /**
+     * Description
+     * Get all categories list by depth
+     *
+     * @param           $mycategories
+     * @param           $depth
+     *
+     * @return          array
+     * @throws          Exception
+     *
+     * @creationDate    23/08/2017
+     * @author          eFaktor     (fbv)
+     */
+    public static function get_my_categories_by_depth($mycategories,$depth=null,$parent=null) {
+        /* Variables */
+        global $DB;
+        $sql    = null;
+        $rdo    = null;
+        $lstcat = array();
 
         try {
             // First Element of the list
             $lstcat[0] = get_string('selectone', 'local_friadmin');
 
+            // SQL Instruction
+            $sql = " SELECT ca.id,
+                            ca.name
+                     FROM   {course_categories} ca
+                     WHERE  ca.id IN ($mycategories->total) ";
+
             // Search criteria
             $params = array();
-            $params['user']     = $user;
-            $params['level']    = CONTEXT_COURSECAT;
-            $params['role']     = 'manager';
 
-            // Sql instruction based on if you are site admin or not
-            if (is_siteadmin()) {
-                // Sql Instruction
-                $sql = " SELECT  ca.id,
-                                 ca.name
-                         FROM    {course_categories} ca
-                         ORDER BY ca.name ";
-            }else {
-                // SQL Instruction
-                $sql = " SELECT	DISTINCT 
-                                  ca.id,
-                                  ca.name
-                         FROM	  {role_assignments}  ra
-                            JOIN  {role}			  r	  ON 	ra.roleid 		= r.id
-                                                          AND	r.archetype 	= :role
-                            JOIN  {context}			  ct  ON  ct.id 			= ra.contextid
-                                                          AND ct.contextlevel = :level
-                            JOIN  {course_categories} ca  ON	ca.id 			= ct.instanceid
-                         WHERE    ra.userid = :user
-                         ORDER BY ca.name ";
-            }//if_admin
+            // Criteria depth
+            if ($depth) {
+                $params['depth'] = $depth;
+
+                $sql .= " AND ca.depth = :depth ";
+            }//if_depth
+
+            // Criteria parent
+            if ($parent) {
+                $params['parent'] = $parent;
+
+                $sql .= " AND ca.parent = :parent ";
+            }//if_parent
 
             // Execute
+            $sql .= " ORDER BY ca.name ";
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 foreach ($rdo as $instance) {
@@ -96,155 +178,144 @@ class friadminrpt
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//get_my_categories
+    }//get_my_categories_by_depth
 
     /**
      * Description
-     * Gets all the course-categories with courses connected to them and returns them in a single array
+     * Return all categories connected with the user, based on the context
      *
-     * @param           NULL
+     * @param           $user
      *
-     * @return          array   All the course-categories
+     * @return          null|stdClass
      * @throws          Exception
      *
-     * @updateDate    23/05/2017
-     * @author          eFaktor     (nas)
-     *
+     * @creationDate    23/08/2017
+     * @author          eFaktor (fbv)
      */
-    public static function get_categories() {
-        // Variables!
+    public static function get_my_categories_by_context($user) {
+        /* Variables */
         global $DB;
-        $categories = array();
-        $rdo = null;
-
-        // Query gets the course category names.
-        $query = "SELECT  ca.id,
-		                  ca.name
-                  FROM    {course_categories} ca";
+        $mycategories   = null;
+        $sql            = null;
+        $params         = null;
+        $sqlwhere       = null;
+        $sqlcontext     = null;
 
         try {
-            $categories[0] = get_string('selectone', 'local_friadmin'); // Sets the first value in the array as "Select one...".
-            $rdo = $DB->get_records_sql($query);
+            // My categories
+            $mycategories = new stdClass();
+            $mycategories->ctx_course   = null;
+            $mycategories->ctx_cat      = null;
+            $mycategories->ctx_system   = null;
+            $mycategories->total        = null;
 
+            // Search criteria
+            $params = array();
+            $params['user'] = $user;
+
+            // Admin all categories
+            // Context System all categories
+            // By CONTEXT SYSTEM
+            $params['context'] = CONTEXT_SYSTEM;
+            $sql = self::get_sql_my_categories_as(CONTEXT_SYSTEM);
+            // Execute
+            $rdo = $DB->get_record_sql($sql,$params);
+            if ($rdo) {
+                $mycategories->ctx_system = true;
+                $mycategories->total      = self::get_all_categories_with_courses();
+            }//if_rdo
+
+            // CONTEXT COURSE && CONTEXT COURSE CAT
+            if (!$mycategories->ctx_system) {
+                // By CONTEXT COURSE
+                $params['context'] = CONTEXT_COURSE;
+                $sql = self::get_sql_my_categories_as(CONTEXT_COURSE);
+                // Execute - Get categories
+                $rdo = $DB->get_record_sql($sql,$params);
+                if ($rdo) {
+                    if ($rdo->category) {
+                        $mycategories->ctx_course = str_replace(',/',',',$rdo->category);
+                        $mycategories->ctx_course = str_replace('/',',',$mycategories->ctx_course);
+                        $mycategories->ctx_course = substr($mycategories->ctx_course,1);
+                        $mycategories->total = self::get_all_categories_with_courses($mycategories->ctx_course);
+                    }//if_Cattegory
+                }//if_rdo
+
+                // By CONTEXT COURSE CAT
+                $params['context'] = CONTEXT_COURSECAT;
+                $sql = self::get_sql_my_categories_as(CONTEXT_COURSECAT);
+                // Execute - Get categories
+                $rdo = $DB->get_record_sql($sql,$params);
+                if ($rdo) {
+                    if ($rdo->category) {
+                        $mycategories->ctx_cat = str_replace(',/',',',$rdo->category);
+                        $mycategories->ctx_cat = str_replace('/',',',$mycategories->ctx_cat);
+                        $mycategories->ctx_cat = substr($mycategories->ctx_cat,1);
+                        if ($mycategories->total) {
+                            $mycategories->total .= ',';
+                        }
+                        $mycategories->total .= self::get_all_categories_with_courses($mycategories->ctx_cat);
+                    }//if_category
+                }//if_rdo
+            }
+
+            // REturn categories
+            if ($mycategories->total
+                ||
+                $mycategories->ctx_system) {
+                return $mycategories;
+            }else {
+                return null;
+            }//mycategories
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//get_my_categories_by_context
+
+    /**
+     * Description
+     * Get all courses connected with a category
+     *
+     * @param           $categories
+     *
+     * @return          null
+     * @throws          Exception
+     *
+     * @creationDate    28/08/2017
+     * @author          eFaktor     (fbv)
+     *
+     */
+    public static function get_courses_by_cat($categories) {
+        /* Variables */
+        global $DB;
+        $sql        = null;
+        $rdo        = null;
+        $lstcourses = null;
+
+        try {
+            // First element
+            $lstcourses[0] = get_string('selectone', 'local_friadmin');
+
+            // SQL Instruction
+            $sql = " SELECT   c.id,
+                              c.fullname
+                     FROM 	  {course}	c
+                     WHERE 	  c.category in ($categories)
+                     ORDER BY c.fullname ";
+
+            // Execute
+            $rdo = $DB->get_records_sql($sql);
             if ($rdo) {
                 foreach ($rdo as $instance) {
-                    $categories[$instance->id] = $instance->name;
-                }
-            }
-            return $categories;
-        } catch (Exception $ex) {
-            Throw $ex;
-        }  // end try_catch
-    } // end get_categories
+                    $lstcourses[$instance->id] = $instance->fullname;
+                }//for_rdo
+            }//if_rdo
 
-    /**
-     * Description
-     * Gets all the course-categories with courses connected to them and returns them in a single array
-     *
-     * @param           NULL
-     *
-     * @return          array   All the course-categories
-     * @throws          Exception
-     *
-     * @updateDate    23/05/2017
-     * @author          eFaktor     (nas)
-     *
-     */
-    public static function get_courses() {
-        // Variables!
-        global $DB;
-        $courses = array();
-        $rdo = null;
-
-        // Query gets the course fullnames.
-        $query = "SELECT  c.id,
-		                  c.fullname
-                  FROM    {course} c";
-
-        try {
-            $courses[0] = get_string('selectone', 'local_friadmin');
-            $rdo = $DB->get_records_sql($query);
-
-            if ($rdo) {
-                foreach ($rdo as $instance) {
-                    $courses[$instance->id] = $instance->fullname;
-                }
-            }
-            return $courses;
-        } catch (Exception $ex) {
-            Throw $ex;
-        }  // end try_catch
-    } // end get_categories
-
-    /**
-     * Description
-     * Gets all the courses based on category and used only by the javascript
-     *
-     * @param           integer $category The Category ID
-     * @return          array|null  All the courses for javascript purposes
-     * @throws          Exception
-     *
-     * @updateDate    23/05/2017
-     * @author          eFaktor     (nas)
-     *
-     */
-    public static function get_courses_js($category) {
-        // Variables!
-        global $DB;
-        $courses = array();
-        $rdo = null;
-
-        // Query gets the courseid and the coursename based on the categoryid parameter in this function.
-        $coursequery = "SELECT        c.id,
-		                              c.fullname
-                        FROM          {course} c
-                          INNER JOIN  {course_categories} ca ON ca.id = c.category
-                        WHERE         ca.id = :category
-                        ORDER BY      c.fullname";
-        try {
-            $courses[0] = get_string('selectone', 'local_friadmin'); // Sets the first value in the array as "Select one...".
-            $rdo = $DB->get_records_sql($coursequery, array('category' => $category));
-
-            return $rdo;
-        } catch (Exception $ex) {
-            Throw $ex;
-        }  // end try_catch
-    } // end get_courses_js
-
-    /**
-     * Description
-     * A function used to get the correct javasript values, it calls the M.core_user.init_courses in the javascript
-     *
-     * @param           $course
-     * @param           $category
-     * @param           $prevcourse
-     *
-     * @updateDate    23/05/2017
-     * @author          eFaktor     (nas)
-     *
-     */
-    public static function get_javascript_values($course, $category, $prevcourse) {
-        // Variables!
-        global $PAGE;
-        $name = 'lst_courses';
-        $path = '/local/friadmin/reports/js/report.js';
-        $requires = array('node', 'event-custom', 'datasource', 'json', 'moodle-core-notification');
-        $grpthree = array('none', 'moodle');
-        $strings = array($grpthree);
-
-        // Initialise js module.
-        $jsmodule = array('name' => $name,
-            'fullpath' => $path,
-            'requires' => $requires,
-            'strings' => $strings
-        );
-
-        $PAGE->requires->js_init_call('M.core_user.init_courses',
-            array($course, $category, $prevcourse),
-            false,
-            $jsmodule
-        );
-    }
+            return $lstcourses;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//get_courses_by_cat
 
     /**
      * Description
@@ -271,6 +342,7 @@ class friadminrpt
         $query      = null;
         $params     = null;
         $categories = null;
+        $category   = null;
 
         try {
             // Search criteria
@@ -279,15 +351,13 @@ class friadminrpt
             $params['to']           = $data->selsummaryto;
 
             // Get subcategories
-            $rdo        = $DB->get_record('course_categories',array('id' => $data->category));
-            $categories = "/" . $data->category;
-            $index = strpos($rdo->path,$categories);
-            if ($index) {
-                $categories = substr($categories,$index);
-                $categories = str_replace('/',',','0' . $categories);
+            $category = "/" . $data->parentcat . "/";
+            $categories = self::get_subcategories_by_cat($category);
+            if ($categories) {
+                $categories .= ',' . $data->parentcat;
             }else {
-                $categories = $data->category;
-            }
+                $categories = $data->parentcat;
+            }//if_categories
 
             // SQL Instruction
             $query = " SELECT       c.id			    as 'courseid',			-- The course ID
@@ -375,196 +445,6 @@ class friadminrpt
         }//try_catch
     }//get_course_summary_data
 
-
-    /**
-     * Description
-     * A function that gets all the information from the database that will be used to create the instructors excel
-     *
-     * @param object $data  Data coming from the from. Course, category, username...
-     *
-     * @return array|null Returns the ID of all the instructors
-     * @throws Exception
-     *
-     * @updateDate    23/05/2017
-     * @author          eFaktor     (nas)
-     *
-     */
-     public static function get_course_instructors($data) {
-        // Variables!
-        global $DB;
-        $rdo            = null;
-        $extrasql       = null;
-        $workplacesql   = null;
-        $jobrolesql     = null;
-        $params         = null;
-        $query          = null;
-
-        try {
-            // Search criteria
-            $params = array();
-            $params['category'] = $data->category;
-
-            // Course.
-            if ($data->course) {
-                $params['course']   = $data->course;
-                $extrasql .= " AND c.id = :course ";
-            }
-
-            // Users fullname.
-            if ($data->userfullname) {
-                $extrasql .= " AND CONCAT(u.firstname, ' ', u.lastname) LIKE '%" . $data->userfullname . "%' ";
-            }
-
-            // Username.
-            if ($data->username) {
-                $extrasql .= " AND u.username LIKE '%" . $data->username . "%' ";
-            }
-
-            // Email.
-            if ($data->useremail) {
-                $extrasql .= " AND u.email LIKE '%" . $data->useremail . "%' ";
-            }
-
-            // Workplace.
-            if ($data->userworkplace) {
-                $workplacesql = " JOIN {user_info_competence_data} 	uic ON  uic.userid  = u.id
-                                  JOIN {report_gen_companydata} 	rgc ON  rgc.id      = uic.competenceid
-                                                                        AND rgc.name LIKE '%" . $data->userworkplace . "'%' ";
-            }
-
-            // Jobrole.
-            if ($data->userjobrole) {
-                $jobrolesql = " JOIN {user_info_competence_data}  uic2 ON  uic2.userid = u.id
-                                JOIN {report_gen_jobrole}         gjr  ON  gjr.id IN (uic2.jobroles)
-                                                                       AND gjr.name LIKE '%" . $data->userjobrole . "%' ";
-            }
-
-            // Query.
-            $query = " SELECT 	GROUP_CONCAT(DISTINCT u.id ORDER BY u.id SEPARATOR ',') as 'instructors'
-                       FROM    	{user}              u
-                          -- INSTRUCTORS
-                          JOIN  {role_assignments}  ra  ON  ra.userid   		= u.id
-                          JOIN  {context}           ct  ON  ct.id       		= ra.contextid
-                          JOIN  {role}              r   ON  r.id        		= ra.roleid
-                                                        AND r.archetype 		= 'teacher'
-                          -- Course
-                          JOIN 	{course}		     c	ON  c.id        		= ct.instanceid
-                                                        AND c.category		    = :category
-                          -- Jobroles
-                          $jobrolesql
-                          -- Workplace
-                          $workplacesql
-                       WHERE u.deleted = 0 
-                          $extrasql ";
-
-            // Execute
-            $rdo = $DB->get_record_sql($query, $params);
-            if ($rdo) {
-                return $rdo->instructors;
-            } else {
-                return null;
-            }
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    } // end get_course_instructors
-
-    /**
-     * Description
-     * Gets all the neccessary data from the database for course instructors
-     *
-     * @param string    $instructors    All the instructor ID's from get_course_instructors
-     * @param integer   $course         The course selected by the user in the form (optional)
-     * @param integer   $category       The category selected by the user in the form (required)
-     * @return array|null               Returns all the data used in the instructor excel
-     * @throws Exception
-     *
-     * @updateDate    23/05/2017
-     * @author          eFaktor     (nas)
-     *
-     */
-    public static function get_course_instructor_data($instructors, $course, $category) {
-        // Variables!
-        global $DB;
-        $rdo        = null;
-        $extrasql   = null;
-        $query      = null;
-        $params     = null;
-        $categories = null;
-
-        try {
-            // Search criteria
-            $params = array();
-
-            // Get subcategories
-            $rdo        = $DB->get_record('course_categories',array('id' => $category));
-            $categories = "/" . $category;
-            $index = strpos($rdo->path,$categories);
-            if ($index) {
-                $categories = substr($categories,$index);
-                $categories = str_replace('/',',','0' . $categories);
-            }else {
-                $categories = $category;
-            }
-
-            // Course criteria
-            if ($course) {
-                $params['course'] = $course;
-                $extrasql .= " AND c.id = :course ";
-            }//if_course
-
-            // SQL -Instruction
-            $query = " SELECT  DISTINCT 
-                                    CONCAT(u.id,c.id)                   as 'unique',
-                                    c.id                                as 'courseid',
-                                    CONCAT(u.firstname,' ', u.lastname) as 'instr',
-                                    c.fullname                          as 'coursename',
-                                    ca.name                             as 'category',
-                                    c.format                            as 'courseformat',
-                                    c.startdate,
-                                    co.name                             as 'levelone',
-                                    cl.name                             as 'location',
-                                    fo2.value							as 'sector',
-                                    fo1.value                           as 'fromto',
-                                    c.visible                           as 'visibility'
-                       FROM         {user}                    u
-                          -- Course
-                          JOIN 		{role_assignments}		  ra 	ON ra.userid  = u.id
-						  JOIN		{context}				  ct	ON ct.id 	  = ra.contextid
-                          JOIN      {course}                  c     ON c.id       = ct.instanceid
-
-                          -- Category
-                          JOIN      {course_categories}       ca    ON  ca.id = c.category
-                                                                    AND ca.id IN ($categories)
-                          -- Location
-                          LEFT JOIN {course_format_options}   fo    ON  fo.courseid = c.id
-                                                                    AND fo.name     = 'course_location'
-                          LEFT JOIN {course_locations}        cl    ON  cl.id       = fo.value
-                          LEFT JOIN {report_gen_companydata}  co    ON  co.id       = cl.levelone
-                          -- Dates
-                          LEFT JOIN {course_format_options}   fo1   ON  fo1.courseid = c.id
-                                                                    AND fo1.name     = 'time'
-                          -- Format options -- Sector (Level two)
-                          LEFT JOIN	{course_format_options}	 fo2	ON 	fo2.courseid  = c.id
-													                AND fo2.name 	  = 'course_sector'
-                       WHERE u.deleted = 0
-                          AND u.id IN ($instructors)
-                          $extrasql
-                       ORDER BY c.fullname ";
-
-
-            // Execute
-            $rdo = $DB->get_records_sql($query, $params);
-            if ($rdo) {
-                return $rdo;
-            } else {
-                return null;
-            }
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    } // end get_course_instructor_data
-
     /**
      * Description
      * Get all courses with coordinators
@@ -597,15 +477,13 @@ class friadminrpt
             $params = Array();
 
             // Get subcategories
-            $rdo        = $DB->get_record('course_categories',array('id' => $data->category));
-            $categories = "/" . $data->category;
-            $index = strpos($rdo->path,$categories);
-            if ($index) {
-                $categories = substr($categories,$index);
-                $categories = str_replace('/',',','0' . $categories);
+            $category = "/" . $data->parentcat . "/";
+            $categories = self::get_subcategories_by_cat($category);
+            if ($categories) {
+                $categories .= ',' . $data->parentcat;
             }else {
-                $categories = $data->category;
-            }
+                $categories = $data->parentcat;
+            }//if_categories
 
             // Course criteria
             if ($data->course) {
@@ -702,6 +580,281 @@ class friadminrpt
 
     /**
      * Description
+     * Gets all the neccessary data from the database for course instructors
+     *
+     * @param string    $instructors    All the instructor ID's from get_course_instructors
+     * @param integer   $course         The course selected by the user in the form (optional)
+     * @param integer   $category       The category selected by the user in the form (required)
+     * @return array|null               Returns all the data used in the instructor excel
+     * @throws Exception
+     *
+     * @updateDate    23/05/2017
+     * @author          eFaktor     (nas)
+     *
+     */
+    public static function get_course_instructor_data($instructors, $course, $category) {
+        // Variables!
+        global $DB;
+        $rdo        = null;
+        $extrasql   = null;
+        $query      = null;
+        $params     = null;
+        $categories = null;
+        $mycat      = null;
+
+        try {
+            // Search criteria
+            $params = array();
+
+            // Get subcategories
+            $mycat = "/" . $category . "/";
+            $categories = self::get_subcategories_by_cat($mycat);
+            if ($categories) {
+                $categories .= ',' . $category;
+            }else {
+                $categories = $category;
+            }//if_categories
+
+            // Course criteria
+            if ($course) {
+                $params['course'] = $course;
+                $extrasql .= " AND c.id = :course ";
+            }//if_course
+
+            // SQL -Instruction
+            $query = " SELECT  DISTINCT 
+                                    CONCAT(u.id,c.id)                   as 'unique',
+                                    c.id                                as 'courseid',
+                                    CONCAT(u.firstname,' ', u.lastname) as 'instr',
+                                    c.fullname                          as 'coursename',
+                                    ca.name                             as 'category',
+                                    c.format                            as 'courseformat',
+                                    c.startdate,
+                                    co.name                             as 'levelone',
+                                    cl.name                             as 'location',
+                                    fo2.value							as 'sector',
+                                    fo1.value                           as 'fromto',
+                                    c.visible                           as 'visibility'
+                       FROM         {user}                    u
+                          -- Course
+                          JOIN 		{role_assignments}		  ra 	ON ra.userid  = u.id
+						  JOIN		{context}				  ct	ON ct.id 	  = ra.contextid
+                          JOIN      {course}                  c     ON c.id       = ct.instanceid
+
+                          -- Category
+                          JOIN      {course_categories}       ca    ON  ca.id = c.category
+                                                                    AND ca.id IN ($categories)
+                          -- Location
+                          LEFT JOIN {course_format_options}   fo    ON  fo.courseid = c.id
+                                                                    AND fo.name     = 'course_location'
+                          LEFT JOIN {course_locations}        cl    ON  cl.id       = fo.value
+                          LEFT JOIN {report_gen_companydata}  co    ON  co.id       = cl.levelone
+                          -- Dates
+                          LEFT JOIN {course_format_options}   fo1   ON  fo1.courseid = c.id
+                                                                    AND fo1.name     = 'time'
+                          -- Format options -- Sector (Level two)
+                          LEFT JOIN	{course_format_options}	 fo2	ON 	fo2.courseid  = c.id
+													                AND fo2.name 	  = 'course_sector'
+                       WHERE u.deleted = 0
+                          AND u.id IN ($instructors)
+                          $extrasql
+                       ORDER BY c.fullname ";
+
+
+            // Execute
+            $rdo = $DB->get_records_sql($query, $params);
+            if ($rdo) {
+                return $rdo;
+            } else {
+                return null;
+            }
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    } // end get_course_instructor_data
+
+    /**
+     * Description
+     * A function that gets all the information from the database that will be used to create the instructors excel
+     *
+     * @param object $data  Data coming from the from. Course, category, username...
+     *
+     * @return array|null Returns the ID of all the instructors
+     * @throws Exception
+     *
+     * @updateDate    23/05/2017
+     * @author          eFaktor     (nas)
+     *
+     */
+    public static function get_course_instructors($data) {
+        // Variables!
+        global $DB;
+        $rdo            = null;
+        $extrasql       = null;
+        $workplacesql   = null;
+        $jobrolesql     = null;
+        $params         = null;
+        $query          = null;
+        $category       = null;
+        $categories     = null;
+
+        try {
+            // Search Criteria
+            $params = array();
+
+            // Get subcategories
+            $category   = "/" . $data->parentcat . "/";
+            $categories = self::get_subcategories_by_cat($category);
+            if ($categories) {
+                $categories .= ',' . $data->parentcat;
+            }else {
+                $categories = $data->parentcat;
+            }//if_categories
+
+            // Course.
+            if ($data->course) {
+                $params['course']   = $data->course;
+                $extrasql .= " AND c.id = :course ";
+            }
+
+            // Users fullname.
+            if ($data->userfullname) {
+                $extrasql .= " AND CONCAT(u.firstname, ' ', u.lastname) LIKE '%" . $data->userfullname . "%' ";
+            }
+
+            // Username.
+            if ($data->username) {
+                $extrasql .= " AND u.username LIKE '%" . $data->username . "%' ";
+            }
+
+            // Email.
+            if ($data->useremail) {
+                $extrasql .= " AND u.email LIKE '%" . $data->useremail . "%' ";
+            }
+
+            // Workplace.
+            if ($data->userworkplace) {
+                $workplacesql = " JOIN {user_info_competence_data} 	uic ON  uic.userid  = u.id
+                                  JOIN {report_gen_companydata} 	rgc ON  rgc.id      = uic.competenceid
+                                                                        AND rgc.name LIKE '%" . $data->userworkplace . "'%' ";
+            }
+
+            // Jobrole.
+            if ($data->userjobrole) {
+                $jobrolesql = " JOIN {user_info_competence_data}  uic2 ON  uic2.userid = u.id
+                                JOIN {report_gen_jobrole}         gjr  ON  gjr.id IN (uic2.jobroles)
+                                                                       AND gjr.name LIKE '%" . $data->userjobrole . "%' ";
+            }
+
+            // Query.
+            $query = " SELECT 	GROUP_CONCAT(DISTINCT u.id ORDER BY u.id SEPARATOR ',') as 'instructors'
+                       FROM    	{user}              u
+                          -- INSTRUCTORS
+                          JOIN  {role_assignments}  ra  ON  ra.userid   		= u.id
+                          JOIN  {context}           ct  ON  ct.id       		= ra.contextid
+                          JOIN  {role}              r   ON  r.id        		= ra.roleid
+                                                        AND r.archetype 		= 'teacher'
+                          -- Course
+                          JOIN 	{course}		     c	ON  c.id        		= ct.instanceid
+                                                        AND c.category		    IN ($categories)
+                          -- Jobroles
+                          $jobrolesql
+                          -- Workplace
+                          $workplacesql
+                       WHERE u.deleted = 0 
+                          $extrasql ";
+
+            // Execute
+            $rdo = $DB->get_record_sql($query, $params);
+            if ($rdo) {
+                return $rdo->instructors;
+            } else {
+                return null;
+            }
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    } // end get_course_instructors
+
+    /**
+     * Description
+     * Gets the categoryname from the category id selected by the user in the form
+     *
+     * @param   integer $category    The category integer selected by the user in the form
+     *
+     * @return  string  $rdo         The category name
+     * @throws          Exception
+     *
+     * @updateDate      23/05/2017
+     * @author          eFaktor     (nas)
+     *
+     * @updateDate      28/08/2017
+     * @auhtor          eFaktor     (fbv)
+     *
+     */
+    public static function get_category_name($category) {
+        // Variables
+        global $DB;
+        $rdo = null;
+
+        try {
+            // Search criteria
+            $params = array();
+            $params['id'] = $category;
+
+            $rdo = $DB->get_record('course_categories', $params,'name');
+
+            // Gets the category.
+            if ($rdo) {
+                return $rdo->name;
+            } else {
+                return null;
+            }
+        } catch (Exception $ex) {
+            Throw $ex;
+        }  // end try_catch
+    } // end get_categories
+
+    /**
+     * Description
+     * Gets the coursename from the category id selected by the user in the form
+     *
+     * @param   integer $course    The course integer selected by the user in the form
+     *
+     * @return  string  $rdo       The coursename
+     * @throws          Exception
+     *
+     * @updateDate      23/05/2017
+     * @author          eFaktor     (nas)
+     *
+     * @updateDate      28/08/2017
+     * @author          eFaktor     (fbv)
+     *
+     */
+    public static function get_course_name($course) {
+        // Variables
+        global $DB;
+        $rdo = null;
+
+        try {
+            $params = array();
+            $params['id'] = $course;
+
+            $rdo = $DB->get_record('course', $params,'fullname');
+
+            // Gets the category.
+            if ($rdo) {
+                return $rdo->fullname;
+            } else {
+                return null;
+            }
+        } catch (Exception $ex) {
+            Throw $ex;
+        }  // end try_catch
+    }//get_course_name
+
+    /**
+     * Description
      * Creates the excel for the summary report
      *
      * @param   array   $coursesdata   The data from the get_course_summary_data
@@ -737,7 +890,7 @@ class friadminrpt
             // Sheet Content
             $myxls = $export->add_worksheet(get_string('content', 'local_friadmin'));
             // Headers.
-            self::add_participants_header_excel($myxls, $coursesdata);
+            self::add_participants_header_excel($myxls);
             $row ++;
             // Content.
             if ($coursesdata) {
@@ -756,63 +909,6 @@ class friadminrpt
             throw $ex;
         }
     }//download_participants_list
-
-    /**
-     * Description
-     * Creates the excel for the instructor report
-     *
-     * @param   array   $courses  Instructors and theirs courses
-     * @param   object  $data       Data from the filter (form)
-     *
-     * @throws          Exception
-     *
-     * @updateDate      23/05/2017
-     * @author          eFaktor     (nas)
-     *
-     * @updateDate      08/06/17
-     * @auhtor          eFaktor     (fbv)
-     *
-     */
-    public static function download_participants_list_instructor($courses, $data) {
-        // Variables.
-        $row        = 0;
-        $time       = null;
-        $name       = null;
-        $export     = null;
-        $myxls      = null;
-        $noresults  = null;
-
-        try {
-            // Creating a workbook.
-            $time = userdate(time(), '%d.%m.%Y', 99, false);
-            $name = clean_filename(get_string('participantslistinstructors', 'local_friadmin') . $time . ".xls");
-            $export = new MoodleExcelWorkbook($name);
-
-            // Sheet - Search criterias.
-            $myxls = $export->add_worksheet(get_string('filter', 'local_friadmin'));
-            self::add_participants_excel_filter_instructor($myxls, $data);
-
-            // Shhet with content.
-            $myxls = $export->add_worksheet(get_string('content', 'local_friadmin'));
-            // Headers.
-            self::add_participants_header_excel_instructor($myxls,$courses);
-            $row ++;
-            // Content.
-            if ($courses) {
-                self::add_participants_content_excel_instructor($courses, $myxls, $row);
-            }else {
-                $noresults = get_string('noresults','local_friadmin');
-                $myxls->write($row, 0, $noresults, array('size' => 16, 'name' => 'Arial', 'text_wrap' => true, 'v_align' => 'left'));
-                $myxls->merge_cells($row, 0, $row, 5);
-                $myxls->set_row($row, 20);
-            }//if_courses
-
-            $export->close();
-            exit;
-        } catch (Exception $ex) {
-            throw $ex;
-        } //try_catch
-    } //download_participants_list_instructor
 
     /**
      * Description
@@ -872,6 +968,258 @@ class friadminrpt
         }//try_catch
     }//download_participants_list_coordinator
 
+    /**
+     * Description
+     * Creates the excel for the instructor report
+     *
+     * @param   array   $courses  Instructors and theirs courses
+     * @param   object  $data       Data from the filter (form)
+     *
+     * @throws          Exception
+     *
+     * @updateDate      23/05/2017
+     * @author          eFaktor     (nas)
+     *
+     * @updateDate      08/06/17
+     * @auhtor          eFaktor     (fbv)
+     *
+     */
+    public static function download_participants_list_instructor($courses, $data) {
+        // Variables.
+        $row        = 0;
+        $time       = null;
+        $name       = null;
+        $export     = null;
+        $myxls      = null;
+        $noresults  = null;
+
+        try {
+            // Creating a workbook.
+            $time = userdate(time(), '%d.%m.%Y', 99, false);
+            $name = clean_filename(get_string('participantslistinstructors', 'local_friadmin') . $time . ".xls");
+            $export = new MoodleExcelWorkbook($name);
+
+            // Sheet - Search criterias.
+            $myxls = $export->add_worksheet(get_string('filter', 'local_friadmin'));
+            self::add_participants_excel_filter_instructor($myxls, $data);
+
+            // Shhet with content.
+            $myxls = $export->add_worksheet(get_string('content', 'local_friadmin'));
+            // Headers.
+            self::add_participants_header_excel_instructor($myxls,$courses);
+            $row ++;
+            // Content.
+            if ($courses) {
+                self::add_participants_content_excel_instructor($courses, $myxls, $row);
+            }else {
+                $noresults = get_string('noresults','local_friadmin');
+                $myxls->write($row, 0, $noresults, array('size' => 16, 'name' => 'Arial', 'text_wrap' => true, 'v_align' => 'left'));
+                $myxls->merge_cells($row, 0, $row, 5);
+                $myxls->set_row($row, 20);
+            }//if_courses
+
+            $export->close();
+            exit;
+        } catch (Exception $ex) {
+            throw $ex;
+        } //try_catch
+    } //download_participants_list_instructor
+
+    /***********/
+    /* PRIVATE */
+    /***********/
+
+    /**
+     * Description
+     * Get sql instruction to get all categories connected with user
+     * based on the context
+     *
+     * @param           $context
+     *
+     * @return          null|string
+     * @throws          Exception
+     *
+     * @creationDate    23/08/2017
+     * @author          eFaktor     (fbv)
+     */
+    private static function get_sql_my_categories_as($context) {
+        /* Variables */
+        $sql = null;
+
+        try {
+            // Switch role
+            switch ($context) {
+                case CONTEXT_COURSE:
+                    $sql = " SELECT	  GROUP_CONCAT(DISTINCT cc.path ORDER BY c.id SEPARATOR ',') as 'category'
+                             FROM	  {role_assignments}	ra
+                                JOIN  {role}				r		ON 	ra.roleid 		= r.id
+                                                                    AND	r.archetype 	IN ('manager','coursecreator')
+                                JOIN  {context}				ct  	ON  ct.id 			= ra.contextid
+                                                                    AND ct.contextlevel = :context
+                                JOIN  {course}				c		ON	c.id 			= ct.instanceid
+                                JOIN  {course_categories}	cc		ON  cc.id 			= c.category
+                             WHERE ra.userid = :user ";
+
+
+                    break;
+                case CONTEXT_COURSECAT:
+                    $sql = " SELECT	  GROUP_CONCAT(DISTINCT cc.path ORDER BY cc.id SEPARATOR ',') as 'category'
+                             FROM	  {role_assignments}	ra
+                                JOIN  {role}				r	ON 	ra.roleid 		= r.id
+                                                                AND	r.archetype 	IN ('manager','coursecreator')
+                                JOIN  {context}			    ct  ON  ct.id 			= ra.contextid
+                                                                AND ct.contextlevel = :context
+                                JOIN  {course_categories}	cc	ON  cc.id 			= ct.instanceid
+                             WHERE ra.userid = :user ";
+
+                    break;
+                case CONTEXT_SYSTEM:
+                    $sql = " SELECT	  ra.id,
+                                      ra.contextid,
+                                      ct.instanceid
+                             FROM	  {role_assignments}  ra
+                                JOIN  {role}			  r	  ON 	ra.roleid 		= r.id
+                                                              AND	r.archetype 	IN ('manager','coursecreator')
+                                JOIN  {context}			  ct  ON  ct.id 			= ra.contextid
+                                                              AND ct.contextlevel = :context
+                             WHERE ra.userid = :user ";
+
+                    break;
+            }//switch_role
+
+            return $sql;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//get_sql_my_categories_as
+
+    /**
+     * Description
+     * Return all categories with courses
+     *
+     * @param           null $in
+     *
+     * @return          bool|mixed|null|string
+     * @throws          Exception
+     *
+     * @creationDate    23/08/2017
+     * @author          eFaktor     (fbv)
+     */
+    private static function get_all_categories_with_courses($in=null) {
+        /* Variables */
+        global $DB;
+        $rdo        = null;
+        $sql        = null;
+        $categories = null;
+
+        try {
+            // SQL Instruction
+            $sql = " SELECT	  GROUP_CONCAT(DISTINCT ca.path ORDER BY ca.id SEPARATOR ',') as 'category'
+                     FROM	  {course}				c
+                        JOIN  {course_categories}	ca ON ca.id = c.category ";
+
+            // Execute
+            if ($in) {
+                $sql .= " AND ca.id IN ($in) ";
+            }//in
+            $rdo = $DB->get_record_sql($sql);
+            if ($rdo) {
+                if ($rdo->category) {
+                    $categories= str_replace(',/',',',$rdo->category);
+                    $categories = str_replace('/',',',$categories);
+                    $categories = substr($categories,1);
+                }//if_Cattegory
+            }//if_rdo
+
+            return $categories;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_cstch
+    }//get_all_categories_with_courses
+
+    /**
+     * @param   array     $sector     All the sectors in an array
+     * @return  null      Returns the sectors in text format or null
+     * @throws  Exception
+     *
+     * @updateDate    23/05/2017
+     * @author          eFaktor     (nas)
+     *
+     */
+    private static function get_sectors($sector) {
+        // Variables
+        global $DB;
+        $rdo = null;
+
+        try {
+            // SQL Instruction
+            $query = "SELECT GROUP_CONCAT(DISTINCT cd.name ORDER BY cd.name SEPARATOR ',') as 'sectors'
+                      FROM 	{report_gen_companydata} cd
+                      WHERE cd.id IN ($sector)
+	                    AND cd.hierarchylevel = 2";
+
+            // Execute
+            $rdo = $DB->get_record_sql($query);
+            if ($rdo) {
+                return $rdo->sectors;
+            } else {
+                return null;
+            }//if_rdo
+        } catch (Exception $ex) {
+            Throw $ex;
+        }  // end try_catch
+    } // end get_categories
+
+    /**
+     * Description
+     * Used to get the coordinators during the excel download call
+     *
+     * @param       integer     $courseid from the database
+     * @return      string      The coordinators firstname and lastname
+     * @throws      Exception
+     *
+     * @creationDate    23/05/2017
+     * @author          eFaktor     (nas)
+     *
+     * @updateDate      07/06/2017
+     * @author          eFaktor     (fbv)
+     */
+    private static function get_coordinator($courseid) {
+        // Variables!
+        global $DB;
+        $rdo = null;
+
+        try {
+            // Search criteria
+            $params = array();
+            $params['courseid'] = $courseid;
+
+            // SQL Instruction
+            $query = " SELECT 	  u.id,
+                                  concat(u.firstname, ' ', u.lastname)		as 'cord'
+                       FROM	      {role_assignments}	ra
+                            -- Only users with contextlevel = 50 (Course)
+                            JOIN  {context}		ct  ON  ct.id 			= ra.contextid
+                                                    AND ct.instanceid	= :courseid
+                            -- Coordinators
+                            JOIN   {role}	    rs 	ON 	rs.id 		    = ra.roleid
+                                                    AND rs.archetype    = 'editingteacher'
+                            -- User info
+                            JOIN   {user}		u	ON 	u.id 		    = ra.userid
+                       ORDER BY ra.id
+                       LIMIT 0,1 ";
+
+            // Execute
+            $rdo = $DB->get_record_sql($query, $params);
+            if ($rdo) {
+                return $rdo->cord;
+            } else {
+                return null;
+            }
+        } catch (Exception $ex) {
+            Throw $ex;
+        }//try_catch
+    } // end get_coordinator
 
     /**
      * Description
@@ -899,12 +1247,13 @@ class friadminrpt
         $strto          = get_string('toexcel', 'local_friadmin');
 
 
-
         try {
             // Extract criteria
             $myfrom     = userdate($data->selsummaryfrom,'%d.%m.%Y', 99, false);
             $myto       = userdate($data->selsummaryto,'%d.%m.%Y', 99, false);
-            $mycategory = self::get_category_name($data->category);
+
+            // Category name
+            $mycategory = self::get_category_name($data->parentcat);
 
             // Summary Report Header.
             $myxls->write($row, $col, $strsummary, array(
@@ -1027,8 +1376,8 @@ class friadminrpt
 
         try {
             //Category and course name
-            $mycategory = self::get_category_name($data->category);
-            $mycourse   = self::get_course_name($data->course);
+            $mycategory = self::get_category_name($data->parentcat);
+            $mycourse   = ($data->course ? self::get_course_name($data->course) : '');
 
             // Instructor Report Header
             $myxls->write($row, $col, $strinsructor, array(
@@ -1240,6 +1589,9 @@ class friadminrpt
         // Variables.
         $col        = 0;
         $row        = 0;
+        $mycategory = null;
+        $mycourse   = null;
+
         $strcoordinator = get_string('coordinatorexcel', 'local_friadmin');
         $strcategory    = get_string('categoryexcel', 'local_friadmin');
         $strcourse      = get_string('courseexcel', 'local_friadmin');
@@ -1250,9 +1602,9 @@ class friadminrpt
         $strjobrole     = get_string('jobroleexcel', 'local_friadmin');
 
         try {
-            // Course/Category name
-            $mycategory = self::get_category_name($data->category);
-            $mycourse = self::get_course_name($data->course);
+            // Category and course name
+            $mycategory = self::get_category_name($data->parentcat);
+            $mycourse   = ($data->course ? self::get_course_name($data->course) : '');
 
             // Coordinator Report Header
             $myxls->write($row, $col, $strcoordinator, array(
@@ -1445,92 +1797,6 @@ class friadminrpt
     } // end add_participants_excel_filter_coordinator
 
     /**
-     * @param   array     $sector     All the sectors in an array
-     * @return  null      Returns the sectors in text format or null
-     * @throws  Exception
-     *
-     * @updateDate    23/05/2017
-     * @author          eFaktor     (nas)
-     *
-     */
-    private static function get_sectors($sector) {
-        // Variables!
-        global $DB;
-        $rdo = null;     // Used to query the database.
-
-
-
-        try {
-            // SQL Instruction
-            $query = "SELECT GROUP_CONCAT(DISTINCT cd.name ORDER BY cd.name SEPARATOR ',') as 'sectors'
-                      FROM 	{report_gen_companydata} cd
-                      WHERE cd.id IN ($sector)
-	                    AND cd.hierarchylevel = 2";
-
-            $rdo = $DB->get_record_sql($query);
-
-            if ($rdo) {
-                return $rdo->sectors;
-            } else {
-                return null;
-            }
-        } catch (Exception $ex) {
-            Throw $ex;
-        }  // end try_catch
-    } // end get_categories
-
-    /**
-     * Description
-     * Used to get the coordinators during the excel download call
-     *
-     * @param       integer     $courseid from the database
-     * @return      string      The coordinators firstname and lastname
-     * @throws      Exception
-     *
-     * @creationDate    23/05/2017
-     * @author          eFaktor     (nas)
-     *
-     * @updateDate      07/06/2017
-     * @author          eFaktor     (fbv)
-     */
-    public static function get_coordinator($courseid) {
-        // Variables!
-        global $DB;
-        $rdo = null;
-
-        try {
-            // Search criteria
-            $params = array();
-            $params['courseid'] = $courseid;
-
-            // SQL Instruction
-            $query = " SELECT 	  u.id,
-                                  concat(u.firstname, ' ', u.lastname)		as 'cord'
-                       FROM	      {role_assignments}	ra
-                            -- Only users with contextlevel = 50 (Course)
-                            JOIN  {context}		ct  ON  ct.id 			= ra.contextid
-                                                    AND ct.instanceid	= :courseid
-                            -- Coordinators
-                            JOIN   {role}	    rs 	ON 	rs.id 		    = ra.roleid
-                                                    AND rs.archetype    = 'editingteacher'
-                            -- User info
-                            JOIN   {user}		u	ON 	u.id 		    = ra.userid
-                       ORDER BY ra.id
-                       LIMIT 0,1 ";
-
-            // Execute
-            $rdo = $DB->get_record_sql($query, $params);
-            if ($rdo) {
-                return $rdo->cord;
-            } else {
-                return null;
-            }
-        } catch (Exception $ex) {
-            Throw $ex;
-        }//try_catch
-    } // end get_coordinator
-
-    /**
      * Description
      * Add the header of the table to the excel report for the summary
      *
@@ -1545,7 +1811,7 @@ class friadminrpt
      * @author          eFaktor     (fbv)
      *
      */
-    private static function add_participants_header_excel(&$myxls, $coursesdata) {
+    private static function add_participants_header_excel(&$myxls) {
         // Variables.
         $col                = 0;
         $row                = 0;
@@ -1883,7 +2149,6 @@ class friadminrpt
         }//try_catch
     } //add_participants_header_excel
 
-
     /**
      * @param       array $coursedata
      * @param             $myxls
@@ -1948,7 +2213,7 @@ class friadminrpt
                 // Course format.
                 $col ++;
                 $format = (get_string_manager()->string_exists($course->courseformat,'local_friadmin')
-                            ? get_string($course->courseformat,'local_friadmin') : $course->courseformat);
+                    ? get_string($course->courseformat,'local_friadmin') : $course->courseformat);
                 $myxls->write($row, $col, $format, array('size' => 12, 'name' => 'Arial', 'text_wrap' => true,'v_align' => 'left'));
                 $myxls->merge_cells($row, $col, $row, $col);
                 $myxls->set_row($row,$h);
@@ -2381,7 +2646,7 @@ class friadminrpt
                 // Course format.
                 $col ++;
                 $format = (get_string_manager()->string_exists($course->courseformat,'local_friadmin')
-                            ? get_string($course->courseformat,'local_friadmin') : $course->courseformat);
+                    ? get_string($course->courseformat,'local_friadmin') : $course->courseformat);
                 $myxls->write($row, $col, $format, array('size' => 12, 'name' => 'Arial', 'text_wrap' => true, 'v_align' => 'left'));
                 $myxls->merge_cells($row, $col, $row, $col);
                 $myxls->set_row($row, $h);
@@ -2724,7 +2989,7 @@ class friadminrpt
                 // Course format.
                 $col ++;
                 $format = (get_string_manager()->string_exists($course->courseformat,'local_friadmin')
-                            ? get_string($course->courseformat,'local_friadmin') : $course->courseformat);
+                    ? get_string($course->courseformat,'local_friadmin') : $course->courseformat);
                 $myxls->write($row, $col, $format, array('size' => 12, 'name' => 'Arial', 'text_wrap' => true, 'v_align' => 'left'));
                 $myxls->merge_cells($row, $col, $row, $col);
                 $myxls->set_row($row, $h);
@@ -2795,81 +3060,4 @@ class friadminrpt
         }//try_catch
     }//add_participants_content_excel
 
-    /**
-     * Description
-     * Gets the categoryname from the category id selected by the user in the form
-     *
-     * @param   integer $category    The category integer selected by the user in the form
-     *
-     * @return  string  $rdo         The category name
-     * @throws          Exception
-     *
-     * @updateDate    23/05/2017
-     * @author          eFaktor     (nas)
-     *
-     */
-    public static function get_category_name($category) {
-        // Variables!
-        global $DB;
-        $rdo = null;
-
-        $query = "SELECT  ca.name
-                  FROM    {course_categories} ca
-                  WHERE   ca.id = :category";
-
-        try {
-            $params = array();
-            $params['category'] = $category;
-
-            $rdo = $DB->get_record_sql($query, $params);
-
-            // Gets the category.
-            if ($rdo) {
-                return $rdo->name;
-            } else {
-                return null;
-            }
-        } catch (Exception $ex) {
-            Throw $ex;
-        }  // end try_catch
-    } // end get_categories
-
-    /**
-     * Description
-     * Gets the coursename from the category id selected by the user in the form
-     *
-     * @param   integer $course    The course integer selected by the user in the form
-     *
-     * @return  string  $rdo       The coursename
-     * @throws          Exception
-     *
-     * @updateDate    23/05/2017
-     * @author          eFaktor     (nas)
-     *
-     */
-    public static function get_course_name($course) {
-        // Variables!
-        global $DB;
-        $rdo = null;
-
-        $query = "SELECT  c.fullname
-                  FROM    {course} c
-                  WHERE   c.id = :course";
-
-        try {
-            $params = array();
-            $params['course'] = $course;
-
-            $rdo = $DB->get_record_sql($query, $params);
-
-            // Gets the category.
-            if ($rdo) {
-                return $rdo->fullname;
-            } else {
-                return null;
-            }
-        } catch (Exception $ex) {
-            Throw $ex;
-        }  // end try_catch
-    } // end get_categories
-}
+}//friadminrpt
