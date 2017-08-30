@@ -33,7 +33,7 @@ require_once('lib/categoryrptlib.php');
 global $PAGE,$USER;
 
 // Params
-$category = required_param('category', PARAM_INT);
+$category       = required_param('category', PARAM_INT);
 $categories     = null;
 $json           = array();
 $data           = null;
@@ -72,20 +72,20 @@ if ($mycategories) {
         }
         $categories .= $mycategories->total;
     }
-} **/
-
+}**/
+/**
 $category   = "/" . $cat . "/";
 if ($categories) {
     $categories .= ',';
 }
 $categories = friadminrpt::get_subcategories_by_cat($category);
-
+**/
 global $CFG;
-$dblog = "CATEGORIES --> " . $categories . "\n";
+$dblog = "CATEGORIES --> " . $category . "\n";
 error_log($dblog, 3, $CFG->dataroot . "/CATEGORIES.log");
 
 // Get courses connected with
-$courselst = friadminrpt::get_courses_by_cat($categories);
+$courselst = friadminrpt::get_courses_by_cat(0);
 
 $data   = array('mycourses' => array());
 $courses = array();
