@@ -77,6 +77,10 @@ if ($mycategories) {
 $category   = "/" . $category . "/";
 $categories = friadminrpt::get_subcategories_by_cat($category,$mycategories->totalpath);
 
+if ($categories) {
+    $categories .= ',' . $category;
+}
+
 global $CFG;
 $dblog = "CATEGORIES --> " . $category . "\n";
 error_log($dblog, 3, $CFG->dataroot . "/CATEGORIES.log");
