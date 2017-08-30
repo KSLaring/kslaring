@@ -1097,6 +1097,10 @@ class friadminrpt {
                     break;
             }//switch_role
 
+            global $CFG;
+            $dblog = "SQL --> " . "\n\n" . $sql . "\n\n";
+            error_log($dblog, 3, $CFG->dataroot . "/CATEGORIES.log");
+
             return $sql;
         }catch (Exception $ex) {
             throw $ex;
