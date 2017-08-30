@@ -214,16 +214,22 @@ class friadminrpt {
             $params['user'] = $user;
 
             // Admin all categories
-            // Context System all categories
-            // By CONTEXT SYSTEM
-            $params['context'] = CONTEXT_SYSTEM;
-            $sql = self::get_sql_my_categories_as(CONTEXT_SYSTEM);
-            // Execute
-            $rdo = $DB->get_record_sql($sql,$params);
-            if ($rdo) {
+            if (is_siteadmin($user)) {
                 $mycategories->ctx_system = true;
                 $mycategories->total      = self::get_all_categories_with_courses();
-            }//if_rdo
+            }else {
+                // Context System all categories
+                // By CONTEXT SYSTEM
+                $params['context'] = CONTEXT_SYSTEM;
+                $sql = self::get_sql_my_categories_as(CONTEXT_SYSTEM);
+                // Execute
+                $rdo = $DB->get_record_sql($sql,$params);
+                if ($rdo) {
+                    $mycategories->ctx_system = true;
+                    $mycategories->total      = self::get_all_categories_with_courses();
+                }//if_rdo
+            }//if_else
+
 
             // CONTEXT COURSE && CONTEXT COURSE CAT
             if (!$mycategories->ctx_system) {
