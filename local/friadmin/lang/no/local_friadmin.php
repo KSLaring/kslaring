@@ -376,3 +376,7 @@ $string['topics']               = 'Emneformat';
 $string['grid']                 = 'Rutenettformat';
 $string['weeks']                = 'Ukeformat';
 $string['social']               = 'Sosialt format';
+$string['clean']                = 'Clean';
+$string['cat_selected']         = 'Category selected';
+$string['cat_required']         = 'The category is required. You have to select one.';
+

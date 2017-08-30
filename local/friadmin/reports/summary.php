@@ -31,35 +31,38 @@ require_once( 'forms/rpt_forms.php');
 require_once( 'lib/categoryrptlib.php');
 require_once($CFG->dirroot . '/lib/excellib.class.php');
 
-// Params!
+global $PAGE,$USER,$OUTPUT;
+
+// Params
+$parent         = optional_param('parentcat', 0,PARAM_INT);
+$mycategories   = null;
+$contextsystem  = context_system::instance();
+$url            = new moodle_url('/local/friadmin/reports/summary.php');
+
 require_login();
 
-// Variables!
-$contextsystem  = context_system::instance();
-$CFG->wwwroot;
-
-// Startpage!
-$url = new moodle_url('/local/friadmin/reports/summary.php');
-
+// Startpage
 $PAGE->set_url($url);
 $PAGE->set_pagelayout('admin');
 $PAGE->set_context($contextsystem);
 
-// Capabilities!
+// Capabilities
 if (!has_capability('local/friadmin:course_locations_manage',$contextsystem)) {
     if (!local_friadmin_helper::CheckCapabilityFriAdmin()) {
         print_error('nopermissions', 'error', '', 'block/frikomport:view');
     }
 }
 
+// Get my categories
+$mycategories = friadminrpt::get_my_categories_by_context($USER->id);
+
 // Form!
-$mform = new summary_form(null);
-$noresults = null;
+$mform = new summary_form(null,array($mycategories,$parent));
 
 if ($mform->is_cancelled()) {
     redirect($CFG->wwwroot);
 } else if ($fromform = $mform->get_data()) {
-    $coursesdata = friadminrpt::get_course_summary_data($fromform);
+    $coursesdata = friadminrpt::get_course_summary_data($fromform,$mycategories->totalpath);
 
     // Download file
     ob_end_clean();
@@ -73,6 +76,9 @@ echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('summaryheading', 'local_friadmin'));
 
 $mform->display();
+
+// Javascript to et categories and courses
+friadminrpt::ini_data_reports('parent','category','course');
 
 // Print Footer!
 echo $OUTPUT->footer();

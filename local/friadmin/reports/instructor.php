@@ -32,19 +32,21 @@ require_once( 'lib/categoryrptlib.php');
 require_once($CFG->dirroot . '/lib/excellib.class.php');
 
 require_login();
-// Params!
 
+global $CFG,$PAGE,$OUTPUT,$USER;
 
-// Variables!
-$instructorsinfo = null;
-$contextsystem   = context_system::instance();
-$url             = new moodle_url('/local/friadmin/reports/instructor.php');
+// Params
+$parent             = optional_param('parentcat', 0,PARAM_INT);
+$contextsystem      = context_system::instance();
+$coursescoordinator = null;
+$mycategories       = null;
+$instructorsinfo    = null;
+$url                = new moodle_url('/local/friadmin/reports/instructor.php');
 
 //Start page
 $PAGE->set_url($url);
 $PAGE->set_pagelayout('admin');
 $PAGE->set_context($contextsystem);
-$PAGE->requires->js('/local/friadmin/reports/js/report.js');
 
 // Capabilities!
 if (!has_capability('local/friadmin:course_locations_manage',$contextsystem)) {
@@ -53,20 +55,21 @@ if (!has_capability('local/friadmin:course_locations_manage',$contextsystem)) {
     }
 }
 
-// Form!
-$mform = new course_instructor_form(null);
+// Get my categories
+$mycategories = friadminrpt::get_my_categories_by_context($USER->id);
 
-// Calls a function to get the javascript values to fill into the form based on the previous search criteria.
-friadminrpt::get_javascript_values('course', 'category', null);
+// Form!
+$mform = new course_instructor_form(null,array($mycategories,$parent));
 
 if ($mform->is_cancelled()) {
     redirect($CFG->wwwroot);
 } else if ($fromform = $mform->get_data()) {
     // Get instructors
-    $instructors = friadminrpt::get_course_instructors($fromform);
+    $instructors = friadminrpt::get_course_instructors($fromform,$mycategories->totalpath);
+
     // Get courses connected with the instructors
     if ($instructors) {
-        $instructorsinfo = friadminrpt::get_course_instructor_data($instructors, $fromform->course, $fromform->category);
+        $instructorsinfo = friadminrpt::get_course_instructor_data($instructors, $fromform->course, $fromform->parentcat,$mycategories->totalpath);
     }
 
     // Download file
@@ -81,6 +84,9 @@ echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('instructorheading', 'local_friadmin'));
 
 $mform->display();
+
+// Javascript to et categories and courses
+friadminrpt::ini_data_reports('parent','category','course');
 
 // Print Footer!
 echo $OUTPUT->footer();

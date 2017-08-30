@@ -33,36 +33,38 @@ require_once($CFG->dirroot . '/lib/excellib.class.php');
 
 require_login();
 
-// Variables!
-global $CFG,$PAGE,$OUTPUT;
+global $CFG,$PAGE,$OUTPUT,$USER;
+
+// Params
+$parent             = optional_param('parentcat', 0,PARAM_INT);
 $contextsystem      = context_system::instance();
 $coursescoordinator = null;
+$mycategories       = null;
 $url                = new moodle_url('/local/friadmin/reports/coordinator.php');
 
 // Start page
 $PAGE->set_url($url);
 $PAGE->set_pagelayout('admin');
 $PAGE->set_context($contextsystem);
-$PAGE->requires->js('/local/friadmin/reports/js/report.js');
 
-// Capabilities!
+// Capabilities
 if (!has_capability('local/friadmin:course_locations_manage',$contextsystem)) {
     if (!local_friadmin_helper::CheckCapabilityFriAdmin()) {
         print_error('nopermissions', 'error', '', 'block/frikomport:view');
     }
 }
 
-// Form!
-$mform = new course_coordinator_form(null);
+// Get my categories
+$mycategories = friadminrpt::get_my_categories_by_context($USER->id);
 
-// Calls a function to get the javascript values to fill into the form based on the previous search criteria.
-friadminrpt::get_javascript_values('course', 'category', null);
+// Form!
+$mform = new course_coordinator_form(null,array($mycategories,$parent));
 
 if ($mform->is_cancelled()) {
     redirect($CFG->wwwroot);
 } else if ($fromform = $mform->get_data()) {
     // Get course with coordinators
-    $coursescoordinator = friadminrpt::get_courses_with_coordinator($fromform);
+    $coursescoordinator = friadminrpt::get_courses_with_coordinator($fromform,$mycategories->totalpath);
 
     // Download file
     ob_end_clean();
@@ -76,6 +78,9 @@ echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('coordinatorheading', 'local_friadmin'));
 
 $mform->display();
+
+// Javascript to et categories and courses
+friadminrpt::ini_data_reports('parent','category','course');
 
 // Print Footer!
 echo $OUTPUT->footer();

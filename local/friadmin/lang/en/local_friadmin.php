@@ -384,3 +384,6 @@ $string['grid']                 = 'grid';
 $string['weeks']                = 'weeks';
 $string['social']               = 'social';
 
+$string['clean']                = 'Clean';
+$string['cat_selected']         = 'Category selected';
+$string['cat_required']         = 'The category is required. You have to select one.';
