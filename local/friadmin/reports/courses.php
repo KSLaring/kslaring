@@ -58,9 +58,10 @@ $mycategories   = friadminrpt::get_my_categories_by_context($USER->id);
 // Get categories and subcategories connecte with user and with coourses
 $cat   = "/" . $category . "/";
 $categories = friadminrpt::get_subcategories_by_cat($cat,$mycategories->totalpath);
-
 if ($categories) {
     $categories .= ',' . $category;
+}else {
+    $categories = $category;
 }
 
 global $CFG;
