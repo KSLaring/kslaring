@@ -284,7 +284,7 @@ class friadminrpt {
                     $dblog .= "MY CATEGORIES - TOTAL II --> " . $mycategories->total . "\n";
 
                     // Only catgories wit
-                    $mycategories->total      = self::get_courses_by_cat($mycategories->total);
+                    $mycategories->total      = self::get_all_categories_with_courses($mycategories->total);
                 }//my_categories
 
             }
