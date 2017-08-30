@@ -269,22 +269,23 @@ class friadminrpt {
                     }//if_category
                 }//if_rdo
 
-                $dblog .= "MY CATEGORIES - TOTAL I --> " . $mycategories->total . "\n";
-
                 // Get subcategories
-
                 if ($mycategories->total) {
-
                     $categories = null;
                     $aux        = explode(',',$mycategories->total);
                     foreach ($aux as $cat) {
                         $category   = "/" . $cat . "/";
-                        $mycategories->total .= ',' . self::get_subcategories_by_cat($category);
-                    }
+                        $categories = self::get_subcategories_by_cat($category);
+                        if ($categories) {
+                            $mycategories->total .= ',' . $categories;
+                        }
+                    }//for_aux
+
+                    $dblog .= "MY CATEGORIES - TOTAL II --> " . $mycategories->total . "\n";
 
                     // Only catgories wit
-                    //$mycategories->total      = self::get_courses_by_cat($mycategories->total);
-                }
+                    $mycategories->total      = self::get_courses_by_cat($mycategories->total);
+                }//my_categories
 
             }
             $dblog .= "MY CATEGORIES - TOTAL --> " . $mycategories->total . "\n";
