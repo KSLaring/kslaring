@@ -52,7 +52,7 @@ require_login();
 require_sesskey();
 
 // Categories connected with the user
-//$mycategories   = friadminrpt::get_my_categories_by_context($USER->id);
+$mycategories   = friadminrpt::get_my_categories_by_context($USER->id);
 
 // Get subcategories
 /**
