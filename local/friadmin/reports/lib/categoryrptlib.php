@@ -268,6 +268,11 @@ class friadminrpt {
             if ($mycategories->total
                 ||
                 $mycategories->ctx_system) {
+
+                global $CFG;
+                $dblog = "MY CATEGORIES --> " . $mycategories->total . "\n";
+                error_log($dblog, 3, $CFG->dataroot . "/CATEGORIES.log");
+
                 return $mycategories;
             }else {
                 return null;
