@@ -279,17 +279,17 @@ class friadminrpt {
                     $aux        = explode(',',$mycategories->total);
                     foreach ($aux as $cat) {
                         $category   = "/" . $cat . "/";
-                        if ($categories) {
-                            $categories .= ',';
-                        }
-                        $categories .= self::get_subcategories_by_cat($category);
+                        //if ($categories) {
+                        //    $categories .= ',';
+                        //}
+                        $mycategories->total .= self::get_subcategories_by_cat($category);
                     }
 
-                    if ($categories) {
-                        $mycategories->total = ',' . $categories;
-                    }
+                    //if ($categories) {
+                    //    $mycategories->total = ',' . $categories;
+                    //}
 
-                    $mycategories->total = self::get_all_categories_with_courses($mycategories->total);
+                    //$mycategories->total = self::get_all_categories_with_courses($mycategories->total);
                 }
 
             }
