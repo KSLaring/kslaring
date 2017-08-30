@@ -52,9 +52,10 @@ require_login();
 require_sesskey();
 
 // Categories connected with the user
-$mycategories   = friadminrpt::get_my_categories_by_context($USER->id);
+//$mycategories   = friadminrpt::get_my_categories_by_context($USER->id);
 
 // Get subcategories
+/**
 if ($mycategories) {
     if ($mycategories->total) {
         $aux = implode(',',$mycategories->total);
@@ -71,7 +72,13 @@ if ($mycategories) {
         }
         $categories .= $mycategories->total;
     }
+} **/
+
+$category   = "/" . $cat . "/";
+if ($categories) {
+    $categories .= ',';
 }
+$categories = friadminrpt::get_subcategories_by_cat($category);
 
 global $CFG;
 $dblog = "CATEGORIES --> " . $categories . "\n";

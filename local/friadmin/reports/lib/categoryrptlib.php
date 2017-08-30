@@ -196,6 +196,8 @@ class friadminrpt {
         /* Variables */
         global $DB;
         $mycategories   = null;
+        $categories     = null;
+        $aux            = null;
         $sql            = null;
         $params         = null;
         $sqlwhere       = null;
@@ -249,11 +251,8 @@ class friadminrpt {
                         if ($mycategories->total) {
                             $mycategories->total .= ',';
                         }
-                        $mycategories->total = self::get_all_categories_with_courses($mycategories->ctx_course);
 
-                        $dblog .= "MY CATEGORIES - CTX_COURSE --> " . $mycategories->ctx_course . "\n";
-                        $dblog .= "MY CATEGORIES - CTX_COURSE - TOTAL --> " . $mycategories->total . "\n";
-
+                        $mycategories->total .= $mycategories->ctx_course;
                     }//if_Cattegory
                 }//if_rdo
 
@@ -268,13 +267,31 @@ class friadminrpt {
                         if ($mycategories->total) {
                             $mycategories->total .= ',';
                         }
-                        $mycategories->total .= self::get_all_categories_with_courses($mycategories->ctx_cat);
-
-                        $dblog .= "MY CATEGORIES - CTX_CAT --> " . $mycategories->ctx_cat . "\n";
-                        $dblog .= "MY CATEGORIES - CTX_CAT - TOTAL --> " . $mycategories->total . "\n";
+                        $mycategories->total .= $mycategories->ctx_cat;
                     }//if_category
                 }//if_rdo
+
+                // Get subcategories
+                if ($mycategories->total) {
+                    $categories = null;
+                    $aux        = implode(',',$mycategories->total);
+                    foreach ($aux as $cat) {
+                        $category   = "/" . $cat . "/";
+                        if ($categories) {
+                            $categories .= ',';
+                        }
+                        $categories .= self::get_subcategories_by_cat($category);
+                    }
+
+                    if ($categories) {
+                        $mycategories->total = ',' . $categories;
+                    }
+
+                    $mycategories->total = self::get_all_categories_with_courses($mycategories->total);
+                }
+
             }
+            $dblog .= "MY CATEGORIES - TOTAL --> " . $mycategories->total . "\n";
 
             error_log($dblog, 3, $CFG->dataroot . "/CATEGORIES.log");
 
@@ -1134,7 +1151,7 @@ class friadminrpt {
 
         try {
             // SQL Instruction
-            $sql = " SELECT	  GROUP_CONCAT(DISTINCT ca.path ORDER BY ca.id SEPARATOR ',') as 'category'
+            $sql = " SELECT	  GROUP_CONCAT(DISTINCT ca.id ORDER BY ca.id SEPARATOR ',') as 'category'
                      FROM	  {course}				c
                         JOIN  {course_categories}	ca ON ca.id = c.category ";
 
