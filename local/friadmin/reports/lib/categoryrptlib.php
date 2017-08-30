@@ -79,6 +79,7 @@ class friadminrpt {
 
     /**
      * @param           $cat
+     * @param           $cattotal
      *
      * @return          mixed|null
      * @throws          Exception
@@ -86,7 +87,7 @@ class friadminrpt {
      * @creationDate    28/08/2017
      * @author          eFaktor     (fbv)
      */
-    public static function get_subcategories_by_cat($cat) {
+    public static function get_subcategories_by_cat($cat,$cattotal=null) {
         /* Variables */
         global $DB;
         $rdo    = null;
@@ -103,6 +104,10 @@ class friadminrpt {
             $sql = " SELECT	GROUP_CONCAT(DISTINCT ca.id ORDER BY ca.id SEPARATOR ',') as 'category'
                      FROM	{course_categories}	ca
                      WHERE	LOCATE(:cat,ca.path) ";
+
+            if ($cattotal) {
+                $sql .= " AND ca.id IN ($cattotal) ";
+            }//if_cattotal
 
             // Execute
             $rdo = $DB->get_record_sql($sql,$params);

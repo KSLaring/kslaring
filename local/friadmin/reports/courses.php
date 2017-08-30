@@ -73,19 +73,16 @@ if ($mycategories) {
         $categories .= $mycategories->total;
     }
 }**/
-/**
+
 $category   = "/" . $cat . "/";
-if ($categories) {
-    $categories .= ',';
-}
-$categories = friadminrpt::get_subcategories_by_cat($category);
-**/
+$categories = friadminrpt::get_subcategories_by_cat($category,$mycategories->totalpath);
+
 global $CFG;
 $dblog = "CATEGORIES --> " . $category . "\n";
 error_log($dblog, 3, $CFG->dataroot . "/CATEGORIES.log");
 
 // Get courses connected with
-$courselst = friadminrpt::get_courses_by_cat(0);
+$courselst = friadminrpt::get_courses_by_cat($categories);
 
 $data   = array('mycourses' => array());
 $courses = array();
