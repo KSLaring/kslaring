@@ -1143,27 +1143,28 @@ class friadminrpt {
                      FROM	  {course}				c
                         JOIN  {course_categories}	ca ON ca.id = c.category ";
 
+            global $CFG;
+            $dblog = null;
+
             // Execute
             if ($in) {
                 $sql .= " AND ca.id IN ($in) ";
             }//in
+
+            $dblog .= "SQL --> " . "\n\n". $sql . "\n\n";
+            $dblog .= " IN --> " . $in . "\n";
+
             $rdo = $DB->get_record_sql($sql);
             if ($rdo) {
                 if ($rdo->category) {
-                    global $CFG;
-                    $dblog = null;
-
-
                     $dblog .= "MY CATEGORIES - TOTAL (RDO) --> " . $rdo->category . "\n";
-
-                    error_log($dblog, 3, $CFG->dataroot . "/CATEGORIES.log");
-
-                    return $rdo->category;
+                    $categories =  $rdo->category;
                 }//if_Cattegory
-            }else {
-                return null;
             }//if_rdo
 
+            error_log($dblog, 3, $CFG->dataroot . "/CATEGORIES.log");
+
+            return $categories;
         }catch (Exception $ex) {
             throw $ex;
         }//try_cstch
