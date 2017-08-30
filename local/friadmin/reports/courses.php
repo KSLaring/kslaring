@@ -64,10 +64,6 @@ if ($categories) {
     $categories = $category;
 }
 
-global $CFG;
-$dblog = "CATEGORIES --> " . $category . "\n";
-error_log($dblog, 3, $CFG->dataroot . "/CATEGORIES.log");
-
 // Get courses connected with
 $courselst = friadminrpt::get_courses_by_cat($categories);
 

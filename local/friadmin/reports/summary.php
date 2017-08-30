@@ -62,7 +62,7 @@ $mform = new summary_form(null,array($mycategories,$parent));
 if ($mform->is_cancelled()) {
     redirect($CFG->wwwroot);
 } else if ($fromform = $mform->get_data()) {
-    $coursesdata = friadminrpt::get_course_summary_data($fromform);
+    $coursesdata = friadminrpt::get_course_summary_data($fromform,$mycategories->totalpath);
 
     // Download file
     ob_end_clean();

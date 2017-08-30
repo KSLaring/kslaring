@@ -65,11 +65,11 @@ if ($mform->is_cancelled()) {
     redirect($CFG->wwwroot);
 } else if ($fromform = $mform->get_data()) {
     // Get instructors
-    $instructors = friadminrpt::get_course_instructors($fromform);
+    $instructors = friadminrpt::get_course_instructors($fromform,$mycategories->totalpath);
 
     // Get courses connected with the instructors
     if ($instructors) {
-        $instructorsinfo = friadminrpt::get_course_instructor_data($instructors, $fromform->course, $fromform->parentcat);
+        $instructorsinfo = friadminrpt::get_course_instructor_data($instructors, $fromform->course, $fromform->parentcat,$mycategories->totalpath);
     }
 
     // Download file

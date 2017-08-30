@@ -64,7 +64,7 @@ if ($mform->is_cancelled()) {
     redirect($CFG->wwwroot);
 } else if ($fromform = $mform->get_data()) {
     // Get course with coordinators
-    $coursescoordinator = friadminrpt::get_courses_with_coordinator($fromform);
+    $coursescoordinator = friadminrpt::get_courses_with_coordinator($fromform,$mycategories->totalpath);
 
     // Download file
     ob_end_clean();

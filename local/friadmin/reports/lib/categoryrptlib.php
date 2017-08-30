@@ -284,19 +284,8 @@ class friadminrpt {
                         }
                     }//for_aux
 
-                    // Only catgories wit
-
+                    // Only caategopries with courses
                     list($mycategories->total,$mycategories->totalpath)      = self::get_all_categories_with_courses($mycategories->total);
-
-                    global $CFG;
-                    $dblog = null;
-
-
-                    $dblog .= "MY CATEGORIES - TOTAL --> " . $mycategories->total . "\n";
-                    $dblog .= "MY CATEGORIES - TOTAL II --> " . $mycategories->totalpath . "\n";
-
-                    error_log($dblog, 3, $CFG->dataroot . "/CATEGORIES.log");
-
                 }//my_categories
             }
 
@@ -364,20 +353,21 @@ class friadminrpt {
      * A function used to get all the information from the databse that is used to create the summary excel
      *
 
-     * @param   Object      $data       Search criteria
+     * @param   Object  $data       Search criteria
+     * @param           $cattotal
      *
-     * @return  array|null
-     * @throws  Exception
+     * @return          array|null
+     * @throws          Exception
      *
-     * @updateDate  23/05/2017
-     * @author      eFaktor     (nas)
+     * @updateDate      23/05/2017
+     * @author          eFaktor     (nas)
      *
      *
-     * @updateDate  08/06/2017
-     * @author      eFaktor     (fbv)
+     * @updateDate      08/06/2017
+     * @author          eFaktor     (fbv)
      *
      */
-    public static function get_course_summary_data($data) {
+    public static function get_course_summary_data($data,$cattotal) {
         /* Variables */
         global $DB;
         $rdo        = null;
@@ -394,7 +384,7 @@ class friadminrpt {
 
             // Get subcategories
             $category = "/" . $data->parentcat . "/";
-            $categories = self::get_subcategories_by_cat($category);
+            $categories = self::get_subcategories_by_cat($category,$cattotal);
             if ($categories) {
                 $categories .= ',' . $data->parentcat;
             }else {
@@ -491,10 +481,11 @@ class friadminrpt {
      * Description
      * Get all courses with coordinators
      *
-     * @param   Object      $data         Filter criteria
+     * @param   Object  $data         Filter criteria
+     * @param           $cattotal
      *
-     * @return  array|null Returns all the data used in the coordinator excel
-     * @throws Exception
+     * @return          array|null Returns all the data used in the coordinator excel
+     * @throws          Exception
      *
      * @creationDate    23/05/2017
      * @author          eFaktor     (nas)
@@ -503,7 +494,7 @@ class friadminrpt {
      * @auhtor          eFaktor     (fbv)
      *
      */
-    public static function get_courses_with_coordinator($data) {
+    public static function get_courses_with_coordinator($data,$cattotal) {
         /* Variables */
         global $DB;
         $sql            = null;
@@ -520,7 +511,7 @@ class friadminrpt {
 
             // Get subcategories
             $category = "/" . $data->parentcat . "/";
-            $categories = self::get_subcategories_by_cat($category);
+            $categories = self::get_subcategories_by_cat($category,$cattotal);
             if ($categories) {
                 $categories .= ',' . $data->parentcat;
             }else {
@@ -627,14 +618,16 @@ class friadminrpt {
      * @param string    $instructors    All the instructor ID's from get_course_instructors
      * @param integer   $course         The course selected by the user in the form (optional)
      * @param integer   $category       The category selected by the user in the form (required)
-     * @return array|null               Returns all the data used in the instructor excel
-     * @throws Exception
+     * @param           $cattotal
      *
-     * @updateDate    23/05/2017
+     * @return          array|null               Returns all the data used in the instructor excel
+     * @throws          Exception
+     *
+     * @updateDate      23/05/2017
      * @author          eFaktor     (nas)
      *
      */
-    public static function get_course_instructor_data($instructors, $course, $category) {
+    public static function get_course_instructor_data($instructors, $course, $category,$cattotal) {
         // Variables!
         global $DB;
         $rdo        = null;
@@ -650,7 +643,7 @@ class friadminrpt {
 
             // Get subcategories
             $mycat = "/" . $category . "/";
-            $categories = self::get_subcategories_by_cat($mycat);
+            $categories = self::get_subcategories_by_cat($mycat,$cattotal);
             if ($categories) {
                 $categories .= ',' . $category;
             }else {
@@ -720,15 +713,16 @@ class friadminrpt {
      * A function that gets all the information from the database that will be used to create the instructors excel
      *
      * @param object $data  Data coming from the from. Course, category, username...
+     * @param        $cattotal
      *
-     * @return array|null Returns the ID of all the instructors
-     * @throws Exception
+     * @return       array|null Returns the ID of all the instructors
+     * @throws       Exception
      *
-     * @updateDate    23/05/2017
-     * @author          eFaktor     (nas)
+     * @updateDate   23/05/2017
+     * @author       eFaktor     (nas)
      *
      */
-    public static function get_course_instructors($data) {
+    public static function get_course_instructors($data,$cattotal) {
         // Variables!
         global $DB;
         $rdo            = null;
@@ -746,7 +740,7 @@ class friadminrpt {
 
             // Get subcategories
             $category   = "/" . $data->parentcat . "/";
-            $categories = self::get_subcategories_by_cat($category);
+            $categories = self::get_subcategories_by_cat($category,$cattotal);
             if ($categories) {
                 $categories .= ',' . $data->parentcat;
             }else {
