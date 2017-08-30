@@ -279,7 +279,17 @@ class friadminrpt {
                     }//for_aux
 
                     // Only catgories wit
+
                     $mycategories->total      = self::get_all_categories_with_courses($mycategories->total);
+
+                    global $CFG;
+                    $dblog = null;
+
+
+                    $dblog .= "MY CATEGORIES - TOTAL --> " . $mycategories->total . "\n";
+
+                    error_log($dblog, 3, $CFG->dataroot . "/CATEGORIES.log");
+
                 }//my_categories
             }
 
@@ -1143,26 +1153,25 @@ class friadminrpt {
                      FROM	  {course}				c
                         JOIN  {course_categories}	ca ON ca.id = c.category ";
 
-            global $CFG;
-            $dblog = null;
-
             // Execute
             if ($in) {
                 $sql .= " AND ca.id IN ($in) ";
             }//in
 
-            $dblog .= "SQL --> " . "\n\n". $sql . "\n\n";
-            $dblog .= " IN --> " . $in . "\n";
-
             $rdo = $DB->get_record_sql($sql);
             if ($rdo) {
                 if ($rdo->category) {
-                    $dblog .= "MY CATEGORIES - TOTAL (RDO) --> " . $rdo->category . "\n";
                     $categories =  $rdo->category;
+
+                    global $CFG;
+                    $dblog = null;
+
+
+                    $dblog .= "MY CATEGORIES - TOTAL (RDO) --> " . $categories . "\n";
+
+                    error_log($dblog, 3, $CFG->dataroot . "/CATEGORIES.log");
                 }//if_Cattegory
             }//if_rdo
-
-            error_log($dblog, 3, $CFG->dataroot . "/CATEGORIES.log");
 
             return $categories;
         }catch (Exception $ex) {
