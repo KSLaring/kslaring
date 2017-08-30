@@ -146,7 +146,7 @@ class friadminrpt {
             $sql = " SELECT ca.id,
                             ca.name
                      FROM   {course_categories} ca
-                     WHERE  ca.id IN ($mycategories->total) ";
+                     WHERE  ca.id IN ($mycategories->totalpath) ";
 
             // Search criteria
             $params = array();
@@ -210,6 +210,7 @@ class friadminrpt {
             $mycategories->ctx_cat      = null;
             $mycategories->ctx_system   = null;
             $mycategories->total        = null;
+            $mycategories->totalpath    = null;
 
             // Search criteria
             $params = array();
@@ -218,7 +219,7 @@ class friadminrpt {
             // Admin all categories
             if (is_siteadmin($user)) {
                 $mycategories->ctx_system = true;
-                $mycategories->total      = self::get_all_categories_with_courses();
+                list($mycategories->total,$mycategories->totalpath)      = self::get_all_categories_with_courses();
             }else {
                 // Context System all categories
                 // By CONTEXT SYSTEM
@@ -228,7 +229,7 @@ class friadminrpt {
                 $rdo = $DB->get_record_sql($sql,$params);
                 if ($rdo) {
                     $mycategories->ctx_system = true;
-                    $mycategories->total      = self::get_all_categories_with_courses();
+                    list($mycategories->total,$mycategories->totalpath)      = self::get_all_categories_with_courses();
                 }//if_rdo
             }//if_else
 
@@ -280,13 +281,14 @@ class friadminrpt {
 
                     // Only catgories wit
 
-                    $mycategories->total      = self::get_all_categories_with_courses($mycategories->total);
+                    list($mycategories->total,$mycategories->totalpath)      = self::get_all_categories_with_courses($mycategories->total);
 
                     global $CFG;
                     $dblog = null;
 
 
                     $dblog .= "MY CATEGORIES - TOTAL --> " . $mycategories->total . "\n";
+                    $dblog .= "MY CATEGORIES - TOTAL --> " . $mycategories->totalpath . "\n";
 
                     error_log($dblog, 3, $CFG->dataroot . "/CATEGORIES.log");
 
@@ -1149,7 +1151,8 @@ class friadminrpt {
 
         try {
             // SQL Instruction
-            $sql = " SELECT	  GROUP_CONCAT(DISTINCT ca.id ORDER BY ca.id SEPARATOR ',') as 'category'
+            $sql = " SELECT	  GROUP_CONCAT(DISTINCT ca.id ORDER BY ca.id SEPARATOR ',')   as 'category',
+                              GROUP_CONCAT(DISTINCT ca.path ORDER BY ca.id SEPARATOR ',') as 'category_path'
                      FROM	  {course}				c
                         JOIN  {course_categories}	ca ON ca.id = c.category ";
 
@@ -1161,16 +1164,15 @@ class friadminrpt {
             $rdo = $DB->get_record_sql($sql);
             if ($rdo) {
                 if ($rdo->category) {
-                    $categories =  $rdo->category;
+                    // Extract all path categories
+                    $categories = str_replace(',/',',',$rdo->category_path);
+                    $categories = str_replace('/',',',$categories);
+                    $categories = substr($categories,1);
 
-                    global $CFG;
-                    $dblog = null;
-
-
-                    $dblog .= "MY CATEGORIES - TOTAL (RDO) --> " . $categories . "\n";
-
-                    error_log($dblog, 3, $CFG->dataroot . "/CATEGORIES.log");
+                    array($rdo->category,$categories);
                 }//if_Cattegory
+            }else {
+                return null;
             }//if_rdo
 
             return $categories;
