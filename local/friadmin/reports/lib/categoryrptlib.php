@@ -204,9 +204,6 @@ class friadminrpt {
         $sqlcontext     = null;
 
         try {
-            global $CFG;
-            $dblog = null;
-
             // My categories
             $mycategories = new stdClass();
             $mycategories->ctx_course   = null;
@@ -281,16 +278,10 @@ class friadminrpt {
                         }
                     }//for_aux
 
-                    $dblog .= "MY CATEGORIES - TOTAL II --> " . $mycategories->total . "\n";
-
                     // Only catgories wit
                     $mycategories->total      = self::get_all_categories_with_courses($mycategories->total);
                 }//my_categories
-
             }
-            $dblog .= "MY CATEGORIES - TOTAL --> " . $mycategories->total . "\n";
-
-            error_log($dblog, 3, $CFG->dataroot . "/CATEGORIES.log");
 
             // REturn categories
             if ($mycategories->total
@@ -1159,9 +1150,7 @@ class friadminrpt {
             $rdo = $DB->get_record_sql($sql);
             if ($rdo) {
                 if ($rdo->category) {
-                    $categories= str_replace(',/',',',$rdo->category);
-                    $categories = str_replace('/',',',$categories);
-                    $categories = substr($categories,1);
+                    $categories= $rdo->category;
                 }//if_Cattegory
             }//if_rdo
 
