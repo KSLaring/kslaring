@@ -272,10 +272,11 @@ class friadminrpt {
                 }//if_rdo
 
                 // Get subcategories
-                /***
+
                 if ($mycategories->total) {
+
                     $categories = null;
-                    $aux        = implode(',',$mycategories->total);
+                    $aux        = explode(',',$mycategories->total);
                     foreach ($aux as $cat) {
                         $category   = "/" . $cat . "/";
                         if ($categories) {
@@ -289,7 +290,7 @@ class friadminrpt {
                     }
 
                     $mycategories->total = self::get_all_categories_with_courses($mycategories->total);
-                } **/
+                }
 
             }
             $dblog .= "MY CATEGORIES - TOTAL --> " . $mycategories->total . "\n";
