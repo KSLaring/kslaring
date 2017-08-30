@@ -288,7 +288,7 @@ class friadminrpt {
 
 
                     $dblog .= "MY CATEGORIES - TOTAL --> " . $mycategories->total . "\n";
-                    $dblog .= "MY CATEGORIES - TOTAL --> " . $mycategories->totalpath . "\n";
+                    $dblog .= "MY CATEGORIES - TOTAL II --> " . $mycategories->totalpath . "\n";
 
                     error_log($dblog, 3, $CFG->dataroot . "/CATEGORIES.log");
 
@@ -1164,10 +1164,19 @@ class friadminrpt {
             $rdo = $DB->get_record_sql($sql);
             if ($rdo) {
                 if ($rdo->category) {
+
                     // Extract all path categories
                     $categories = str_replace(',/',',',$rdo->category_path);
                     $categories = str_replace('/',',',$categories);
                     $categories = substr($categories,1);
+
+                    global $CFG;
+                    $dblog = null;
+
+
+                    $dblog .= "MY CATEGORIES - TOTAL PATH --> " . $rdo->category_path . "\n";
+                    $dblog .= "MY CATEGORIES - TOTAL PATH II --> " . $categories . "\n";
+                    error_log($dblog, 3, $CFG->dataroot . "/CATEGORIES.log");
 
                     array($rdo->category,$categories);
                 }//if_Cattegory
