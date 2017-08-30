@@ -74,7 +74,7 @@ if ($mycategories) {
     }
 }**/
 
-$category   = "/" . $cat . "/";
+$category   = "/" . $category . "/";
 $categories = friadminrpt::get_subcategories_by_cat($category,$mycategories->totalpath);
 
 global $CFG;
