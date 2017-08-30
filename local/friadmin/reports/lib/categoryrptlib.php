@@ -269,6 +269,8 @@ class friadminrpt {
                     }//if_category
                 }//if_rdo
 
+                $dblog .= "MY CATEGORIES - TOTAL I --> " . $mycategories->total . "\n";
+
                 // Get subcategories
 
                 if ($mycategories->total) {
@@ -281,7 +283,7 @@ class friadminrpt {
                     }
 
                     // Only catgories wit
-                    //$mycategories->total      = self::get_all_categories_with_courses();
+                    //$mycategories->total      = self::get_courses_by_cat($mycategories->total);
                 }
 
             }
