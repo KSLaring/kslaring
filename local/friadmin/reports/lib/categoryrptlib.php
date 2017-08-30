@@ -202,6 +202,9 @@ class friadminrpt {
         $sqlcontext     = null;
 
         try {
+            global $CFG;
+            $dblog = null;
+
             // My categories
             $mycategories = new stdClass();
             $mycategories->ctx_course   = null;
@@ -227,6 +230,8 @@ class friadminrpt {
                 if ($rdo) {
                     $mycategories->ctx_system = true;
                     $mycategories->total      = self::get_all_categories_with_courses();
+
+                    $dblog .= "MY CATEGORIES - CTX_SYSTEM - TOTAL --> " . $mycategories->total . "\n";
                 }//if_rdo
             }//if_else
 
@@ -245,6 +250,10 @@ class friadminrpt {
                             $mycategories->total .= ',';
                         }
                         $mycategories->total = self::get_all_categories_with_courses($mycategories->ctx_course);
+
+                        $dblog .= "MY CATEGORIES - CTX_COURSE --> " . $mycategories->ctx_course . "\n";
+                        $dblog .= "MY CATEGORIES - CTX_COURSE - TOTAL --> " . $mycategories->total . "\n";
+
                     }//if_Cattegory
                 }//if_rdo
 
@@ -260,18 +269,19 @@ class friadminrpt {
                             $mycategories->total .= ',';
                         }
                         $mycategories->total .= self::get_all_categories_with_courses($mycategories->ctx_cat);
+
+                        $dblog .= "MY CATEGORIES - CTX_CAT --> " . $mycategories->ctx_cat . "\n";
+                        $dblog .= "MY CATEGORIES - CTX_CAT - TOTAL --> " . $mycategories->total . "\n";
                     }//if_category
                 }//if_rdo
             }
+
+            error_log($dblog, 3, $CFG->dataroot . "/CATEGORIES.log");
 
             // REturn categories
             if ($mycategories->total
                 ||
                 $mycategories->ctx_system) {
-
-                global $CFG;
-                $dblog = "MY CATEGORIES --> " . $mycategories->total . "\n";
-                error_log($dblog, 3, $CFG->dataroot . "/CATEGORIES.log");
 
                 return $mycategories;
             }else {
@@ -1096,10 +1106,6 @@ class friadminrpt {
 
                     break;
             }//switch_role
-
-            global $CFG;
-            $dblog = "SQL --> " . "\n\n" . $sql . "\n\n";
-            error_log($dblog, 3, $CFG->dataroot . "/CATEGORIES.log");
 
             return $sql;
         }catch (Exception $ex) {
