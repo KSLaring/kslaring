@@ -280,8 +280,8 @@ class friadminrpt {
                         $mycategories->total .= ',' . self::get_subcategories_by_cat($category);
                     }
 
-                    // Only catgories with courses connected
-                    $mycategories->total      = self::get_all_categories_with_courses();
+                    // Only catgories wit
+                    //$mycategories->total      = self::get_all_categories_with_courses();
                 }
 
             }
