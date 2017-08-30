@@ -232,8 +232,6 @@ class friadminrpt {
                 if ($rdo) {
                     $mycategories->ctx_system = true;
                     $mycategories->total      = self::get_all_categories_with_courses();
-
-                    $dblog .= "MY CATEGORIES - CTX_SYSTEM - TOTAL --> " . $mycategories->total . "\n";
                 }//if_rdo
             }//if_else
 
@@ -279,17 +277,11 @@ class friadminrpt {
                     $aux        = explode(',',$mycategories->total);
                     foreach ($aux as $cat) {
                         $category   = "/" . $cat . "/";
-                        //if ($categories) {
-                        //    $categories .= ',';
-                        //}
-                        $mycategories->total .= self::get_subcategories_by_cat($category);
+                        $mycategories->total .= ',' . self::get_subcategories_by_cat($category);
                     }
 
-                    //if ($categories) {
-                    //    $mycategories->total = ',' . $categories;
-                    //}
-
-                    //$mycategories->total = self::get_all_categories_with_courses($mycategories->total);
+                    // Only catgories with courses connected
+                    $mycategories->total      = self::get_all_categories_with_courses();
                 }
 
             }
