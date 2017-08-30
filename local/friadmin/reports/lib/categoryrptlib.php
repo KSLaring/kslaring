@@ -1150,11 +1150,20 @@ class friadminrpt {
             $rdo = $DB->get_record_sql($sql);
             if ($rdo) {
                 if ($rdo->category) {
-                    $categories= $rdo->category;
+                    global $CFG;
+                    $dblog = null;
+
+
+                    $dblog .= "MY CATEGORIES - TOTAL (RDO) --> " . $rdo->category . "\n";
+
+                    error_log($dblog, 3, $CFG->dataroot . "/CATEGORIES.log");
+
+                    return $rdo->category;
                 }//if_Cattegory
+            }else {
+                return null;
             }//if_rdo
 
-            return $categories;
         }catch (Exception $ex) {
             throw $ex;
         }//try_cstch
