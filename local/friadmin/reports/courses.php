@@ -51,9 +51,31 @@ $PAGE->set_url($url);
 require_login();
 require_sesskey();
 
+// Categories connected with the user
+$mycategories   = friadminrpt::get_my_categories_by_context($USER->id);
+
 // Get subcategories
-$category   = "/" . $category . "/";
-$categories = friadminrpt::get_subcategories_by_cat($category);
+if ($mycategories) {
+    if ($mycategories->total) {
+        $aux = implode(',',$mycategories->total);
+        foreach ($aux as $cat) {
+            $category   = "/" . $cat . "/";
+            if ($categories) {
+                $categories .= ',';
+            }
+            $categories = friadminrpt::get_subcategories_by_cat($category);
+        }
+
+        if ($categories) {
+            $categories .= ',';
+        }
+        $categories .= $mycategories->total;
+    }
+}
+
+global $CFG;
+$dblog = "CATEGORIES --> " . $categories . "\n";
+error_log($dblog, 3, $CFG->dataroot . "/CATEGORIES.log");
 
 // Get courses connected with
 $courselst = friadminrpt::get_courses_by_cat($categories);
