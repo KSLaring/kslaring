@@ -1145,9 +1145,11 @@ class friadminrpt {
     private static function get_all_categories_with_courses($in=null) {
         /* Variables */
         global $DB;
-        $rdo        = null;
-        $sql        = null;
-        $categories = null;
+        $rdo            = null;
+        $sql            = null;
+        $categories     = null;
+        $categoriespath = null;
+
 
         try {
             // SQL Instruction
@@ -1164,27 +1166,17 @@ class friadminrpt {
             $rdo = $DB->get_record_sql($sql);
             if ($rdo) {
                 if ($rdo->category) {
+                    // Categories
+                    $categories = $rdo->category;
 
                     // Extract all path categories
-                    $categories = str_replace(',/',',',$rdo->category_path);
-                    $categories = str_replace('/',',',$categories);
-                    $categories = substr($categories,1);
-
-                    global $CFG;
-                    $dblog = null;
-
-
-                    $dblog .= "MY CATEGORIES - TOTAL PATH --> " . $rdo->category_path . "\n";
-                    $dblog .= "MY CATEGORIES - TOTAL PATH II --> " . $categories . "\n";
-                    error_log($dblog, 3, $CFG->dataroot . "/CATEGORIES.log");
-
-                    array($rdo->category,$categories);
+                    $categoriespath = str_replace(',/',',',$rdo->category_path);
+                    $categoriespath = str_replace('/',',',$categoriespath);
+                    $categoriespath = substr($categoriespath,1);
                 }//if_Cattegory
-            }else {
-                return null;
             }//if_rdo
 
-            return $categories;
+            return array($categories,$categoriespath);
         }catch (Exception $ex) {
             throw $ex;
         }//try_cstch
