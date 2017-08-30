@@ -34,6 +34,7 @@ global $PAGE,$USER;
 
 // Params
 $category       = required_param('category', PARAM_INT);
+$cat            = null;
 $categories     = null;
 $json           = array();
 $data           = null;
@@ -54,28 +55,9 @@ require_sesskey();
 // Categories connected with the user
 $mycategories   = friadminrpt::get_my_categories_by_context($USER->id);
 
-// Get subcategories
-/**
-if ($mycategories) {
-    if ($mycategories->total) {
-        $aux = implode(',',$mycategories->total);
-        foreach ($aux as $cat) {
-            $category   = "/" . $cat . "/";
-            if ($categories) {
-                $categories .= ',';
-            }
-            $categories = friadminrpt::get_subcategories_by_cat($category);
-        }
-
-        if ($categories) {
-            $categories .= ',';
-        }
-        $categories .= $mycategories->total;
-    }
-}**/
-
-$category   = "/" . $category . "/";
-$categories = friadminrpt::get_subcategories_by_cat($category,$mycategories->totalpath);
+// Get categories and subcategories connecte with user and with coourses
+$cat   = "/" . $category . "/";
+$categories = friadminrpt::get_subcategories_by_cat($cat,$mycategories->totalpath);
 
 if ($categories) {
     $categories .= ',' . $category;
