@@ -240,9 +240,10 @@ class friadminrpt {
                 $rdo = $DB->get_record_sql($sql,$params);
                 if ($rdo) {
                     if ($rdo->category) {
-                        $mycategories->ctx_course = str_replace(',/',',',$rdo->category);
-                        $mycategories->ctx_course = str_replace('/',',',$mycategories->ctx_course);
-                        $mycategories->ctx_course = substr($mycategories->ctx_course,1);
+                        $mycategories->ctx_course = $rdo->category;
+                        if ($mycategories->total) {
+                            $mycategories->total .= ',';
+                        }
                         $mycategories->total = self::get_all_categories_with_courses($mycategories->ctx_course);
                     }//if_Cattegory
                 }//if_rdo
@@ -254,9 +255,7 @@ class friadminrpt {
                 $rdo = $DB->get_record_sql($sql,$params);
                 if ($rdo) {
                     if ($rdo->category) {
-                        $mycategories->ctx_cat = str_replace(',/',',',$rdo->category);
-                        $mycategories->ctx_cat = str_replace('/',',',$mycategories->ctx_cat);
-                        $mycategories->ctx_cat = substr($mycategories->ctx_cat,1);
+                        $mycategories->ctx_cat = $rdo->category;
                         if ($mycategories->total) {
                             $mycategories->total .= ',';
                         }
@@ -1056,7 +1055,7 @@ class friadminrpt {
             // Switch role
             switch ($context) {
                 case CONTEXT_COURSE:
-                    $sql = " SELECT	  GROUP_CONCAT(DISTINCT cc.path ORDER BY c.id SEPARATOR ',') as 'category'
+                    $sql = " SELECT	  GROUP_CONCAT(DISTINCT cc.id ORDER BY c.id SEPARATOR ',') as 'category'
                              FROM	  {role_assignments}	ra
                                 JOIN  {role}				r		ON 	ra.roleid 		= r.id
                                                                     AND	r.archetype 	IN ('manager','coursecreator')
@@ -1069,7 +1068,7 @@ class friadminrpt {
 
                     break;
                 case CONTEXT_COURSECAT:
-                    $sql = " SELECT	  GROUP_CONCAT(DISTINCT cc.path ORDER BY cc.id SEPARATOR ',') as 'category'
+                    $sql = " SELECT	  GROUP_CONCAT(DISTINCT cc.id ORDER BY cc.id SEPARATOR ',') as 'category'
                              FROM	  {role_assignments}	ra
                                 JOIN  {role}				r	ON 	ra.roleid 		= r.id
                                                                 AND	r.archetype 	IN ('manager','coursecreator')
