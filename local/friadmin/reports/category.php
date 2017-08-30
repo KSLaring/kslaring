@@ -67,7 +67,6 @@ if ($parent) {
 // set data to send javascript
 $data   = array('categories' => array(),'parentcat' => null);
 if ($lstcategories) {
-
     foreach ($lstcategories as $id => $category) {
         $info       = new stdClass();
         $info->id   = $id;
