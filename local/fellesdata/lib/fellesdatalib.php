@@ -612,14 +612,14 @@ class FSKS_COMPANY {
                                   ks.industrycode                       as 'industry',
                                   fs.parent,
                                   IF(fs.privat,0,1)                     as 'public',
-                                  TRIM(IF(fs.ansvar,fs.ansvar,0))       as 'ansvar',
-                                  TRIM(IF(fs.tjeneste,fs.tjeneste,0))   as 'tjeneste',
-                                  TRIM(IF(fs.adresse1,fs.adresse1,0))   as 'adresse1',
-                                  TRIM(IF(fs.adresse2,fs.adresse2,0))   as 'adresse2',
-                                  TRIM(IF(fs.adresse3,fs.adresse3,0))   as 'adresse3',
-                                  TRIM(IF(fs.postnr,fs.postnr,0))       as 'postnr',
-                                  TRIM(IF(fs.poststed,fs.poststed,0))   as 'poststed',
-                                  TRIM(IF(fs.epost,fs.epost,0))         as 'epost',
+                                  TRIM(IF(fs.ansvar != '',fs.ansvar,0))       as 'ansvar',
+                                  TRIM(IF(fs.tjeneste != '',fs.tjeneste,0))   as 'tjeneste',
+                                  TRIM(IF(fs.adresse1 != '',fs.adresse1,0))   as 'adresse1',
+                                  TRIM(IF(fs.adresse2 != '',fs.adresse2,0))   as 'adresse2',
+                                  TRIM(IF(fs.adresse3 != '',fs.adresse3,0))   as 'adresse3',
+                                  TRIM(IF(fs.postnr != '',fs.postnr,0))       as 'postnr',
+                                  TRIM(IF(fs.poststed != '',fs.poststed,0))   as 'poststed',
+                                  TRIM(IF(fs.epost != '',fs.epost,0))         as 'epost',
                                   '0'                                   as 'action'
                      FROM		  {fs_company}	  fs
                         JOIN      {ks_company}	  ks 	ON ks.companyid     = fs.parent
@@ -724,14 +724,14 @@ class FSKS_COMPANY {
                               fs.parent,
                               ks_pa.industrycode                    as 'industry',
                               IF(fs.privat,0,1) 	                as 'public',
-                              TRIM(IF(fs.ansvar,fs.ansvar,0))       as 'ansvar',
-                              TRIM(IF(fs.tjeneste,fs.tjeneste,0))   as 'tjeneste',
-                              TRIM(IF(fs.adresse1,fs.adresse1,0))   as 'adresse1',
-                              TRIM(IF(fs.adresse2,fs.adresse2,0))   as 'adresse2',
-                              TRIM(IF(fs.adresse3,fs.adresse3,0))   as 'adresse3',
-                              TRIM(IF(fs.postnr,fs.postnr,0))       as 'postnr',
-                              TRIM(IF(fs.poststed,fs.poststed,0))   as 'poststed',
-                              TRIM(IF(fs.epost,fs.epost,0))         as 'epost',
+                              TRIM(IF(fs.ansvar != '',fs.ansvar,0))       as 'ansvar',
+                              TRIM(IF(fs.tjeneste != '',fs.tjeneste,0))   as 'tjeneste',
+                              TRIM(IF(fs.adresse1 != '',fs.adresse1,0))   as 'adresse1',
+                              TRIM(IF(fs.adresse2 != '',fs.adresse2,0))   as 'adresse2',
+                              TRIM(IF(fs.adresse3 != '',fs.adresse3,0))   as 'adresse3',
+                              TRIM(IF(fs.postnr  != '',fs.postnr,0))       as 'postnr',
+                              TRIM(IF(fs.poststed != '',fs.poststed,0))   as 'poststed',
+                              TRIM(IF(fs.epost != '',fs.epost,0))         as 'epost',
                               fs_imp.action
                      FROM	  {fs_company}		fs
                         JOIN  {fs_imp_company}	fs_imp 	ON 	fs_imp.org_enhet_id = fs.companyid
@@ -3052,6 +3052,7 @@ class FS {
             // Commit
             $trans->allow_commit();
         }catch (Exception $ex) {
+
             // Rollback
             $trans->rollback($ex);
 
