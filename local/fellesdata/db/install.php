@@ -68,8 +68,15 @@ function xmldb_local_fellesdata_install() {
         Fellesdata_Install::add_suspicious($dbMan);
         Fellesdata_Install::add_suspicious_action($dbMan);
         
-        /* Last time executed   */
+        // Last time executed
         set_config('lastexecution', 0, 'local_fellesdata');
+
+        // Set up the cron to deactivate
+        $rdo = $DB->get_record('task_scheduled',array('component' => 'local_fellesdata'),'id,disabled');
+        if ($rdo) {
+            $rdo->disabled = 1;
+            $DB->update_record('task_scheduled',$rdo);
+        }
     }catch (Exception $ex) {
         /* Delete Tables created    */
         Fellesdata_Install::DeleteFellesdata_Tables($dbMan);

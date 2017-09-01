@@ -95,6 +95,9 @@ class FELLESDATA_CRON {
             // Companies synchornization
             self::companies_fs_synchronization($plugin,$fstExecution,$dblog);
 
+            // Synchronize companies moved
+            self::companies_moved_fs_synchronization($plugin,$fstExecution,$dblog);
+
             // Job roles to map
             self::jobroles_fs_to_map($plugin,$dblog);
 
@@ -190,7 +193,11 @@ class FELLESDATA_CRON {
                 case TEST_FS_SYNC_ORG:
                     echo "Synchronization FS Companies" . "</br>";
 
+                    // Synchronize Companies
                     self::companies_fs_synchronization($pluginInfo,false,$dblog);
+
+                    // Synchronize companies moved
+                    self::companies_moved_fs_synchronization($pluginInfo,false,$dblog);
 
                     break;
                 case TEST_FS_SYNC_JR:
@@ -714,10 +721,10 @@ class FELLESDATA_CRON {
             $dblog .= ' START Import FS ORG Structure . ' . "\n";
 
             // Call web service
-            $fsResponse = self::process_tradis_service($plugin,TRADIS_FS_COMPANIES,$dblog);
+            //$fsResponse = self::process_tradis_service($plugin,TRADIS_FS_COMPANIES,$dblog);
 
             // Import data into temporary tables
-            if ($fsResponse) {
+            //if ($fsResponse) {
                 // Clean temporary table
                 FS::clean_temporary_fellesdata(IMP_COMPANIES,$plugin);
 
@@ -725,10 +732,12 @@ class FELLESDATA_CRON {
                 $pathFile = $CFG->dataroot . '/fellesdata/' . TRADIS_FS_COMPANIES . '.txt';
 
                 if (file_exists($pathFile)) {
+                    echo "1" . "</br>";
                     // Get last changes
                     // First check if is a suspicious file
                     if ($plugin->suspicious_path) {
                         if (!suspicious::check_for_suspicious_data(TRADIS_FS_COMPANIES,$pathFile)) {
+                            echo "1.1" . "</br>";
                             // Get content
                             $content = file_get_contents($pathFile);
                             if (strpos(chr(13),$content)) {
@@ -747,6 +756,7 @@ class FELLESDATA_CRON {
                             unlink($pathFile);
                         }//if_suspicious
                     }else {
+                        echo "2" . "</br>";
                         // Get content
                         $content = file_get_contents($pathFile);
                         if (strpos(chr(13),$content)) {
@@ -755,7 +765,7 @@ class FELLESDATA_CRON {
                             $content = file($pathFile);
                         }
 
-                        self::save_temporary_fs($content,IMP_COMPANIES);
+                        //self::save_temporary_fs($content,IMP_COMPANIES);
                     }///if_suspicous_path
 
                     // Clean repeat companies
@@ -764,7 +774,7 @@ class FELLESDATA_CRON {
                     // Log
                     $dblog .= 'FILE DOES NOT EXIST ' . "\n";
                 }//if_exists
-            }//if_fsResponse
+            //}//if_fsResponse
 
             // Log
             $dblog .= ' FINSIH Import FS ORG Structure . ' . "\n";
@@ -791,11 +801,11 @@ class FELLESDATA_CRON {
         $pathFile   = null;
         $content    = null;
         $fsResponse = null;
-        
+
         try {
             // Log
             $dblog .= ' START Import FS JOB ROLES . ' . "\n";
-            
+
             // Call web service
             $fsResponse = self::process_tradis_service($plugin,TRADIS_FS_JOBROLES,$dblog);
 
@@ -1302,6 +1312,9 @@ class FELLESDATA_CRON {
                         self::send_notifications(SYNC_COMP,null,$notifyTo,$pluginInfo->fs_source);
                     }//if_notify
                 }else {
+                    // Apply company changes inside the same level
+                    FSKS_COMPANY::update_company_changes_same_level();
+
                     // Synchronize new companies
                     self::companies_new_fs_synchronization($pluginInfo,$dblog);
 
@@ -1327,7 +1340,83 @@ class FELLESDATA_CRON {
             throw $ex;
         }//try_catch
     }//companies_fs_synchronization
-    
+
+    /**
+     * Description
+     * Synchronization of all companies that have been moved to different levels
+     *
+     * @param       $plugin
+     * @param       $fstExecution
+     * @param       $dblog
+     *
+     * @throws      Exception
+     *
+     * @creationDate    01/09/2017
+     * @author          eFaktor     (fbv)
+     */
+    private static function companies_moved_fs_synchronization($plugin,$fstExecution,&$dblog) {
+        /* Variables    */
+        global $SESSION;
+        $response       = null;
+        $moved          = null;
+        $rdocompanies   = null;
+        $toSynchronize  = null;
+        $total          = null;
+        $start          = 0;
+        $limit          = 1000;
+
+        try {
+            // To avoid problems timeout
+            if (isset($SESSION->manual) && ($SESSION->manual)) {
+                $limit          = 150;
+            }//if_session_manul
+
+            // Log
+            $dblog .= ' START Companies MOVED FS/KS Synchronization . ' . "\n";
+
+            // check if the synchronization can be run
+            if (suspicious::run_synchronization(IMP_SUSP_COMPANIES)) {
+                // First execution
+                if (!$fstExecution) {
+                    // Apply changes
+                    $moved = FSKS_COMPANY::update_companies_moved_other_level();
+
+                    // Synchronize companies moved
+                    if ($moved) {
+                        // Get total
+                        $total = count($moved);
+                        for ($i=0;$i<=$total;$i=$i+$limit) {
+                            // Get companies to synchronize
+                            list($toSynchronize,$rdocompanies) = FSKS_COMPANY::get_moved_companiesfs_to_synchronize($moved,$start,$limit);
+
+                            // Call webs service
+                            if ($toSynchronize) {
+                                $params     = array('companiesFS' => $toSynchronize);
+                                $response   = self::process_ks_service($plugin,KS_SYNC_FS_COMPANY,$params);
+
+                                if ($response) {
+                                    if ($response['error'] == '200') {
+                                        FSKS_COMPANY::synchronize_companies_ksfs($rdocompanies,$response['companies']);
+                                    }else {
+                                        // Log
+                                        $dblog  .= "ERROR WS: " . $response['message'] . "\n\n";
+                                    }//if_no_error
+                                }//if_response
+                            }//if_toSynchronize
+
+                        }//for_Total
+
+                    }//if_moved
+                }//if_first_execution
+            }//if_suspicious
+
+            // Log
+            $dblog .= ' FINISH Companies MOVED FS/KS Synchronization . ' . "\n";
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//companies_moved_fs_synchronization
+
     /**
      * Description
      * Synchronize companies created as a new from Tardis
