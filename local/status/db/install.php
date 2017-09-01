@@ -115,6 +115,13 @@ function xmldb_local_status_install() {
 
             $dbman->create_table($tblreporters);
         }//if_reporters
+
+        // Set up the cron to deactivate
+        $rdo = $DB->get_record('task_scheduled',array('component' => 'local_status'),'id,disabled');
+        if ($rdo) {
+            $rdo->disabled = 1;
+            $DB->update_record('task_scheduled',$rdo);
+        }
     }catch (Exception $ex) {
         throw $ex;
     }//try_catch
