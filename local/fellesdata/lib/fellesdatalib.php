@@ -578,6 +578,72 @@ class FSKS_COMPANY {
 
     /**
      * Description
+     * Get all movements between levels that have to be synchronized
+     *
+     * @param       $moved
+     * @param       $start
+     * @param       $end
+     *
+     * @return      array
+     * @throws      Exception
+     */
+    public static function get_moved_companiesfs_to_synchronize($moved,$start,$end) {
+        /* Variables */
+        global $DB;
+        $infoCompany    = null;
+        $params         = null;
+        $sql            = null;
+        $rdo            = null;
+        $toSynchronize  = array();
+        $in             = null;
+
+        try {
+            // Get companies to move
+            $in = implode(',',$moved);
+
+            // Search Criteria
+            $params = array();
+            $params['synchronized'] = 0;
+
+            // SQL Instruction
+            $sql = " SELECT	  DISTINCT 
+                                  fs.companyid                                as 'fsid',
+                                  IF(ks_fs.id,ks_fs.kscompany,0)              as 'ksid',
+                                  TRIM(fs.name)                               as 'name',
+                                  fs.level,
+                                  ks.industrycode                             as 'industry',
+                                  fs.parent,
+                                  IF(fs.privat,0,1)                           as 'public',
+                                  TRIM(IF(fs.ansvar != '',fs.ansvar,0))       as 'ansvar',
+                                  TRIM(IF(fs.tjeneste != '',fs.tjeneste,0))   as 'tjeneste',
+                                  TRIM(IF(fs.adresse1 != '',fs.adresse1,0))   as 'adresse1',
+                                  TRIM(IF(fs.adresse2 != '',fs.adresse2,0))   as 'adresse2',
+                                  TRIM(IF(fs.adresse3 != '',fs.adresse3,0))   as 'adresse3',
+                                  TRIM(IF(fs.postnr != '',fs.postnr,0))       as 'postnr',
+                                  TRIM(IF(fs.poststed != '',fs.poststed,0))   as 'poststed',
+                                  TRIM(IF(fs.epost != '',fs.epost,0))         as 'epost',
+                                  '1'                                         as 'action',
+                                  '1'                                         as 'moved'
+                     FROM		  {fs_company}	  fs
+                        JOIN      {ks_company}	  ks 	ON ks.companyid     = fs.parent
+                        LEFT JOIN {ksfs_company}  ks_fs	ON ks_fs.fscompany 	= fs.companyid
+                     WHERE	      fs.synchronized = 0
+                        AND		  fs.companyid IN ($in) ";
+
+            // Execute
+            $rdo = $DB->get_records_sql($sql,$params,$start,$end);
+            if ($rdo) {
+                $toSynchronize = json_encode($rdo);
+            }//if_rdo
+
+            return array($toSynchronize,$rdo);
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//get_moved_companiesfs_to_synchronize
+
+    /**
+     * Description
      * Get all companies mapped as new that have to be synchornized
      * @param           integer $start
      * @param           integer $end
@@ -605,13 +671,13 @@ class FSKS_COMPANY {
 
             // SQL Instruction
             $sql = " SELECT	  DISTINCT 
-                                  fs.companyid                          as 'fsid',
-                                  IF(ks_fs.id,ks_fs.kscompany,0)        as 'ksid',
-                                  TRIM(fs.name)                         as 'name',
+                                  fs.companyid                                as 'fsid',
+                                  IF(ks_fs.id,ks_fs.kscompany,0)              as 'ksid',
+                                  TRIM(fs.name)                               as 'name',
                                   fs.level,
-                                  ks.industrycode                       as 'industry',
+                                  ks.industrycode                             as 'industry',
                                   fs.parent,
-                                  IF(fs.privat,0,1)                     as 'public',
+                                  IF(fs.privat,0,1)                           as 'public',
                                   TRIM(IF(fs.ansvar != '',fs.ansvar,0))       as 'ansvar',
                                   TRIM(IF(fs.tjeneste != '',fs.tjeneste,0))   as 'tjeneste',
                                   TRIM(IF(fs.adresse1 != '',fs.adresse1,0))   as 'adresse1',
@@ -620,7 +686,8 @@ class FSKS_COMPANY {
                                   TRIM(IF(fs.postnr != '',fs.postnr,0))       as 'postnr',
                                   TRIM(IF(fs.poststed != '',fs.poststed,0))   as 'poststed',
                                   TRIM(IF(fs.epost != '',fs.epost,0))         as 'epost',
-                                  '0'                                   as 'action'
+                                  '0'                                         as 'action',
+                                  '0'                                         as 'moved'
                      FROM		  {fs_company}	  fs
                         JOIN      {ks_company}	  ks 	ON ks.companyid     = fs.parent
                         LEFT JOIN {ksfs_company}  ks_fs	ON ks_fs.fscompany 	= fs.companyid
@@ -722,17 +789,18 @@ class FSKS_COMPANY {
                               IF(fs.level > 1,TRIM(fs.name), TRIM(ks_pa.name))  as 'name',
                               fs.level,
                               fs.parent,
-                              ks_pa.industrycode                    as 'industry',
-                              IF(fs.privat,0,1) 	                as 'public',
-                              TRIM(IF(fs.ansvar != '',fs.ansvar,0))       as 'ansvar',
-                              TRIM(IF(fs.tjeneste != '',fs.tjeneste,0))   as 'tjeneste',
-                              TRIM(IF(fs.adresse1 != '',fs.adresse1,0))   as 'adresse1',
-                              TRIM(IF(fs.adresse2 != '',fs.adresse2,0))   as 'adresse2',
-                              TRIM(IF(fs.adresse3 != '',fs.adresse3,0))   as 'adresse3',
-                              TRIM(IF(fs.postnr  != '',fs.postnr,0))       as 'postnr',
-                              TRIM(IF(fs.poststed != '',fs.poststed,0))   as 'poststed',
-                              TRIM(IF(fs.epost != '',fs.epost,0))         as 'epost',
-                              fs_imp.action
+                              ks_pa.industrycode                                as 'industry',
+                              IF(fs.privat,0,1) 	                            as 'public',
+                              TRIM(IF(fs.ansvar != '',fs.ansvar,0))             as 'ansvar',
+                              TRIM(IF(fs.tjeneste != '',fs.tjeneste,0))         as 'tjeneste',
+                              TRIM(IF(fs.adresse1 != '',fs.adresse1,0))         as 'adresse1',
+                              TRIM(IF(fs.adresse2 != '',fs.adresse2,0))         as 'adresse2',
+                              TRIM(IF(fs.adresse3 != '',fs.adresse3,0))         as 'adresse3',
+                              TRIM(IF(fs.postnr  != '',fs.postnr,0))            as 'postnr',
+                              TRIM(IF(fs.poststed != '',fs.poststed,0))         as 'poststed',
+                              TRIM(IF(fs.epost != '',fs.epost,0))               as 'epost',
+                              fs_imp.action,
+                              '0'                                               as 'moved'
                      FROM	  {fs_company}		fs
                         JOIN  {fs_imp_company}	fs_imp 	ON 	fs_imp.org_enhet_id = fs.companyid
                                                         AND fs_imp.imported     = :imported
@@ -820,6 +888,190 @@ class FSKS_COMPANY {
 
     /**
      * Description
+     * Apply the changes coming inside the same level
+     *
+     * @throws          Exception
+     *
+     * @creationDate    01/09/2017
+     * @author          eFaktor     (fbv)
+     */
+    public static function update_company_changes_same_level() {
+        /* Variables */
+        global $DB;
+        $rdo        = null;
+        $sql        = null;
+        $params     = null;
+        $time       = null;
+        $company    = null;
+        $fsimp      = null;
+        $trans      = null;
+
+        // Begin transaction
+        $trans = $DB->start_delegated_transaction();
+
+        try {
+            // Local time
+            $time = time();
+
+            // Search criteria
+            $params = array();
+            $params['action']   = UPDATE;
+            $params['imported'] = 0;
+
+            // SQL Instruction
+            $sql = " SELECT	  fs_imp.id             as 'fsid',
+                              fs_imp.ORG_ENHET_ID   as 'companyid',
+                              fs_imp.ORG_NAVN	    as 'name',
+                              fs_imp.ORG_NIVAA      as 'level',
+                              fs_imp.ORG_ENHET_OVER as 'fs_parent',
+                              fs_imp.PRIVAT         as 'privat',
+                              fs_imp.ANSVAR         as 'ansvar',
+                              fs_imp.TJENESTE       as 'tjeneste',
+                              fs_imp.ADRESSE1       as 'adresse1',
+                              fs_imp.ADRESSE2       as 'adresse2',
+                              fs_imp.ADRESSE3       as 'adresse3',
+                              fs_imp.POSTNR         as 'postnr',
+                              fs_imp.POSTSTED       as 'poststed', 
+                              fs_imp.EPOST          as 'epost',
+                              fs.id,
+                              fs.synchronized,
+                              fs.timemodified
+                     FROM	  {fs_imp_company}	fs_imp	
+                        JOIN  {fs_company}		fs      ON  fs.companyid  = fs_imp.ORG_ENHET_ID
+                                                        AND fs.level 	  = fs_imp.ORG_NIVAA
+                     WHERE	  fs_imp.imported = :imported
+                        AND	  fs_imp.action   = :action ";
+
+            // Execute
+            $rdo = $DB->get_records_sql($sql,$params);
+            if ($rdo) {
+                foreach ($rdo as $company) {
+                    // Update fs_imp
+                    $fsimp = new stdClass();
+                    $fsimp->id              = $company->fsid;
+                    $fsimp->timemodified    = $time;
+                    $fsimp->imported        = 1;
+                    // Execute
+                    $DB->update_record('fs_imp_company',$fsimp);
+
+                    // Update fs_company
+                    unset($company->fsid);
+                    $company->synchronized = 0;
+                    $company->timemodified = $time;
+                    // Execute
+                    $DB->update_record('fs_company',$company);
+                }//for
+            }//if_Rdo
+
+            // Commit
+            $trans->allow_commit();
+        }catch (Exception $ex) {
+            // Rollback
+            $trans->rollback($ex);
+
+            throw $ex;
+        }//try_catch
+    }//update_company_changes
+
+    /**
+     * Description
+     * Apply the changes for companies moved to other level
+     *
+     * @return          array
+     * @throws          Exception
+     *
+     * @creationDate    01/09/2017
+     * @author          eFaktor     (fbv)
+     */
+    public static function update_companies_moved_other_level() {
+        /* Variables */
+        global $DB;
+        $rdo        = null;
+        $sql        = null;
+        $params     = null;
+        $company    = null;
+        $fsimp      = null;
+        $time       = null;
+        $trans      = null;
+        $moved      = array();
+
+        // Begin transaction
+        $trans = $DB->start_delegated_transaction();
+
+        try {
+            // Local time
+            $time = time();
+
+            // Search criteria
+            $params = array();
+            $params['action']   = UPDATE;
+            $params['imported'] = 0;
+
+            // SQL Instruction
+            $sql = " SELECT	  fs_imp.id 			as 'fsid',
+                              fs_imp.ORG_ENHET_ID 	as 'companyid',
+                              fs_imp.ORG_NAVN		as 'name',
+                              fs_imp.ORG_NIVAA 		as 'level',
+                              fs_imp.ORG_ENHET_OVER as 'fs_parent',
+                              ks.companyid			as 'parent',
+                              fs_imp.PRIVAT 		as 'privat',
+                              fs_imp.ANSVAR 		as 'ansvar',
+                              fs_imp.TJENESTE 		as 'tjeneste',
+                              fs_imp.ADRESSE1 		as 'adresse1',
+                              fs_imp.ADRESSE2 		as 'adresse2',
+                              fs_imp.ADRESSE3 		as 'adresse3',
+                              fs_imp.POSTNR 		as 'postnr',
+                              fs_imp.POSTSTED 		as 'poststed', 
+                              fs_imp.EPOST 			as 'epost',
+                              fs.id,
+                              fs.synchronized,
+                              fs.timemodified
+                     FROM	  {fs_imp_company}	fs_imp	
+                        JOIN  {fs_company}		fs 		ON 	fs.companyid 	= fs_imp.ORG_ENHET_ID
+                                                        AND fs.level 	   != fs_imp.ORG_NIVAA
+                        JOIN  {ksfs_company}	ksfs	ON  ksfs.fscompany 	= fs_imp.ORG_ENHET_OVER
+                        JOIN  {ks_company}		ks		ON	ks.companyid  	= ksfs.kscompany
+                     WHERE	  fs_imp.action   = :action	
+                        AND   fs_imp.imported = :imported ";
+
+            // Execute
+            $rdo = $DB->get_records_sql($sql,$params);
+            if ($rdo) {
+                foreach ($rdo as $company) {
+                    // Update fs_imp
+                    $fsimp = new stdClass();
+                    $fsimp->id              = $company->fsid;
+                    $fsimp->timemodified    = $time;
+                    $fsimp->imported        = 1;
+                    // Execute
+                    $DB->update_record('fs_imp_company',$fsimp);
+
+                    // Update fs_company
+                    unset($company->fsid);
+                    $company->synchronized = 0;
+                    $company->timemodified = $time;
+                    // Execute
+                    $DB->update_record('fs_company',$company);
+
+                    $moved["'" . $company->companyid . "'"] = "'" . $company->companyid . "'";
+                }//for_rdo
+            }//if_rdo
+
+            // Commit
+            $trans->allow_commit();
+
+            return $moved;
+        }catch (Exception $ex) {
+            // Rollback
+            $trans->rollback($ex);
+
+            throw $ex;
+        }//try_catch
+    }//update_companies_moved_other_level
+
+
+    /**
+     * Description
      * Synchronize companies between FS and KS
      *
      * @param           $companiesFSKS
@@ -860,33 +1112,6 @@ class FSKS_COMPANY {
         }//try_catch
     }//synchronize_companies_ksfs
 
-    /**
-     * Description
-     * Synchronize companies only on FS site.
-     *
-     * @throws          Exception
-     *
-     * @creationDate    10/02/2016
-     * @author          eFaktor     (fbv)
-     */
-    public static function synchronize_companies_fs() {
-        /* Variables    */
-        $companiesFS = null;
-
-        try {
-            /* Get Companies to synchronize only in FS  */
-            $companiesFS = self::get_companiesfs_to_synchronizefs();
-
-            /* Synchronize /update  FS Company  */
-            if ($companiesFS) {
-                foreach ($companiesFS as $company) {
-                    self::synchronize_company_fs($company);
-                }//for_company
-            }
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//synchronize_companies_fs
 
     /**
      * Description
@@ -1024,83 +1249,8 @@ class FSKS_COMPANY {
 
     /**
      * Description
-     * Get all companies that have to be updated or deleted only in the FS site
+     * Synchronize company between FS and KS sites.
      *
-     * @return          array
-     *
-     * @throws          Exception
-     *
-     * @creationDate    09/02/2016
-     * @author          eFaktor     (fbv)
-     */
-    private static function get_companiesfs_to_synchronizefs() {
-        /* Variables    */
-        global $DB;
-        $synchronizeFS  = array();
-        $infoCompany    = null;
-        $params         = null;
-        $sql            = null;
-        $rdo            = null;
-
-        try {
-            // Search Criteria
-            $params = array();
-            $params['imported'] = 0;
-            $params['add']      = ADD;
-
-            // SQL Instruction
-            $sql = " SELECT DISTINCT
-                            fs.id,
-                            fs.org_enhet_id   as 'companyid',
-                            fs.org_navn       as 'name',
-                            fs.org_enhet_over as 'fs_parent',
-                            fs.privat,
-                            IF(fs.ansvar,fs.ansvar,0)       as 'ansvar',
-                            IF(fs.tjeneste,fs.tjeneste,0)   as 'tjeneste',
-                            IF(fs.adresse1,fs.adresse1,0)   as 'adresse1',
-                            IF(fs.adresse2,fs.adresse2,0)   as 'adresse2',
-                            IF(fs.adresse3,fs.adresse3,0)   as 'adresse3',
-                            IF(fs.postnr,fs.postnr,0)       as 'postnr',
-                            IF(fs.poststed,fs.poststed,0)   as 'poststed',
-                            IF(fs.epost,fs.epost,0)         as 'epost',
-                            fs.action
-                     FROM   {fs_imp_company}	fs
-                     WHERE	fs.action 	 != :add
-                        AND	fs.imported  = :imported ";
-
-            // Execute
-            $rdo = $DB->get_records_sql($sql,$params);
-            if ($rdo) {
-                foreach ($rdo as $instance) {
-                    // Info Company
-                    $infoCompany = new stdClass();
-                    $infoCompany->id            = $instance->id;
-                    $infoCompany->fscompany     = $instance->companyid;
-                    $infoCompany->name          = $instance->name;
-                    $infoCompany->fs_parent     = $instance->fs_parent;
-                    $infoCompany->privat        = $instance->privat;
-                    $infoCompany->ansvar        = $instance->ansvar;
-                    $infoCompany->tjeneste      = $instance->tjeneste;
-                    $infoCompany->adresseOne    = $instance->adresse1;
-                    $infoCompany->adresseTwo    = $instance->adresse2;
-                    $infoCompany->adresseThree  = $instance->adresse3;
-                    $infoCompany->postnr        = $instance->postnr;
-                    $infoCompany->poststed      = $instance->poststed;
-                    $infoCompany->epost         = $instance->epost;
-                    $infoCompany->action        = $instance->action;
-
-                    // Add company
-                    $synchronizeFS[$instance->id] = $infoCompany;
-                }//for_rdo
-            }//if_rdo
-
-            return $synchronizeFS;
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//get_companiesfs_to_synchronizefs
-
-    /**
      * @param           $companyKSFS
      * @param           $impKey
      *
@@ -1109,8 +1259,8 @@ class FSKS_COMPANY {
      * @creationDate    10/02/2016
      * @author          eFaktor     (fbv)
      *
-     * Description
-     * Synchronize company between FS and KS sites.
+     * @updateDate      01/09/2017
+     * @author          eFaktor     (fbv)
      */
     private static function synchronize_company_ksfs($companyKSFS,$impKey) {
         /* Variables    */
@@ -1136,7 +1286,7 @@ class FSKS_COMPANY {
             // Company Info to check if already exists or no
             $params = array();
             $params['companyid'] = $companyKSFS->fsid;
-            $rdoCompany = $DB->get_record('fs_company',$params,'id');
+            $rdoCompany          = $DB->get_record('fs_company',$params,'id');
 
             //  Apply Synchronization
             switch ($companyKSFS->action) {
@@ -1215,7 +1365,7 @@ class FSKS_COMPANY {
 
             // Synchronized
             if ($sync) {
-                $instance = $DB->get_record('fs_imp_company',array('ORG_ENHET_ID' => $impKey),'id,imported');
+                $instance = $DB->get_record('fs_imp_company',array('ORG_ENHET_ID' => $impKey,'ORG_NIVAA' => $companyKSFS->level),'id,imported');
                 if ($instance) {
                     $instance->imported         = 1;
                     $instance->timemodified     = $time;

@@ -664,7 +664,7 @@ class STATUS {
                                   TRIM(IF(fs.postnr != '',fs.postnr,0))       as 'postnr',
                                   TRIM(IF(fs.poststed != '',fs.poststed,0))   as 'poststed',
                                   TRIM(IF(fs.epost != '',fs.epost,0))         as 'epost',
-                                  '2' 							        as 'action'
+                                  '2' 							              as 'action'
                      FROM	  	  {fs_company}		fs
                         -- INFO KS
                         JOIN  	  {ksfs_company}	fk 		ON 	fk.fscompany 	    = fs.companyid
@@ -776,7 +776,8 @@ class STATUS {
                               TRIM(IF(fs.postnr != '',fs.postnr,0))       as 'postnr',
                               TRIM(IF(fs.poststed != '',fs.poststed,0))   as 'poststed',
                               TRIM(IF(fs.epost != '',fs.epost,0))         as 'epost',
-                              fs_imp.action
+                              fs_imp.action,
+                              '0'                                         as 'moved'
                      FROM	  {fs_company}		fs
                         -- INFO KS
                         JOIN  {ksfs_company}	fk 		ON 	fk.fscompany 	    = fs.companyid
