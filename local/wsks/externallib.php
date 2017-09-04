@@ -167,7 +167,7 @@ class local_wsks_external extends external_api {
         $companies = new external_value(PARAM_TEXT,'Companie. String like
                                                     {"fsid": xxx, "ksid" : xxx, "name" : xxxx, "industry" : yyyy, "level" : zzzz, "parent" : rrrr,
                                                      "public" : zzzz, "ansvar": xxxx, "tjeneste" : yyyyy, "adresse1" : xxxx, "adresse2": xxxx, "adresse3" : xxx,
-                                                     "postnr" : xxx, "poststed": xxxx, "epost" : xxxx, "action": xxxx}');
+                                                     "postnr" : xxx, "poststed": xxxx, "epost" : xxxx, "action": xxxx, "moved" : x}');
 
         return new external_function_parameters(array('companiesFS'=> $companies));
     }//wsFSCompany_parameters

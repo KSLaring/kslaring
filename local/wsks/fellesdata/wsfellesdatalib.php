@@ -2367,8 +2367,9 @@ class WS_FELLESDATA {
 
                     // Relation parent
                     if ($companyInfo->parent) {
+                        // Only one parent connected with
                         // Check if already exists
-                        $rdo = $DB->get_record('report_gen_company_relation',array('companyid' => $companyId,'parentid' => $companyInfo->parent),'id');
+                        $rdo = $DB->get_record('report_gen_company_relation',array('companyid' => $companyId),'id,parentid,modified');
                         if (!$rdo) {
                             // Create relation
                             $instanceParent = new stdClass();
@@ -2378,6 +2379,17 @@ class WS_FELLESDATA {
 
                             // Execute
                             $DB->insert_record('report_gen_company_relation',$instanceParent);
+                        }else {
+                            // Update to nw parent
+                            if (isset($companyInfo->moved)) {
+                                if ($companyInfo->moved) {
+                                    $rdo->parentid   = $companyInfo->parent;
+                                    $rdo->modified   = $time;
+
+                                    // Execute
+                                    $DB->update_record('report_gen_company_relation',$rdo);
+                                }//if_companyInfo
+                            }//if_moved
                         }//if_!rdo
                     }//if_parent
 
