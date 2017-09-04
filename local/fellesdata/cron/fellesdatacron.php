@@ -721,10 +721,10 @@ class FELLESDATA_CRON {
             $dblog .= ' START Import FS ORG Structure . ' . "\n";
 
             // Call web service
-            //$fsResponse = self::process_tradis_service($plugin,TRADIS_FS_COMPANIES,$dblog);
+            $fsResponse = self::process_tradis_service($plugin,TRADIS_FS_COMPANIES,$dblog);
 
             // Import data into temporary tables
-            //if ($fsResponse) {
+            if ($fsResponse) {
                 // Clean temporary table
                 FS::clean_temporary_fellesdata(IMP_COMPANIES,$plugin);
 
@@ -732,12 +732,10 @@ class FELLESDATA_CRON {
                 $pathFile = $CFG->dataroot . '/fellesdata/' . TRADIS_FS_COMPANIES . '.txt';
 
                 if (file_exists($pathFile)) {
-                    echo "1" . "</br>";
                     // Get last changes
                     // First check if is a suspicious file
                     if ($plugin->suspicious_path) {
                         if (!suspicious::check_for_suspicious_data(TRADIS_FS_COMPANIES,$pathFile)) {
-                            echo "1.1" . "</br>";
                             // Get content
                             $content = file_get_contents($pathFile);
                             if (strpos(chr(13),$content)) {
@@ -756,7 +754,6 @@ class FELLESDATA_CRON {
                             unlink($pathFile);
                         }//if_suspicious
                     }else {
-                        echo "2" . "</br>";
                         // Get content
                         $content = file_get_contents($pathFile);
                         if (strpos(chr(13),$content)) {
@@ -765,7 +762,7 @@ class FELLESDATA_CRON {
                             $content = file($pathFile);
                         }
 
-                        //self::save_temporary_fs($content,IMP_COMPANIES);
+                        self::save_temporary_fs($content,IMP_COMPANIES);
                     }///if_suspicous_path
 
                     // Clean repeat companies
@@ -774,7 +771,7 @@ class FELLESDATA_CRON {
                     // Log
                     $dblog .= 'FILE DOES NOT EXIST ' . "\n";
                 }//if_exists
-            //}//if_fsResponse
+            }//if_fsResponse
 
             // Log
             $dblog .= ' FINSIH Import FS ORG Structure . ' . "\n";
