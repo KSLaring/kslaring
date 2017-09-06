@@ -75,7 +75,11 @@ if ($hassiteconfig) {
 
     /* Municipality */
     $settings->add(new admin_setting_configtext('local_fellesdata/ks_muni',get_string('ks_municipality','local_fellesdata'),'','',PARAM_TEXT,50));
-    
+
+    // Automatic map
+    $settings->add(new admin_setting_configcheckbox('local_fellesdata/automatic',
+        get_string('map_automatically', 'local_fellesdata'),
+        get_string('map_automatically_desc', 'local_fellesdata'), 0));
 
     ///* Hierarchy Municipality   */
     //$settings->add(new admin_setting_configtext('local_fellesdata/ks_muni_level',get_string('ks_hierarchy','local_fellesdata'),'','',PARAM_TEXT,50));

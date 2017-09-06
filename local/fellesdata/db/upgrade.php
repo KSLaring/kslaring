@@ -50,18 +50,19 @@ function xmldb_local_fellesdata_upgrade($oldVersion) {
     $tblImpUsers        = null;
     $fdlTimeImp         = null;
     $fdlTime            = null;
+    $fdlmoved           = null;
 
-    /* Get Manager  */
+    // Get manager
     $dbMan = $DB->get_manager();
 
 
     try {
 
         if ($oldVersion < 2016031400) {
-            /* Table        */
+            // Table
             $tblImpUsersJR = new xmldb_table('fs_imp_users_jr');
 
-            /* New Field    */
+            // New field
             $fldStillins = new xmldb_field('STILLINGSNR', XMLDB_TYPE_CHAR, '255', null, XMLDB_NOTNULL, null, null, 'FODSELSNR');
             if (!$dbMan->field_exists($tblImpUsersJR, $fldStillins)) {
                 $dbMan->add_field($tblImpUsersJR, $fldStillins);
@@ -74,10 +75,10 @@ function xmldb_local_fellesdata_upgrade($oldVersion) {
         }//id_oflVersion
 
         if ($oldVersion < 2016060604) {
-            /* Table        */
+            // Table
             $tblKSCompany = new xmldb_table('ks_company');
 
-            /* New Field    */
+            // New field
             $fldParent = new xmldb_field('parent', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
             if (!$dbMan->field_exists($tblKSCompany, $fldParent)) {
                 $dbMan->add_field($tblKSCompany, $fldParent);
@@ -85,22 +86,22 @@ function xmldb_local_fellesdata_upgrade($oldVersion) {
         }
 
         if ($oldVersion < 2016060606) {
-            /* Table */
+            // Table
             $tblFSCompany   = new xmldb_table('fs_company');
 
-            /* New Field */
+            // New field
             $fldFSParent = new xmldb_field('fs_parent', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null,'parent');
             if (!$dbMan->field_exists($tblFSCompany, $fldFSParent)) {
                 $dbMan->add_field($tblFSCompany, $fldFSParent);
             }//if_not_exists
         }
 
-        /* Managers Reporters Temporary Table */
+        // Managers Reporters Temporary Table
         if ($oldVersion < 2016061204) {
             Fellesdata_Update::Update_FSImpManagersReporters($dbMan);
         }//managersReporters
 
-        /* User Competence Table */
+        // User Competence Table
         if ($oldVersion < 2016061400) {
             Fellesdata_Update::Update_FSUserCompetence($dbMan);
         }//UserCompetence
@@ -110,23 +111,21 @@ function xmldb_local_fellesdata_upgrade($oldVersion) {
         }//ResourceNumber
 
         if ($oldVersion < 2016092700) {
-            /* Table */
+            // Table
             $tblResource   = new xmldb_table('user_resource_number');
 
-            /* New Field */
+            // New field
             $fldIndustryCode = new xmldb_field('industrycode', XMLDB_TYPE_CHAR, '50',null,XMLDB_NOTNULL,null,null, 'ressursnr');
             if (!$dbMan->field_exists($tblResource, $fldIndustryCode)) {
                 $dbMan->add_field($tblResource, $fldIndustryCode);
             }//if_not_exists
         }//if_oldVersion_2016092700
 
-        /**
-         * Add ADFS ID
-         */
+        //  Add ADFS ID
         if ($oldVersion < 2016102504) {
             $fldUsersImp = new xmldb_table('fs_imp_users');
             if ($dbMan->table_exists('fs_imp_users')) {
-                /* ADFS ID  */
+                // ADFS ID
                 $fldADFS = new xmldb_field('brukernavn', XMLDB_TYPE_CHAR, '50',null,null,null,null, 'epost');
                 if (!$dbMan->field_exists($fldUsersImp, $fldADFS)) {
                     $dbMan->add_field($fldUsersImp, $fldADFS);
@@ -138,17 +137,16 @@ function xmldb_local_fellesdata_upgrade($oldVersion) {
             $tblTemp =  new xmldb_table('fs_ws_users_accounts');
 
             $tblTemp->add_field('id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
-            /* personalnumber --> Personal number   */
+            // personalnumber --> Personal number
             $tblTemp->add_field('personalnumber',XMLDB_TYPE_CHAR,'50',null, null, null,null);
-            /* REsource number  */
+            // REsource number
             $tblTemp->add_field('imported',XMLDB_TYPE_CHAR,'50',null, null, null,null);
-            /* firstname    --> First name          */
+            // firstname    --> First name
             $tblTemp->add_field('key',XMLDB_TYPE_CHAR,'255',null, null, null,null);
 
-
-            /* Keys     */
+            // Keys
             $tblTemp->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
-            /* Index    */
+            // Index
             $tblTemp->add_index('personalnumber',XMLDB_INDEX_NOTUNIQUE,array('personalnumber'));
 
             if (!$dbMan->table_exists('fs_ws_users_accounts')) {
@@ -168,10 +166,10 @@ function xmldb_local_fellesdata_upgrade($oldVersion) {
 
         // Add token connected with the file
         if ($oldVersion < 2017011802) {
-            /* Table        */
+            // Table
             $tblSuspicious = new xmldb_table('fs_suspicious');
 
-            /* New Field    */
+            // New field
             $fldToken = new xmldb_field('token',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,0, 'impfs');
             if (!$dbMan->field_exists($tblSuspicious, $fldToken)) {
                 $dbMan->add_field($tblSuspicious, $fldToken);
@@ -231,6 +229,17 @@ function xmldb_local_fellesdata_upgrade($oldVersion) {
                 $dbMan->add_field($tblImpUsers, $fdlTime);
             }//if_not_exists_timemodified
         }//if_oldversion
+
+        if ($oldVersion < 2017090402) {
+            // Table
+            $tblFSCompany   = new xmldb_table('fs_company');
+
+            // New field
+            $fdlmoved = new xmldb_field('moved', XMLDB_TYPE_INTEGER, '2', null, XMLDB_NOTNULL, null, 0,'fs_parent');
+            if (!$dbMan->field_exists($tblFSCompany, $fdlmoved)) {
+                $dbMan->add_field($tblFSCompany, $fdlmoved);
+            }//if_not_exists
+        }
 
         return true;
     }catch (Exception $ex) {

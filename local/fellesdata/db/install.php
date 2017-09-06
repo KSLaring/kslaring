@@ -750,6 +750,8 @@ class Fellesdata_Install {
             $tblFSCompany->add_field('parent',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
             /* fs_parent    */
             $tblFSCompany->add_field('fs_parent',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
+            // moved
+            $tblFSCompany->add_field('moved',XMLDB_TYPE_INTEGER,'2',null, XMLDB_NOTNULL, null,0);
             /* privat --> public */
             $tblFSCompany->add_field('privat',XMLDB_TYPE_INTEGER,'1',null, null, null,null);
             /* ansvar   */

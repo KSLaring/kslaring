@@ -33,14 +33,30 @@ $PAGE->set_url('/local/status/Test.php');
 echo $OUTPUT->header();
 
 try {
-    echo " TESTING FELLESDATA STATUS CRON " . "</br>";
-    echo "Start ... " . "</br>";
 
     // Plugin info
     $plugin = get_config('local_fellesdata');
+/**
+    // Get parameters service
+    $to     = mktime(1, 60, 0, date("m"), date("d"), date("Y"));
+    $to     = gmdate('Y-m-d\TH:i:s\Z',$to);
+    $from   = gmdate('Y-m-d\TH:i:s\Z',0);
+
+    echo "to --> " . $to . "</br>";
+    echo "from --> " . $from . "</br>";
+
+    // Build url end point
+    $url = 'https://tjenester.bergen.kommune.no/tardis/fellesdata/v_leka_oren_tre_nivaa?fromDate=' . $from . '&toDate=' . $to;
+    $url = trim($url);
+
+    echo "END POINT --> " . $url . "</br>";
+
+    echo " TESTING FELLESDATA STATUS CRON " . "</br>";
+    echo "Start ... " . "</br>"; **/
+
 
     // Call cron
-    \STATUS_CRON::test($plugin);
+    //\STATUS_CRON::test($plugin);
 }catch (Exception $ex) {
     throw $ex;
 }//try_catch
