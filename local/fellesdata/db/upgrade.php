@@ -230,7 +230,7 @@ function xmldb_local_fellesdata_upgrade($oldVersion) {
             }//if_not_exists_timemodified
         }//if_oldversion
 
-        if ($oldVersion < 2017090402) {
+        if ($oldVersion < 2017090600) {
             // Table
             $tblFSCompany   = new xmldb_table('fs_company');
 
