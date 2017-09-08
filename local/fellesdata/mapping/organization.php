@@ -41,7 +41,7 @@ $url        = new moodle_url('/local/fellesdata/mapping/organization.php',array(
 $urlNew     = new moodle_url('/local/fellesdata/mapping/organization_new.php',array('le' => $level));
 $return     = new moodle_url('/local/fellesdata/mapping/mapping_org.php');
 $start      = 0;
-$step       = 5;
+$step       = 20;
 $fsToMap    = null;
 $total      = 0;
 $matched    = false;
