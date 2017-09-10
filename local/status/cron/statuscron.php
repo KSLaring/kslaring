@@ -56,7 +56,7 @@ class STATUS_CRON {
             self::managers_reporters($plugin,$industry,$dblog);
 
             // Repair connections
-            self::repair_connections($dblog);
+            //self::repair_connections($dblog);
 
             // Import last status from fellesdata
             self::import_status($plugin,$dblog);
@@ -261,10 +261,10 @@ class STATUS_CRON {
             self::sync_status_users_accounts($plugin,$industry,$dblog);
             
             // Synchronization FS Companies
-            self::sync_status_fs_organizations($plugin,$dblog);
+            //self::sync_status_fs_organizations($plugin,$dblog);
 
             // Synchronization FS Job roles
-            self::sync_status_fs_jobroles($plugin,$dblog);
+            //self::sync_status_fs_jobroles($plugin,$dblog);
             
             // Synchronization FS Managers/Reporters to delete
             // Managers
@@ -392,10 +392,10 @@ class STATUS_CRON {
             self::import_status_users($plugin,$dblog);
 
             // Import FS Companies
-            self::import_status_orgstructure($plugin,$dblog);
+            //self::import_status_orgstructure($plugin,$dblog);
 
             // Import FS Job roles
-            self::import_status_jobroles($plugin,$dblog);
+            //self::import_status_jobroles($plugin,$dblog);
 
             // Import FS User Competence
             self::import_status_managers_reporters($plugin,$dblog);

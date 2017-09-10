@@ -670,7 +670,7 @@ class STATUS {
                         JOIN  	  {ksfs_company}	fk 		ON 	fk.fscompany 	    = fs.companyid
                         -- INFO PARENT
                         JOIN  	  {ks_company}		ks_pa	ON 	ks_pa.companyid     = fk.kscompany
-                        LEFT JOIN {fs_imp_company}	fs_imp 	ON 	fs_imp.org_enhet_id = fs.companyid
+                        LEFT JOIN {fs_imp_company}	fs_imp 	ON 	fs_imp.org_enhet_id = fs.companyid                     
                      WHERE 	fs_imp.id IS NULL ";
 
             // Execute
