@@ -252,11 +252,6 @@ class wsdoskom_cron {
 
                                     break;
 
-                                case 'mobilephone':
-                                    //$userInfo->mobilephone = trim($entry->value);
-
-                                    break;
-
                                 case 'email':
                                     $userInfo->email = trim($entry->value);
 
