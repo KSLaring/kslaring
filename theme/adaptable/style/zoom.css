@@ -1,0 +1,42 @@
+/* set fullscreen */
+.fullin .container {
+    width: [[setting:fullscreenwidth]];
+}
+
+.sbll {
+    display: none;
+}
+
+.fullin .sbll {
+    display: inherit;
+}
+
+.fullin .hbll {
+    display: none;
+}
+
+.zoomin #block-region-side-post {
+    width: 0;
+    height: 0;
+    overflow: hidden;
+    margin-left: 0;
+    display: none;
+}
+
+.zoomin #region-main,
+.zoomin #region-bs-main-and-pre {
+    width: 100%;
+    margin-left: 0;
+}
+
+.sbl {
+    display: none;
+}
+
+.zoomin .sbl {
+    display: inherit;
+}
+
+.zoomin .hbl {
+    display: none;
+}
