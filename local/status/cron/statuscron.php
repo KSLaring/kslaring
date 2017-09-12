@@ -26,14 +26,12 @@
  *
  */
 
-
-
 class STATUS_CRON {
     /***********/
     /* PUBLIC  */
     /***********/
 
-    public static function cron_old($plugin) {
+    public static function cron($plugin) {
         /* Varibales */
         global $CFG;
         $dblog = null;
@@ -100,19 +98,19 @@ class STATUS_CRON {
             $industry = STATUS::get_industry_code($plugin->ks_muni);
 
             // Get competence from KS
-            //self::competence_data($plugin,$industry,$dblog);
+            self::competence_data($plugin,$industry,$dblog);
 
             // Get managers reporters from KS
-            //self::managers_reporters($plugin,$industry,$dblog);
+            self::managers_reporters($plugin,$industry,$dblog);
 
             // Repair connections
-            //self::repair_connections($dblog);
+            self::repair_connections($dblog);
 
             // Import last status from fellesdata
             self::import_status($plugin,$dblog);
 
             // Syncronization
-            //self::synchronization($plugin,$industry,$dblog);
+            self::synchronization($plugin,$industry,$dblog);
 
             // Finish Log
             $dblog .= $time . ' (' . userdate(time(),'%d.%m.%Y %H:%M', 99, false) . ') - FINISH FELLESDATA STATUS CRON' . "\n\n";
@@ -389,11 +387,11 @@ class STATUS_CRON {
             $dblog .= ' START Import STATUS. ' . "\n";
 
             // Import FS Users
-            //self::import_status_users($plugin,$dblog);
+            self::import_status_users($plugin,$dblog);
 
             // Import FS Companies
             self::import_status_orgstructure($plugin,$dblog);
-/**
+
             // Import FS Job roles
             self::import_status_jobroles($plugin,$dblog);
 
@@ -402,7 +400,7 @@ class STATUS_CRON {
 
             // Import FS User Competence JR
             self::import_status_user_competence($plugin,$dblog);
-**/
+
             // Log
             $dblog .= ' FINISH Import STATUS. ' . "\n";
 
@@ -504,7 +502,6 @@ class STATUS_CRON {
 
             // Call web service
             $response = self::process_tardis_status($plugin,TRADIS_FS_COMPANIES,$dblog);
-            /**
 
             // Import data into temporary tables
             if ($response) {
@@ -538,7 +535,6 @@ class STATUS_CRON {
                     $dblog .= ' FILE DOES NOT EXIST ' . "\n";
                 }//if_exists
             }//if_fsResponse
-             * */
 
             // Log
             $dblog .= 'FINISH Import STATUS ORG Structure . ' . "\n";
@@ -1524,7 +1520,6 @@ class STATUS_CRON {
             $response   = curl_exec( $ch );
             curl_close( $ch );
 
-            print $response;
             // Save original file receive it
             $pathFile = $original . '/' . $service . '.txt';
             if (file_exists($pathFile)) {
