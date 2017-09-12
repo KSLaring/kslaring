@@ -651,14 +651,15 @@ class FS_MAPPING {
             $params['action']   = ACT_DELETE;
 
             /* SQL Instruction  */
-            $sql = " SELECT 	    fs.stillingskode,
-                                    fs.stillingstekst
-                     FROM			{fs_imp_jobroles}	fs
-                        LEFT JOIN	{ksfs_jobroles}		ksfs	ON 	ksfs.fsjobrole = fs.stillingskode
+            $sql = " SELECT     DISTINCT
+                                  fs.stillingskode,
+                                  fs.stillingstekst
+                     FROM		  {fs_imp_jobroles}	fs
+                        LEFT JOIN {ksfs_jobroles}		ksfs	ON 	ksfs.fsjobrole = fs.stillingskode
                                                                 AND	ksfs.ksjobrole = :job_role
-                     WHERE          fs.imported = 0	
-                          AND       fs.action != :action
-                          AND       ksfs.id IS NULL ";
+                     WHERE        fs.imported = 0	
+                          AND     fs.action != :action
+                          AND     ksfs.id IS NULL ";
 
             /* Search   */
             if ($search) {
@@ -1142,28 +1143,28 @@ class FS_MAPPING {
         $trans          = null;
         $time           = null;
 
-        /* Start Transaction    */
+        // Start transaction
         $trans = $DB->start_delegated_transaction();
 
         try {
             // Local time
             $time = time();
-            
-            /* Check if already exist */
+
+            // Check if already exist
             $params = array();
             $params['companyid'] = $fsCompany->fscompany;
             $rdo = $DB->get_record('fs_company',$params);
 
             if (!$rdo) {
-                /* Create Company   */
+                // create company
                 $infoCompany = new stdClass();
                 $infoCompany->companyid     = $fsCompany->fscompany;
-                $infoCompany->name          = $fsCompany->real_name;
+                $infoCompany->name          = str_replace("'"," ",$fsCompany->real_name);
                 $infoCompany->fs_parent     = ($fsCompany->fs_parent ? $fsCompany->fs_parent : 0);
                 $infoCompany->parent        = 0;
                 $infoCompany->level         = $level;
                 $infoCompany->privat        = $fsCompany->privat;
-                /* Invoice Data */
+                // Invoice data
                 $infoCompany->ansvar        = $fsCompany->ansvar;
                 $infoCompany->tjeneste      = $fsCompany->tjeneste;
                 $infoCompany->adresse1      = $fsCompany->adresse1;
@@ -1176,25 +1177,26 @@ class FS_MAPPING {
                 $infoCompany->new           = 1;
                 $infoCompany->timemodified  = time();
 
-                /* Execute  */
+                // Execute
                 $infoCompany->id = $DB->insert_record('fs_company',$infoCompany);
 
-                /* Save */
+                // Save
                 $SESSION->FS_COMP["'" . $infoCompany->companyid . "'"] = $infoCompany;
             }//if_rdo
 
-            /* Update Record as imported    */
+            // Update records as imported
             $infoImp = new stdClass();
             $infoImp->id            = $fsCompany->id;
             $infoImp->org_enhet_id  = $fsCompany->fscompany;
+            $infoImp->org_navn      = str_replace("'"," ",$fsCompany->real_name);
             $infoImp->imported      = 1;
             $infoImp->timemodified  = $time;
             $DB->update_record('fs_imp_company',$infoImp);
 
-            /* Commit   */
+            // Commit
             $trans->allow_commit();
         }catch (Exception $ex) {
-            /* Rollback */
+            // Rollback
             $trans->rollback($ex);
 
             throw $ex;
@@ -1225,26 +1227,26 @@ class FS_MAPPING {
         $time           = null;
         $trans          = null;
 
-        /* Start transaction    */
+        // Start transaction
         $trans = $DB->start_delegated_transaction();
 
         try {
-            /* Local Time   */
+            // Local time
             $time = time();
 
-            /* Check if already exist */
+            // Check if already exist
             $params = array();
             $params['companyid'] = $fsCompany->fscompany;
             $rdo = $DB->get_record('fs_company',$params);
 
             if (!$rdo) {
-                /* FS Company   */
+                // FS company
                 $infoCompany = new stdClass();
                 $infoCompany->companyid     = $fsCompany->fscompany;
-                $infoCompany->name          = $fsCompany->real_name;
+                $infoCompany->name          = str_replace("'"," ",$fsCompany->real_name);
                 $infoCompany->fs_parent     = ($fsCompany->fs_parent ? $fsCompany->fs_parent : 0);
                 $infoCompany->parent        = $ksCompany->parent;
-                /* Invoice Data */
+                // Invoice data
                 $infoCompany->privat        = $fsCompany->privat;
                 $infoCompany->ansvar        = $fsCompany->ansvar;
                 $infoCompany->tjeneste      = $fsCompany->tjeneste;
@@ -1259,49 +1261,51 @@ class FS_MAPPING {
                 $infoCompany->new           = 0;
                 $infoCompany->timemodified  = $time;
 
-                /* Execute  */
+                // Execute
                 $DB->insert_record('fs_company',$infoCompany);
             }else {
-                $rdo->name          = $fsCompany->name;
+                $rdo->name          = str_replace("'"," ",$fsCompany->real_name);
                 $rdo->fs_parent     = $fsCompany->fs_parent;
                 $rdo->parent        = $ksCompany->parent;
                 $rdo->level         = $level;
                 $rdo->synchronized  = 1;
                 $rdo->timemodified  = $time;
 
-                /* Execute  */
+                // Execute
                 $DB->update_record('fs_company',$rdo);
             }//if_rdo
 
-            /* Relation */
-            /* Check if already exist   */
+            // Relation
+            // Check if already exist
             $params = array();
             $params['fscompany'] = $fsCompany->fscompany;
             $params['kscompany'] = $ksCompany->kscompany;
             $rdo = $DB->get_record('ksfs_company',$params);
             if (!$rdo) {
-                /* Create Relation  */
+                // Create relation
                 $infoRelation = new stdClass();
                 $infoRelation->fscompany = $fsCompany->fscompany;
                 $infoRelation->kscompany = $ksCompany->kscompany;
 
-                /* Execute  */
+                // Execute
                 $DB->insert_record('ksfs_company',$infoRelation);
             }//if_no_exists
 
-            /* Update Record as imported    */
+            // Update record as importer
             $infoImp = new stdClass();
             $infoImp->id            = $fsCompany->id;
             $infoImp->org_enhet_id  = $fsCompany->fscompany;
             $infoImp->imported      = 1;
+            $infoImp->org_navn      = str_replace("'"," ",$fsCompany->real_name);
             $infoImp->timemodified  = $time;
-            /* Executes */
+
+            // Execute
             $DB->update_record('fs_imp_company',$infoImp);
 
-            /* Commit   */
+            // Commit
             $trans->allow_commit();
         }catch (Exception $ex) {
-            /* Rollback */
+            // Rollback
             $trans->rollback($ex);
 
             throw $ex;
@@ -1412,6 +1416,7 @@ class FS_MAPPING {
                 $sector     = str_replace(' og ',' ',$sector);
                 $sector     = str_replace(' eller ',' ',$sector);
                 $sector     = str_replace('/',' ',$sector);
+                $sector     = str_replace("'","\'",$sector);
                 $searchBy   = explode(' ',$sector);
 
                 foreach($searchBy as $match) {
@@ -1583,12 +1588,12 @@ class FS_MAPPING {
         $params         = null;
 
         try {
-            /* Search Criteria  */
+            // Search criteria
             $params = array();
             $params['imported'] = 0;
             $params['action']   = ACT_DELETE;
 
-            /* Get Level    */
+            // Get level
             switch ($level) {
                 case FS_LE_1:
                     $params['level'] = $plugin->map_one;
@@ -1604,7 +1609,7 @@ class FS_MAPPING {
                     break;
             }//level
 
-            /* SQL Instruction  */
+            // SQL Instruction
             $sql = " SELECT count(DISTINCT  fs_imp.id) as 'total'
                      FROM			{fs_imp_company}  fs_imp
                         LEFT JOIN	{fs_company}	  fs	  ON fs.companyid = fs_imp.org_enhet_id
@@ -1618,15 +1623,17 @@ class FS_MAPPING {
                 $sql .= " AND fs_imp.org_enhet_id NOT IN ($notIn) ";
             }//if_notIn
 
-            /* Sector */
+            // Sector
             if ($sector) {
                 $sqlMatch = null;
                 $searchBy = null;
-                /* Search By    */
+
+                // Search by
                 $sector     = str_replace(',',' ',$sector);
                 $sector     = str_replace(' og ',' ',$sector);
                 $sector     = str_replace(' eller ',' ',$sector);
                 $sector     = str_replace('/',' ',$sector);
+                $sector     = str_replace("'","\'",$sector);
                 $searchBy   = explode(' ',$sector);
 
                 foreach($searchBy as $match) {
@@ -1640,7 +1647,7 @@ class FS_MAPPING {
                 $sql .= " AND (fs_imp.org_navn like '%" . $sector . "%' OR " . $sqlMatch . ")";
             }//if_patterns
 
-            /* Execute  */
+            // Execute
             $rdo = $DB->get_record_sql($sql,$params);
             if ($rdo) {
                 return $rdo->total;
@@ -1679,11 +1686,14 @@ class FS_MAPPING {
         $infoMatch  = null;
 
         try {
-            /* Search Criteria  */
+            // Company name
+            $fscompany = str_replace("'","\'",$fscompany);
+
+            // Search criteria
             $params = array();
             $params['level'] = $level;
 
-            /* SQL Instruction  */
+            // SQL Instruction
             $sql = " SELECT	ks.id,
                             ks.companyid as 'kscompany',
                             ks.name,
@@ -1692,15 +1702,16 @@ class FS_MAPPING {
                     FROM	{ks_company} ks
                     WHERE 	ks.hierarchylevel = :level ";
 
-            /* Pattern  */
+            // Pattern
             if ($sector) {
                 $sector     = str_replace(',',' ',$sector);
                 $sector     = str_replace(' og ',' ',$sector);
                 $sector     = str_replace(' eller ',' ',$sector);
                 $sector     = str_replace('/',' ',$sector);
+                $sector     = str_replace("'","\'",$sector);
                 $searchBy   = explode(' ',$sector);
 
-                /* Search by */
+                // Search by
                 foreach($searchBy as $match) {
                     if ($sqlMatch) {
                         $sqlMatch .= " OR ";
@@ -1715,12 +1726,12 @@ class FS_MAPPING {
                 }
             }//if_sector
 
-            /* Execute  */
+            // Execute
             $sql .= " ORDER BY ks.industrycode, ks.name ";
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 foreach ($rdo as $instance) {
-                    /* Info Match   */
+                    // Info match
                     $infoMatch = new stdClass();
                     $infoMatch->id          = $instance->id;
                     $infoMatch->kscompany   = $instance->kscompany;
@@ -1728,7 +1739,7 @@ class FS_MAPPING {
                     $infoMatch->industry    = $instance->industrycode;
                     $infoMatch->parent      = $instance->parent;
 
-                    /* Add Match    */
+                    // Add match
                     $matches[$instance->kscompany] = $infoMatch;
                 }//for_Rdo
             }//if_rdo
