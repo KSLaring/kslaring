@@ -26,8 +26,6 @@
  *
  */
 
-
-
 class STATUS_CRON {
     /***********/
     /* PUBLIC  */

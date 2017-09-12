@@ -199,3 +199,6 @@ $string['error_reponse_body']               = ' <p>Vi vil gjerne informere deg o
 $string['error_process_subject'] = '{$a->SITE}: {$a->type} TARDIS - FEIL ';
 $string['error_process_body']    = '<p>Vi vil gjerne informere deg om at det har oppstått et problem i TARDIS-integrasjonen mellom  {$a} og KS Læring.</p>
                                     <p>Vi har derfor deaktivert cron-jobben {$a}, slik at du kan aktivere den igjen når problemet er løst. Vennligst kontakt Weblogin-support for hjelp.</p>';
+
+$string['map_automatically']        = 'Map automatically';
+$string['map_automatically_desc']   = 'Map automatically will not applied for the first execution. The first time the mapping has to be done manually';

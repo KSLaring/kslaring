@@ -578,6 +578,123 @@ class FSKS_COMPANY {
 
     /**
      * Description
+     * Get total of companies that have to be created and synchronized manually
+     *
+     * @return          null
+     * @throws          Exception
+     *
+     * @creationDate    05/09/2017
+     * @author          eFaktor     (fbv)
+     */
+    public static function get_total_companies_automatically($level) {
+        /* Variables */
+        global $DB;
+        $rdo    = null;
+        $sql    = null;
+        $params = null;
+
+        try {
+            // Search criteria
+            $params = array();
+            $params['action']   = DELETE;
+            $params['imported'] = 0;
+            $params['level']    = $level;
+
+            // SQL Instruction
+            $sql = " SELECT		  count(DISTINCT fs_imp.id) as 'total'
+                     FROM		  {fs_imp_company}	fs_imp
+                        LEFT JOIN {fs_company}		fs		ON 	fs.companyid 	= fs_imp.ORG_ENHET_ID
+                        -- Info parent
+                        JOIN 	  {ksfs_company}  	ksfs	ON 	ksfs.fscompany 	= fs_imp.ORG_ENHET_OVER
+                        JOIN	  {ks_company}		ks		ON	ks.companyid	= ksfs.kscompany
+                     WHERE	      fs_imp.action 	!= :action
+                          AND	  fs_imp.imported    = 0
+                          AND     fs_imp.ORG_NIVAA  != :level
+                          AND	  fs.id IS NULL ";
+
+            // Execute
+            $rdo = $DB->get_record_sql($sql,$params);
+            if ($rdo) {
+                return $rdo->total;
+            }else {
+                return null;
+            }//if_Rdo
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//get_total_companies_automatically
+
+    /**
+     * Description
+     * Get all companies that have to be created and synchronized automatically
+     *
+     * @param           $start
+     * @param           $end
+     *
+     * @return          array
+     * @throws          Exception
+     *
+     * @creationDate    05/09/2017
+     * @author          eFaktor     (fbv)
+     */
+    public static function get_companies_to_synchronize_automatically($level,$start,$end) {
+        /* Variables */
+        global  $DB;
+        $rdo            = null;
+        $sql            = null;
+        $params         = null;
+        $toSynchronize  = array();
+
+        try {
+            // Search criteria
+            $params = array();
+            $params['action']   = DELETE;
+            $params['imported'] = 0;
+            $params['level']    = $level;
+
+            // SQL Instruction
+            $sql = " SELECT		  fs_imp.ORG_ENHET_ID 							as 'fsid',
+                                  '0'											as 'ksid',
+                                  TRIM(fs_imp.ORG_NAVN)  	 					as 'name',
+                                  fs_imp.ORG_NIVAA								as 'level',
+                                  ks.companyid									as 'parent',
+                                  fs_imp.ORG_ENHET_OVER							as 'fs_parent',
+                                  IF(fs_imp.privat,0,1)   						as 'public',
+                                  TRIM(IF(fs_imp.ansvar,fs_imp.ansvar,0))       as 'ansvar',
+                                  TRIM(IF(fs_imp.tjeneste,fs_imp.tjeneste,0))   as 'tjeneste',
+                                  TRIM(IF(fs_imp.adresse1,fs_imp.adresse1,0))   as 'adresse1',
+                                  TRIM(IF(fs_imp.adresse2,fs_imp.adresse2,0))   as 'adresse2',
+                                  TRIM(IF(fs_imp.adresse3,fs_imp.adresse3,0))   as 'adresse3',
+                                  TRIM(IF(fs_imp.postnr,fs_imp.postnr,0))       as 'postnr',
+                                  TRIM(IF(fs_imp.poststed,fs_imp.poststed,0))   as 'poststed',
+                                  TRIM(IF(fs_imp.epost,fs_imp.epost,0))         as 'epost',
+                                  fs_imp.action									as 'action',
+                                  '0'                                         	as 'moved'
+                     FROM		  {fs_imp_company}	fs_imp
+                        LEFT JOIN {fs_company}		fs		ON 	fs.companyid 	= fs_imp.ORG_ENHET_ID
+                        -- Info parent
+                        JOIN 	  {ksfs_company}  	ksfs	ON 	ksfs.fscompany 	= fs_imp.ORG_ENHET_OVER
+                        JOIN	  {ks_company}		ks		ON	ks.companyid	= ksfs.kscompany
+                     WHERE	      fs_imp.action 		!= :action
+                          AND	  fs_imp.imported  	     = :imported
+                          AND     fs_imp.ORG_NIVAA      != :level
+                          AND	  fs.id IS NULL ";
+
+            // Excute
+            $DB->get_records_sql($sql,$params,$start,$end);
+            if ($rdo) {
+                $toSynchronize = json_encode($rdo);
+            }//if_rdo
+
+            return array($toSynchronize,$rdo);
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//get_companies_to_synchronize_automatically
+
+
+    /**
+     * Description
      * Get all movements between levels that have to be synchronized
      *
      * @param       $moved
@@ -604,6 +721,7 @@ class FSKS_COMPANY {
             // Search Criteria
             $params = array();
             $params['synchronized'] = 0;
+            $params['moved']        = 1;
 
             // SQL Instruction
             $sql = " SELECT	  DISTINCT 
@@ -628,7 +746,11 @@ class FSKS_COMPANY {
                         JOIN      {ks_company}	  ks 	ON ks.companyid     = fs.parent
                         LEFT JOIN {ksfs_company}  ks_fs	ON ks_fs.fscompany 	= fs.companyid
                      WHERE	      fs.synchronized = 0
-                        AND		  fs.companyid IN ($in) ";
+                        AND		  fs.companyid IN ($in)
+                        AND       (fs.parent IS NOT NULL 
+                                   OR 
+                                   fs.parent != 0)
+                        AND       fs.moved = :moved ";
 
             // Execute
             $rdo = $DB->get_records_sql($sql,$params,$start,$end);
@@ -668,6 +790,7 @@ class FSKS_COMPANY {
             $params = array();
             $params['synchronized'] = 0;
             $params['new']          = 1;
+            $params['moved']        = 0;
 
             // SQL Instruction
             $sql = " SELECT	  DISTINCT 
@@ -693,6 +816,7 @@ class FSKS_COMPANY {
                         LEFT JOIN {ksfs_company}  ks_fs	ON ks_fs.fscompany 	= fs.companyid
                      WHERE	      fs.synchronized = :synchronized
                           AND	  fs.new 		  = :new
+                          AND     fs.moved        = :moved
                      ";
 
 
@@ -728,8 +852,9 @@ class FSKS_COMPANY {
         try {
             // Search criteria
             $params = array();
-            $params['new']  = 1;
-            $params['sync'] = 0;
+            $params['new']      = 1;
+            $params['sync']     = 0;
+            $params['moved']    = 0;
 
             // SQL Instruction
             $sql = " SELECT	      count(DISTINCT fs.id)   as 'total'
@@ -737,7 +862,8 @@ class FSKS_COMPANY {
                         JOIN      {ks_company}	  ks 	ON ks.companyid     = fs.parent
                         LEFT JOIN {ksfs_company}  ks_fs	ON ks_fs.fscompany 	= fs.companyid
                      WHERE	      fs.synchronized = :sync
-                        AND	  	  fs.new 		  = :new ";
+                          AND	  fs.new 		  = :new
+                          AND     fs.moved        = :moved ";
 
             // Execute
             $rdo = $DB->get_record_sql($sql,$params);
@@ -781,6 +907,7 @@ class FSKS_COMPANY {
             $params['new']          = 0;
             $params['imported']     = 1;
             $params['synchronized'] = 0;
+            $params['moved']        = 0;
 
             // SQL Instruction
             $sql = " SELECT DISTINCT 
@@ -809,7 +936,8 @@ class FSKS_COMPANY {
                         -- INFO PARENT
                         JOIN  {ks_company}		ks_pa	ON 	ks_pa.companyid     = fk.kscompany
                      WHERE	  fs.new 			= :new
-                        AND   fs.synchronized   = :synchronized ";
+                          AND fs.synchronized   = :synchronized
+                          AND fs.moved = :moved ";
 
             // Status criterua
             if ($status) {
@@ -854,6 +982,7 @@ class FSKS_COMPANY {
             $params['new']          = 0;
             $params['imported']     = 1;
             $params['synchronized'] = 0;
+            $params['moved']        = 0;
 
             // SQL Instruction
             $sql = " SELECT DISTINCT 
@@ -866,7 +995,8 @@ class FSKS_COMPANY {
                         -- INFO PARENT
                         JOIN  {ks_company}		ks_pa	ON 	ks_pa.companyid     = fk.kscompany
                      WHERE	  fs.new 			= :new
-                        AND   fs.synchronized   = :synchronized ";
+                          AND fs.synchronized   = :synchronized
+                          AND fs.moved          = :moved ";
 
             // Status criterua
             if ($status) {
@@ -958,6 +1088,7 @@ class FSKS_COMPANY {
                     unset($company->fsid);
                     $company->synchronized = 0;
                     $company->timemodified = $time;
+                    $company->moved        = 0;
                     // Execute
                     $DB->update_record('fs_company',$company);
                 }//for
@@ -1048,8 +1179,9 @@ class FSKS_COMPANY {
 
                     // Update fs_company
                     unset($company->fsid);
-                    $company->synchronized = 0;
-                    $company->timemodified = $time;
+                    $company->synchronized  = 0;
+                    $company->timemodified  = $time;
+                    $company->moved         = 1;
                     // Execute
                     $DB->update_record('fs_company',$company);
 
@@ -1076,13 +1208,14 @@ class FSKS_COMPANY {
      *
      * @param           $companiesFSKS
      * @param           $companiesImported
+     * @param           $automatic
      *
      * @throws          Exception
      *
      * @creationDate    10/02/2016
      * @author          eFaktor     (fbv)
      */
-    public static function synchronize_companies_ksfs($companiesFSKS,$companiesImported) {
+    public static function synchronize_companies_ksfs($companiesFSKS,$companiesImported,$automatic=null) {
         /* Variables */
         $infoCompany    = null;
         $objCompany     = null;
@@ -1104,7 +1237,17 @@ class FSKS_COMPANY {
                     $infoCompany->ksid  = $objCompany->ksId;
 
                     // Synchronize Company
-                    self::synchronize_company_ksfs($infoCompany,$objCompany->fsId);
+                    switch ($automatic) {
+                        case true:
+                            self::synchronize_automatically_companyksfs($infoCompany,$objCompany->fsId);
+
+                            break;
+                        case false:
+                            self::synchronize_company_ksfs($infoCompany,$objCompany->fsId);
+
+                            break;
+                    }//switch_automatic
+
                 }//if_imported
             }//for_companiesFS
         }catch (Exception $ex) {
@@ -1145,9 +1288,9 @@ class FSKS_COMPANY {
                                   fs.companyid,
                                   fs.synchronized
                      FROM 	      {fs_imp_company}	fs_imp
-                        LEFT JOIN {fs_company}		fs		ON fs.companyid = fs_imp.ORG_ENHET_ID
+                        LEFT JOIN {fs_company}		fs		ON  fs.companyid    = fs_imp.ORG_ENHET_ID
+                                                            AND fs.synchronized = 0
                      WHERE 	      fs_imp.imported 	 = 0
-                          AND     fs.synchronized    = 0
                           AND     fs_imp.org_nivaa 	!= 4
                           AND     fs_imp.action      = :add
                           AND     fs_imp.id NOT IN ($notIn) 
@@ -1248,6 +1391,139 @@ class FSKS_COMPANY {
     /***********/
 
     /**
+     * Decription
+     * Synchronize company between FS and KS sites. Only for companies that have to be created automatically
+     *
+     * @param           $companyKSFS
+     * @param           $impKey
+     *
+     * @throws          Exception
+     *
+     * @creationDate    05/09/2017
+     * @author          eFaktor     (fbv)
+     */
+    private static function synchronize_automatically_companyksfs($companyKSFS,$impKey) {
+        /* Variables    */
+        global $DB;
+        $rdoCompany     = null;
+        $rdoRelation    = null;
+        $rdo            = null;
+        $params         = null;
+        $infoCompany    = null;
+        $infoRelation   = null;
+        $instance       = null;
+        $time           = null;
+        $sync           = false;
+        $trans          = null;
+
+        // Start transaction
+        $trans = $DB->start_delegated_transaction();
+
+        try {
+            // Local Time
+            $time = time();
+
+            // First create the comapny
+            $rdoCompany = new stdClass();
+            $rdoCompany->companyid     = $companyKSFS->fsid;
+            $rdoCompany->name          = $companyKSFS->name;
+            $rdoCompany->fs_parent     = $companyKSFS->fs_parent;
+            $rdoCompany->parent        = $companyKSFS->parent;
+            $rdoCompany->level         = $companyKSFS->level;
+            $rdoCompany->privat        = ($companyKSFS->privat ? 0 : 1);
+            $rdoCompany->ansvar        = $companyKSFS->ansvar;
+            $rdoCompany->tjeneste      = $companyKSFS->tjeneste;
+            $rdoCompany->adresse1      = $companyKSFS->adresse1;
+            $rdoCompany->adresse2      = $companyKSFS->adresse2;
+            $rdoCompany->adresse3      = $companyKSFS->adresse3;
+            $rdoCompany->postnr        = $companyKSFS->postnr;
+            $rdoCompany->poststed      = $companyKSFS->poststed;
+            $rdoCompany->epost         = $companyKSFS->epost;
+            $rdoCompany->action        = $companyKSFS->action;
+            $rdoCompany->synchronized  = 1;
+            $rdoCompany->new           = 1;
+            $rdoCompany->timemodified  = $time;
+
+            // Execute
+            $rdoCompany->id = $DB->insert_record('fs_company',$rdoCompany);
+
+            //  Apply Synchronization
+            switch ($companyKSFS->action) {
+                case ADD:
+                case UPDATE:
+                case STATUS:
+                    // Insert KS Company
+                    // Check if already exists
+                    $rdo = $DB->get_record('ks_company',array('companyid' => $companyKSFS->ksid));
+                    if (!$rdo) {
+                        $infoCompany = new stdClass();
+                        $infoCompany->companyid         = $companyKSFS->ksid;
+                        $infoCompany->name              = $companyKSFS->name;
+                        $infoCompany->industrycode      = $companyKSFS->industry;
+                        $infoCompany->hierarchylevel    = $companyKSFS->level;
+                        $infoCompany->parent            = $companyKSFS->parent;
+
+                        // Execute
+                        $DB->insert_record('ks_company',$infoCompany);
+                    }else {
+                        $rdo->companyid         = $companyKSFS->ksid;
+                        $rdo->name              = $companyKSFS->name;
+                        $rdo->industrycode      = $companyKSFS->industry;
+                        $rdo->hierarchylevel    = $companyKSFS->level;
+                        $rdo->parent            = $companyKSFS->parent;
+
+                        $DB->update_record('ks_company',$rdo);
+                    }//if_no_exist
+
+                    // Relation FS KS Companies
+                    // Check it with kscompany  --> 0 For new companies
+                    // Check it with kscompany  --> $companyKSFS->ksid
+                    $params = array();
+                    $params['kscompany']    = $companyKSFS->ksid;
+                    $params['fscompany']    = $companyKSFS->fsid;
+                    $rdoRelation = $DB->get_record('ksfs_company',$params);
+                    if ($rdoRelation) {
+                        // Execute
+                        $rdoRelation->kscompany = $companyKSFS->ksid;
+                        $DB->update_record('ksfs_company',$rdoRelation);
+                    }else {
+                        // Execute
+                        $params['kscompany']    = $companyKSFS->ksid;
+                        $DB->insert_record_raw('ksfs_company',$params,false);
+                    }//if_rdo
+
+                    // Synchronized
+                    $sync = true;
+
+                    break;
+                default:
+                    // Synchronized
+                    $sync = false;
+
+                    break;
+            }//switch_Action
+
+            // Synchronized
+            if ($sync) {
+                $instance = $DB->get_record('fs_imp_company',array('ORG_ENHET_ID' => $impKey,'ORG_NIVAA' => $companyKSFS->level),'id,imported');
+                if ($instance) {
+                    $instance->imported         = 1;
+                    $instance->timemodified     = $time;
+                    $DB->update_record('fs_imp_company',$instance);
+                }
+            }//if_sync
+
+            // Commit
+            $trans->allow_commit();
+        }catch (Exception $ex) {
+            // Rollback
+            $trans->rollback($ex);
+
+            throw $ex;
+        }//try_catch
+    }//synchronize_automatically_companyksfs
+
+    /**
      * Description
      * Synchronize company between FS and KS sites.
      *
@@ -1298,6 +1574,7 @@ class FSKS_COMPANY {
                         $rdoCompany->parent        = $companyKSFS->parent;
                         $rdoCompany->synchronized  = 1;
                         $rdoCompany->timemodified  = $time;
+                        $rdoCompany->moved         = $companyKSFS->moved;
 
                         // Execute
                         $DB->update_record('fs_company',$rdoCompany);

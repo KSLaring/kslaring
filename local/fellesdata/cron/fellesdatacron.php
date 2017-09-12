@@ -1312,6 +1312,11 @@ class FELLESDATA_CRON {
                     // Apply company changes inside the same level
                     FSKS_COMPANY::update_company_changes_same_level();
 
+                    // Companies to create automatically
+                    if ($pluginInfo->automatic) {
+                        self::companies_automatically_synchronized($pluginInfo,$dblog);
+                    }//if_automatic
+
                     // Synchronize new companies
                     self::companies_new_fs_synchronization($pluginInfo,$dblog);
 
@@ -1320,14 +1325,16 @@ class FELLESDATA_CRON {
 
                     // Send notifications
                     // Notification manual synchronization
-                    if ($notifyTo) {
-                        // Get companies to send notifications
-                        $toMail = FSKS_COMPANY::get_companiesfs_to_mail();
+                    if ($pluginInfo->automatic) {
+                        if ($notifyTo) {
+                            // Get companies to send notifications
+                            $toMail = FSKS_COMPANY::get_companiesfs_to_mail();
 
-                        if ($toMail) {
-                            self::send_notifications(SYNC_COMP,$toMail,$notifyTo,$pluginInfo->fs_source);
-                        }//if_toMail
-                    }//if_notify
+                            if ($toMail) {
+                                self::send_notifications(SYNC_COMP,$toMail,$notifyTo,$pluginInfo->fs_source);
+                            }//if_toMail
+                        }//if_notify
+                    }//if_automatic
                 }//if_else
             }//if_synchronization
 
@@ -1337,6 +1344,71 @@ class FELLESDATA_CRON {
             throw $ex;
         }//try_catch
     }//companies_fs_synchronization
+
+    /**
+     * Description
+     * Synchronization of the companies when the synchronization has to be done automatically
+     *
+     * @param           $plugin
+     * @param           $dblog
+     *
+     * @throws          Exception
+     *
+     * @creationDate    05/09/2017
+     * @author          eFaktor     (fbv)
+     */
+    private static function companies_automatically_synchronized($plugin,&$dblog) {
+        /* Variables */
+        global $SESSION;
+        $response       = null;
+        $moved          = null;
+        $rdocompanies   = null;
+        $toSynchronize  = null;
+        $total          = null;
+        $start          = 0;
+        $limit          = 1000;
+
+        try {
+            // To avoid problems timeout
+            if (isset($SESSION->manual) && ($SESSION->manual)) {
+                $limit          = 150;
+            }//if_session_manul
+
+            // Log
+            $dblog .= ' START Companies AUTOMATICALLY FS/KS Synchronization . ' . "\n";
+
+            // Get total
+            $total = FSKS_COMPANY::get_total_companies_automatically($plugin->map_one);
+
+            // Synchronize
+            if ($total) {
+                for ($i=0;$i<=$total;$i=$i+$limit) {
+                    // Get companies to synchronize
+                    list($toSynchronize,$rdocompanies) = FSKS_COMPANY::get_companies_to_synchronize_automatically($plugin->map_one,$start,$limit);
+
+                    // Call webs service
+                    if ($toSynchronize) {
+                        $params     = array('companiesFS' => $toSynchronize);
+                        $response   = self::process_ks_service($plugin,KS_SYNC_FS_COMPANY,$params);
+
+                        if ($response) {
+                            if ($response['error'] == '200') {
+                                FSKS_COMPANY::synchronize_companies_ksfs($rdocompanies,$response['companies'],true);
+                            }else {
+                                /* Log  */
+                                $dblog  .= "ERROR WS: " . $response['message'] . "\n\n";
+                            }//if_no_error
+                        }//if_response
+                    }//if_toSynchronize
+                }//for
+            }//if_total
+
+            // Log
+            $dblog .= ' FINISH Companies AUTOMATICALLY FS/KS Synchronization . ' . "\n";
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//companies_automatically_synchronized
 
     /**
      * Description
@@ -1402,7 +1474,6 @@ class FELLESDATA_CRON {
                             }//if_toSynchronize
 
                         }//for_Total
-
                     }//if_moved
                 }//if_first_execution
             }//if_suspicious

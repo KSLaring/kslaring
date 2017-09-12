@@ -199,3 +199,6 @@ $string['error_reponse_body']               = ' <p>We would like to inform you, 
 $string['error_process_subject'] = '{$a->SITE}: {$a->type} Integration - ERROR ';
 $string['error_process_body']    = '<p>We would like to inform you, that there has been a problem during the integration between {$a} and KS.</p>
                                     <p>So, the {$a} cron has been de-activated meanwhile the problem is being fixed.Please contact the Weblogin support for assistance.</p>';
+
+$string['map_automatically']        = 'Map automatically';
+$string['map_automatically_desc']   = 'Map automatically will not applied for the first execution. The first time the mapping has to be done manually';
