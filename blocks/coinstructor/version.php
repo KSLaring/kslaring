@@ -16,5 +16,5 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-$plugin->version  = 2017040600.02;
+$plugin->version  = 2017091200.00;
 $plugin->component = 'block_coinstructor';

@@ -21,3 +21,6 @@ $string['headercategory'] = 'Category';
 $string['headercourse'] = 'Course';
 $string['courseoverview'] = 'Courses as instructor';
 $string['block_max_courses'] = 'Max courses displayed in block';
+
+$string['coinstructor:addinstance'] = 'Add a new coteacher block';
+$string['coinstructor:myaddinstance'] = 'Add a new coteacher block to MY HOME page';

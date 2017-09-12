@@ -21,3 +21,6 @@ $string['headercategory'] = 'Kategory';
 $string['headercourse'] = 'Kurs';
 $string['courseoverview'] = 'Kurs som lærer';
 $string['block_max_courses'] = 'Maks antall kurs oppført i blokken';
+
+$string['coteacher:addinstance'] = 'Add a new coteacher block';
+$string['coteacher:myaddinstance'] = 'Add a new coteacher block to MY HOME page';
