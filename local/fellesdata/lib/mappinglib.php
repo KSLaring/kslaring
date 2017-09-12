@@ -527,7 +527,7 @@ class FS_MAPPING {
                         AND fs.new 			= :new
                         AND fs.synchronized = :synchronized ";
 
-            /* Search   */
+            // Search
             if ($search) {
                 $extra = explode(' ',$search);
                 foreach ($extra as $str) {
@@ -540,7 +540,7 @@ class FS_MAPPING {
                 $sql .= $sqlExtra . " AND ($locate) ";
             }//if_search
 
-            /* Execute */
+            // Execute
             $sql .= " ORDER By fs.name ";
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
@@ -591,8 +591,10 @@ class FS_MAPPING {
         $pluginInfo = null;
 
         try {
+            // First element of the list
             $lstParents[0] = get_string('sel_parent','local_fellesdata');
-            /* Search Criteria  */
+
+            // Search criteria
             $params          = array();
             if ($level != FS_LE_1) {
                 $params['hierarchylevel'] =  ($level - 1);
@@ -601,12 +603,12 @@ class FS_MAPPING {
             }
 
             if ($level == FS_LE_2) {
-                /* Plugin Info      */
+                // plugin info
                 $pluginInfo     = get_config('local_fellesdata');
                 $params['name'] = $pluginInfo->ks_muni;
             }//if_FS_LE_2
 
-            /* Execute */
+            // Execute
             $rdo = $DB->get_records('ks_company',$params,'industrycode,name');
             if ($rdo) {
                 foreach ($rdo as $instance) {
@@ -645,12 +647,12 @@ class FS_MAPPING {
         $fsJobroles = null;
 
         try {
-            /* Search criteria */
+            // Search criteria
             $params = array();
             $params['job_role'] = $ks_jobrole;
             $params['action']   = ACT_DELETE;
 
-            /* SQL Instruction  */
+            // SQL Instruction
             $sql = " SELECT     DISTINCT
                                   fs.stillingskode,
                                   fs.stillingstekst
@@ -661,7 +663,7 @@ class FS_MAPPING {
                           AND     fs.action != :action
                           AND     ksfs.id IS NULL ";
 
-            /* Search   */
+            // Search
             if ($search) {
                 $extra = explode(' ',$search);
                 foreach ($extra as $str) {
@@ -680,7 +682,7 @@ class FS_MAPPING {
                 $sql .= " AND ($locate) ";
             }//if_search
 
-            /* Execute */
+            // Execute
             $sql .= " ORDER BY   fs.stillingskode,fs.stillingstekst ";
 
             $rdo = $DB->get_records_sql($sql,$params);
@@ -720,18 +722,19 @@ class FS_MAPPING {
         $fsJobroles = null;
 
         try {
-            /* Search criteria */
+            // Search criteria
             $params = array();
             $params['job_role'] = $ks_jobrole;
 
-            /* SQL Instruction  */
-            $sql = " SELECT   fs.jrcode,
-                              fs.jrname
-                     FROM	      {fs_jobroles}		fs
-                        JOIN      {ksfs_jobroles}	ksfs	ON 	ksfs.fsjobrole  = fs.jrcode
-                                                            AND	ksfs.ksjobrole  = :job_role ";
+            // SQL Instruction
+            $sql = " SELECT   DISTINCT 
+                                fs.jrcode,
+                                fs.jrname
+                     FROM	    {fs_jobroles}	fs
+                        JOIN    {ksfs_jobroles}	ksfs	ON 	ksfs.fsjobrole  = fs.jrcode
+                                                        AND	ksfs.ksjobrole  = :job_role ";
 
-            /* Search   */
+            // Search
             if ($search) {
                 $extra = explode(' ',$search);
                 foreach ($extra as $str) {
@@ -746,7 +749,7 @@ class FS_MAPPING {
                 $sql .= " WHERE ($locate) ";
             }//if_search
 
-            /* Execute */
+            // Execute
             $sql .= " ORDER BY fs.jrcode,fs.jrname ";
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
@@ -779,9 +782,10 @@ class FS_MAPPING {
         $params     = null;
 
         try {
+            // First Element of the list
             $lstParents[0] = get_string('sel_parent','local_fellesdata');
 
-            /* Execute */
+            // Execute
             $rdo = $DB->get_records('ks_jobroles',null,'jobroleid,industrycode,name');
             if ($rdo) {
                 foreach ($rdo as $instance) {
@@ -813,11 +817,11 @@ class FS_MAPPING {
         $lstLevels  = array();
 
         try {
-            /* SQL Instruction  */
+            // SQL Instruction
             $sql = "SELECT MAX(hierarchylevel) as max
                     FROM    {ks_company} ";
 
-            /* Execute */
+            // Execute
             $rdo = $DB->get_record_sql($sql);
             if ($rdo) {
                 //for ($i=0;$i<=$rdo->max;$i++) {
@@ -825,7 +829,7 @@ class FS_MAPPING {
                 //}
             }
 
-            /* Temporary for L5 */
+            // Temporary for L5
             $lstLevels[0] = get_string('sel_parent','local_fellesdata');
             $lstLevels[1] = 1;
             $lstLevels[2] = 2;
@@ -949,16 +953,17 @@ class FS_MAPPING {
         $params = null;
 
         try {
-            /* Criteria */
+            // Search criteria
             $params = array();
             $params['imported'] = 1;
             $params['deleted']  = ACT_DELETE;
 
-            /* SQL Instruction  */
+            // SQL Instruction
             $sql = " DELETE FROM {fs_imp_company}
                      WHERE  imported = :imported
                         AND action != :deleted ";
-            /* Execute  */
+
+            // Execute
             $DB->execute($sql,$params);
         }catch (Exception $ex) {
             throw $ex;
@@ -988,7 +993,7 @@ class FS_MAPPING {
         $function   = null;
 
         try {
-            /* Get action   */
+            // Get action
             switch ($action) {
                 case MAP:
                     $function = "MapFSJobRole";
@@ -1000,11 +1005,11 @@ class FS_MAPPING {
                     break;
             }
 
-            /* Map/UnMap FS Job Roles */
+            // Map/UnMap FS Job Roles
             foreach ($toMap as $fs) {
-                /* Get Info FS Job role */
+                // Get Info FS Job role
                 $rdo = $DB->get_record('fs_imp_jobroles',array('STILLINGSKODE' => $fs));
-                /* Mapping */
+                // Mapping
                 if ($rdo) {
 
                     self::$function($rdo,$ksJobRole);
@@ -1034,16 +1039,16 @@ class FS_MAPPING {
         $params = null;
 
         try {
-            /* Criteria */
+            // Search criteria
             $params = array();
             $params['imported'] = 1;
             $params['deleted']  = ACT_DELETE;
 
-            /* SQL Instruction  */
+            // SQL Instruction
             $sql = " DELETE FROM {fs_imp_jobroles}
                      WHERE  imported = :imported
                         AND action != :deleted ";
-            /* Execute  */
+            // Execute
             $DB->execute($sql,$params);
         }catch (Exception $ex) {
             throw $ex;
@@ -1411,7 +1416,7 @@ class FS_MAPPING {
             if ($sector) {
                 $sqlMatch = null;
                 $searchBy = null;
-                /* Search By    */
+                // Search by
                 $sector     = str_replace(',',' ',$sector);
                 $sector     = str_replace(' og ',' ',$sector);
                 $sector     = str_replace(' eller ',' ',$sector);
@@ -1627,7 +1632,6 @@ class FS_MAPPING {
             if ($sector) {
                 $sqlMatch = null;
                 $searchBy = null;
-
                 // Search by
                 $sector     = str_replace(',',' ',$sector);
                 $sector     = str_replace(' og ',' ',$sector);
@@ -1923,13 +1927,13 @@ class FS_MAPPING {
         $options    = null;
 
         try {
-            /* Initialise Options Selector  */
+            // Initialise Options Selector
             $options = array();
             $options['class']       = 'FindFSCompanies_WithoutParent';
             $options['name']        = 'acompanies';
             $options['multiselect'] = true;
 
-            /* Connect Selector User    */
+            // Connect Selector User
             $hash                           = md5(serialize($options));
             $USER->search_selectors[$hash]  = $options;
 
@@ -1962,13 +1966,13 @@ class FS_MAPPING {
         $options    = null;
 
         try {
-            /* Initialise Options Selector  */
+            // Initialise Options Selector
             $options = array();
             $options['class']       = 'FindFSCompanies_WithParent';
             $options['name']        = 'scompanies';
             $options['multiselect'] = true;
 
-            /* Connect Selector User    */
+            // Connect Selector User
             $hash                           = md5(serialize($options));
             $USER->search_selectors[$hash]  = $options;
 
@@ -2000,14 +2004,13 @@ class FS_MAPPING {
         $options    = null;
 
         try {
-            /* Initialise Options Selector  */
+            // Initialise Options Selector
             $options = array();
             $options['class']       = 'FindFSJobroles_NO_Mapped';
             $options['name']        = 'ajobroles';
             $options['multiselect'] = true;
 
-
-            /* Connect Selector User    */
+            // Connect Selector User
             $hash                           = md5(serialize($options));
             $USER->search_selectors[$hash]  = $options;
 
@@ -2039,13 +2042,13 @@ class FS_MAPPING {
         $options    = null;
 
         try {
-            /* Initialise Options Selector  */
+            // Initialise Options Selector
             $options = array();
             $options['class']       = 'FindFSJobroles_Mapped';
             $options['name']        = 'sjobroles';
             $options['multiselect'] = true;
 
-            /* Connect Selector User    */
+            // Connect Selector User
             $hash                           = md5(serialize($options));
             $USER->search_selectors[$hash]  = $options;
 
