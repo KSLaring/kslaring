@@ -14,10 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle. If not, see <http://www.gnu.org/licenses/>.
 
-$string['pluginname'] = 'Blokk for kurs med instruktørrolle';
-$string['blocktitle'] = 'Kurs med rollen Instruktør';
+$string['pluginname'] = 'Coinstructor blokk';
+$string['blocktitle'] = 'Kurs som instruktør';
 $string['showall'] = 'Vis alle...';
 $string['headercategory'] = 'Kategori';
 $string['headercourse'] = 'Kurs';
-$string['courseoverview'] = 'Kurs med rollen Instruktør';
+$string['courseoverview'] = 'Kurs som instruktør';
 $string['block_max_courses'] = 'Maks antall kurs oppført i blokken';
+
+$string['coinstructor:addinstance'] = 'Add a new coteacher block';
+$string['coinstructor:myaddinstance'] = 'Add a new coteacher block to MY HOME page';
