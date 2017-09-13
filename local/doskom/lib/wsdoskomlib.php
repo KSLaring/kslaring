@@ -665,9 +665,9 @@ class wsdoskom {
     private static function get_company($companyid) {
         /* Variables */
         global $DB;
-        $rdo = null;
+        $rdo    = null;
         $params = null;
-        $sql = null;
+        $sql    = null;
 
         try {
             // Search criteria
@@ -687,7 +687,7 @@ class wsdoskom {
                      WHERE    cd.id = :id ";
 
             // Execute
-            $rdo = $DB->get_records_sql($sql,$params);
+            $rdo = $DB->get_record_sql($sql,$params);
 
             return $rdo;
         }catch (Exception $ex) {
