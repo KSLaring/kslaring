@@ -1382,17 +1382,6 @@ class wsdoskom {
             $acturl     = urlencode($acturl);
             $back       = urlencode($userSSO['LogoutUrl']);
             $params     = '?id=' . $userid . '&ticket=' . $key . '&RedirectPage=' . $acturl . '&LogoutUrl=' . $back;
-
-            // DOSKOM log
-            $infolog = new stdClass();
-            $infolog->action      = 'wsLogInUser';
-            $infolog->description = $CFG->wwwroot . '/local/doskom/autologin.php' . $params;
-            $infolog->timecreated = time();
-            // Add log
-            $log[] = $infolog;
-            // Write log
-            wsdoskom::write_log($log);
-
             $response   =  urlencode($CFG->wwwroot . '/local/doskom/autologin.php' . $params);
 
             return $response ;
