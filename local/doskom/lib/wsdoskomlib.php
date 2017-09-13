@@ -227,10 +227,10 @@ class wsdoskom {
                 $userid = self::check_user($userSSO['id'],$userSSO,$result);
                 if ($userid) {
                     // Update user
-                    self::update_user($userid,$userSSO,$company->label,$result,$log);
+                    self::update_user($userid,$userSSO,$company->label,$result);
                 }else {
                     // Create new user
-                    $userid = self::create_user($userSSO,$company->label,$result,$log);
+                    $userid = self::create_user($userSSO,$company->label,$result);
                 }//if_user_exist
 
                 // DOSKOM log
@@ -976,7 +976,7 @@ class wsdoskom {
      * Description
      * Update the user
      */
-    private static function update_user($user_id,$userSSO,$label,&$result,&$log) {
+    private static function update_user($user_id,$userSSO,$label,&$result) {
         /* Variables   */
         global $DB;
         $instance = null;
@@ -1007,27 +1007,6 @@ class wsdoskom {
                 $instance->department  = $userSSO['workPlace'];
             }//if_work_place
 
-            $infolog = new stdClass();
-            $infolog->action      = 'wsLogInUser - UPDATE';
-            $infolog->description = ' username : ' . $instance->username ;
-            $infolog->description .= ', auth : saml';
-            $infolog->description .= ', password : not cached';
-            $infolog->description .= ', source:' . $label;
-            $infolog->description .= ', firstname: ' . $instance->firstname;
-            $infolog->description .= ', lastname: ' . $instance->lastname;
-            $infolog->description .= ', email: ' . $instance->email;
-            $infolog->description .= ', confirmed: 1';
-            $infolog->description .= ', firstaccess: ' . $instance->firstaccess;
-            $infolog->description .= ', timemodified: ' . $instance->timemodified;
-            $infolog->description .= ', mnethostid: ' . $instance->mnethostid;
-            $infolog->description .= '. idnumber : ' . $instance->idnumber;
-            $infolog->description .= ', secret: ' . $instance->secret;
-            $infolog->description .= ', lang: ' . $instance->lang;
-            $infolog->description .= ', department: ' . $instance->department;
-            $infolog->timecreated = time();
-            // Add log
-            $log[] = $infolog;
-
             // Execute
             $DB->update_record('user',$instance);
 
@@ -1057,7 +1036,7 @@ class wsdoskom {
      * @creationDate    20/02/2015
      * @author          eFaktor     (fbv)
      */
-    private static function create_user($userSSO,$label,&$result,&$log) {
+    private static function create_user($userSSO,$label,&$result) {
         /* Variables    */
         global $DB, $CFG;
         $newuser = null;
@@ -1090,39 +1069,8 @@ class wsdoskom {
                 $newuser->department  = $userSSO['workPlace'];
             }//if_work_place
 
-            // DOSKOM log
-
-            $infolog = new stdClass();
-            $infolog->action      = 'wsLogInUser - INSERT';
-            $infolog->description = ' username : ' . $newuser->username ;
-            $infolog->description .= ', auth : saml';
-            $infolog->description .= ', password : not cached';
-            $infolog->description .= ', source:' . $label;
-            $infolog->description .= ', firstname: ' . $newuser->firstname;
-            $infolog->description .= ', lastname: ' . $newuser->lastname;
-            $infolog->description .= ', email: ' . $newuser->email;
-            $infolog->description .= ', confirmed: 1';
-            $infolog->description .= ', firstaccess: ' . $newuser->firstaccess;
-            $infolog->description .= ', timemodified: ' . $newuser->timemodified;
-            $infolog->description .= ', mnethostid: ' . $newuser->mnethostid;
-            $infolog->description .= '. idnumber : ' . $newuser->idnumber;
-            $infolog->description .= ', secret: ' . $newuser->secret;
-            $infolog->description .= ', lang: ' . $newuser->lang;
-            $infolog->description .= ', department: ' . $newuser->department;
-            $infolog->timecreated = time();
-            // Add log
-            $log[] = $infolog;
-
             // Execute
             $newuser->id = $DB->insert_record('user',$newuser);
-
-            $infolog = new stdClass();
-            $infolog->action      = 'wsLogInUser';
-            $infolog->description = ' username : ' . $newuser->username ;
-            $infolog->description .= 'id : ' . $newuser->id;
-            $infolog->timecreated = time();
-            // Add log
-            $log[] = $infolog;
 
             // Assign company to the user
             self::assign_company_user($newuser->id,$userSSO['companyId']);
@@ -1434,6 +1382,17 @@ class wsdoskom {
             $acturl     = urlencode($acturl);
             $back       = urlencode($userSSO['LogoutUrl']);
             $params     = '?id=' . $userid . '&ticket=' . $key . '&RedirectPage=' . $acturl . '&LogoutUrl=' . $back;
+
+            // DOSKOM log
+            $infolog = new stdClass();
+            $infolog->action      = 'wsLogInUser';
+            $infolog->description = $CFG->wwwroot . '/local/doskom/autologin.php' . $params;
+            $infolog->timecreated = time();
+            // Add log
+            $log[] = $infolog;
+            // Write log
+            wsdoskom::write_log($log);
+
             $response   =  urlencode($CFG->wwwroot . '/local/doskom/autologin.php' . $params);
 
             return $response ;
