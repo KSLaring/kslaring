@@ -210,7 +210,7 @@ function xmldb_local_doskom_install() {
         $tbldoskomcomp->add_key('source',XMLDB_INDEX_NOTUNIQUE,array('doskomid'));
         $tbldoskomcomp->add_key('company',XMLDB_INDEX_NOTUNIQUE,array('companyid'));
         $tbldoskomcomp->add_key('sourcecompany',XMLDB_INDEX_NOTUNIQUE,array('doskomid','companyid'));
-        
+
         // Create table
         $db_man->create_table($tbldoskomcomp);
     }//if_doskom_company

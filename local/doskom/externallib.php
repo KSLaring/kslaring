@@ -546,7 +546,7 @@ class local_doskom_external extends external_api {
         $result['courses']      = array();
 
         try {
-            list($result['courses'],$historicallog) = wsdoskom::get_historical_courses_completion($criteria,$result,&$log);
+            list($result['courses'],$historicallog) = wsdoskom::get_historical_courses_completion($criteria,$result,$log);
 
             // Historical log
             if ($historicallog) {
