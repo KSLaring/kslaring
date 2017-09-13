@@ -97,8 +97,6 @@ function xmldb_local_doskom_upgrade($oldVersion) {
                 $tbldoskom->add_field('api',XMLDB_TYPE_CHAR,'250',null, XMLDB_NOTNULL, null,null);
                 // label
                 $tbldoskom->add_field('label',XMLDB_TYPE_CHAR,'25',null, XMLDB_NOTNULL, null,null);
-                // active
-                $tbldoskom->add_field('active',XMLDB_TYPE_INTEGER,'2',null, XMLDB_NOTNULL, null,1);
                 // timecreated
                 $tbldoskom->add_field('timecreated',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
 
@@ -120,6 +118,8 @@ function xmldb_local_doskom_upgrade($oldVersion) {
                 $tbldoskomcomp->add_field('doskomid',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
                 // companyid    --> foreign key to company_data
                 $tbldoskomcomp->add_field('companyid',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
+                // active
+                $tbldoskomcomp->add_field('active',XMLDB_TYPE_INTEGER,'2',null, XMLDB_NOTNULL, null,1);
 
                 // Adding keys, index, foreing keys
                 $tbldoskomcomp->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
@@ -163,7 +163,7 @@ function xmldb_local_doskom_upgrade($oldVersion) {
             }
         }//ifoldVersion
 
-        if ($oldVersion < 2017091204) {
+        if ($oldVersion < 2017091206) {
             // doskom logs
             // mdl_doskom_log
             $tblLog = new xmldb_table('doskom_log');
