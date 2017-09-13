@@ -1215,40 +1215,15 @@ class wsdoskom {
             switch ($rol) {
                 case ROL_EDIT_TEACHER:
                 case ROL_TEACHER:
-                    self::enrol_user($userid,$companyid,$courseid,$log);
                     $archetype  = strtolower($rol);
                     $rdo        = $DB->get_record('role',array('archetype' => $archetype),'id');
-                    if ($rdo) {
-                        $context = CONTEXT_COURSE::instance($companyid);
-                        role_assign($rdo->id, $userid,$context->id);
-
-                        // DOSKOM log
-                        $infolog = new stdClass();
-                        $infolog->action      = 'wsLogInUser';
-                        $infolog->description = 'Assign rol course. rol : ' . $rol . " user : " . $userid . " company " . $companyid . " course " . $courseid;
-                        $infolog->timecreated = $time;
-                        // Add log
-                        $log[] = $infolog;
-                    }//if_rdo_rol
+                    self::enrol_user($userid,$companyid,$courseid,$rdo->id,$log);
 
                     break;
                 case ROL_STUDENT:
                     $archetype  = strtolower($rol);
                     $rdo        = $DB->get_record('role',array('archetype' => $archetype),'id');
-                    if ($rdo) {
-                        $context = CONTEXT_COURSE::instance($courseid);
-                        role_assign($rdo->id, $userid,$context->id);
-
-                        // DOSKOM log
-                        $infolog = new stdClass();
-                        $infolog->action      = 'wsLogInUser';
-                        $infolog->description = 'Assign rol course. rol : ' . $rol . " user : " . $userid . " company " . $companyid . " course " . $courseid;
-                        $infolog->timecreated = $time;
-                        // Add log
-                        $log[] = $infolog;
-                    }//if_rdo_rol
-
-                    self::enrol_user($userid,$companyid,$courseid,$log);
+                    self::enrol_user($userid,$companyid,$courseid,$rdo->id,$log);
 
                     break;
                 default:
@@ -1275,7 +1250,7 @@ class wsdoskom {
      * @creationDate    20/02/2015
      * @author          eFaktor     (fbv)
      */
-    private static function enrol_user($userid,$companyid,$courseid,&$log) {
+    private static function enrol_user($userid,$companyid,$courseid,$rol,&$log) {
         /* Variables    */
         $plugin = null;
 
@@ -1287,12 +1262,12 @@ class wsdoskom {
                 $instance = self::get_enrolment_instance($courseid,$companyid);
                 if ($instance) {
                     // Enrol user
-                    $plugin->enrol_user($instance,$userid,null,time());
+                    $plugin->enrol_user($instance,$userid,$rol,time());
 
                     // DOSKOM log
                     $infolog = new stdClass();
                     $infolog->action      = 'wsLogInUser';
-                    $infolog->description = 'Enrol user ' . $userid . " company " . $companyid . " course " . $courseid;
+                    $infolog->description = 'Enrol user ' . $userid . " ROL : " . $rol . " company " . $companyid . " course " . $courseid;
                     $infolog->timecreated = time();
                     // Add log
                     $log[] = $infolog;
