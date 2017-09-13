@@ -126,36 +126,12 @@ function xmldb_local_doskom_upgrade($oldVersion) {
                 $tbldoskomcomp->add_key('doskcompanyidomid',XMLDB_KEY_FOREIGN,array('companyid'), 'company_data', array('id'));
                 $tbldoskomcomp->add_key('source',XMLDB_INDEX_NOTUNIQUE,array('doskomid'));
                 $tbldoskomcomp->add_key('company',XMLDB_INDEX_NOTUNIQUE,array('companyid'));
+                $tbldoskomcomp->add_key('sourcecompany',XMLDB_INDEX_NOTUNIQUE,array('doskomid','companyid'));
 
                 // Create table
                 $dbMan->create_table($tbldoskomcomp);
             }//if_doskom_company
 
-            $tbldoskom      = new xmldb_table('doskom');
-            $tbldoskomcomp  = new xmldb_table('doskom_company');
-
-            // doskom - endpoint
-            $xmldb_index = new xmldb_index('endpoint',XMLDB_INDEX_NOTUNIQUE,array('api'));
-            if (!$dbMan->index_exists($tbldoskom,$xmldb_index)) {
-                $dbMan->add_index($tbldoskom,$xmldb_index);
-            }
-
-            // doskom_company
-            // Source and company index
-            $xmldb_index = new xmldb_index('sourcecompany',XMLDB_INDEX_UNIQUE,array('doskomid','companyid'));
-            if (!$dbMan->index_exists($tbldoskomcomp,$xmldb_index)) {
-                $dbMan->add_index($tbldoskomcomp,$xmldb_index);
-            }
-            // Source index (anyname)
-            $xmldb_index = new xmldb_index('source',XMLDB_INDEX_NOTUNIQUE,array('doskomid'));
-            if (!$dbMan->index_exists($tbldoskomcomp,$xmldb_index)) {
-                $dbMan->add_index($tbldoskomcomp,$xmldb_index);
-            }
-            // Company index
-            $xmldb_index = new xmldb_index('company',XMLDB_INDEX_NOTUNIQUE,array('companyid'));
-            if (!$dbMan->index_exists($tbldoskomcomp,$xmldb_index)) {
-                $dbMan->add_index($tbldoskomcomp,$xmldb_index);
-            }
 
             // doskom logs
             // mdl_doskom_log
@@ -173,6 +149,7 @@ function xmldb_local_doskom_upgrade($oldVersion) {
                 // Adding keys, index, foreing keys
                 $tblLog->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
                 $tblLog->add_key('timecreated',XMLDB_INDEX_NOTUNIQUE,array('timecreated'));
+                $tblLog->add_key('action',XMLDB_INDEX_NOTUNIQUE,array('action'));
 
                 // Create table
                 $dbMan->create_table($tblLog);
