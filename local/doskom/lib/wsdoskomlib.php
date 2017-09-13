@@ -289,6 +289,15 @@ class wsdoskom {
                 $result['msg_error']    = 'Company does not exits. So, the user cannot be connected with and log in';
             }
         }catch (Exception $ex) {
+
+            // DOSKOM log
+            $infolog = new stdClass();
+            $infolog->action       = 'wsLogInUser';
+            $infolog->description .= 'ERROR: ' . $ex->getMessage();
+            $infolog->timecreated  = $time;
+            // Add log
+            $log[] = $infolog;
+
             throw $ex;
         }//Try_catch
     }//log_in_user
@@ -1284,7 +1293,7 @@ class wsdoskom {
                     $infolog = new stdClass();
                     $infolog->action      = 'wsLogInUser';
                     $infolog->description = 'Enrol user ' . $userid . " company " . $companyid . " course " . $courseid;
-                    $infolog->timecreated = $time;
+                    $infolog->timecreated = time();
                     // Add log
                     $log[] = $infolog;
                 }//if_instance
