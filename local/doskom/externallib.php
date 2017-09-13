@@ -20,7 +20,7 @@
 
 require_once('../../config.php');
 require_once ($CFG->libdir.'/externallib.php');
-require_once ('wsDOSKOMlib.php');
+require_once ('lib/wsdoskomlib.php');
 
 class local_doskom_external extends external_api {
     /*****************/
@@ -126,7 +126,7 @@ class local_doskom_external extends external_api {
 
     /**
      * @static
-     * @param           $user_SSO
+     * @param           $usersso
      * @return          array
      *
      * @creationDate    20/02/2015
@@ -135,26 +135,32 @@ class local_doskom_external extends external_api {
      * Description
      * Authenticate the user.
      */
-    public static function wsLogInUser($user_SSO) {
+    public static function wsLogInUser($usersso) {
         /* Variables    */
-        $secret     = null;
-        $user_id    = null;
-        /* Parameter Validation */
-        $params = self::validate_parameters(self::wsLogInUser_parameters(), array('user_sso' => $user_SSO));
+        $log     = array();
+        $infolog = null;
+
+        // Parameters validation
+        $params = self::validate_parameters(self::wsLogInUser_parameters(), array('user_sso' => $usersso));
 
 
-        /* Execute  */
+        // Response from web service
         $result     = array();
         $result['error']        = 200;
         $result['msg_error']    = '';
         $result['url']          = '';
 
         try {
-            /* Library  */
+            // Library
             require_once('../../user/profile/field/gender/lib/genderlib.php');
-            
-            /* Log in the user  */
-            WS_DOSKOM::logInUser($user_SSO,$result);
+
+            // Doskom log
+            $log = array();
+
+            // Log in
+            wsdoskom::log_in_user($usersso,$result,$log);
+            // Write log
+            wsdoskom::write_log($log);
 
             return $result;
         }catch (Exception $ex) {
@@ -162,6 +168,16 @@ class local_doskom_external extends external_api {
                 $result['error']        = 500;
                 $result['msg_error']    = $ex->getMessage() . ' ' . $ex->getTraceAsString();
             }//if_error
+
+            // DOSKOM log
+            $infolog = new stdClass();
+            $infolog->action      = 'wsLogInUser';
+            $infolog->description = 'ERROR --> ' . $ex->getTraceAsString();
+            $infolog->timecreated = time();
+            // Add log
+            $log[] = $infolog;
+            // Write log
+            wsdoskom::write_log($log);
 
             return $result;
         }//try_catch_exception
@@ -223,29 +239,35 @@ class local_doskom_external extends external_api {
     }//wsDeActivateUser_returns
 
     /**
+     * Description
+     * Deactivates a specific user.
+     *
      * @static
-     * @param           $user_lst
+     * @param           $userlst
      * @return          array
      *
      * @creationDate    20/02/2015
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Deactivates a specific user.
      */
+    public static function wsDeActivateUser($userlst) {
+        /* Variables */
+        $log     = array();
+        $infolog = null;
 
-    public static function wsDeActivateUser($user_lst) {
-        /* Parameter Validation */
-        $params = self::validate_parameters(self::wsDeActivateUser_parameters(), array('user_lst' => $user_lst));
+        // Parameters validation
+        $params = self::validate_parameters(self::wsDeActivateUser_parameters(), array('user_lst' => $userlst));
 
-        /* Execute  */
+        // Response web service
         $result     = array();
         $result['error']        = 200;
         $result['msg_error']    = '';
         $result['url']          = '';
 
         try {
-            WS_DOSKOM::deactivateUsers($user_lst,$result);
+            // Deactivate user
+            wsdoskom::deactivate_users($userlst,$result,$log);
+            // Write log
+            wsdoskom::write_log($log);
 
             return $result;
         }catch (Exception $ex) {
@@ -253,6 +275,16 @@ class local_doskom_external extends external_api {
                 $result['error']        = 500;
                 $result['msg_error']    = $ex->getMessage();
             }//if_error
+
+            // DOSKOM log
+            $infolog = new stdClass();
+            $infolog->action      = 'wsDeActivateUser';
+            $infolog->description = 'ERROR --> ' . $ex->getTraceAsString();
+            $infolog->timecreated = time();
+            // Add log
+            $log[] = $infolog;
+            // Write log
+            wsdoskom::write_log($log);
 
             return $result;
         }//try_catch
@@ -356,18 +388,30 @@ class local_doskom_external extends external_api {
      * Return the course catalog connected with company
      */
     public static function wsGetCourseCatalog($company) {
+        /* Variables */
+        $log     = array();
+        $infolog = null;
+        $catlog  = null;
+
         /* Parameter Validation */
         $params = self::validate_parameters(self::wsGetCourseCatalog_parameters(), array('company' => $company));
 
-        /* Execute  */
+        // Web service response
         $result     = array();
         $result['error']        = 200;
         $result['msg_error']    = '';
         $result['catalog']      = array();
 
         try {
-            /* Get the course catalog   */
-            $result['catalog'] = WS_DOSKOM::getCourseCatalog($company['company'],$result);
+            // Get the course catalog
+            list($result['catalog'],$catlog) = wsdoskom::get_course_catalog($company['company'],$result,$log);
+
+            // Write log
+            wsdoskom::write_log($log);
+            // Write catalog log
+            if ($catlog) {
+                wsdoskom::add_catalog_log($log);
+            }//if_catlog
 
             return $result;
         }catch (Exception $ex) {
@@ -375,6 +419,16 @@ class local_doskom_external extends external_api {
                 $result['error']        = 500;
                 $result['msg_error']    = $ex->getMessage();
             }//if_error
+
+            // DOSKOM log
+            $infolog = new stdClass();
+            $infolog->action      = 'wsGetCourseCatalog';
+            $infolog->description = 'ERROR --> ' . $ex->getTraceAsString();
+            $infolog->timecreated = time();
+            // Add log
+            $log[] = $infolog;
+            // Write log
+            wsdoskom::write_log($log);
 
             return $result;
         }//try_catch
@@ -478,33 +532,28 @@ class local_doskom_external extends external_api {
      */
     public static function wsGetAccomplishedCourses($criteria) {
         /* Variables */
-        global $CFG;
-        $log = null;
-        $dblog = null;
-        
-        /* Parameter Validation */
+        $log            = null;
+        $infolog        = null;
+        $historicallog  = null;
+
+        // Parameters validation
         $params = self::validate_parameters(self::wsGetAccomplishedCourses_parameters(), array('criteria' => $criteria));
         
-        /* Execute  */
+        // Web service response
         $result     = array();
         $result['error']        = 200;
         $result['msg_error']    = '';
         $result['courses']      = array();
 
         try {
-            // Log
-            $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START  Historical course completion . ' . "\n";
-            
-            list($result['courses'],$log) = WS_DOSKOM::getHistoricalCoursesCompletion($criteria,$result);
-            
-            if ($log) {
-                $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' Updating Log Historical course completion . ' . "\n";
-                WS_DOSKOM::update_log_historical($log);
-            }//if_log
+            list($result['courses'],$historicallog) = wsdoskom::get_historical_courses_completion($criteria,$result,&$log);
 
-            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' Finish  Historical course completion . ' . "\n";
-            error_log($dblog, 3, $CFG->dataroot . "/doskom.log");
-            
+            // Historical log
+            if ($historicallog) {
+                wsdoskom::update_log_historical($historicallog);
+            }//if_log
+            // Write log
+            wsdoskom::write_log($log);
             return $result;
         }catch (Exception $ex) {
             if ($result['error'] == '200') {
@@ -512,10 +561,16 @@ class local_doskom_external extends external_api {
                 $result['msg_error']    = $ex->getMessage();
             }//if_error
 
-            $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' Finish  ERROR Historical course completion . ' . "\n";
-            $dblog .= 'Error --> ' . $ex->getTraceAsString() . "\n";
-            error_log($dblog, 3, $CFG->dataroot . "/doskom.log");
-            
+            // DOSKOM log
+            $infolog = new stdClass();
+            $infolog->action      = 'wsGetAccomplishedCourses';
+            $infolog->description = 'ERROR --> ' . $ex->getTraceAsString();
+            $infolog->timecreated = time();
+            // Add log
+            $log[] = $infolog;
+            // Write log
+            wsdoskom::write_log($log);
+
             return $result;
         }//try_catch
     }//wsGetAccomplishedCourses

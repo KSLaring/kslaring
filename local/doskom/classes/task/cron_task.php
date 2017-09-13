@@ -30,6 +30,7 @@ class cron_task extends \core\task\scheduled_task {
     public function execute() {
         global $CFG;
         require_once($CFG->dirroot . '/local/doskom/lib.php');
+        require_once($CFG->dirroot . '/local/doskom/lib/doskomlib.php');
         doskom_cron();
     }
 

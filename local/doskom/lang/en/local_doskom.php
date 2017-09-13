@@ -11,6 +11,7 @@
  */
 
 $string['pluginname']               = 'DOSKOM SSO';
+$string['doskom:manage']            = 'Manage DOSKOM';
 
 $string['err_authenticate']         = 'Sorry, You are not authenticated user. Please, contact with the system administrator.';
 $string['exists_username']          = 'Other user is using the username <b>{$a->username}</b>. Please, contact with the system administrator.';
@@ -31,3 +32,39 @@ $string['end_point_production']             = 'Production';
 $string['end_point_production_desc']        = 'Production or Pilot site';
 
 $string['crontask']             = 'Doskom Synchronization Cron Task';
+
+$string['sources']      = 'Sources';
+$string['sources_desc'] = 'Sources information (APIs End points)';
+$string['viewsources']  = 'View sources';
+$string['addsource']    = 'Add source';
+
+$string['companies']        = 'Companies';
+$string['companies_desc']   = 'Companies information';
+$string['viewcomp']         = 'View companies';
+$string['addcomp']          = 'Add company';
+
+$string['strsource']    = 'Source';
+$string['strlabel']     = 'Label';
+$string['stractions']   = 'Actions';
+$string['strcompany']   = 'Company';
+$string['stractive']    = 'Active';
+
+$string['headersource']     = 'DOSKOM Sources';
+$string['headercompany']    = 'DOSKOM Companies';
+
+$string['delete_endpoint_are_you_sure']   = 'Are you sure you want to delete the <strong>{$a}</strong> end point?';
+$string['delete_endpoint_companies_are_you_sure']   = 'There are companies connected with .Are you sure you want to delete the <strong>{$a}</strong> end point?';
+$string['delete_company_are_you_sure']    = 'Are you sure you want to delete the <strong>{$a}</strong> company?';
+
+$string['deletedendpoint'] = 'The <strong>{$a}</strong> end point has been deleted';
+$string['deletedcompany'] = 'The <strong>{$a}</strong> company has been deleted';
+$string['error_deleted'] = 'Sorry, there has been a problem during the process. Please, try again or contact with administrator ';
+
+$string['strcoid']      = 'Company ID';
+$string['strconame']    = 'Company name';
+$string['srtcouser']    = 'User';
+$string['strcotoken']   = 'Token';
+$string['strselone']    = 'Select one...';
+
+$string['errexits'] = 'Already exists';
+

@@ -2329,7 +2329,7 @@ class WS_FELLESDATA {
 
             // Check if already exists with the name
             if (!$rdo) {
-                $rdo = $DB->get_record('report_gen_companydata',array('name' => $companyInfo->name));
+                $rdo = $DB->get_record('report_gen_companydata',array('name' => $companyInfo->name,'hierarchylevel' => $companyInfo->level));
             }
 
             // Extract info company
