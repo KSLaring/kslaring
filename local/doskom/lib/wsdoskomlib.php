@@ -289,6 +289,14 @@ class wsdoskom {
                 $result['error']        = 409;
                 $result['msg_error']    = 'Company does not exits. So, the user cannot be connected with and log in';
             }
+
+            // DOSKOM log
+            $infolog = new stdClass();
+            $infolog->action       = 'wsLogInUser';
+            $infolog->description  = 'FINISH User : ' . $userSSO['ssn'];
+            $infolog->timecreated  = $time;
+            // Add log
+            $log[] = $infolog;
         }catch (Exception $ex) {
             throw $ex;
         }//Try_catch
