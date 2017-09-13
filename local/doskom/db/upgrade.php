@@ -87,7 +87,7 @@ function xmldb_local_doskom_upgrade($oldVersion) {
         }//$oldVersion
 
         // New tables for Multiple sources
-        if ($oldVersion < 2017090406) {
+        if ($oldVersion < 2017091208) {
             // mdl_doskom table
             $tbldoskom      = new xmldb_table('doskom');
             if (!$dbMan->table_exists($tbldoskom)) {
@@ -107,7 +107,6 @@ function xmldb_local_doskom_upgrade($oldVersion) {
                 // Create table
                 $dbMan->create_table($tbldoskom);
             }//if_doskom
-
 
             // mdl_doskom_company
             $tbldoskomcomp  = new xmldb_table('doskom_company');
@@ -131,11 +130,7 @@ function xmldb_local_doskom_upgrade($oldVersion) {
                 // Create table
                 $dbMan->create_table($tbldoskomcomp);
             }//if_doskom_company
-        }//if_oldversion
 
-
-        // Adding indexes
-        if ($oldVersion < 2017090602) {
             $tbldoskom      = new xmldb_table('doskom');
             $tbldoskomcomp  = new xmldb_table('doskom_company');
 
@@ -161,9 +156,7 @@ function xmldb_local_doskom_upgrade($oldVersion) {
             if (!$dbMan->index_exists($tbldoskomcomp,$xmldb_index)) {
                 $dbMan->add_index($tbldoskomcomp,$xmldb_index);
             }
-        }//ifoldVersion
 
-        if ($oldVersion < 2017091206) {
             // doskom logs
             // mdl_doskom_log
             $tblLog = new xmldb_table('doskom_log');
