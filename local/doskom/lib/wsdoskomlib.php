@@ -902,7 +902,7 @@ class wsdoskom {
                                                       e.company  LIKE '%,"   . $company . "'
                                                     )
                      WHERE	  c.category = :category
-                     ORDER BY c.fullname ASC";
+                     ORDER BY c.fullname ASC ";
 
             /* Execute  */
             $rdo = $DB->get_records_sql($sql,$params);
