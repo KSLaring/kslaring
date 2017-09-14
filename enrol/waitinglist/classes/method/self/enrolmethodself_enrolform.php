@@ -43,7 +43,7 @@ class enrolmethodself_enrolform extends \moodleform {
      * @return string form identifier
      */
     protected function get_form_identifier() {
-        list( $waitinglist,$method,$listtotal,$confirmed,$remainder) = $this->_customdata;
+        list( $waitinglist,$method,$listtotal,$confirmed,$remainder,$onlist) = $this->_customdata;
         $formid = $method->id.'_'.get_class($this);
         return $formid;
     }

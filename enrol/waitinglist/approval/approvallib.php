@@ -1,10 +1,25 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 /**
  * Approval Request - Library
  *
  * @package         enrol/waitinglist
  * @subpackage      approval
  * @copyright       2013 efaktor    {@link http://www.efaktor.no}
+ * @license         http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
  * @creationDate    24/12/2015
  * @author          efaktor     (fbv)
@@ -13,6 +28,8 @@
  */
 define('APPROVED_ACTION',1);
 define('REJECTED_ACTION',2);
+define('FROM_MAIL','mail');
+define('FROM_SITE','site');
 define('ONWAIT_ACTION',3);
 define('WAITINGLIST_FIELD_INVOICE','customint8');
 define('WAITINGLIST_FIELD_APPROVAL','customint7');
@@ -23,6 +40,44 @@ Class Approval {
     /**********/
     /* PUBLIC */
     /**********/
+
+    /**
+     * Description
+     * A log about approval request
+     *
+     * @param           $inforequest
+     * @param           $manager
+     * @param           $confirmed
+     * @param           $from
+     *
+     * @throws          Exception
+     *
+     * @creationDate    14/09/2017
+     * @author          eFaktor     (fbv)
+     */
+    public static function write_approval_log($inforequest,$manager,$confirmed,$from) {
+        /* Variables */
+        global $DB;
+        $infolog = null;
+
+        try {
+            // Log
+            $infolog = new stdClass();
+            $infolog->managerid     = $manager;
+            $infolog->courseid      = $inforequest->courseid;
+            $infolog->userid        = $inforequest->userid;
+            $infolog->action        = $inforequest->action;
+            $infolog->confirmed     = $confirmed;
+            $infolog->source        = $from;
+            $infolog->timecreated   = time();
+
+            // Execute
+            $DB->insert_record('enrol_approval_log',$infolog);
+        }catch (Exception $ex) {
+            echo $ex->getTraceAsString();
+            throw $ex;
+        }//try_catch
+    }//write_approval_log
 
     /**
      * Description
@@ -283,10 +338,10 @@ Class Approval {
             $infoMail->arguments    = $infoApproval->arguments;
             $infoMail->approvalid   = $infoApproval->id;
             // Approve Link
-            $lnkApprove = $CFG->wwwroot . '/enrol/waitinglist/approval/action.php/' . $infoApproval->token . '/' . $infoApproveAct->token;
+            $lnkApprove = $CFG->wwwroot . '/enrol/waitinglist/approval/action.php/0/' . $infoApproval->token . '/' . $infoApproveAct->token;
             $infoMail->approve = $lnkApprove;
             // Reject Link
-            $lnkReject  = $CFG->wwwroot . '/enrol/waitinglist/approval/action.php/' . $infoApproval->token . '/' . $infoRejectAct->token;
+            $lnkReject  = $CFG->wwwroot . '/enrol/waitinglist/approval/action.php/0/' . $infoApproval->token . '/' . $infoRejectAct->token;
             $infoMail->reject = $lnkReject;
 
             // Commit
@@ -526,8 +581,8 @@ Class Approval {
                 $infoNotification->approvalid   = $rdo->id;
                 $infoNotification->arguments    = $rdo->arguments;
                 $infoNotification->timesent     = userdate($rdo->timesent,'%d.%m.%Y', 99, false);
-                $infoNotification->approve      = $CFG->wwwroot . '/enrol/waitinglist/approval/action.php/' . $rdo->token;
-                $infoNotification->reject       = $CFG->wwwroot . '/enrol/waitinglist/approval/action.php/' . $rdo->token;
+                $infoNotification->approve      = $CFG->wwwroot . '/enrol/waitinglist/approval/action.php/0/' . $rdo->token;
+                $infoNotification->reject       = $CFG->wwwroot . '/enrol/waitinglist/approval/action.php/0/' . $rdo->token;
                 $infoNotification->managers     = self::get_manager_entries($rdo->id);
 
                 return $infoNotification;
@@ -632,14 +687,17 @@ Class Approval {
             $params['approve']  = 0;
             $params['reject']   = 0;
             $params['unenrol']  = 0;
-            $params['request']  = $args[0];
-            $params['action']   = $args[1];
+            $params['request']  = $args[1];
+            $params['action']   = $args[2];
 
             // SQL Instruction
             $sql = " SELECT   ea.id,
                               ea.userid,
+                              u.firstname,
+                              u.lastname,
                               ea.companyid,
                               ea.courseid,
+                              c.fullname,
                               ea.userenrolid,
                               ea.waitinglistid,
                               ea.methodtype,
@@ -647,9 +705,11 @@ Class Approval {
                               eact.action,
                               ea.approved,
                               ea.rejected
-                     FROM	  {enrol_approval}	  		  ea
-                        JOIN  {enrol_approval_action}	  eact	ON 	eact.approvalid = ea.id
+                     FROM	  {enrol_approval}	  		ea
+                        JOIN  {enrol_approval_action}	eact	ON 	eact.approvalid = ea.id
                                                                 AND eact.token		= :action
+                        JOIN  {user}					u 		ON 	u.id 			= ea.userid
+                        JOIN  {course}				    c 		ON  c.id 			= ea.courseid
                     WHERE	ea.token    = :request
                         AND	ea.approved = :approve
                         AND	ea.rejected = :reject
@@ -2231,7 +2291,8 @@ Class Approval {
             $params['waiting']  = $waitingId;
 
             // SQL Instruction
-            $sql = " SELECT	      u.id,
+            $sql = " SELECT	  DISTINCT 
+                                  u.id,
                                   CONCAT(u.firstname,' ',u.lastname) as 'name',
                                   u.email,
                                   ea.arguments,
@@ -2241,7 +2302,7 @@ Class Approval {
                                   ea.companyid,
                                   co.industrycode,
                                   co.name         as 'company',
-                                  CONCAT(um.firstname,' ',um.lastname) as 'manager',
+                                  GROUP_CONCAT(DISTINCT eam.managerid ORDER BY eam.id DESC SEPARATOR ',' ) as 'manager',
                                   eam.timeupdated
                      FROM		  {enrol_approval}	          ea
                         JOIN 	  {user}			          u	  ON  u.id 		     = ea.userid
@@ -2253,6 +2314,7 @@ Class Approval {
                      WHERE	      ea.courseid 		= :course
                         AND       ea.waitinglistid 	= :waiting
                         AND       ea.unenrol        = 0
+                     GROUP BY 	  u.id
                      ORDER BY     u.firstname,u.lastname ";
 
             // Execute
@@ -2268,7 +2330,13 @@ Class Approval {
                     $infoRequest->seats     = $instance->seats;
                     $infoRequest->approved  = $instance->approved;
                     $infoRequest->rejected  = $instance->rejected;
-                    $infoRequest->manager   = ($instance->timeupdated ? $instance->manager : null);
+                    $infoRequest->manager   = null;
+                    if ($instance->timeupdated) {
+                        $manager = explode(',',$instance->manager);
+                        $manager = get_complete_user_data('id',$manager[0]);
+                        $infoRequest->manager = $manager->firstname . ' ' . $manager->lastname;
+
+                    }
                     $infoRequest->done      = ($instance->timeupdated ?
                                                     userdate($instance->timeupdated,'%d.%m.%Y', 99, false) : null);
                     if ($isCompanyDemanded) {

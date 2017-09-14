@@ -172,6 +172,28 @@
               <KEY NAME="fk_approval" TYPE="foreign" FIELDS="approvalid"  REFTABLE="enrol_approval"  REFFIELDS="id"/>
           </KEYS>
       </TABLE>
+
+      <!-- enrol approval log -->
+      <TABLE NAME="enrol_approval_log" COMMENT="enrol_approval_log table">
+          <FIELDS>
+              <FIELD NAME="id"          SEQUENCE="true"  TYPE="int"     LENGTH="10"     NOTNULL="true"/>
+              <FIELD NAME="managerid"   SEQUENCE="false" TYPE="int"     LENGTH="10"     NOTNULL="true"/>
+              <FIELD NAME="courseid"    SEQUENCE="false" TYPE="int"     LENGTH="10"     NOTNULL="true"/>
+              <FIELD NAME="userid"      SEQUENCE="false" TYPE="int"     LENGTH="10"     NOTNULL="true"/>
+              <FIELD NAME="action"      SEQUENCE="false" TYPE="int"     LENGTH="2"      NOTNULL="true"/>
+              <FIELD NAME="confirmed"   SEQUENCE="false" TYPE="int"     LENGTH="2"      NOTNULL="true"/>
+              <FIELD NAME="source"      SEQUENCE="false" TYPE="char"    LENGTH="100"    NOTNULL="true"/>
+              <FIELD NAME="timecreated" SEQUENCE="false" TYPE="int"     LENGTH="10"     NOTNULL="true"/>
+          </FIELDS>
+          <KEYS>
+              <KEY NAME="primary"     TYPE="primary" FIELDS="id"/>
+          </KEYS>
+          <INDEXES>
+              <INDEX NAME="ix_manager" UNIQUE="false" FIELDS="managerid"/>
+              <INDEX NAME="ix_course"  UNIQUE="false" FIELDS="courseid"/>
+              <INDEX NAME="ix_user"    UNIQUE="false" FIELDS="userid"/>
+          </INDEXES>
+      </TABLE>
   </TABLES>
     
 </XMLDB>

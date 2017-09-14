@@ -1,10 +1,25 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 /**
  * Approval Request - Action Request Admin
  *
  * @package         enrol/waitinglist
  * @subpackage      approval
  * @copyright       2013 efaktor    {@link http://www.efaktor.no}
+ * @license         http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
  * @creationDate    29/12/2015
  * @author          efaktor     (fbv)
@@ -63,6 +78,9 @@ if (is_siteadmin($USER->id)) {
 
 $strTitle = null;
 if (Approval::apply_action_from_manager($infoRequest,$infoManager)) {
+    // Write log
+    Approval::write_approval_log($infoRequest,$infoManager->managerid,true,FROM_SITE);
+
     $user = get_complete_user_data('id',$userId);
     $infoNotification = new stdClass();
     $infoNotification->user = fullname($user);

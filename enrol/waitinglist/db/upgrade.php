@@ -45,6 +45,7 @@ function xmldb_enrol_waitinglist_upgrade($oldversion) {
     $table              = null;
     $field              = null;
     $fldEnrolEnd        = null;
+    $tbllog             = null;
 
     try {
         if ($oldversion < 2015021101) {
@@ -291,6 +292,40 @@ function xmldb_enrol_waitinglist_upgrade($oldversion) {
                 }
             }//if_rdo
         }//if_odl_version_2017050802
+
+        if ($oldversion < 2017091402) {
+            $tbllog = new xmldb_table('enrol_approval_log');
+
+            // Check if already exists
+            if (!$dbman->table_exists('enrol_approval_log')) {
+                // id -- primary key
+                $tbllog->add_field('id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
+                // managerid
+                $tbllog->add_field('managerid',XMLDB_TYPE_INTEGER,'10',null, null, null,null);
+                // courseid
+                $tbllog->add_field('courseid',XMLDB_TYPE_INTEGER,'10',null, null, null,null);
+                // userid
+                $tbllog->add_field('userid',XMLDB_TYPE_INTEGER,'10',null, null, null,null);
+                // action
+                $tbllog->add_field('action',XMLDB_TYPE_INTEGER,'2',null, null, null,null);
+                // confirmed
+                $tbllog->add_field('confirmed',XMLDB_TYPE_INTEGER,'2',null, null, null,null);
+                // from
+                $tbllog->add_field('source',XMLDB_TYPE_CHAR,'100',null, null, null,null);
+                // timecreated
+                $tbllog->add_field('timecreated',XMLDB_TYPE_INTEGER,'10',null, null, null,null);
+
+                // Keys
+                $tbllog->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+                // Adding indexes
+                $tbllog->add_index('ix_manager',XMLDB_INDEX_NOTUNIQUE,array('managerid'));
+                $tbllog->add_index('ix_course',XMLDB_INDEX_NOTUNIQUE,array('courseid'));
+                $tbllog->add_index('ix_user',XMLDB_INDEX_NOTUNIQUE,array('userid'));
+
+                // Create table
+                $dbman->create_table($tbllog);
+            }//if_exists
+        }//if_odl version
 
         return true;
     }catch (Exception $ex) {
