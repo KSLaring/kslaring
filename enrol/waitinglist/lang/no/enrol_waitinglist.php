@@ -314,5 +314,9 @@ $string['body_instructor']  = '<p>Vi ønsker å informere deg om at du er satt o
 $string['body_uninstructor'] = '<p>Vi ønsker å informere deg om at du er fjernet som kursansvarlig for kurset {$a->course}</p>
                                 </br>
                                 <p>Dette er en automatisk generert epost fra {$a->site} og du kan ikke svare på denne eposten.</p>';
+
 $string['rpt_by']           = 'By';
 $string['rpt_when']         = 'When';
+
+$string['confirm_approve'] = 'Are you sure that you want to approve the request for <strong>{$a->user}</strong> user and <strong>{$a->course}</strong> course?' ;
+$string['confirm_reject'] = ' Are you sure that you want to reject the request for <strong>{$a->user}</strong> user and <strong>{$a->course}</strong> course?';

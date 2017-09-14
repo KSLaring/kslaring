@@ -782,7 +782,7 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
             }
 
             if ($remainder) {
-                $form = new enrolmethodself_enrolform(NULL, array($waitinglist,$this,$listtotal,false,$remainder));
+                $form = new enrolmethodself_enrolform(NULL, array($waitinglist,$this,$listtotal,false,$remainder,$onlist));
 
                 if ($form->is_cancelled()) {
                     $redirect = $CFG->wwwroot . '/index.php';
