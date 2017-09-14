@@ -410,7 +410,7 @@ class local_doskom_external extends external_api {
             wsdoskom::write_log($log);
             // Write catalog log
             if ($catlog) {
-                wsdoskom::add_catalog_log($log);
+                wsdoskom::add_catalog_log($catlog);
             }//if_catlog
 
             return $result;
