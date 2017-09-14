@@ -488,7 +488,7 @@ class WS_DOSKOM {
                 return $rdo->id;
             }else {
                 /* Second with secret   */
-                $sqlTotal = $sql . " AND    u.secret  = :secret ";
+                $sqlTotal = $sql . " AND	u.secret  = :secret ";
                 /* Execute  */
                 $rdo = $DB->get_record_sql($sqlTotal,$params);
                 if ($rdo) {

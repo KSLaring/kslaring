@@ -1,0 +1,208 @@
+.div_doskom {
+    display:inline-block;
+    /* top right bottom left */
+    margin: 10px 15px 10px 15px;
+}
+
+.div_doskom .dk_left {
+    float:left;
+}
+
+.div_doskom .dk_right {
+    float:left;
+}
+
+.block_doskom {
+    width: 100%;
+    display:block;
+    margin-bottom: 25px;
+    margin-top: 10px;
+}
+
+.block_doskom_lnks {
+    display:inline-block;
+}
+.block_doskom_lnks .dk_left {
+    float:left;
+    margin-right: 50px;
+}
+
+.block_doskom_lnks .dk_right {
+    float:left;
+}
+
+.block_doskom label.header {
+    width: 95%;
+    text-align: left;
+    display:inline-block;
+    color:  #757474;
+    font:bold 12px Verdana,Verdana Pro,sans-serif;
+    text-indent: 1px;
+    cursor: default;
+    margin-top: 10px;
+    margin-bottom: 20px;
+    height: 25px;
+    line-height: 25px;
+    text-transform: uppercase;
+    background-color: #f2f2f2;
+}
+
+.block_doskom table {
+    width: 100%;
+    border-collapse:collapse;
+    margin-bottom: 0;
+    display: table;
+}
+
+.block_doskom .lnk_add {
+    display:inline-block;
+    margin-top: 15px;
+}
+
+.block_doskom .lnk_act {
+    display:inline-block;
+    margin-right: 10px;
+}
+
+a.lnk_disabled {
+    pointer-events: none;
+    cursor: default;
+}
+
+.block_doskom tr.header_doskom {
+    background-color:  #e5e5e5 !important;
+    color:  #000;
+    padding: 0;
+    margin-bottom: 0;
+    font:bold 12px Verdana,Verdana Pro,sans-serif;
+    border-bottom: 2px solid #d8d8d8;
+    vertical-align: middle;
+    height: 30px;
+}
+
+.block_doskom table tr:nth-child(odd) tr:not(:first-child) {
+    background-color: #ffffff;
+}
+.block_doskom table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.block_doskom td.source,
+.block_doskom th.source {
+    width: 30%;
+    text-align: left;
+    text-justify:inter-word;
+    padding: 0px 10px 0px 0px;
+}
+
+.block_doskom td.comp,
+.block_doskom th.comp {
+    width: 20%;
+    text-align: left;
+    text-justify:inter-word;
+    padding: 0px 10px 0px 0px;
+}
+
+.block_doskom th.lbldk,
+.block_doskom td.lbldk {
+    width: 12%;
+    text-align: left;
+    text-justify:inter-word;
+    padding: 0px 10px 0px 0px;
+}
+
+.block_doskom th.act,
+.block_doskom td.act {
+    width: 10%;
+    text-align: center;
+    text-justify:inter-word;
+    padding: 0px 10px 0px 0px;
+}
+
+@media (max-width: 767px) {
+    .div_doskom,
+    .block_doskom ,
+    .block_doskom  table {
+        float: none;
+        width: 100%;
+        display: block;
+        text-justify: inter-word;
+        word-wrap: break-word;
+    }
+
+    /* Force table to not be like tables anymore */
+    .block_doskom  tbody, tr, th, td {
+        display: block;
+    }
+
+    .block_doskom table {
+        display:block;
+        background-color: white !important;
+        width:100%;
+    }
+
+    .block_doskom thead tr {
+        display:none;
+    }
+
+
+    .block_doskom table tr {
+        width: 100%;
+        border: 1px solid darkgray;
+        background-color: white !important;
+        padding-bottom: 15px;
+    }
+
+    .block_doskom td {
+        width:100%;
+        border-top: 1px solid #f2f2f2;
+    }
+
+    .block_doskom table td.source,
+    .block_doskom table td.comp,
+    .block_doskom table td.lbldk,
+    .block_doskom table td.act {
+        /* Behave  like a "row" */
+        position: relative;
+        padding-left: 50%;
+        padding-bottom: 0px;
+        width: 40%;
+        white-space: normal;
+        text-align:left;
+        background-color: white !important;
+        display: inline-block;
+        text-justify:inter-word;
+        word-wrap: break-word;
+    }
+
+    .block_doskom table td.source:before,
+    .block_doskom table td.comp:before,
+    .block_doskom table td.lbldk:before,
+    .block_doskom table td.act:before {
+        /* Now like a table header */
+        position: absolute;
+        /* Top/left values mimic padding */
+        top: 6px;
+        left: 6px;
+        width: 45%;
+        padding-right: 5px;
+        padding-bottom: 0px;
+        text-align:left;
+        text-justify:inter-word;
+        word-wrap: break-word;
+        font-weight: bold;
+        background-color: white !important;
+    }
+
+    .block_doskom table td.source:before,
+    .block_doskom table td.comp:before,
+    .block_doskom table td.lbldk:before,
+    .block_doskom table td.act:before {
+        content:attr(data-th);
+        background-color: white !important;
+        text-justify:inter-word;
+        word-wrap: break-word;
+        color:  #000;
+        font:bold 12px Verdana,Verdana Pro,sans-serif;
+    }
+}

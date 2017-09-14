@@ -15,12 +15,14 @@
  */
 
 require( '../../config.php' );
-require_once ('wsDOSKOMlib.php');
+require_once ('lib/wsdoskomlib.php');
 
 /* PARAMS   */
 global $SESSION;
 global $PAGE;
 global $CFG;
+global $OUTPUT;
+
 // User Id
 $id             = $SESSION->user;
 // User token
@@ -47,10 +49,10 @@ $PAGE->verify_https_required();
 $PAGE->set_pagelayout('login');
 
 // Authenticate the user to log in
-$authenticated = WS_DOSKOM::authenticateUser($id,$key);
+$authenticated = wsdoskom::authenticate_user($id,$key);
 
 if ($authenticated) {
-    WS_DOSKOM::deleteKey($authenticated);
+    wsdoskom::delete_key($authenticated);
     $user = get_complete_user_data('id',$id);
     complete_user_login($user);
 
