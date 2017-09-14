@@ -155,7 +155,7 @@
               <KEY NAME="fk_user"     TYPE="foreign" FIELDS="userid"     REFTABLE="user"   REFFIELDS="id"/>
           </KEYS>
       </TABLE>
-                                      <!-- enrol_approval_approvers -->
+                                            <!-- enrol_approval_approvers -->
       <TABLE NAME="enrol_approval_approvers" COMMENT="enrol_approval_approvers table">
           <FIELDS>
               <FIELD NAME="id"          SEQUENCE="true"  TYPE="int"     LENGTH="10"     NOTNULL="true"/>
