@@ -381,7 +381,7 @@ class enrolmethodmanual extends \enrol_waitinglist\method\enrolmethodbase{
             $confirmed  = $entryman->get_confirmed_listtotal();
 
             if ($instance->{self::MFIELD_MAXENROLLED}) {
-                $vacancies = $instance->{self::MFIELD_MAXENROLLED} - $count - $confirmed;
+                $vacancies = $instance->{self::MFIELD_MAXENROLLED}  - $confirmed;
                 if (!$vacancies) {
                     $vacancies = -1;
                 }
