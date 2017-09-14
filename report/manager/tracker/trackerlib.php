@@ -1135,6 +1135,8 @@ class TrackerManager {
         $ue             = null;
         $sql            = null;
         $rdo            = null;
+        $capability     = null;
+        $capabilityself = null;
 
         try {
             // User enrolment instance
@@ -1160,7 +1162,9 @@ class TrackerManager {
                 $instance->courseid = $courseId;
                 $instance->enrol    = $method[0];
 
-                $capability = 'enrol/' . $method[0] . ':unenrol';
+                // Capabilities to unenrol
+                $capability     = 'enrol/' . $method[0] . ':unenrol';
+                $capabilityself = 'enrol/' . $method[0] . ':unenrolself';
 
                 if (($method[0] == 'waitinglist') && $methodType == 'self') {
                     if ($unEnrolDate) {
@@ -1176,10 +1180,12 @@ class TrackerManager {
                     if ($rdo) {
                         foreach ($rdo as $ue) {
                             if ($plugin->allow_unenrol_user($instance,$ue) && has_capability($capability, $context)) {
-                        $unEnrol  = $unEnrol && true;
-                    }else {
-                        $unEnrol = false;
-                    }
+                                $unEnrol  = $unEnrol && true;
+                            }else if ($plugin->allow_unenrol_user($instance,$ue) && has_capability($capabilityself, $context)) {
+
+                            }else {
+                                $unEnrol = false;
+                            }
                         }//for_rdo
                     }//if_rdo
                 }//if_waitinglist_self
