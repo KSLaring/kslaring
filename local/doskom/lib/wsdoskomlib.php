@@ -459,6 +459,14 @@ class wsdoskom {
                 $log[] = $infolog;
             }//if_category_list
 
+            // DOSKOM log
+            $infolog = new stdClass();
+            $infolog->action      = 'wsGetCourseCatalog';
+            $infolog->description = 'FINISH Course catalog for company : ' . $company;
+            $infolog->timecreated = $time;
+            // Add log
+            $log[] = $infolog;
+
             return array($catalog,$catlog);
         }catch (Exception $ex) {
             $result['error']        = 409;
