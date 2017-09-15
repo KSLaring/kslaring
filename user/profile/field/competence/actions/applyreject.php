@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 /**
- * Extra Profile Field Competence - Version
+ * Extra Profile Field Competence - Reject Competence
  *
  * Description
  *
@@ -23,21 +23,31 @@
  * @copyright       2014        eFaktor {@link http://www.efaktor.no}
  * @license         http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
- * @creationDate    27/01/2015
+ * @creationDate    15/09/2017
  * @author          eFaktor     (fbv)
  *
- * Description
- * A new user profile which includes information about the companies and job roles connected with user
- *
  */
+require_once('../../../../../config.php');
 
-defined('MOODLE_INTERNAL') || die();
+global $PAGE,$CFG,$OUTPUT,$SITE;
 
+$act1 = required_param('t',PARAM_RAW);
+$act2 = required_param('m',PARAM_RAW);
 
-$plugin->version   = 2017091500;                    // The current plugin version (Date: YYYYMMDDXX).
-$plugin->requires  = 2014050800;                    // Requires this Moodle version.
-$plugin->component = 'profilefield_competence';     // Full name of the plugin (used for diagnostics).
+$contextSystem      = context_system::instance();
+$returnUrl          = $CFG->wwwroot . '/index.php';
+$url                = new moodle_url('/user/profile/field/competence/actions/reject.php');
 
+// Page settings
+$PAGE->set_url($url);
+$PAGE->set_context($contextSystem);
+$PAGE->set_pagelayout('standard');
+$PAGE->set_title($SITE->fullname);
+$PAGE->set_heading($SITE->fullname);
 
-/* Dependencies */
-$plugin->dependencies = array('report_manager' => 2017032100);
+// Header
+echo $OUTPUT->header();
+$relativePath = $CFG->wwwroot . '/user/profile/field/competence/actions/reject.php/1/' . $act1 . "/" . $act2;
+redirect($relativePath);
+// Footer
+echo $OUTPUT->footer();

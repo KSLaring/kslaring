@@ -1,4 +1,19 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
  * Extra Profile Field Competence - Add Competence
  *
@@ -7,6 +22,7 @@
  * @package         user/profile
  * @subpackage      field/competence
  * @copyright       2014        eFaktor {@link http://www.efaktor.no}
+ * @license         http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
  * @creationDate    27/01/2015
  * @author          eFaktor     (fbv)
@@ -18,6 +34,8 @@
  * New js to load the company structure
  *
  */
+
+global $CFG, $PAGE, $SESSION, $SITE, $OUTPUT;
 
 require_once('../../../../../config.php');
 require_once('../competencelib.php');
@@ -31,7 +49,7 @@ if (isguestuser()) {
     print_error('guestnoeditprofile');
 }
 
-/* PARAMS */
+// PARAMS
 $user_id        = optional_param('id',0,PARAM_INT);
 $my_companies   = null;
 
@@ -44,7 +62,7 @@ if ($user_id) {
 $url            = new moodle_url('/user/profile/field/competence/actions/add_competence.php',array('id' =>$user_id));
 $return_url     = new moodle_url('/user/profile/field/competence/competence.php',array('id' =>$user_id));
 
-/* Settings Page    */
+// Page settings
 $PAGE->https_required();
 $PAGE->set_context(context_user::instance($user_id));
 $PAGE->set_course($SITE);
@@ -61,17 +79,16 @@ if (empty($CFG->loginhttps)) {
 
 $PAGE->verify_https_required();
 
-/* Get the companies connected with the user    */
+// Companies connected with the user
 $my_companies = Competence::get_mycompanies($user_id);
 
-/* Form */
+// Form
 $form = new competence_add_competence_form(null,array($user_id,$my_companies));
 if ($form->is_cancelled()) {
     $_POST = array();
     redirect($return_url);
 }else if($data = $form->get_data()) {
-
-    /* Add the Competence   */
+    // Add competence
     Competence::add_competence($data);
 
     unset($SESSION->user_id);
@@ -79,13 +96,13 @@ if ($form->is_cancelled()) {
     redirect($return_url);
 }//if_else
 
-/* Print Header */
+// Header
 echo $OUTPUT->header();
 
 $form->display();
 
-/* Initialise Organization Structure    */
+// Initialize Organization structure
 Competence::init_organization_structure('level_','job_roles',$user_id);
 
-/* Print Footer */
+// Footer
 echo $OUTPUT->footer();
