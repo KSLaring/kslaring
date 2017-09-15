@@ -118,7 +118,6 @@ class wsdoskom_cron {
         /* Variables    */
         $urlWs          = null;
         $response       = null;
-        $plugin_info    = null;
         $infolog        = null;
         $time           = null;
 
@@ -133,12 +132,9 @@ class wsdoskom_cron {
             $infolog->timecreated   = $time;
             // Add log
             $log[] = $infolog;
-
-            // Plugin Info
-            $plugin_info     = get_config('local_doskom');
-
+            
             // Build url end point
-            $urlWs = $plugin_info->wsdoskom_end_point . '/' . $company->id .'/personalia/no';
+            $urlWs = $company->api . '/' . $company->id .'/personalia/no';
 
             // Call Web Service
             $ch = curl_init($urlWs);
