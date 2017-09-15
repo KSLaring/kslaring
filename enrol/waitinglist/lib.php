@@ -145,7 +145,7 @@ class enrol_waitinglist_plugin extends enrol_plugin {
              */
             global $DB;
             $str_title      = get_string('manual_manage','enrol_waitinglist');
-            $managelink = new moodle_url('/enrol/waitinglist/managemanual.php',array('id' => $instance->id));
+            $managelink = new moodle_url('/enrol/waitinglist/managemanual.php',array('id' => $instance->id,'co' => $instance->courseid));
             $manual_enrol   = navigation_node::create($str_title,
                                                       $managelink,
                                                       navigation_node::TYPE_SETTING,'manual_enrol',
