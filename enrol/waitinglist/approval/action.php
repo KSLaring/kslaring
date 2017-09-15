@@ -29,7 +29,7 @@
 require('../../../config.php');
 require_once('approvallib.php');
 
-global $PAGE,$CFG,$OUTPUT;
+global $PAGE,$CFG,$OUTPUT,$SITE;
 
 /* PARAMS */
 $contextSystem      = context_system::instance();
@@ -65,13 +65,16 @@ if (count($args) != 4) {
     $infoRequest  = Approval::get_notification_request($args);
     $infoManager  = Approval::get_request_manager($args[3]);
 
+    // Confirm parameter
     $confirmed = $args[0];
-    if ($confirmed == 1) {
-        if ((!$infoRequest) || (!$infoManager)) {
-            echo html_writer::start_tag('div',array('class' => 'loginerrors'));
-            echo $OUTPUT->error_text('<h4>' . get_string('err_link','enrol_waitinglist') . '</h4>');
-            echo html_writer::end_tag('div');
-        }else {
+
+    // reqiest ok or not
+    if ((!$infoRequest) || (!$infoManager)) {
+        echo html_writer::start_tag('div',array('class' => 'loginerrors'));
+        echo $OUTPUT->error_text('<h4>' . get_string('err_link','enrol_waitinglist') . '</h4>');
+        echo html_writer::end_tag('div');
+    }else {
+        if ($confirmed == 1) {
             $strTitle = null;
 
             if (Approval::apply_action_from_manager($infoRequest,$infoManager)) {
@@ -100,12 +103,6 @@ if (count($args) != 4) {
             echo html_writer::start_tag('div');
             echo '<h4>' . $strTitle . '</h4>';
             echo html_writer::end_tag('div');
-        }//if_request
-    }else {
-        if ((!$infoRequest) || (!$infoManager)) {
-            echo html_writer::start_tag('div',array('class' => 'loginerrors'));
-            echo $OUTPUT->error_text('<h4>' . get_string('err_link','enrol_waitinglist') . '</h4>');
-            echo html_writer::end_tag('div');
         }else {
             // Write log
             Approval::write_approval_log($infoRequest,$infoManager->managerid,false,FROM_MAIL);
@@ -128,15 +125,8 @@ if (count($args) != 4) {
             $relativePath = new moodle_url('/enrol/waitinglist/approval/applyact.php',array('r' => $args[1],'a' => $args[2],'t' => $args[3]));
 
             echo $OUTPUT->confirm($strconfirm,$relativePath,$returnUrl);
-        }
-    }//if_confirm
-    /**
-
-
-
-
-
-    **/
+        }//if_confirmed
+    }
 }//if_args
 
 

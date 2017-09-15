@@ -28,7 +28,7 @@
  */
 require('../../../config.php');
 
-global $PAGE,$CFG,$OUTPUT;
+global $PAGE,$CFG,$OUTPUT,$SITE;
 
 $act1 = required_param('r',PARAM_RAW);
 $act2 = required_param('a',PARAM_RAW);

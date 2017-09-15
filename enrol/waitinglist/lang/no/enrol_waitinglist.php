@@ -318,5 +318,6 @@ $string['body_uninstructor'] = '<p>Vi ønsker å informere deg om at du er fjern
 $string['rpt_by']           = 'By';
 $string['rpt_when']         = 'When';
 
+
 $string['confirm_approve'] = 'Are you sure that you want to approve the request for <strong>{$a->user}</strong> user and <strong>{$a->course}</strong> course?' ;
 $string['confirm_reject'] = ' Are you sure that you want to reject the request for <strong>{$a->user}</strong> user and <strong>{$a->course}</strong> course?';
