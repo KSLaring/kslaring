@@ -14,29 +14,29 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 /**
- * Approval Request - Action Manager
- *
- * @package         enrol/waitinglist
- * @subpackage      approval
- * @copyright       2013 efaktor    {@link http://www.efaktor.no}
- * @license         http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- *
- * @creationDate    29/12/2015
- * @author          efaktor     (fbv)
+ * Extra Profile Field Competence - Reject Competence
  *
  * Description
+ *
+ * @package         user/profile
+ * @subpackage      field/competence
+ * @copyright       2014        eFaktor {@link http://www.efaktor.no}
+ * @license         http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ *
+ * @creationDate    15/09/2017
+ * @author          eFaktor     (fbv)
+ *
  */
-require('../../../config.php');
+require_once('../../../../../config.php');
 
 global $PAGE,$CFG,$OUTPUT,$SITE;
 
-$act1 = required_param('r',PARAM_RAW);
-$act2 = required_param('a',PARAM_RAW);
-$act3 = required_param('t',PARAM_RAW);
+$act1 = required_param('t',PARAM_RAW);
+$act2 = required_param('m',PARAM_RAW);
 
 $contextSystem      = context_system::instance();
 $returnUrl          = $CFG->wwwroot . '/index.php';
-$url                = new moodle_url('/enrol/waitinglist/approval/action.php');
+$url                = new moodle_url('/user/profile/field/competence/actions/reject.php');
 
 // Page settings
 $PAGE->set_url($url);
@@ -47,7 +47,7 @@ $PAGE->set_heading($SITE->fullname);
 
 // Header
 echo $OUTPUT->header();
-$relativePath = $CFG->wwwroot . '/enrol/waitinglist/approval/action.php/1/' . $act1 . "/" . $act2 . "/" . $act3;
+$relativePath = $CFG->wwwroot . '/user/profile/field/competence/actions/reject.php/1/' . $act1 . "/" . $act2;
 redirect($relativePath);
 // Footer
 echo $OUTPUT->footer();

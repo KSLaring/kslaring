@@ -1,4 +1,18 @@
 <?php
+// This file is part of Moodle - http://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 /**
  * Extra Profile Field Competence - Library
  *
@@ -7,6 +21,7 @@
  * @package         user/profile
  * @subpackage      field/competence
  * @copyright       2014        eFaktor {@link http://www.efaktor.no}
+ * @license         http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  *
  * @creationDate    27/01/2015
  * @author          eFaktor     (fbv)
@@ -20,6 +35,41 @@ class Competence {
     /*************/
     /*  PUBLIC   */
     /*************/
+
+    /**
+     * Description
+     * Write competence log
+     *
+     * @param           $request
+     * @param           $action
+     * @param           $confirm
+     *
+     * @throws          Exception
+     *
+     * @creationDate    15/09/2017
+     * @author          eFaktor     (fbv)
+     */
+    public static function write_competence_log($request,$action,$confirm) {
+        /* Variables */
+        global $DB;
+        $infolog = null;
+
+        try {
+            // Log
+            $infolog = new stdClass();
+            $infolog->managerid     = $request->managerid;
+            $infolog->companyid     = $request->companyid;
+            $infolog->userid        = $request->userid;
+            $infolog->action        = $action;
+            $infolog->confirmed     = $confirm;
+            $infolog->timecreated   = time();
+
+            // Execute
+            $DB->insert_record('user_info_competence_log',$infolog);
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//write_competence_log
 
     /**
      * Description
@@ -817,18 +867,22 @@ class Competence {
      * Get competence request connected with ticket
      *
      * @param           string  $token      Competence requet ticket
+     * @param           integer $manager
      *
      * @return          mixed
      * @throws          Exception
      *
      * @creationDate    26/02/2016
      * @author          eFaktor     (fbv)
+     *
+     * @updateDate      15/09/2017
+     * @author          eFaktor     (fbv)
      */
-    public static function competence_request($token) {
+    public static function competence_request($token,$manager) {
         /* Variables */
 
         try {
-            return self::get_competence_request($token);
+            return self::get_competence_request($token,$manager);
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -844,8 +898,7 @@ class Competence {
      * Description
      * Remove send notification to revert situation
      *
-     * @param               $competenceRequest  Competence id
-     * @param           int $managerId          Manager id
+     * @param               $competencerequest  Competence id
      *
      * @return          bool
      * @throws          Exception
@@ -853,7 +906,7 @@ class Competence {
      * @creationDate    26/02/2016
      * @author          eFaktor     (fbv)
      */
-    public static function reject_competence($competenceRequest,$managerId) {
+    public static function reject_competence($competencerequest) {
         /* Variables    */
         global $DB;
         $time = null;
@@ -863,16 +916,16 @@ class Competence {
             $time = time();
 
             // Reject
-            $competenceRequest->rejected = 1;
-            $competenceRequest->approved = 0;
-            $competenceRequest->timerejected   = $time;
-            $competenceRequest->timemodified   = $time;
+            $competencerequest->rejected = 1;
+            $competencerequest->approved = 0;
+            $competencerequest->timerejected   = $time;
+            $competencerequest->timemodified   = $time;
 
             // Execute
-            $DB->delete_records('user_info_competence_data',array("id" => $competenceRequest->id));
+            $DB->delete_records('user_info_competence_data',array("id" => $competencerequest->id));
 
             // Send Notification to the user
-            self::send_notification_user($competenceRequest,REQUEST_REJECTED);
+            self::send_notification_user($competencerequest,REQUEST_REJECTED);
 
             /* Send Notification Manager to revert the situation    */
             //self::SendNotification_ToRevert($competenceRequest,$managerId);
@@ -1544,7 +1597,7 @@ class Competence {
             $infoMail->employee = $myCompany;
 
             // Reject Link
-            $lnkReject  = $CFG->wwwroot . '/user/profile/field/competence/actions/reject.php/' . $infoCompetenceData->token . '/' . $manager->id;
+            $lnkReject  = $CFG->wwwroot . '/user/profile/field/competence/actions/reject.php/0/' . $infoCompetenceData->token . '/' . $manager->id;
             $strReject  = (string)new lang_string('reject_lnk','profilefield_competence',null,$userManager->lang);
             $infoMail->reject = '<a href="' . $lnkReject . '">' . $strReject . '</br>';
 
@@ -1576,7 +1629,7 @@ class Competence {
      * Description
      * Send notification to the user
      *
-     * @param           Object  $competenceRequest
+     * @param           $competencerequest
      * @param           $action
      *
      * @throws          Exception
@@ -1584,24 +1637,27 @@ class Competence {
      * @creationDate    26/02/2016
      * @author          eFaktor     (fbv)
      */
-    private static function send_notification_user($competenceRequest,$action) {
+    private static function send_notification_user($competencerequest,$action) {
         /* Variables    */
         global $SITE;
-        $strBody    = null;
-        $strSubject = null;
-        $bodyText   = null;
-        $bodyHtml   = null;
-        $infoMail   = null;
-        $user       = null;
+        $strBody        = null;
+        $strSubject     = null;
+        $bodyText       = null;
+        $bodyHtml       = null;
+        $infoMail       = null;
+        $user           = null;
+        $manager        = null;
 
         try {
             // Get Info User
-            $user = get_complete_user_data('id',$competenceRequest->userid);
+            $user = get_complete_user_data('id',$competencerequest->userid);
+            // Get info manager
+            $manager = get_complete_user_data('id',$competencerequest->managerid);
 
             // Extra Info
             $infoMail = new stdClass();
-            $infoMail->company  = $competenceRequest->company;
-            $infoMail->user     = fullname($user);
+            $infoMail->company  = $competencerequest->company;
+            $infoMail->user     = $competencerequest->user;
             $infoMail->site     = $SITE->shortname;
 
             // Mail
@@ -1610,29 +1666,66 @@ class Competence {
                     $strSubject = (string)new lang_string('msg_subject_rejected','profilefield_competence',$infoMail,$user->lang);
                     $strBody    = (string)new lang_string('msg_body_approved','profilefield_competence',$infoMail,$user->lang);
 
+                    // Content Mail
+                    $bodyText = null;
+                    $bodyHtml = null;
+                    if (strpos($strBody, '<') === false) {
+                        // Plain text only.
+                        $bodyText = $strBody;
+                        $bodyHtml = text_to_html($bodyText, null, false, true);
+                    } else {
+                        // This is most probably the tag/newline soup known as FORMAT_MOODLE.
+                        $bodyHtml = format_text($strBody, FORMAT_MOODLE);
+                        $bodyText = html_to_text($bodyHtml);
+                    }
+
+                    // Send Mail
+                    email_to_user($user, $SITE->shortname, $strSubject, $bodyText,$bodyHtml);
+
                     break;
                 case REQUEST_REJECTED:
+                    // For the user
                     $strSubject = (string)new lang_string('msg_subject_rejected','profilefield_competence',$infoMail,$user->lang);
                     $strBody    = (string)new lang_string('msg_body_rejected','profilefield_competence',$infoMail,$user->lang);
+
+                    // Content Mail
+                    $bodyText = null;
+                    $bodyHtml = null;
+                    if (strpos($strBody, '<') === false) {
+                        // Plain text only.
+                        $bodyText = $strBody;
+                        $bodyHtml = text_to_html($bodyText, null, false, true);
+                    } else {
+                        // This is most probably the tag/newline soup known as FORMAT_MOODLE.
+                        $bodyHtml = format_text($strBody, FORMAT_MOODLE);
+                        $bodyText = html_to_text($bodyHtml);
+                    }
+                    // Send Mail
+                    email_to_user($user, $SITE->shortname, $strSubject, $bodyText,$bodyHtml);
+
+                    // For the manager
+                    $strSubject = (string)new lang_string('msgsbj_rejected_manager','profilefield_competence',$infoMail,$user->lang);
+                    $strBody    = (string)new lang_string('msgbody_rejeted_manager','profilefield_competence',$infoMail,$user->lang);
+
+                    // Content Mail
+                    $bodyText = null;
+                    $bodyHtml = null;
+                    if (strpos($strBody, '<') === false) {
+                        // Plain text only.
+                        $bodyText = $strBody;
+                        $bodyHtml = text_to_html($bodyText, null, false, true);
+                    } else {
+                        // This is most probably the tag/newline soup known as FORMAT_MOODLE.
+                        $bodyHtml = format_text($strBody, FORMAT_MOODLE);
+                        $bodyText = html_to_text($bodyHtml);
+                    }
+                    // Send Mail - Manager
+                    email_to_user($manager, $SITE->shortname, $strSubject, $bodyText,$bodyHtml);
 
                     break;
             }//switch
 
-            // Content Mail
-            $bodyText = null;
-            $bodyHtml = null;
-            if (strpos($strBody, '<') === false) {
-                // Plain text only.
-                $bodyText = $strBody;
-                $bodyHtml = text_to_html($bodyText, null, false, true);
-            } else {
-                // This is most probably the tag/newline soup known as FORMAT_MOODLE.
-                $bodyHtml = format_text($strBody, FORMAT_MOODLE);
-                $bodyText = html_to_text($bodyHtml);
-            }
 
-            // Send Mail
-            email_to_user($user, $SITE->shortname, $strSubject, $bodyText,$bodyHtml);
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -1706,31 +1799,55 @@ class Competence {
      * Description
      * Get competence request connected with token
      *
-     * @param           string $token   Ticket conencted with the request
+     * @param           string  $token   Ticket conencted with the request
+     * @param           integer $manager
      *
      * @return          mixed
      * @throws          Exception
      *
      * @creationDate    26/02/2016
      * @author          eFaktor     (fbv)
+     *
+     * @updateDate      15/09/2017
+     * @author          eFaktor     (fbv)
      */
-    private static function get_competence_request($token) {
+    private static function get_competence_request($token,$manager) {
         /* Variables */
         global $DB;
-        $competenceRequest  = null;
-        $companies          = null;
+        $sql                = null;
+        $competencerequest  = null;
+        $params             = null;
 
         try {
+            // Search criteria
+            $params = array();
+            $params['to'] = $token;
+            $params['ma'] = $manager;
+
+            // SQL Isntruction
+            $sql = " SELECT	    uic.id,
+                                uic.userid,
+                                CONCAT(u.firstname, ' ',u.lastname) as 'user',
+                                uic.companyid,
+                                co.name 							as 'company',
+                                ma.managerid
+                     FROM		{user_info_competence_data}	  uic
+                        -- Info user
+                        JOIN	{user}						  u  ON u.id 	= uic.userid
+                        -- Info company
+                        JOIN	{report_gen_companydata}	  co ON co.id = uic.companyid
+                        -- Info Manager
+                        JOIN	{report_gen_company_manager}  ma ON (ma.levelthree = co.id
+                                                                     OR 
+                                                                     ma.leveltwo = co.id)
+                                                                 AND ma.managerid = :ma
+                     WHERE	    uic.token		= :to
+                         AND	uic.rejected 	= 0 ";
+
             // Execute
-            $competenceRequest = $DB->get_record('user_info_competence_data',array('token' => $token));
+            $competencerequest = $DB->get_record_sql($sql,$params);
 
-            // Get Company Name
-            if ($competenceRequest) {
-                $companies = self::get_company_name($competenceRequest->companyid);
-                $competenceRequest->company   = $companies[$competenceRequest->companyid];
-            }//if_competenceRequest
-
-            return $competenceRequest;
+            return $competencerequest;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
