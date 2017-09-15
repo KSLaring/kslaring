@@ -47,6 +47,10 @@ if ($hassiteconfig) {
                                                     get_string('end_point_production_desc','local_doskom'),1));
     **/
 
+    // Notifications
+    $settings->add(new admin_setting_configtext('local_doskom/mail_notification',
+                                                      get_string('basic_notify', 'local_doskom'), '', ''));
+
     // Add seting links doskom
     require_once('settingslib.php');
     require_once('lib/actionslib.php');
