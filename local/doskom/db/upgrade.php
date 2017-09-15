@@ -87,7 +87,7 @@ function xmldb_local_doskom_upgrade($oldVersion) {
         }//$oldVersion
 
         // New tables for Multiple sources
-        if ($oldVersion < 2017091208) {
+        if ($oldVersion < 2017091210) {
             // mdl_doskom table
             $tbldoskom      = new xmldb_table('doskom');
             if (!$dbMan->table_exists($tbldoskom)) {

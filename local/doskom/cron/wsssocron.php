@@ -12,6 +12,8 @@
  */
 
 define ('EXITS_USERNAME','manager');
+define ('ERROR_SERVICE',0);
+define ('ERROR_PROCESS',1);
 
 class wsdoskom_cron {
 
@@ -65,6 +67,9 @@ class wsdoskom_cron {
 
                            // Clean data
                             doskom::clean_temporary($log);
+                        }else {
+                            // Error send notification
+                            self::send_notifications(ERROR_SERVICE);
                         }
                     }//for_companies
                 }else {
@@ -92,7 +97,10 @@ class wsdoskom_cron {
 
             return true;
         }catch (Exception $ex) {
-           return false;
+            // Error send notification
+            self::send_notifications(ERROR_PROCESS);
+
+            return false;
         }//try_catch
     }//cron
 
@@ -100,6 +108,60 @@ class wsdoskom_cron {
     /* PRIVATE  */
     /************/
 
+    /**
+     * @throws          Exception
+     *
+     * @creationDate    15/09/2017
+     * @author          eFaktor     (fbv)
+     */
+    private static function send_notifications($error) {
+        /* Variables */
+        global $SITE, $USER;
+        $plugin     = null;
+        $notifyto   = null;
+        $subject    = null;
+        $body       = null;
+        $time       = null;
+
+        try {
+            // Plugin Info
+            $plugin     = get_config('local_doskom');
+
+            // Notifications
+            if ($plugin->mail_notification) {
+                // get notifications
+                $notifyto   = explode(',',$plugin->mail_notification);
+
+                // time local
+                $time = userdate(time(),'%d.%m.%Y', 99, false);
+
+                switch ($error) {
+                    case ERROR_SERVICE:
+                        // Subject
+                        $subject = (string)new lang_string('errorws_subject','local_doskom',$SITE->shortname,$USER->lang);
+                        // Body
+                        $body = (string)new lang_string('errorws_body','local_doskom',$time,$USER->lang);
+
+                        break;
+                    case ERROR_PROCESS:
+                        // Subject
+                        $subject = (string)new lang_string('errorprocess_subject','local_doskom',$SITE->shortname,$USER->lang);
+                        // Body
+                        $body = (string)new lang_string('errorprocess_body','local_doskom',$time,$USER->lang);
+
+                        break;
+                }//switch_Error
+
+                // send
+                foreach ($notifyto as $to) {
+                    $USER->email    = $to;
+                    email_to_user($USER, $SITE->shortname, $subject, $body,$body);
+                }//for_Each
+            }//if_mail_notifications
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//send_notifications
 
     /**
      * Description
@@ -118,7 +180,6 @@ class wsdoskom_cron {
         /* Variables    */
         $urlWs          = null;
         $response       = null;
-        $plugin_info    = null;
         $infolog        = null;
         $time           = null;
 
@@ -134,11 +195,8 @@ class wsdoskom_cron {
             // Add log
             $log[] = $infolog;
 
-            // Plugin Info
-            $plugin_info     = get_config('local_doskom');
-
             // Build url end point
-            $urlWs = $plugin_info->wsdoskom_end_point . '/' . $company->id .'/personalia/no';
+            $urlWs = $company->api . '/' . $company->id .'/personalia/no';
 
             // Call Web Service
             $ch = curl_init($urlWs);
