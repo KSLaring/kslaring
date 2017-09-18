@@ -11,9 +11,7 @@
 $string['enabledock'] = 'Tillat brukeren å flytte denne blokken til sidestolpen';
 $string['pluginname'] = 'Kursveiviser - kursliste';
 $string['searchinfrikomport'] = 'Søk';
-$string['morecoursesinfo'] = 'There may be more courses you may be interested in
-than the ones listed in the table. Please use the filters above to specify
-what you are looking for.';
+$string['morecoursesinfo'] = 'Det kan være flere kurs enn det som vises her. Vennligst bruk filterne over for å avgrense hva du leter etter.';
 $string['fri_course_list:addinstance'] = 'Legg til en ny Kursveiviser-kurs-liste-blokk';
 $string['fri_course_list:myaddinstance'] = 'Legg til en ny Kursveiviser-kurs-liste-blokk til Min startside';
 $string['fri_course_list:view'] = 'Vis Kursveiviser-kurs-liste-blokken';
