@@ -26,3 +26,4 @@ $string['choose_muni']  = 'Choose Municipality ...';
 $string['sel_muni']     = 'Municipalities';
 
 $string['install_municipality'] = 'First, the Municipality Profile Field has to be installed. Please, contact to the administrator.';
+$string['logos'] = 'Municipalities logos location';

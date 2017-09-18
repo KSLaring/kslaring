@@ -27,3 +27,4 @@ $string['choose_muni']  = 'Velg kommunelogo ...';
 $string['sel_muni']     = 'Kommuner';
 
 $string['install_municipality'] = 'Du må først legge til "Municipality"-feltet i brukerens profil. Vennligst kontakt administrator.';
+$string['logos'] = 'Municipalities logos location';

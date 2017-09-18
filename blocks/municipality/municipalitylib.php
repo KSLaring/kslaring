@@ -16,7 +16,7 @@ class Municipality  {
 
     /**
      * @param           $user_id
-     * @return          bool
+     * @return          null|stdClass
      * @throws          Exception
      *
      * @creationDate    22/08/2013
@@ -31,6 +31,8 @@ class Municipality  {
         $municipality = null;
 
         try {
+            require_once($CFG->libdir.'/filelib.php');
+
             /* Search Criteria  */
             $params = array();
             $params['user_id']      = $user_id;
@@ -54,6 +56,7 @@ class Municipality  {
                 $municipality->name     = $rdo->municipality;
                 $municipality->logo     = new moodle_url($CFG->wwwroot . '/KommuneLogos/' . $rdo->logo);
             }//if_rdo
+
             return $municipality;
         }catch (Exception $ex) {
             throw $ex;
