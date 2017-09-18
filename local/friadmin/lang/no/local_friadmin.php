@@ -25,7 +25,7 @@ $string['course_summary']       = 'Beskrivelse';
 $string['course_targetgroup']   = 'Målgruppe';
 $string['course_date']          = 'Dato';
 $string['course_time']          = 'Tid fra - til';
-$string['course_seats']         = 'Tilg. plasser';
+$string['course_seats']         = 'Plasser';
 $string['course_deadline']      = 'Påmeldingsfrist';
 $string['course_length']        = 'Varighet';
 $string['course_municipality']  = 'Kommune';
@@ -47,7 +47,7 @@ $string['usercourse_summary']       = 'Beskrivelse';
 $string['usercourse_targetgroup']   = 'Målgruppe';
 $string['usercourse_date']          = 'Dato';
 $string['usercourse_time']          = 'Tid fra - til';
-$string['usercourse_seats']         = 'Tilg. plasser';
+$string['usercourse_seats']         = 'Plasser';
 $string['usercourse_deadline']      = 'Påmeldingsfrist';
 $string['usercourse_length']        = 'Varighet';
 $string['usercourse_municipality']  = 'Kommune';
@@ -94,6 +94,8 @@ $string['coursetemplate_result']        = 'Kurset er opprettet -
 id: <strong>{$a->id}</strong>, kortnavn: "<strong>{$a->shortname}</strong>",
 Fullt navn: "<strong>{$a->fullname}</strong>".';
 $string['coursetemplate_error']         = 'Kurset kunne ikke opprettes.';
+$string['coursetemplate_tags']          = 'Kurs tags';
+$string['coursetemplate_last']          = 'Kurs created';
 
 $string['mysettings_title']                 = 'Mine innstillinger';
 $string['seltemplcategory']                 = 'Velg din lokale kursmalkategori...';
@@ -268,9 +270,9 @@ $string['body_uninstructor'] = '<p>Vi ønsker å informere deg om at du ikke len
                                 </br>
                                 <p>Dette er en automatisk generert epost fra {$a->site}. Du kan ikke svare på denne eposten.</p>';
 
-$string['notemplate']        = 'None';
-$string['courseformats']     = 'Course template list';
-$string['courseformatsdesc'] = 'The course list. Please select the course formats that may be used as templates.';
+$string['notemplate']        = 'Ingen';
+$string['courseformats']     = 'Liste over kursmaler';
+$string['courseformatsdesc'] = 'Kurslisten. Vennligst velg kurs som skal brukes som kursmaler.';
 
 $string['summaryfrom']  = 'Fra:';
 $string['summaryto']    = 'Til:';
@@ -286,7 +288,7 @@ $string['coordinatorheading']   = 'Kurskoordinator rapport';
 $string['biggerthanto']     = 'Den valgte fra-datoen kan ikke være større enn den valgte til-datoen';
 $string['smallerthanfrom']  = 'Den valgte til-datoen kan ikke være mindre enn den valgte fra-datoen';
 $string['biggerthannow']    = 'Den valgte datoen kan ikke være senere enn datoen i dag';
-$string['morethantwoyears'] = 'Forskjellen mellom datoene kan ikke være større enn 2 år';
+$string['morethantwoyears'] = 'Forskjellen mellom datoene kan ikke vøre større enn 2 år';
 
 $string['header_instructorsfilter'] = 'Instruktør filter';
 $string['header_coordinatorfilter'] = 'Koordinator filter';
@@ -301,7 +303,7 @@ $string['levelone'] = 'Nivå 1';
 $string['kommune']  = 'Kommune';
 $string['sector'] = 'Sektor';
 $string['coordinator'] = 'Koordinator';
-$string['spots'] = 'Ledige plasser';
+$string['spots'] = 'Tilgjengelige plasser';
 $string['prices'] = 'Priser';
 $string['instructors'] = 'Instruktører';
 $string['students'] = 'Studenter';
@@ -312,10 +314,10 @@ $string['expiration'] = 'Utløper';
 
 $string['courselong'] = 'Kursets fulle navn';
 $string['courseshort'] = 'Kursets kortnavn';
-$string['courseformat'] = 'Format';
-$string['internalprice'] = 'Intern pris';
-$string['externalprice'] = 'Ekstern pris';
-$string['nexttab'] = 'Klikk neste fane for å se alle rådata';
+$string['courseformat'] = 'Kursformat';
+$string['internalprice'] = 'Internpris';
+$string['externalprice'] = 'Eksternpris';
+$string['nexttab'] = 'Klikk på fanen for å se alle rådata';
 $string['from'] = 'Fra';
 $string['to'] = 'Til';
 $string['fromto'] = 'Fra - Til';
@@ -327,15 +329,15 @@ $string['yes'] = 'Ja';
 $string['no'] = 'Nei';
 
 $string['instructorname'] = 'Instruktørens navn';
-$string['coordinatorname'] = 'Koordinators navn';
-$string['coursename'] = 'Kursets navn';
+$string['coordinatorname'] = 'Koordinatorens navn';
+$string['coursename'] = 'Kursnavn';
 
 $string['userworkplace'] = 'Arbeidssted';
 $string['userjobrole'] = 'Jobbrolle';
 
 $string['noresults'] = 'Ingen resultater';
 
-$string['summaryrptexcel'] = 'Oversikts Rapport';
+$string['summaryrptexcel'] = 'Oversiktsrapport';
 $string['coordinatorexcel'] = 'Koordinatorrapport';
 $string['instructorexcel'] = 'Instruktørrapport';
 $string['categoryexcel'] = 'Kategori';
@@ -343,32 +345,32 @@ $string['courseexcel'] = 'Kurs';
 $string['fromexcel'] = 'Fra';
 $string['toexcel'] = 'Til';
 $string['courseexcel'] = 'Kurs';
-$string['fullnameexcel'] = 'Brukerens fulle navn';
+$string['fullnameexcel'] = 'Brukerens navn';
 $string['usernameexcel'] = 'Brukernavn';
-$string['emailexcel'] = 'Epost';
+$string['emailexcel'] = 'E-post';
 $string['workplaceexcel'] = 'Arbeidssted';
 $string['jobroleexcel'] = 'Jobbrolle';
 
-$string['participantslistsummary'] = 'Deltakerliste_sammendrag_';
-$string['participantslistinstructors'] = 'Deltakerliste_instruktører_';
-$string['participantslistcoordinators'] = 'Deltakerliste_koordinatorer_';
+$string['participantslistsummary'] = 'Sammendrag av deltakerliste';
+$string['participantslistinstructors'] = 'Instruktørliste';
+$string['participantslistcoordinators'] = 'Koordinatorliste';
 
-$string['filter'] = 'Filtrer';
+$string['filter'] = 'Filter';
 $string['content'] = 'Innhold';
 
 $string['courselocation'] = 'Kurssted';
 
-$string['download_one_location'] = 'Last ned for et kurssted';
-$string['download_all_locations'] = 'Last ned for alle kurssteder';
+$string['download_one_location'] = 'Last ned kursoverikt for kursstedet';
+$string['download_all_locations'] = 'Last ned kursoversikt for alle kurssteder';
 
-$string['alllocations'] = 'Alle_kurs_på_';
-$string['onelocation'] = 'Kurs_på_';
+$string['alllocations'] = 'Alle kurs i';
+$string['onelocation'] = 'Kurs i';
 
 $string['classroom']            = 'Arrangementsformat';
 $string['classroom_frikomport'] = 'Enkelt arrangementsformat';
 $string['netcourse']            = 'Nettkursformat';
 $string['elearning_frikomport'] = 'Enkelt nettkursformat';
-$string['topcoll']              = 'Collapsed topics';
+$string['topcoll']              = 'Kollapset emnevisning';
 $string['single_frikomport']    = 'Enkeltelementsformat';
 $string['singleactivity']       = 'Enkeltelementsformat';
 $string['whitepaper']           = 'white paper';
@@ -376,6 +378,7 @@ $string['topics']               = 'Emneformat';
 $string['grid']                 = 'Rutenettformat';
 $string['weeks']                = 'Ukeformat';
 $string['social']               = 'Sosialt format';
+
 $string['clean']                = 'Clean';
 $string['cat_selected']         = 'Category selected';
 $string['cat_required']         = 'The category is required. You have to select one.';

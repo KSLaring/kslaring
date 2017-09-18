@@ -81,7 +81,7 @@ class ct_settings_form extends moodleform {
         $form->addElement('date_selector', 'startdate', get_string('startdate'));
         $form->addHelpButton('startdate', 'startdate');
         $form->setDefault('startdate', time() + 3600 * 24);
-        
+
         // Description.
         $form->addElement('header', 'descriptionhdr', get_string('description'));
         $form->setExpanded('descriptionhdr');
@@ -198,7 +198,7 @@ class ct_settings_form extends moodleform {
                 list($file_options,$context) = course_page::get_file_options($courseId);
                 $file_options['accepted_types'] = array('image','web_image');
                 $file_editor = course_page::prepare_file_manager_home_graphics_video($file_options,$context,'pagegraphics');
-                
+
                 $page_graphics = $form->createElement('filemanager', 'pagegraphics_filemanager', get_string('home_graphics','local_course_page'), null, $file_options);
                 $form->insertElementBefore($page_graphics,'courseformathdr');
                 $form->setDefault('pagegraphics_filemanager',$file_editor->pagegraphics_filemanager);
@@ -235,7 +235,7 @@ class ct_settings_form extends moodleform {
                 $home_participant = $form->createElement('checkbox','participant',get_string('home_participant','local_course_page'));
                 $form->insertElementBefore($home_participant,'descriptionhdr');
                 $form->setDefault('participant',$value);
-                
+
                 break;
 
             case 'homevisible':
@@ -292,10 +292,12 @@ class ct_settings_form extends moodleform {
                     }else {
                         $readonly = '';
                     }//if_Exists
+
+                    $lstSectors     = course_page::get_sectors_locations_list($assigned->id);
                 }else {
                     $readonly = '';
+                    $lstSectors = array();
                 }//if_assigned
-                $lstSectors     = course_page::get_sectors_locations_list($assigned->id);
                 $form->addElement('select','course_sector',get_string('home_sector',$str_format),$lstSectors,'multiple ' . $readonly);
                 $form->setDefault('course_sector',$value);
 
@@ -334,7 +336,7 @@ class ct_settings_form extends moodleform {
                 $form->setType('licence',PARAM_TEXT);
 
                 break;
-            
+
             default:
                 break;
         }//switch
