@@ -1091,11 +1091,16 @@ tr.flagged-tag a {
 .userenrolment .col_group .groups {
   margin-right: 30px;
 }
-.userenrolment .col_role .role,
 .userenrolment .col_group .group {
   float: left;
   padding: 3px;
   margin: 3px;
+  white-space: nowrap;
+}
+.userenrolment .col_role .role {
+  float: left;
+  padding: 0 3px 3px;
+  margin: 0 3px 3px;
   white-space: nowrap;
 }
 .userenrolment .col_role .role a,
@@ -1125,8 +1130,8 @@ tr.flagged-tag a {
 }
 .userenrolment .col_enrol .enrolment {
   float: left;
-  padding: 3px;
-  margin: 3px;
+  padding: 0 3px 3px;
+  margin: 0 3px 3px;
 }
 .userenrolment .col_enrol .enrolment a {
   float: right;
@@ -2059,36 +2064,30 @@ table.collection tbody > tr:nth-child(odd) > td,
 table.collection tbody > tr:nth-child(odd) > th {
   background-color: #e8edf3;
 }
-table.collection .name {
+table.collection td.name {
   text-align: left;
   vertical-align: middle;
 }
-table.collection .awards {
-  width: 10%;
-  text-align: center;
-  vertical-align: middle;
-}
-table.collection .criteria {
-  width: 40%;
-  text-align: left;
-  vertical-align: top;
-}
-table.collection .badgeimage,
-table.collection .status {
+table.collection td.awards {
   width: 15%;
   text-align: center;
   vertical-align: middle;
 }
-table.collection .description {
+table.collection td.criteria {
+  width: 40%;
+  text-align: left;
+  vertical-align: top;
+}
+table.collection td.status {
+  width: 15%;
+  text-align: center;
+  vertical-align: middle;
+}
+table.collection td.description {
   width: 25%;
   text-align: left;
 }
-.dir-rtl table.collection .name,
-.dir-rtl table.collection .criteria,
-.dir-rtl table.collection .description {
-  text-align: right;
-}
-table.collection .actions {
+table.collection td.actions {
   width: 11em;
   text-align: center;
   vertical-align: middle;
@@ -6178,6 +6177,12 @@ a.ygtvspacer:hover {
   background: url('[[pix:theme|fp/alias]]') no-repeat;
   background-position: bottom left;
 }
+.dir-rtl .fp-iconview .fp-file.fp-hasreferences .fp-reficons1 {
+  transform: scaleX(-1);
+}
+.dir-rtl .fp-iconview .fp-file.fp-isreference .fp-reficons2 {
+  transform: scaleX(-1);
+}
 .filemanager .fp-iconview .fp-file.fp-originalmissing .fp-thumbnail img {
   display: none;
 }
@@ -6220,6 +6225,14 @@ a.ygtvspacer:hover {
   top: 9px;
   left: -6px;
   z-index: 1001;
+}
+.dir-rtl .filemanager .fp-filename-icon.fp-hasreferences .fp-reficons1 {
+  transform: scaleX(-1);
+  left: -17px;
+}
+.dir-rtl .filemanager .fp-filename-icon.fp-isreference .fp-reficons2 {
+  transform: scaleX(-1);
+  left: 6px;
 }
 .filemanager .fp-contextmenu {
   display: none;
@@ -7878,6 +7891,7 @@ body.path-question-type .mform fieldset.hidden {
 #groupeditform .groups select,
 #groupeditform .members select {
   min-width: 175px;
+  max-width: 90%;
 }
 .dir-rtl #groupeditform .groups,
 .dir-rtl #groupeditform .members {

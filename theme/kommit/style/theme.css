@@ -870,6 +870,10 @@ a.autolink.glossary {
 #page-mod-lesson-view #region-main div[role="main"] > .singlebutton form {
   margin-left: 0;
 }
+#page-mod-lesson-view.format-classroom div[role="main"] .lesson_right > a,
+#page-mod-lesson-view.format-netcourse div[role="main"] .lesson_right > a {
+  display: none;
+}
 #page-mod-lesson-continue .ftoggler {
   display: none;
 }
@@ -1188,6 +1192,9 @@ body {
 }
 .page-context-header {
   margin-top: 1em;
+}
+.used-region-side-post #block-region-side-post {
+  margin-left: 2.12765957%;
 }
 #page-footer {
   width: 100%;
