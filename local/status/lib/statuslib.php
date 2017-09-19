@@ -370,11 +370,12 @@ class STATUS {
             }//switch
 
             // SQL Instruction
-            $sql = " SELECT  count(DISTINCT mr.id) as 'total'
-                     FROM		{". $table . "} 			mr
-                        JOIN	{fs_imp_managers_reporters}	fs	ON  fs.FODSELSNR    = mr.username
-                         										AND fs.action       = :action
-                                                                AND fs.imported     = :imported ";
+            $sql = " SELECT 		count(DISTINCT mr.id) as 'total'
+                     FROM			{user_managers}				mr
+                        LEFT JOIN	{fs_imp_managers_reporters}	fs ON  fs.FODSELSNR = mr.username 
+                                                                   AND fs.action 	= :action
+                                                                   AND fs.imported  = :imported
+                     WHERE  fs.id IS NULL ";
 
             // Execute
             $rdo = $DB->get_record_sql($sql,$params);
@@ -432,10 +433,11 @@ class STATUS {
             $sql = " SELECT  DISTINCT 
                                   mr.id     as 'key',
                                   mr.userid as 'user'
-                     FROM		{" . $table . "} 		    mr
-                        JOIN	{fs_imp_managers_reporters}	fs	ON  fs.FODSELSNR = mr.username
-                                                                AND fs.action 	 = :action
-                                                                AND fs.imported  = :imported ";
+                     FROM		  {" . $table . "} 		        mr
+                        LEFT JOIN {fs_imp_managers_reporters}	fs	ON  fs.FODSELSNR = mr.username
+                                                                    AND fs.action 	 = :action
+                                                                    AND fs.imported  = :imported
+                     WHERE  fs.id IS NULL ";
             
             // Execute
             $rdo = $DB->get_records_sql($sql,$params,$start,$limit);
