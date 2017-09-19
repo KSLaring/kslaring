@@ -1567,7 +1567,7 @@ class ImportCompetence {
                                                                                   jr_rel.levelthree = $levelThree
                                                                                  )
                                                                                 )
-                     WHERE	jr.industrycode like '%" . $industry ."%'(
+                     WHERE	jr.industrycode like '%" . $industry ."%'
                         AND jr.name like '%" . $jobrole . "%'
                      ";
 
