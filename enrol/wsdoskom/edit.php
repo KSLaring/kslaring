@@ -83,8 +83,13 @@ if ($m_form->is_cancelled()) {
     if (isset($data->add_all) && ($data->add_all)) {
         $tosave = $company_lst;
         unset($tosave[0]);
-        unset($tosave[' ']);
-        $instance->company        = implode(',',array_keys($tosave));
+        $instance->company        = trim(implode(',',array_keys($tosave)));
+
+        // First element
+        $first = substr($instance->company,0,1);
+        if ($first == ",") {
+            $instance->company = substr($instance->company,1);
+        }
         $DB->update_record('enrol', $instance);
 
         $m_form = new enrol_wsdoskom_edit_form(NULL, array($instance, $plugin_config, $context,$company_lst,$company_lst));
@@ -106,8 +111,13 @@ if ($m_form->is_cancelled()) {
             }
             $tosave = $mycompanies;
             unset($tosave[0]);
-            unset($tosave[' ']);
             $instance->company        = implode(',',array_keys($tosave));
+
+            // First element
+            $first = substr($instance->company,0,1);
+            if ($first == ",") {
+                $instance->company = substr($instance->company,1);
+            }
             $DB->update_record('enrol', $instance);
         }
         
@@ -123,8 +133,13 @@ if ($m_form->is_cancelled()) {
             if ($mycompanies) {
                 $tosave = $mycompanies;
                 unset($tosave[0]);
-                unset($tosave[' ']);
                 $instance->company        = implode(',',array_keys($tosave));
+
+                // First element
+                $first = substr($instance->company,0,1);
+                if ($first == ",") {
+                    $instance->company = substr($instance->company,1);
+                }
             }else {
                 $instance->company = 0;
             }
