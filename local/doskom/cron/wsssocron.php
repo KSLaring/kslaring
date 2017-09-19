@@ -35,6 +35,7 @@ class wsdoskom_cron {
         $infolog        = null;
         $time           = null;
         $user           = null;
+        $error          = null;
 
         try {
             // Local time
@@ -59,14 +60,33 @@ class wsdoskom_cron {
                     $active = $companies->active;
 
                     foreach ($active as $company) {
-                        $company->import         = self::call_ws($company,$log);
+                        list($company->import,$error)         = self::call_ws($company,$log);
 
                         //Add company
-                        if ($company->import) {
-                            doskom::import_doskom($company,$log);
+                        if (!$error) {
+                            if ($company->import) {
+                                // DOSKOM LOG
+                                $infolog = new stdClass();
+                                $infolog->action        = 'wsdoskom_cron';
+                                $infolog->description   = 'Start import doskom';
+                                $infolog->timecreated   = $time;
+                                // Add log
+                                $log[] = $infolog;
 
-                           // Clean data
-                            doskom::clean_temporary($log);
+                                //Import doskom
+                                doskom::import_doskom($company,$log);
+
+                                // DOSKOM LOG
+                                $infolog = new stdClass();
+                                $infolog->action        = 'wsdoskom_cron';
+                                $infolog->description   = 'Finish import doskom';
+                                $infolog->timecreated   = $time;
+                                // Add log
+                                $log[] = $infolog;
+
+                                // Clean data
+                                doskom::clean_temporary($log);
+                            }
                         }else {
                             // Error send notification
                             self::send_notifications(ERROR_SERVICE);
@@ -97,9 +117,6 @@ class wsdoskom_cron {
 
             return true;
         }catch (Exception $ex) {
-            // Error send notification
-            self::send_notifications(ERROR_PROCESS);
-
             return false;
         }//try_catch
     }//cron
@@ -224,7 +241,7 @@ class wsdoskom_cron {
                 // Add log
                 $log[] = $infolog;
 
-                return null;
+                return array(null,true);
             }else {
                 $response = json_decode($response);
                 if (isset($response->status)) {
@@ -236,7 +253,7 @@ class wsdoskom_cron {
                     // Add log
                     $log[] = $infolog;
 
-                    return null;
+                    return array(null,true);
                 }else {
                     // DOSKOM LOG
                     $infolog = new stdClass();
@@ -246,7 +263,7 @@ class wsdoskom_cron {
                     // Add log
                     $log[] = $infolog;
 
-                    return $response;
+                    return array($response,false);
                 }
             }//if_response
         }catch (Exception $ex) {
@@ -258,6 +275,9 @@ class wsdoskom_cron {
             $infolog->timecreated   = $time;
             // Add log
             $log[] = $infolog;
+
+            // Error send notification
+            self::send_notifications(ERROR_PROCESS);
 
             throw $ex;
         }//try_catch
