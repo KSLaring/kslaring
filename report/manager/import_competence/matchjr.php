@@ -43,7 +43,7 @@ $url            = new moodle_url('/report/manager/import_competence/matchjr.php'
 $urlImport      = new moodle_url('/report/manager/import_competence/import.php');
 $nonExisting    = null;
 $start          = 0;
-$step           = 4;
+$step           = 2;
 
 // Start page
 $siteContext = context_system::instance();
