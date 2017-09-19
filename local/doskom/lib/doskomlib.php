@@ -159,6 +159,15 @@ class doskom {
 
             return $noerror;
         }catch (Exception $ex) {
+            // Doskom log
+            $infolog = new stdClass();
+            $infolog->action = 'import_doskom';
+            $infolog->description  = 'ERROR. Finish extracting data for company ' . $company .' in a temporary table (user_personalia).';
+            $infolog->description .= ' ERROR: ' . $ex->getTraceAsString() ;
+            $infolog->timecreated = time();
+            // Add log
+            $log[] = $infolog;
+
             throw $ex;
         }//try_catch
     }//import_doskom
