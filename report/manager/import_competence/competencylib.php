@@ -358,16 +358,21 @@ class ImportCompetence {
         $error          = null;
 
         try {
-            /* Checking by Industry Code, Workplace Name */
-            list($nonExisting,$nonMatches) = self::Get_NonExisting_Workplaces($start,$length);
+            // Checking by industry
+            self::get_nonexisting_workplaces_by_industry($nonExisting,$nonMatches,$start,$length);
+            // Checking by workplace
+            self::get_nonexisting_workplaces_by_industry_workplace($nonExisting,$nonMatches,$start,$length);
+            // Checking by sector
+            self::get_nonexisting_workplaces_by_industry_sector($nonExisting,$nonMatches,$start,$length);
 
-            /* Non Matches --> Mark how not importable  */
+            // Checking by workplace name
+            // Non Matches --> Mark how not importable
             if ($nonMatches) {
                 $error = get_string('err_wk_none_match','report_manager');
                 self::Mark_NotImportable($nonMatches,$error);
             }//if_nonMatches
 
-            /* Update the workplace matched for the existing */
+            // Update the workplace matched for the existing
             self::UpdateMatch_ExistingWorkplaces($nonExisting);
 
             /* Non Existing --> Show Form to Match      */
@@ -397,22 +402,24 @@ class ImportCompetence {
         $error          = null;
 
         try {
-            /* Checking by name, industry code  */
-            list($nonExisting,$nonMatches) = self::Get_NonExisting_JobRoles($start,$length);
+            // Checking by industry code
+            self::get_nonexisting_jobroles_by_industry($nonExisting,$nonMatches,$start,$length);
+            // Checking by name
+            self::get_nonexisting_jobroles_by_name($nonExisting,$nonMatches,$start,$length);
 
-            /* Checking by Organization Structure        */
+            // Checking by Organization Structure
             self::Mark_NonExisting_JobRoles_By_Workplace($nonExisting);
 
-            /* Non Matches --> Mark how not importable  */
+            //  Non Matches --> Mark how not importable
             if ($nonMatches) {
                 $error = get_string('err_jr_none_match','report_manager');
                 self::Mark_NotImportable($nonMatches,$error);
             }//if_nonMatches
 
-            /* Update the job roles matched for the existing    */
+            // Update the job roles matched for the existing
             self::UpdateMatch_ExistingJobRoles($nonExisting);
 
-            /* Non Existing --> Show Form to match  */
+            //  Non Existing --> Show Form to match
             return $nonExisting;
         }catch (Exception $ex) {
             throw $ex;
@@ -784,83 +791,63 @@ class ImportCompetence {
         }//try_catch
     }//Get_NonExistingUsers
 
-
     /**
-     * @return          array
+     * Description
+     * Get nonexisting by industry code
+     *
+     * @param           $nonExisting
+     * @param           $nonMatches
      * @param           $start
-     * @param           $length
+     * @param           $lenght
+     *
      * @throws          Exception
      *
-     * @creationDate    26/08/2015
+     * @creationDate    19/09/2017
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get non existing workplaces by industry code
-     * Non existing workplaces with and without possible matches
      */
-    private static function Get_NonExisting_Workplaces($start,$length) {
-        /* Variables    */
+    private static function get_nonexisting_workplaces_by_industry(&$nonExisting,&$nonMatches,$start,$lenght) {
+        /* Variables */
         global $DB;
         $params         = null;
         $sql            = null;
         $rdo            = null;
-        $nonExisting    = array();
-        $nonMatches     = array();
         $info           = null;
 
         try {
-            /* Search Criteria  */
-            $params = array();
-            $params['level_ic']     = 3;
-            $params['level_wk']     = 3;
-            $params['level_se']     = 2;
-            $params['import']       = 1;
+            // Search criteria
 
-            /* SQL Instruction  */
-            $sql = " SELECT	DISTINCT 	ci.id,
-                                        ci.workplace,
-                                        ci.workplace_ic,
-                                        ci.sector
+            $params = array();
+            $params['level']    = 3;
+            $params['import']   = 1;
+
+            // SQL Instruction
+            $sql = " SELECT	DISTINCT 	
+                                ci.id,
+                                ci.workplace,
+                                ci.workplace_ic,
+                                ci.sector
                      FROM			{report_gen_competence_imp}	ci
                         -- By Industry Code
                         LEFT JOIN	{report_gen_companydata}	ic	ON 	ic.industrycode 	= ci.workplace_ic
-                                                                    AND	ic.hierarchylevel 	= :level_ic
-                        -- By Workplace name
-                        LEFT JOIN	{report_gen_companydata}	wk	ON 	wk.name 			= ci.workplace
-                                                                    AND	wk.hierarchylevel 	= :level_wk
-                        -- By Sector
-                        LEFT JOIN	{report_gen_companydata}	se 	ON 	se.name 			= ci.sector
-                                                                    AND se.industrycode		= ci.workplace_ic
-                                                                    AND se.hierarchylevel	= :level_se
+                                                                    AND	ic.hierarchylevel 	= :level
                      WHERE	ci.toimport = :import
-                        AND	(
-                             ci.workplace_match IS NULL
-                             OR
-                             ci.workplace_match = 0
-		                    )
-                        AND (
-                             ic.id IS NULL
-                             OR
-                             wk.id IS NULL
-                             OR
-                             se.id IS NULL
-                             )
-                     LIMIT $start, $length ";
+                        AND	(ci.workplace_match IS NULL OR ci.workplace_match = 0)
+                        AND ic.id is NULL ";
 
-            /* Execute  */
-            $rdo = $DB->get_records_sql($sql,$params);
+            // Execute
+            $rdo = $DB->get_records_sql($sql,$params,$start,$lenght);
             if ($rdo) {
-                /* Save and get possible matches    */
+                // Save and get possible matches
                 foreach ($rdo as $instance) {
-                    /* Info record workplace   */
+                    // info workspace
                     $info = new stdClass();
                     $info->id           = $instance->id;
                     $info->workplace    = $instance->workplace;
                     $info->industry     = $instance->workplace_ic;
                     $info->sector       = $instance->sector;
-                    /* Get Possible Matches */
+                    // Get possible matches
                     $info->matches      = self::Get_WorkplacesPossibleMatches($info->workplace,$info->industry);
-                    /* Get possible matches by Sector   */
+                    // Get possible matches by Sector
                     self::Get_WorkplacesPossibleMatches_By_Sector($info->workplace,$info->industry,$info->sector,$info->matches);
 
                     /**
@@ -868,20 +855,175 @@ class ImportCompetence {
                      * Non existing without possibles matches
                      */
                     if ($info->matches) {
-                        /* Non Existing with possibles matches  */
+                        // Non Existing with possibles matches
                         $nonExisting[$instance->id] = $info;
                     }else {
-                        /* Non existing without non possible matches    */
+                        // Non existing without non possible matches
                         $nonMatches[$instance->id] = $instance->id;
                     }//if_else_matches
                 }//for_Rdo
             }//if_Rdo
-
-            return array($nonExisting,$nonMatches);
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//Get_NonExisting_Workplaces
+    }//get_nonexisting_workplaces_by_industry
+
+    /**
+     * Description
+     * Get non existing by workplace
+     *
+     * @param           $nonExisting
+     * @param           $nonMatches
+     * @param           $start
+     * @param           $lenght
+     *
+     * @throws          Exception
+     *
+     * @creationDate    19/09/2017
+     * @author          eFaktor     (fbv)
+     */
+    private static function get_nonexisting_workplaces_by_industry_workplace(&$nonExisting,&$nonMatches,$start,$lenght) {
+        /* Variables */
+        global $DB;
+        $params         = null;
+        $sql            = null;
+        $rdo            = null;
+        $info           = null;
+
+        try {
+            // Search criteria
+
+            $params = array();
+            $params['level']    = 3;
+            $params['import']   = 1;
+
+            // SQL Instruction
+            $sql = " SELECT	DISTINCT 	
+                                ci.id,
+                                ci.workplace,
+                                ci.workplace_ic,
+                                ci.sector
+                     FROM			{report_gen_competence_imp}	ci
+                        -- By Industry Code
+                        LEFT JOIN	{report_gen_companydata}	wk	ON 	wk.industrycode 	= ci.workplace_ic
+                                                                    AND wk.name 			= ci.workplace
+                                                                    AND	wk.hierarchylevel 	= :level
+                     WHERE	ci.toimport = :import
+                        AND	(ci.workplace_match IS NULL OR ci.workplace_match = 0)
+                        AND wk.id is NULL ";
+
+            // Execute
+            $rdo = $DB->get_records_sql($sql,$params,$start,$lenght);
+            if ($rdo) {
+                // Save and get possible matches
+                foreach ($rdo as $instance) {
+                    // info workspace
+                    $info = new stdClass();
+                    $info->id           = $instance->id;
+                    $info->workplace    = $instance->workplace;
+                    $info->industry     = $instance->workplace_ic;
+                    $info->sector       = $instance->sector;
+                    // Get possible matches
+                    $info->matches      = self::Get_WorkplacesPossibleMatches($info->workplace,$info->industry);
+                    // Get possible matches by Sector
+                    self::Get_WorkplacesPossibleMatches_By_Sector($info->workplace,$info->industry,$info->sector,$info->matches);
+
+                    /**
+                     * Non existing with possibles matches
+                     * Non existing without possibles matches
+                     */
+                    if ($info->matches) {
+                        // Non Existing with possibles matches
+                        $nonExisting[$instance->id] = $info;
+                    }else {
+                        // Non existing without non possible matches
+                        $nonMatches[$instance->id] = $instance->id;
+                    }//if_else_matches
+                }//for_Rdo
+            }//if_Rdo
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//get_nonexisting_workplaces_by_industry_workplace
+
+    /**
+     * Description
+     * Get non existing workplaces by sector
+     *
+     * @param           $nonExisting
+     * @param           $nonMatches
+     * @param           $start
+     * @param           $lenght
+     *
+     * @throws          Exception
+     *
+     * @creationDate    19/09/2017
+     * @author          eFaktor     (fbv)
+     */
+    private static function get_nonexisting_workplaces_by_industry_sector(&$nonExisting,&$nonMatches,$start,$lenght) {
+        /* Variables */
+        global $DB;
+        $params         = null;
+        $sql            = null;
+        $rdo            = null;
+        $info           = null;
+
+        try {
+            // Search criteria
+
+            $params = array();
+            $params['level']    = 2;
+            $params['import']   = 1;
+
+            // SQL Instruction
+            $sql = " SELECT	DISTINCT 	
+                                ci.id,
+                                ci.workplace,
+                                ci.workplace_ic,
+                                ci.sector
+                     FROM			{report_gen_competence_imp}	ci
+                        -- By Sector
+                        LEFT JOIN	{report_gen_companydata}	se 	ON 	se.name 			= ci.sector
+                                                                    AND se.industrycode		= ci.workplace_ic
+                                                                    AND se.hierarchylevel	= :level
+                     WHERE	ci.toimport = :import
+                        AND	(ci.workplace_match IS NULL OR ci.workplace_match = 0)
+                        AND se.id is NULL ";
+
+            // Execute
+            $rdo = $DB->get_records_sql($sql,$params,$start,$lenght);
+            if ($rdo) {
+                // Save and get possible matches
+                foreach ($rdo as $instance) {
+                    // info workspace
+                    $info = new stdClass();
+                    $info->id           = $instance->id;
+                    $info->workplace    = $instance->workplace;
+                    $info->industry     = $instance->workplace_ic;
+                    $info->sector       = $instance->sector;
+                    // Get possible matches
+                    $info->matches      = self::Get_WorkplacesPossibleMatches($info->workplace,$info->industry);
+                    // Get possible matches by Sector
+                    self::Get_WorkplacesPossibleMatches_By_Sector($info->workplace,$info->industry,$info->sector,$info->matches);
+
+                    /**
+                     * Non existing with possibles matches
+                     * Non existing without possibles matches
+                     */
+                    if ($info->matches) {
+                        // Non Existing with possibles matches
+                        $nonExisting[$instance->id] = $info;
+                    }else {
+                        // Non existing without non possible matches
+                        $nonMatches[$instance->id] = $instance->id;
+                    }//if_else_matches
+                }//for_Rdo
+            }//if_Rdo
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//get_nonexisting_workplaces_by_industry_sector
+
 
     /**
      * @param           $workplace
@@ -921,16 +1063,9 @@ class ImportCompetence {
                         JOIN	{report_gen_companydata}		se	ON 	se.id 				= cr.parentid
 													                AND se.hierarchylevel 	= :level_se
                      WHERE	co.hierarchylevel = :level
-                        AND	(
-                             LOCATE(co.industrycode,'" . $industry ."') > 0
-                             OR
-                             LOCATE('" . $industry ."',co.industrycode) > 0
-                            )
-                        AND (
-                            LOCATE(co.name,'" . $workplace ."') > 0
-                            OR
-                            LOCATE('" . $workplace ."',co.name) > 0
-                            ) ";
+                        AND co.industrycodelike '%"  . $industry ."%'
+                        AND co.name '%"  . $workplace ."%'
+                    ";
 
             /* Execute  */
             $rdo = $DB->get_records_sql($sql,$params);
@@ -1000,11 +1135,7 @@ class ImportCompetence {
                         JOIN	{report_gen_company_relation}	cr	ON 	cr.companyid 		= co.id
                         JOIN	{report_gen_companydata}		se	ON 	se.id 				= cr.parentid
                                                                     AND se.hierarchylevel 	= :se_level
-                                                                    AND (
-                                                                         LOCATE(se.name,'" . $sector ."') > 0
-                                                                         OR
-                                                                         LOCATE('" . $sector ."',se.name) > 0
-                                                                        )
+                                                                    AND se.name like '%" . $sector . "%'
                      WHERE	co.hierarchylevel   = :level
                         AND	co.name 		    = :workplace
                         AND co.industrycode     = :industry
@@ -1105,94 +1236,82 @@ class ImportCompetence {
         }//try_catch
     }//UpdateMatch_ExistingWorkplaces
 
-
     /**
-     * @return          array
+     * Description
+     * Non existing jobroles by industry
+     *
+     * @param           $nonExisting
+     * @param           $nonMatches
      * @param           $start
      * @param           $length
+     *
      * @throws          Exception
      *
-     * @creationDate    27/08/2015
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get non existing job roles by industry code and name
-     * Non existing job roles with and without possible matches
+     * @creationDate    19/09/2017
+     * @author          eFaktor     (Fbv)
      */
-    private static function Get_NonExisting_JobRoles($start, $length) {
+    private static function get_nonexisting_jobroles_by_industry(&$nonExisting,&$nonMatches,$start, $length) {
         /* Variables    */
         global $DB;
         $params         = null;
         $sql            = null;
         $rdo            = null;
-        $nonExisting    = array();
-        $nonMatches     = array();
         $info           = null;
 
         try {
-            /* Search Criteria  */
+            // Search criteria
             $params = array();
-            $params['import']       = 1;
-            $params['level_three']  = 3;
-            $params['level_two']    = 2;
-            $params['level_one']    = 1;
-            $params['level_zero']   = 0;
+            $params['import'] = 1;
+            $params['three']  = 3;
+            $params['two']    = 2;
+            $params['one']    = 1;
+            $params['zero']   = 0;
 
-            /* SQL Instruction  */
-            $sql = " SELECT	DISTINCT 	ci.id,
-                                        ci.jobrole,
-                                        ci.jobrole_ic,
-                                        ci.generic,
-                                        CONCAT(se.name,'/',wk.name) as 'ref',
-                                        ci.workplace_match 			as 'three',
-                                        ci.sector_match 			as 'two',
-                                        lo.id 						as 'one',
-                                        lz.id 						as 'zero'
-                      FROM			{report_gen_competence_imp}		ci
-                          -- Level Three
-                          JOIN		{report_gen_companydata}			wk		ON	wk.id				= ci.workplace_match
-                                                                                AND wk.hierarchylevel	= :level_three
-                          -- Level Two
-                          JOIN		{report_gen_companydata}			se		ON	se.id 				= ci.sector_match
-                                                                                AND	se.hierarchylevel 	= :level_two
-                          -- Level One
-                          JOIN		{report_gen_company_relation}		lo_r	ON 	lo_r.companyid 		= ci.sector_match
-                          JOIN		{report_gen_companydata}			lo		ON 	lo.id				= lo_r.parentid
-                                                                                AND	lo.hierarchylevel	= :level_one
-                          -- Level Zero
-                          JOIN 		{report_gen_company_relation}		lz_r	ON 	lz_r.companyid 		= lo.id
-                          JOIN		{report_gen_companydata}			lz		ON 	lz.id				= lz_r.parentid
-                                                                                AND	lz.hierarchylevel	= :level_zero
-                          -- Job Roles by industry Code and Name
-                          LEFT JOIN	{report_gen_jobrole}				jr 		ON 	jr.name 		    = ci.jobrole
-                          LEFT JOIN	{report_gen_jobrole}				ic 		ON 	ic.industrycode     = ci.jobrole_ic
-                      WHERE 	ci.toimport = :import
-                          AND   (
-                                 ci.jobrole_match IS NULL
-                                 OR
-                                 ci.jobrole_match = 0
-                                )
-                          AND	(
-                                 jr.id IS NULL
-                                 OR
-                                 ic.id IS NULL
-                                )
-                      LIMIT $start, $length ";
+            // SQL Instruction
+            $sql = " SELECT	DISTINCT 	
+                                ci.id,
+                                ci.jobrole,
+                                ci.jobrole_ic,
+                                ci.generic,
+                                CONCAT(se.name,'/',wk.name) as 'ref',
+                                ci.workplace_match 			as 'three',
+                                ci.sector_match 			as 'two',
+                                lo.id 						as 'one',
+                                lz.id 						as 'zero'
+                     FROM		  {report_gen_competence_imp}		ci
+                        -- Level Three
+                        JOIN	  {report_gen_companydata}			wk		ON	wk.id				= ci.workplace_match
+                                                                            AND wk.hierarchylevel	= :three
+                        -- Level Two
+                        JOIN	  {report_gen_companydata}			se		ON	se.id 				= ci.sector_match
+                                                                            AND	se.hierarchylevel 	= :two
+                        -- Level One
+                        JOIN	  {report_gen_company_relation}		lo_r	ON 	lo_r.companyid 		= ci.sector_match
+                        JOIN	  {report_gen_companydata}			lo		ON 	lo.id				= lo_r.parentid
+                                                                            AND	lo.hierarchylevel	= :one
+                        -- Level Zero
+                        JOIN 	  {report_gen_company_relation}		lz_r	ON 	lz_r.companyid 		= lo.id
+                        JOIN	  {report_gen_companydata}			lz		ON 	lz.id				= lz_r.parentid
+                                                                            AND	lz.hierarchylevel	= :zero
+                        -- Job Roles by industry Code 
+                        LEFT JOIN {report_gen_jobrole}				jr 		ON 	jr.industrycode 	= ci.jobrole_ic
+                     WHERE 	 ci.toimport = :import
+                        AND  (ci.jobrole_match IS NULL OR ci.jobrole_match = 0)
+                        AND  jr.id IS NULL ";
 
-
-            /* Execute  */
-            $rdo = $DB->get_records_sql($sql,$params);
+            // Execute
+            $rdo = $DB->get_records_sql($sql,$params,$start,$length);
             if ($rdo) {
-                /* Save and get possible matches    */
+                // Save and get possible matches
                 foreach ($rdo as $instance) {
-                    /* Info */
+                    // Info
                     $info = new stdClass();
                     $info->id       = $instance->id;
                     $info->jobrole  = $instance->jobrole;
                     $info->industry = $instance->jobrole_ic;
                     $info->generic  = $instance->generic;
                     $info->ref      = $instance->ref;
-                    /* Get possibles matches    */
+                    // Get possible matches
                     if ($instance->generic) {
                         $info->matches = self::Get_JobRolesGeneric_PossibleMatches($info->jobrole,$info->industry);
                     }else {
@@ -1204,20 +1323,118 @@ class ImportCompetence {
                      * Non existing without possibles matches
                      */
                     if ($info->matches) {
-                        /* Non Existing with possibles matches  */
+                        // Non Existing with possibles matches
                         $nonExisting[$instance->id] = $info;
                     }else {
-                        /* Non existing without non possible matches    */
+                        // Non existing without non possible matches
                         $nonMatches[$instance->id] = $instance->id;
                     }//if_else_matches
                 }//for_each
             }//if_rdo
-
-            return array($nonExisting,$nonMatches);
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//Get_NonExisting_JobRoles
+    }//get_nonexisting_jobroles_byindustry
+
+    /**
+     * Description
+     * Non existing job roles by name
+     *
+     * @param           $nonExisting
+     * @param           $nonMatches
+     * @param           $start
+     * @param           $length
+     *
+     * @throws           Exception
+     *
+     * @creationDate    19/09/2017
+     * @author          eFaktor     (fbv)
+     */
+    private static function get_nonexisting_jobroles_by_name(&$nonExisting,&$nonMatches,$start, $length) {
+        /* Variables    */
+        global $DB;
+        $params         = null;
+        $sql            = null;
+        $rdo            = null;
+        $info           = null;
+
+        try {
+            // Search criteria
+            $params = array();
+            $params['import'] = 1;
+            $params['three']  = 3;
+            $params['two']    = 2;
+            $params['one']    = 1;
+            $params['zero']   = 0;
+
+            // SQL Instruction
+            $sql = " SELECT	DISTINCT 	
+                                ci.id,
+                                ci.jobrole,
+                                ci.jobrole_ic,
+                                ci.generic,
+                                CONCAT(se.name,'/',wk.name) as 'ref',
+                                ci.workplace_match 			as 'three',
+                                ci.sector_match 			as 'two',
+                                lo.id 						as 'one',
+                                lz.id 						as 'zero'
+                     FROM		  {report_gen_competence_imp}		ci
+                        -- Level Three
+                        JOIN	  {report_gen_companydata}			wk		ON	wk.id				= ci.workplace_match
+                                                                            AND wk.hierarchylevel	= :three
+                        -- Level Two
+                        JOIN	  {report_gen_companydata}			se		ON	se.id 				= ci.sector_match
+                                                                            AND	se.hierarchylevel 	= :two
+                        -- Level One
+                        JOIN	  {report_gen_company_relation}		lo_r	ON 	lo_r.companyid 		= ci.sector_match
+                        JOIN	  {report_gen_companydata}			lo		ON 	lo.id				= lo_r.parentid
+                                                                            AND	lo.hierarchylevel	= :one
+                        -- Level Zero
+                        JOIN 	  {report_gen_company_relation}		lz_r	ON 	lz_r.companyid 		= lo.id
+                        JOIN	  {report_gen_companydata}			lz		ON 	lz.id				= lz_r.parentid
+                                                                            AND	lz.hierarchylevel	= :zero
+                        -- Job Roles by industry Code 
+                        LEFT JOIN {report_gen_jobrole}				jr 		ON 	jr.name 		    = ci.jobrole
+                     WHERE 	 ci.toimport = :import
+                        AND  (ci.jobrole_match IS NULL OR ci.jobrole_match = 0)
+                        AND  jr.id IS NULL ";
+
+            // Execute
+            $rdo = $DB->get_records_sql($sql,$params,$start,$length);
+            if ($rdo) {
+                // Save and get possible matches
+                foreach ($rdo as $instance) {
+                    // Info
+                    $info = new stdClass();
+                    $info->id       = $instance->id;
+                    $info->jobrole  = $instance->jobrole;
+                    $info->industry = $instance->jobrole_ic;
+                    $info->generic  = $instance->generic;
+                    $info->ref      = $instance->ref;
+                    // Get possible matches
+                    if ($instance->generic) {
+                        $info->matches = self::Get_JobRolesGeneric_PossibleMatches($info->jobrole,$info->industry);
+                    }else {
+                        $info->matches = self::Get_JobRolesPossibleMatches($info->jobrole,$info->industry,$instance->three,$instance->two,$instance->one,$instance->zero);
+                    }//if_generic
+
+                    /**
+                     * Non existing with possibles matches
+                     * Non existing without possibles matches
+                     */
+                    if ($info->matches) {
+                        // Non Existing with possibles matches
+                        $nonExisting[$instance->id] = $info;
+                    }else {
+                        // Non existing without non possible matches
+                        $nonMatches[$instance->id] = $instance->id;
+                    }//if_else_matches
+                }//for_each
+            }//if_rdo
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//get_nonexisting_jobroles_by_name
 
     /**
      * @param           $jobrole

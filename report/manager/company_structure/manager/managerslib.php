@@ -410,7 +410,9 @@ Class Managers {
             /* Get Companies Level */
             switch ($level) {
                 case 0:
-                    $levelZero = $parents[$level];
+                    if ($parents[$level] != 0) {
+                        $levelZero = $parents[$level];
+                    }
 
                     break;
                 case 1:
@@ -434,32 +436,20 @@ Class Managers {
             }//switch
 
             foreach ($managersLst as $manager) {
-                /* New Manager  */
-                $infoManager = new stdClass();
-                $infoManager->managerid         = $manager;
-                $infoManager->levelzero         = $levelZero;
-                $infoManager->levelone          = $levelOne;
-                $infoManager->leveltwo          = $levelTwo;
-                $infoManager->levelthree        = $levelThree;
-                $infoManager->hierarchylevel    = $level;
-                $infoManager->timecreated       = $time;
+                if ($levelZero) {
+                    /* New Manager  */
+                    $infoManager = new stdClass();
+                    $infoManager->managerid         = $manager;
+                    $infoManager->levelzero         = $levelZero;
+                    $infoManager->levelone          = $levelOne;
+                    $infoManager->leveltwo          = $levelTwo;
+                    $infoManager->levelthree        = $levelThree;
+                    $infoManager->hierarchylevel    = $level;
+                    $infoManager->timecreated       = $time;
 
-                /* Execute  */
-                $DB->insert_record('report_gen_company_manager',$infoManager);
-
-                /* New Reporter */
-                $infoReporter = new stdClass();
-                $infoReporter->reporterid        = $manager;
-                $infoReporter->levelzero         = $levelZero;
-                $infoReporter->levelone          = $levelOne;
-                $infoReporter->leveltwo          = $levelTwo;
-                $infoReporter->levelthree        = $levelThree;
-                $infoReporter->hierarchylevel    = $level;
-                $infoReporter->timecreated       = $time;
-
-                /* Execute  */
-                /* Check if already exists  */
-                //$DB->insert_record('report_gen_company_reporter',$infoReporter);
+                    /* Execute  */
+                    $DB->insert_record('report_gen_company_manager',$infoManager);
+                }
             }//for_managers
 
             /* Commit   */
