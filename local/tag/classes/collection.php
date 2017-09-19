@@ -143,11 +143,16 @@ class collection extends core_tag_collection {
             $params = array_merge($params, $inparams);
         }
 
+        $collatedanish = '';
+        if (current_language() === "no" || current_language() === "da" || current_language() === "sv") {
+            $collatedanish = 'collate utf8_danish_ci';
+        }
+
         $sql = "SELECT tg.id, tg.rawname, tg.name, tg.isstandard, tg.flag, tg.tagcollid
                         $fromclause
                         $whereclause
                         GROUP BY tg.id, tg.rawname, tg.name, tg.flag, tg.isstandard, tg.tagcollid
-                        ORDER BY tg.name ASC";
+                        ORDER BY tg.name $collatedanish ASC";
 
         $grouptags = $DB->get_records_sql($sql, $params, 0, $limit);
 
@@ -156,10 +161,11 @@ class collection extends core_tag_collection {
             $tagscount = $DB->get_field_sql("SELECT COUNT(DISTINCT tg.id) $fromclause $whereclause", $params);
         }
 
-        if (strval($sort) !== '') {
-            self::$taggroupsortfield = $sort;
-            usort($grouptags, "self::taggroup_sort");
-        }
+        // It's not necessary to sort, the data comes sorted form the db.
+        //if (strval($sort) !== '') {
+        //    self::$taggroupsortfield = $sort;
+        //    usort($grouptags, "self::taggroup_sort");
+        //}
 
         return $grouptags;
     }
@@ -199,11 +205,16 @@ class collection extends core_tag_collection {
             $params[] = '%' . core_text::strtolower($search) . '%';
         }
 
+        $collatedanish = '';
+        if (current_language() === "no" || current_language() === "da" || current_language() === "sv") {
+            $collatedanish = 'collate utf8_danish_ci';
+        }
+
         $sql = "SELECT tg.id, tg.rawname, tg.name, tg.isstandard, tg.flag, tg.tagcollid
                         $fromclause
                         $whereclause
                         GROUP BY tg.id, tg.rawname, tg.name, tg.flag, tg.isstandard, tg.tagcollid
-                        ORDER BY tg.name ASC";
+                        ORDER BY tg.name $collatedanish ASC";
 
         $grouptags = $DB->get_records_sql($sql, $params, 0, $limit);
 
@@ -212,10 +223,11 @@ class collection extends core_tag_collection {
             $tagscount = $DB->get_field_sql("SELECT COUNT(DISTINCT tg.id) $fromclause $whereclause", $params);
         }
 
-        if (strval($sort) !== '') {
-            self::$taggroupsortfield = $sort;
-            usort($grouptags, "self::taggroup_sort");
-        }
+        // It's not necessary to sort, the data comes sorted form the db.
+        //if (strval($sort) !== '') {
+        //    self::$taggroupsortfield = $sort;
+        //    usort($grouptags, "self::taggroup_sort");
+        //}
 
         return $grouptags;
     }
@@ -262,11 +274,16 @@ class collection extends core_tag_collection {
             $params[] = '%' . core_text::strtolower($excludename) . '%';
         }
 
+        $collatedanish = '';
+        if (current_language() === "no" || current_language() === "da" || current_language() === "sv") {
+            $collatedanish = 'collate utf8_danish_ci';
+        }
+
         $sql = "SELECT tg.id, tg.rawname, tg.name, tg.isstandard, tg.flag, tg.tagcollid
                         $fromclause
                         $whereclause
                         GROUP BY tg.id, tg.rawname, tg.name, tg.flag, tg.isstandard, tg.tagcollid
-                        ORDER BY tg.name ASC";
+                        ORDER BY tg.name $collatedanish ASC";
 
         $grouptags = $DB->get_records_sql($sql, $params, 0, $limit);
 
@@ -287,6 +304,11 @@ class collection extends core_tag_collection {
         $tags = null;
         $metaprefix = str_replace('_', '\_', $metaprefix);
 
+        $collatedanish = '';
+        if (current_language() === "no" || current_language() === "da" || current_language() === "sv") {
+            $collatedanish = 'collate utf8_danish_ci';
+        }
+
         $sql = "
             SELECT
               tg.id,
@@ -303,14 +325,17 @@ class collection extends core_tag_collection {
                     AND ti1.itemtype = 'tag'
               GROUP BY ti1.tagid
             )
-            GROUP BY tg.id, tg.name;
+            GROUP BY tg.id, tg.name
+            ORDER BY tg.name $collatedanish ASC;
         ";
 
         $params = array($tagcollid, $metaprefix . '%');
         $tagdata = $DB->get_records_sql($sql, $params);
 
         self::$taggroupsortfield = 'name';
-        usort($tagdata, "self::taggroup_sort");
+
+        // It's not necessary to sort, the data comes sorted form the db.
+        //usort($tagdata, "self::taggroup_sort");
 
         return $tagdata;
     }
@@ -365,7 +390,7 @@ class collection extends core_tag_collection {
             return ($a->$tagsort == $b->$tagsort) ? 0 : ($a->$tagsort > $b->$tagsort) ? 1 : -1;
         } else {
             if (is_string($a->$tagsort)) {
-                return strcmp($a->$tagsort, $b->$tagsort);
+                return strnatcmp($a->$tagsort, $b->$tagsort);
             } else {
                 return 0;
             }
