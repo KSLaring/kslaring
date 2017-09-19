@@ -28,6 +28,8 @@
  * Matching workplaces
  */
 
+global $CFG,$PAGE,$USER,$OUTPUT,$SITE;
+
 require_once('../../../config.php');
 require_once('competencylib.php');
 require_once('match_form.php');
@@ -35,13 +37,13 @@ require_once($CFG->libdir . '/adminlib.php');
 
 require_login();
 
-/* PARAMS   */
+// PARAMS
 $return         = new moodle_url('/report/manager/index.php');
 $url            = new moodle_url('/report/manager/import_competence/matchwk.php');
 $urlImport      = new moodle_url('/report/manager/import_competence/import.php');
 $nonExisting    = null;
 $start          = 0;
-$step           = 2;
+$step           = 4;
 
 /* Start the page */
 $siteContext = context_system::instance();
@@ -55,7 +57,7 @@ $PAGE->set_context($siteContext);
 $PAGE->set_title($SITE->fullname);
 $PAGE->set_heading($SITE->fullname);
 
-/* ADD require_capability */
+// ADD require_capability
 if (!has_capability('report/manager:edit', $siteContext)) {
     print_error('nopermissions', 'error', '', 'report/manager:edit');
 }
@@ -68,7 +70,7 @@ if (empty($CFG->loginhttps)) {
 
 $PAGE->verify_https_required();
 
-/* 2.- Check Workplaces */
+// 2.- Check Workplaces
 $nonExisting = ImportCompetence::CheckWorkplaces($start,$step);
 $total       = count($nonExisting);
 
@@ -78,25 +80,25 @@ if ($nonExisting) {
         $_POST = array();
         redirect($return);
     }else if ($data = $form->get_data()) {
-        /* First Matching   */
+        // First matching
         $matched = ImportCompetence::MatchingWorkplaces($nonExisting,$data);
 
-        /* Redirect */
+        // Redirect
         if ($matched) {
             redirect($url);
         }//matched
     }//if_Else
 }else {
-    /* Process Job Roles    */
+    // Process job roles
     $url            = new moodle_url('/report/manager/import_competence/matchjr.php');
     redirect($url);
 }//if_nonExisting
 
-/* Header   */
+// Header
 echo $OUTPUT->header();
 echo $OUTPUT->heading_with_help(get_string('match_wk', 'report_manager'), 'match_wk','report_manager');
 
 $form->display();
 
-/* Footer   */
+// Footer
 echo $OUTPUT->footer();

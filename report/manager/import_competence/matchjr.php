@@ -28,6 +28,8 @@
  * Matching Job roles
  */
 
+global $CFG,$PAGE,$USER,$OUTPUT,$SITE;
+
 require_once('../../../config.php');
 require_once('competencylib.php');
 require_once('match_form.php');
@@ -35,15 +37,15 @@ require_once($CFG->libdir . '/adminlib.php');
 
 require_login();
 
-/* PARAMS   */
+// PARAMS
 $return         = new moodle_url('/report/manager/index.php');
 $url            = new moodle_url('/report/manager/import_competence/matchjr.php');
 $urlImport      = new moodle_url('/report/manager/import_competence/import.php');
 $nonExisting    = null;
 $start          = 0;
-$step           = 2;
+$step           = 4;
 
-/* Start the page */
+// Start page
 $siteContext = context_system::instance();
 
 //HTTPS is required in this page when $CFG->loginhttps enabled
@@ -55,7 +57,7 @@ $PAGE->set_context($siteContext);
 $PAGE->set_title($SITE->fullname);
 $PAGE->set_heading($SITE->fullname);
 
-/* ADD require_capability */
+// ADD require_capability
 if (!has_capability('report/manager:edit', $siteContext)) {
     print_error('nopermissions', 'error', '', 'report/manager:edit');
 }
@@ -68,7 +70,7 @@ if (empty($CFG->loginhttps)) {
 
 $PAGE->verify_https_required();
 
-/* 3.- Check Job Roles  */
+// 3.- Check Job Roles
 $nonExisting    = ImportCompetence::CheckJobRoles($start,$step);
 $total          = count($nonExisting);
 
@@ -78,16 +80,16 @@ if ($nonExisting) {
         $_POST = array();
         redirect($return);
     }else if ($data = $form->get_data()) {
-        /* First Matching   */
+        // First matchin
         $matched = ImportCompetence::MatchingJobRoles($nonExisting,$data);
 
-        /* Redirect */
+        // Redirect
         if ($matched) {
             redirect($url);
         }//matched
     }//if_Else
 }else {
-    /* Finish process   */
+    // Finish process
     $url            = new moodle_url('/report/manager/import_competence/processing.php');
     redirect($url);
 }//if_nonExisting

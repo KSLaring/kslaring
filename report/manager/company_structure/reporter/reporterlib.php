@@ -404,7 +404,9 @@ Class Reporters {
             /* Get Companies Level */
             switch ($level) {
                 case 0:
-                    $levelZero = $parents[$level];
+                    if ($parents[$level] != 0) {
+                        $levelZero = $parents[$level];
+                    }
 
                     break;
                 case 1:
@@ -428,18 +430,20 @@ Class Reporters {
             }//switch
 
             foreach ($reportersLst as $reporter) {
-                /* New Reporter */
-                $infoReporter = new stdClass();
-                $infoReporter->reporterid        = $reporter;
-                $infoReporter->levelzero         = $levelZero;
-                $infoReporter->levelone          = $levelOne;
-                $infoReporter->leveltwo          = $levelTwo;
-                $infoReporter->levelthree        = $levelThree;
-                $infoReporter->hierarchylevel    = $level;
-                $infoReporter->timecreated       = $time;
+                if ($levelZero) {
+                    /* New Reporter */
+                    $infoReporter = new stdClass();
+                    $infoReporter->reporterid        = $reporter;
+                    $infoReporter->levelzero         = $levelZero;
+                    $infoReporter->levelone          = $levelOne;
+                    $infoReporter->leveltwo          = $levelTwo;
+                    $infoReporter->levelthree        = $levelThree;
+                    $infoReporter->hierarchylevel    = $level;
+                    $infoReporter->timecreated       = $time;
 
-                /* Execute  */
-                $DB->insert_record('report_gen_company_reporter',$infoReporter);
+                    /* Execute  */
+                    $DB->insert_record('report_gen_company_reporter',$infoReporter);
+                }
             }//for_reporters
 
             /* Commit */
