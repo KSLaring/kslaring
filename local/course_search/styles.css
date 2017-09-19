@@ -198,6 +198,9 @@
   display: none;
 }
 #page-course-search #course-cards .course-card-item .course-img {
+  background-color: #f9f9f9;
+  border: 1px solid #e8e8e8;
+  height: 8em;
   text-align: center;
 }
 #page-course-search #course-cards .course-card-item .course-img img {

@@ -84,7 +84,19 @@ class courses implements \renderable, \templatable {
     }
 
     public function export_course_data() {
-        return $this->get_coursecollection();
+        return $this->get_coursecollection_o();
+    }
+
+    public function export_json_course_data() {
+        $json = '{ "courses": { ';
+        $json .= implode(', ', $this->get_coursecollection());
+        $json .= ' } }';
+
+        return $json;
+    }
+
+    public function get_course_json_for_cron($course, $alltext, $sortcounter) {
+        return '"' . $course->id . '": ' . json_encode($this->get_one_course($course, $alltext, $sortcounter));
     }
 
     /**
@@ -93,6 +105,57 @@ class courses implements \renderable, \templatable {
      * @return array The course collection, indexed by courseid
      */
     protected function get_coursecollection() {
+        global $DB;
+
+        $courseids = array();
+
+        // Load the fixture for development.
+        if (false) {
+            $json = file_get_contents(__DIR__ . '/../../fixtures/courses.json');
+            $context = json_decode($json);
+
+            $this->coursecollection = $context->courses;
+        } else {
+            $courses = get_courses('all', 'c.fullname collate utf8_danish_ci ASC', 'c.id, c.visible');
+            $preselectedcourseids = \local_course_search\util::get_user_tagged_courseids();
+            $templateids = $this->get_template_courses_ids();
+            foreach ($courses as $course) {
+                // Exclude the site and the template courses.
+                if ($course->id == 1 || in_array($course->id, $templateids)) {
+                    continue;
+                }
+
+                // Exclude the courses that have none of the user's preselected tags.
+                if (!in_array($course->id, $preselectedcourseids)) {
+                    continue;
+                }
+
+                // Save the course id.
+                $courseids[] = $course->id;
+            }
+        }
+
+        list($insql, $inparams) = $DB->get_in_or_equal($courseids);
+        $sql = "SELECT 
+                 course, json
+            FROM {local_course_search}
+            WHERE course " . $insql;
+
+        if ($result = $DB->get_records_sql($sql, $inparams)) {
+            foreach ($result as $row) {
+                $this->coursecollection[] = $row->json;
+            }
+        }
+
+        return $this->coursecollection;
+    }
+
+    /**
+     * Get the courses to show in the result area.
+     *
+     * @return array The course collection, indexed by courseid
+     */
+    protected function get_coursecollection_o() {
         // Load the fixture for development.
         if (false) {
             $json = file_get_contents(__DIR__ . '/../../fixtures/courses.json');
@@ -124,10 +187,177 @@ class courses implements \renderable, \templatable {
         return $this->coursecollection;
     }
 
-    /*
+    /**
      * Get the data for one course.
+     *
+     * @param object $course The course object
+     * @param int $sortcounter The number for course sorting
+     *
+     * @return object The object with all needed course data
      */
-    protected function get_one_course($course, $sortcounter) {
+    protected function get_one_course($course, $alltext, $sortcounter) {
+        global $CFG, $DB;
+
+        $sumlen = 80;
+        $namelen = 35;
+        $context = context_course::instance($course->id);
+        $date = '';
+        $timestamp = 0;
+        $availseats = '';
+        $availnumber = '';
+        $deadline = '';
+        $location = '';
+        $municipality = '';
+
+        require_once($CFG->dirroot . '/local/course_page/locallib.php');
+        $formatoptions = \course_page::get_format_fields($course->id);
+        $formatoptions = \course_page::get_available_seats_format_option($course->id, $formatoptions);
+
+        if (!empty($formatoptions['homepage'])) {
+            $url = new \moodle_url('/local/course_page/home_page.php', array('id' => $course->id));
+            $availseats = $formatoptions['enrolledusers']->value;
+            if ($availseats === 'hide') {
+                $availseats = '';
+            } else {
+                if (\core_text::strpos($availseats, ' ') !== false) {
+                    $availnumber = \core_text::substr($availseats, 0, \core_text::strpos($availseats, ' '));
+                }
+            }
+            $deadline = \course_page::deadline_course($course->id);
+            if ($deadline) {
+                $deadline = userdate($deadline, '%d.%m.%Y');
+            } else {
+                $deadline = '';
+            }
+            if (!empty($formatoptions['course_location'])) {
+                $locationid = (int)$formatoptions['course_location']->value;
+                $location = \course_page::get_location_name($locationid);
+
+                // Get the location municipality.
+                $params = array();
+                $params['location'] = $locationid;
+
+                // SQL Instruction.
+                $sql = " SELECT
+                                      cl.id,
+                                      levelone.name as 'muni'
+                         FROM		  {course_locations}		cl
+                            JOIN	  {report_gen_companydata}	levelone  ON  levelone.id 	= cl.levelone
+                         WHERE		  cl.id = :location ";
+
+                // Execute.
+                if ($rdo = $DB->get_record_sql($sql, $params)) {
+                    $municipality = $rdo->muni;
+                }
+            }
+        } else {
+            $url = new \moodle_url('/course/view.php', array('id' => $course->id));
+        }
+
+        $courseextended = $course;
+        if ($courseextended instanceof stdClass) {
+            require_once($CFG->libdir . '/coursecatlib.php');
+            $courseextended = new \course_in_list($course);
+        }
+
+        $summary = content_to_text($course->summary, $course->summaryformat);
+        $summary = str_replace(array("\n", "\r"), ' ', $summary);
+        if (\core_text::strlen($summary) > $sumlen) {
+            $summary = \core_text::str_max_bytes($summary, $sumlen) . ' ...';
+        }
+
+        $img = '';
+
+        $timestamp = $course->startdate;
+        $date = userdate($timestamp, '%d.%m.%Y');
+        $sortdate = userdate($timestamp, '%Y%m%d');
+
+        if (strlen($date) < 10) {
+            $date = '0' . $date;
+        }
+        if (strlen($sortdate) < 8) {
+            $sortdate = substr($sortdate, 0, -1) . '0' . substr($sortdate, -1);
+        }
+
+        // Use the first image saved in the course settings.
+        /* @var stored_file $file A Moodle stored file object */
+        foreach ($courseextended->get_course_overviewfiles() as $file) {
+            $isimage = $file->is_valid_image();
+            if ($isimage) {
+                $path = '/' . $file->get_contextid() . '/' . $file->get_component() . '/' .
+                    $file->get_filearea() . $file->get_filepath() . $file->get_filename();
+                $imgurl = moodle_url::make_file_url('/pluginfile.php', $path);
+                $img = $imgurl->out();
+
+                break;
+            }
+        }
+
+        $coursetags = \core_tag_tag::get_item_tags_array('core', 'course', $course->id);
+        $tags = array();
+        $tagcollection = array();
+
+        foreach ($coursetags as $key => $value) {
+            $tagcollid = \core_tag_area::get_collection('core', 'course');
+            $metagroupname = '';
+
+            if ($relatedgrouptags = \local_tag\collection::get_tag_related_group_tags($tagcollid, $key,
+                \local_tag\tag::get_meta_group_prefix())
+            ) {
+                $grouptag = array_shift($relatedgrouptags);
+                $metagroupname = \local_tag\tag::get_meta_tag_stripped_name($grouptag->name,
+                    \local_tag\tag::get_meta_group_prefix());
+            }
+
+            if (!empty($metagroupname)) {
+                $tags[] = (object)array(
+                    'id' => $key,
+                    'name' => $value,
+                    'group' => $metagroupname
+                );
+                $tagcollection[] = strtolower($metagroupname) . '-' . $value;
+            }
+        }
+
+        $coursename = format_string($course->fullname, true, array('context' => $context));
+        if (\core_text::strlen($coursename) > $namelen) {
+            $coursename = \core_text::str_max_bytes($coursename, $namelen) . ' ...';
+        }
+        $coursename = str_replace('"', '&quot;', $coursename);
+
+        //$alltext = $DB->get_field('local_course_search', 'alltext', array('course' => $course->id));
+
+        $result = (object)array(
+            "id" => $course->id,
+            "sortorder" => $sortcounter,
+            "name" => $coursename,
+            "img" => $img,
+            "summary" => $summary,
+            "link" => $url->out(),
+            "date" => $date,
+            "sortdate" => $sortdate,
+            "availseats" => $availseats,
+            "availnumber" => $availnumber,
+            "deadline" => $deadline,
+            "municipality" => $municipality,
+            "location" => $location,
+            "tags" => $tags,
+            "tagcollection" => $tagcollection,
+            "alltext" => $alltext
+        );
+
+        return $result;
+    }
+
+    /**
+     * Get the data for one course.
+     *
+     * @param object $course The course object
+     * @param int $sortcounter The number for course sorting
+     *
+     * @return object The object with all needed course data
+     */
+    protected function get_one_course_o($course, $sortcounter) {
         global $CFG, $DB;
         $context = context_course::instance($course->id);
         $date = '';

@@ -48,5 +48,29 @@ function xmldb_local_course_search_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2017060400, 'local', 'courses_search');
     }
 
+    if ($oldversion < 2017091900) {
+
+        // Define field json to be added to local_course_search.
+        $table = new xmldb_table('local_course_search');
+
+        $field = new xmldb_field('json', XMLDB_TYPE_TEXT, null, null, null, null, null, 'alltext');
+
+        // Conditionally launch add field json.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Define index course (unique) to be added to local_course_search.
+        $index = new xmldb_index('course', XMLDB_INDEX_UNIQUE, array('course'));
+
+        // Conditionally launch add index course.
+        if (!$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+
+        // Course_search savepoint reached.
+        upgrade_plugin_savepoint(true, 2017091900, 'local', 'course_search');
+    }
+
     return true;
 }
