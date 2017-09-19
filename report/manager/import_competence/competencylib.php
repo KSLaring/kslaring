@@ -1063,8 +1063,8 @@ class ImportCompetence {
                         JOIN	{report_gen_companydata}		se	ON 	se.id 				= cr.parentid
 													                AND se.hierarchylevel 	= :level_se
                      WHERE	co.hierarchylevel = :level
-                        AND co.industrycodelike '%"  . $industry ."%'
-                        AND co.name '%"  . $workplace ."%'
+                        AND co.industrycode like '%"  . $industry ."%'
+                        AND co.name like '%"  . $workplace ."%'
                     ";
 
             /* Execute  */
@@ -1458,7 +1458,7 @@ class ImportCompetence {
         $infoMatch  = null;
 
         try {
-            /* SQL Instruction  */
+            // SQL Instruction
             $sql = " SELECT		DISTINCT  	jr.id,
                                             jr.name,
                                             jr.industrycode
@@ -1468,28 +1468,21 @@ class ImportCompetence {
                                                                             AND jr_rel.levelone 	IS NULL
                                                                             AND jr_rel.leveltwo 	IS NULL
                                                                             AND jr_rel.levelthree 	IS NULL
-                     WHERE	(
-                             LOCATE(jr.industrycode,'" . $industry ."') > 0
-                             OR
-                             LOCATE('" . $industry ."',jr.industrycode) > 0
-                            )
-                        AND (
-                             LOCATE(jr.name,'" . $jobrole ."') > 0
-                             OR
-                             LOCATE('" . $jobrole ."',jr.name) > 0
-                            ) ";
+                     WHERE	jr.industrycode like '%" . $industry. "%'
+                        AND jr.name like '%" . $jobrole . "%'
+                     ";
 
-            /* Execute  */
+            // Execute
             $rdo = $DB->get_records_sql($sql);
             if ($rdo) {
                 foreach ($rdo as $instance) {
-                    /* Info Match   */
+                    // Info match
                     $infoMatch = new stdClass();
                     $infoMatch->id          = $instance->id;
                     $infoMatch->name        = $instance->name;
                     $infoMatch->industry    = $instance->industrycode;
 
-                    /* Add */
+                    // Add
                     $matches[$instance->id] = $infoMatch;
                 }//for_each
             }//if_rdo
@@ -1527,7 +1520,7 @@ class ImportCompetence {
         $infoMatch  = null;
 
         try {
-            /* SQL Instruction  */
+            // SQL Instruction
             $sql = " SELECT		DISTINCT  	jr.id,
                                             jr.name,
                                             jr.industrycode
@@ -1574,29 +1567,22 @@ class ImportCompetence {
                                                                                   jr_rel.levelthree = $levelThree
                                                                                  )
                                                                                 )
-                     WHERE	(
-                             LOCATE(jr.industrycode,'" . $industry ."') > 0
-                             OR
-                             LOCATE('" . $industry ."',jr.industrycode) > 0
-                            )
-                        AND (
-                             LOCATE(jr.name,'" . $jobrole ."') > 0
-                             OR
-                             LOCATE('" . $jobrole ."',jr.name) > 0
-                            ) ";
+                     WHERE	jr.industrycode like '%" . $industry ."%'(
+                        AND jr.name like '%" . $jobrole . "%'
+                     ";
 
 
-            /* Execute  */
+            // Execute
             $rdo = $DB->get_records_sql($sql);
             if ($rdo) {
                 foreach ($rdo as $instance) {
-                    /* Info Match   */
+                    // Info match
                     $infoMatch = new stdClass();
                     $infoMatch->id          = $instance->id;
                     $infoMatch->name        = $instance->name;
                     $infoMatch->industry    = $instance->industrycode;
 
-                    /* Add */
+                    // Add
                     $matches[$instance->id] = $infoMatch;
                 }//for_each
             }//if_rdo
