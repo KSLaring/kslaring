@@ -2002,7 +2002,8 @@ class ImportCompetence {
                      FROM			{report_gen_competence_imp}   ci
                         LEFT JOIN	{user_info_competence}		  uic	ON uic.userid = ci.userid
                      WHERE	ci.toimport = :import
-                        AND ci.todelete = :delete ";
+                        AND ci.todelete = :delete
+                        AND ci.userid IS NOT NULL ";
 
             /* Execute  */
             $rdo = $DB->get_records_sql($sql,$params);
