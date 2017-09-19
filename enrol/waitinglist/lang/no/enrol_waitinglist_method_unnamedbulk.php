@@ -22,7 +22,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['unnamedbulk_displayname'] = 'Bulkpåmelding';
+$string['unnamedbulk_displayname'] = 'Bulk-påmelding til arrangement';
 $string['unnamedbulk_menutitle'] = 'Reserver plasser';
 $string['waitlistmessagetitle_unnamedbulk'] = 'Kursplasser er lagt til i ventelisten for: {$a}';
 $string['waitlistmessagetitle_unnamedbulk_changed'] = 'Plasser lagt til i ventelisten for: {$a}. Endret plasser';
@@ -42,7 +42,10 @@ $string['sendconfirmmessage_help'] ='Når kursplasser blir ledige i kurset, og d
 $string['confirmedmessage_unnamedbulk'] = 'Plasser tildelt på: {$a->coursename}';
 $string['confirmedmessagetext_unnamedbulk'] = 'Plasser reservert for: {$a->coursename}. {$a->allocatedseats} av dine forespurte {$a->totalseats} plasser på ventelisten for {$a->coursename} er tildelt deg. 
 
-Du kan se og endre antall plasser ved å følge denne lenken: {$a->editenrolurl}';
+Du kan se og endre antall plasser ved å følge denne lenken: {$a->editenrolurl}
+
+OBS! Har din kommune Single Sign On til KS Læring må du logge inn i KS Læring før du klikker på lenken over. Da unngår du å måtte logge inn manuelt via ID-porten.'
+;
 $string['customconfirmedmessage'] = 'Bekreftelse på din reservasjon';
 $string['customconfirmedmessage_help'] = 'Du kan legge til en egendefinert bekreftelsesmelding i ren tekst eller i Moodles auto-format, inkludert html-og flerspråktagger. Meldingen vil bli sendt til den brukeren som har reservert plasser på ventelisten når det blir ledige plasser på kurset.
 
@@ -61,4 +64,4 @@ $string['unnamedbulk_enrolformintro'] = 'Bruk dette skjemaet til å reservere pl
 $string['unnamedbulk_enrolformqueuestatus'] = 'Du er tildelt {$a->assignedseats} og du har {$a->waitingseats} plasser på ventelisten.';
 $string['unnamedbulk_enrolformqueuestatus_label'] = 'Din reservasjon';
 $string['unnamedbulk_enrolformqueuestatus_all'] = 'Du har blitt tildelt alle dine forespurte plasser';
-$string['no_seats'] = 'You must reserve at least one seat';
+$string['no_seats'] = 'Du må reservere minst en plass';
