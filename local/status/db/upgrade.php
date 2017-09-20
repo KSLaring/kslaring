@@ -50,6 +50,8 @@ function xmldb_local_status_upgrade($oldversion) {
             $tblmanagers->add_field('userid',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
             // Username
             $tblmanagers->add_field('username',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
+            // Level one.
+            $tblmanagers->add_field('levelone',XMLDB_TYPE_INTEGER,'10',null, null, null,null);
             // Level two.
             $tblmanagers->add_field('leveltwo',XMLDB_TYPE_INTEGER,'10',null, null, null,null);
             // Level three.
@@ -75,6 +77,8 @@ function xmldb_local_status_upgrade($oldversion) {
             $tblreporters->add_field('userid',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
             // Username
             $tblreporters->add_field('username',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
+            // Level one.
+            $tblreporters->add_field('levelone',XMLDB_TYPE_INTEGER,'10',null, null, null,null);
             // Level two.
             $tblreporters->add_field('leveltwo',XMLDB_TYPE_INTEGER,'10',null, null, null,null);
             // Level three.
@@ -88,6 +92,25 @@ function xmldb_local_status_upgrade($oldversion) {
             $dbman->create_table($tblreporters);
         }//if_reporters
     }//if_old_version
-    
+
+    if ($oldversion < 2017092000) {
+        // Table - reporters
+        $table   = new xmldb_table('user_reporters');
+
+        // New field
+        $fdl = new xmldb_field('levelone', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, 0,'username');
+        if (!$dbman->field_exists($table, $fdl)) {
+            $dbman->add_field($table, $fdl);
+        }//if_not_exists
+
+        // Table - managers
+        $table   = new xmldb_table('user_managers');
+
+        // New field
+        $fdl = new xmldb_field('levelone', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, 0,'username');
+        if (!$dbman->field_exists($table, $fdl)) {
+            $dbman->add_field($table, $fdl);
+        }//if_not_exists
+    }
     return true;
 }//xmldb_local_fellesdata_status_upgrade

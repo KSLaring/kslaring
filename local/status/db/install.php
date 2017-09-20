@@ -78,6 +78,8 @@ function xmldb_local_status_install() {
             $tblmanagers->add_field('userid',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
             // Username
             $tblmanagers->add_field('username',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
+            // Level one.
+            $tblmanagers->add_field('levelone',XMLDB_TYPE_INTEGER,'10',null, null, null,null);
             // Level two.
             $tblmanagers->add_field('leveltwo',XMLDB_TYPE_INTEGER,'10',null, null, null,null);
             // Level three.
@@ -103,6 +105,8 @@ function xmldb_local_status_install() {
             $tblreporters->add_field('userid',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
             // Username
             $tblreporters->add_field('username',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
+            // Level one.
+            $tblreporters->add_field('levelone',XMLDB_TYPE_INTEGER,'10',null, null, null,null);
             // Level two.
             $tblreporters->add_field('leveltwo',XMLDB_TYPE_INTEGER,'10',null, null, null,null);
             // Level three.
