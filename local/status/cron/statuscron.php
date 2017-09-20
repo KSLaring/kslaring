@@ -101,13 +101,13 @@ class STATUS_CRON {
             //self::competence_data($plugin,$industry,$dblog);
 
             // Get managers reporters from KS
-            //self::managers_reporters($plugin,$industry,$dblog);
+            self::managers_reporters($plugin,$industry,$dblog);
 
             // Repair connections
             //self::repair_connections($dblog);
 
             // Import last status from fellesdata
-            //self::import_status($plugin,$dblog);
+            self::import_status($plugin,$dblog);
 
             // Syncronization
             self::synchronization($plugin,$industry,$dblog);
