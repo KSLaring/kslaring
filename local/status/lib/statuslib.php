@@ -458,7 +458,7 @@ class STATUS {
 
             // SQL Instruction
             $sql = " SELECT       DISTINCT 
-                                  mr.id     as 'key',
+                                  mr.key    as 'key',
                                   mr.userid as 'user'
                      FROM		  {". $table."} 		      mr ";
             $sqlrest = " JOIN  	  {ksfs_company}		      fsk ON  fsk.kscompany = ks.companyid
