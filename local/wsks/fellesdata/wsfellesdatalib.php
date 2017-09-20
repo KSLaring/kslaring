@@ -1074,14 +1074,14 @@ class WS_FELLESDATA {
             }//switch_Type
 
             // SQL Instruction
-            $sql = " SELECT   re.id,
+            $sql = " SELECT   re.id                             as 'keyid',
                               $field 						    as 'userid',
                               u.username,
                               IF(re.levelone,re.levelone,0)     as 'levelone',
                               IF(re.leveltwo,re.leveltwo,0)     as 'leveltwo',
                               IF(re.levelthree,re.levelthree,0) as 'levelthree'
-                     FROM	    {$table}	re
-                         JOIN	{user}							u	ON  u.id  			= re.reporterid
+                     FROM	    {" . $table . "}	re
+                         JOIN	{user}							u	ON  u.id  			= $field
                          JOIN	{report_gen_company_relation}	cr  ON	cr.parentid 	= re.levelzero
                          JOIN	{report_gen_companydata}		co	ON  co.id 			= cr.companyid 
                                                                     AND co.industrycode = :industry
@@ -1119,6 +1119,7 @@ class WS_FELLESDATA {
         $rdo        = null;
         $params     = null;
         $sql        = null;
+        $companies  = array();
 
         try {
             // Search criteria
@@ -1128,15 +1129,18 @@ class WS_FELLESDATA {
             $params['level']    = $level;
 
             // SQL Instruction
-            $sql = " SELECT GROUP_CONCAT(DISTINCT co.id ORDER BY co.id SEPARATOR ',') as 'companies' 
+            $sql = " SELECT co.id 
                      FROM 	{report_gen_companydata}	co
                      where 	co.industrycode   = :industry	
                         AND co.mapped         = :mapped
                         AND co.hierarchylevel = :level ";
             // Execute
-            $rdo = $DB->get_record_sql($sql,$params);
+            $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
-                return $rdo->companies;
+                foreach ($rdo as $instance) {
+                    $companies[$instance->id] = $instance->id;
+                }
+                return implode(',',$companies);
             }else {
                 return 0;
             }
