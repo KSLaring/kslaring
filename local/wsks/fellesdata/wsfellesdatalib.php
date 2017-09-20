@@ -1042,14 +1042,22 @@ class WS_FELLESDATA {
         $data       = null;
         $table      = null;
         $field      = null;
+        $one        = null;
+        $two        = null;
+        $three      = null;
 
         try {
+            // Companies by level
+            $one    = self::get_companies_by_industry_level($industry,1);
+
+            $two    = self::get_companies_by_industry_level($industry,2);
+
+            $three  = self::get_companies_by_industry_level($industry,3);
+
+
             // Search criteria
             $params = array();
-            $params['industry2'] = $industry;
-            $params['mapped2']   = 'TARDIS';
-            $params['industry3'] = $industry;
-            $params['mapped3']   = 'TARDIS';
+            $params['industry'] = $industry;
 
             // Select table
             switch ($type) {
@@ -1066,21 +1074,29 @@ class WS_FELLESDATA {
             }//switch_Type
 
             // SQL Instruction
-            $sql = " SELECT       re.id,
-                                  $field as 'userid',
-                                  u.username,
-                                  re.leveltwo,
-                                  re.levelthree
-                     FROM		  {" .$table . "}	re
-                        JOIN	  {user}						u		ON u.id 				= $field
-                        -- Level Two
-                        JOIN 	  {report_gen_companydata}		co_two 	ON 	co_two.id 			= re.leveltwo
-                                                                        AND	co_two.mapped 		= :mapped2
-                                                                        AND co_two.industrycode = :industry2
-                        -- Level Three
-                        LEFT JOIN	{report_gen_companydata}	co		ON 	co.id 			    = re.levelthree
-                                                                        AND co.mapped 		    = :mapped3
-                                                                        AND co.industrycode     = :industry3 ";
+            $sql = " SELECT   re.id,
+                              $field 						    as 'userid',
+                              u.username,
+                              IF(re.levelone,re.levelone,0)     as 'levelone',
+                              IF(re.leveltwo,re.leveltwo,0)     as 'leveltwo',
+                              IF(re.levelthree,re.levelthree,0) as 'levelthree'
+                     FROM	    {$table}	re
+                         JOIN	{user}							u	ON  u.id  			= re.reporterid
+                         JOIN	{report_gen_company_relation}	cr  ON	cr.parentid 	= re.levelzero
+                         JOIN	{report_gen_companydata}		co	ON  co.id 			= cr.companyid 
+                                                                    AND co.industrycode = :industry
+                     WHERE 	re.levelzero IS NOT NULL
+                        AND re.levelzero != 0
+                            AND (re.levelone IS NULL
+                                 OR
+                                 re.levelone IN ($one))
+                            AND (re.leveltwo IS NULL
+                                 OR 
+                                 re.leveltwo IN ($two))
+                            AND (re.levelthree IS NULL
+                                 OR 
+                                 re.levelthree IN ($three))
+                     ORDER by $field, u.username ";
 
             // Execute
             $rdo = $DB->get_records_sql($sql,$params);
@@ -1096,6 +1112,38 @@ class WS_FELLESDATA {
             throw $ex;
         }//try_catch
     }//get_managers_ks
+
+    private static function get_companies_by_industry_level($industrycode,$level) {
+        /* Variables */
+        global $DB;
+        $rdo        = null;
+        $params     = null;
+        $sql        = null;
+
+        try {
+            // Search criteria
+            $params = array();
+            $params['industry'] = $industrycode;
+            $params['mapped']   = 'TARDIS';
+            $params['level']    = $level;
+
+            // SQL Instruction
+            $sql = " SELECT GROUP_CONCAT(DISTINCT co.id ORDER BY co.id SEPARATOR ',') as 'companies' 
+                     FROM 	{report_gen_companydata}	co
+                     where 	co.industrycode   = :industry	
+                        AND co.mapped         = :mapped
+                        AND co.hierarchylevel = :level ";
+            // Execute
+            $rdo = $DB->get_record_sql($sql,$params);
+            if ($rdo) {
+                return $rdo->companies;
+            }else {
+                return 0;
+            }
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//get_companies_by_industry
 
     /**
      * Description
