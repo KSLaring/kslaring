@@ -1074,7 +1074,7 @@ class WS_FELLESDATA {
             }//switch_Type
 
             // SQL Instruction
-            $sql = " SELECT   re.id                             as 'key',
+            $sql = " SELECT   re.id                             as 'keyid',
                               $field 						    as 'userid',
                               u.username,
                               IF(re.levelone,re.levelone,0)     as 'levelone',
