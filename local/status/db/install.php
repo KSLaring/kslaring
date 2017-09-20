@@ -75,7 +75,7 @@ function xmldb_local_status_install() {
             // Id - Primary key
             $tblmanagers->add_field('id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
             //key
-            $tblmanagers->add_field('key',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
+            $tblmanagers->add_field('keyid',XMLDB_TYPE_INTEGER,'10',null, null, null,null);
             // User id
             $tblmanagers->add_field('userid',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
             // Username
@@ -104,7 +104,7 @@ function xmldb_local_status_install() {
             // Id - Primary key
             $tblreporters->add_field('id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
             //key
-            $tblreporters->add_field('key',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
+            $tblreporters->add_field('keyid',XMLDB_TYPE_INTEGER,'10',null, null, null,null);
             // User id
             $tblreporters->add_field('userid',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
             // Username

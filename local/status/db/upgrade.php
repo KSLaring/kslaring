@@ -93,7 +93,7 @@ function xmldb_local_status_upgrade($oldversion) {
         }//if_reporters
     }//if_old_version
 
-    if ($oldversion < 2017092002) {
+    if ($oldversion < 2017092004) {
         // Table - reporters
         $table   = new xmldb_table('user_reporters');
 
@@ -103,7 +103,7 @@ function xmldb_local_status_upgrade($oldversion) {
             $dbman->add_field($table, $fdl);
         }//if_not_exists
         // New field - key
-        $fdl = new xmldb_field('key', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, 0,'id');
+        $fdl = new xmldb_field('keyid', XMLDB_TYPE_INTEGER, '10', null, null, null, null,'id');
         if (!$dbman->field_exists($table, $fdl)) {
             $dbman->add_field($table, $fdl);
         }//if_not_exists
@@ -117,7 +117,7 @@ function xmldb_local_status_upgrade($oldversion) {
             $dbman->add_field($table, $fdl);
         }//if_not_exists
         // New field - key
-        $fdl = new xmldb_field('key', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, 0,'id');
+        $fdl = new xmldb_field('keyid', XMLDB_TYPE_INTEGER, '10', null, null, null, null,'id');
         if (!$dbman->field_exists($table, $fdl)) {
             $dbman->add_field($table, $fdl);
         }//if_not_exists
