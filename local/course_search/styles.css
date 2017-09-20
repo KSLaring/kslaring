@@ -198,7 +198,8 @@
   display: none;
 }
 #page-course-search #course-cards .course-card-item .course-img {
-  background-color: #f9f9f9;
+  background: #f9f9f9 50% 50% no-repeat;
+  background-size: cover;
   border: 1px solid #e8e8e8;
   height: 8em;
   text-align: center;
