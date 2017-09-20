@@ -1099,6 +1099,15 @@ class WS_FELLESDATA {
                      ORDER by $field, u.username ";
 
             // Execute
+            // Log
+            global $CFG;
+            $dblog  =  "\n" . "\n";
+            $dblog .= $sql . "\n\n";
+            $dblog .= "ONE: " . $one . "\n\n";
+            $dblog .= "TWO: " . $two . "\n\n";
+            $dblog .= "THREE: " . $three . "\n\n";
+
+            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 foreach ($rdo as $instance) {
