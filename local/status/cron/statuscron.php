@@ -110,7 +110,7 @@ class STATUS_CRON {
             self::import_status($plugin,$dblog);
 
             // Syncronization
-            self::synchronization($plugin,$industry,$dblog);
+            //self::synchronization($plugin,$industry,$dblog);
 
             // Finish Log
             $dblog .= $time . ' (' . userdate(time(),'%d.%m.%Y %H:%M', 99, false) . ') - FINISH FELLESDATA STATUS CRON' . "\n\n";
@@ -275,7 +275,7 @@ class STATUS_CRON {
 
             STATUS::synchronize_managers_reporters_deleted(MANAGERS);
             STATUS::synchronize_managers_reporters_deleted(REPORTERS);
-            
+
             // Synchronization FS User Competence to Delete
             //self::sync_status_delete_competence($plugin,$dblog);
 
