@@ -266,9 +266,13 @@ class STATUS_CRON {
             
             // Synchronization FS Managers/Reporters to delete
             // Managers
-            self::sync_status_delete_managers_reporters($plugin,MANAGERS,$dblog);
+            self::sync_status_delete_managers_reporters($plugin,MANAGERS,1,$dblog);
+            self::sync_status_delete_managers_reporters($plugin,MANAGERS,2,$dblog);
+            self::sync_status_delete_managers_reporters($plugin,MANAGERS,3,$dblog);
             // Reporters
-            self::sync_status_delete_managers_reporters($plugin,REPORTERS,$dblog);
+            self::sync_status_delete_managers_reporters($plugin,REPORTERS,1,$dblog);
+            self::sync_status_delete_managers_reporters($plugin,REPORTERS,2,$dblog);
+            self::sync_status_delete_managers_reporters($plugin,REPORTERS,3,$dblog);
 
             // Synchronization FS Managers/Reporters
             self::sync_status_managers_reporters($plugin,$dblog);
@@ -877,7 +881,7 @@ class STATUS_CRON {
      * @creationDate    03/03/2017
      * @author          eFaktor     (fbv)
      */
-    private static function sync_status_delete_managers_reporters($plugin,$type,&$dblog) {
+    private static function sync_status_delete_managers_reporters($plugin,$type,$level,&$dblog) {
         /* Variables */
         $total       = null;
         $todeleted   = null;
@@ -891,11 +895,11 @@ class STATUS_CRON {
             $dblog .= ' START Synchronization STATUS delete managers/reporters. ' . "\n";
 
             // Get total to delete
-            $total = STATUS::total_managers_reporters_to_delete($type);
+            $total = STATUS::total_managers_reporters_to_delete($level,$type);
             if ($total) {
                 for ($i=0;$i<=$total;$i=$i+$limit) {
                     // Get to delete
-                    $todeleted = STATUS::managers_reporters_to_delete_ks($type,$start,$limit);
+                    $todeleted = STATUS::managers_reporters_to_delete_ks($level,$type,$start,$limit);
 
                     // Call service
                     $params = array();

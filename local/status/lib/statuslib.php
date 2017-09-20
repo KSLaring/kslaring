@@ -344,13 +344,16 @@ class STATUS {
      * @creationDate    03/03/2017
      * @author          eFaktor     (fbv)
      */
-    public static function total_managers_reporters_to_delete($type) {
+    public static function total_managers_reporters_to_delete($level,$type) {
         /* Variables */
         global $DB;
-        $table  = null;
-        $field  = null;
-        $sql    = null;
-        $params = null;
+        $table      = null;
+        $field      = null;
+        $sql        = null;
+        $sqllevel   = null;
+        $sqltotal   = null;
+        $sqlrest    = null;
+        $params     = null;
 
         try {
             //Search criteria
@@ -370,20 +373,41 @@ class STATUS {
             }//switch
 
             // SQL Instruction
-            $sql = " SELECT 		count(DISTINCT mr.id) as 'total'
-                     FROM			{user_managers}				mr
-                        LEFT JOIN	{fs_imp_managers_reporters}	fs ON  fs.FODSELSNR = mr.username 
-                                                                   AND fs.action 	= :action
-                                                                   AND fs.imported  = :imported
-                     WHERE  fs.id IS NULL ";
+            $sql = " SELECT       count(DISTINCT mr.id) as 'total'
+                     FROM		  {". $table . "} 		      mr ";
+            $sqlrest = " JOIN  	  {ksfs_company}		      fsk ON  fsk.kscompany = ks.companyid
+                        LEFT JOIN {fs_imp_managers_reporters} fs  ON  fs.FODSELSNR  = mr.username
+                                                                  AND fs.action 	  = :action
+                                                                  AND fs.imported   = :imported
+                                                                  AND fsk.fscompany = fs.org_enhet_id
+                     WHERE fs.id IS NULL ";
+
+            // For level one
+            switch ($level) {
+                case '1':
+                    $sqllevel = " JOIN  	  {ks_company}	    ks  ON  ks.companyid  = mr.levelone ";
+                    $sqltotal = $sql . $sqllevel . $sqlrest . " AND mr.leveltwo = 0 AND mr.levelthree = 0 ";
+
+                    break;
+                case '2':
+                    $sqllevel = " JOIN  	  {ks_company}		ks  ON  ks.companyid  = mr.leveltwo ";
+                    $sqltotal = $sql . $sqllevel . $sqlrest . " AND mr.levelthree = 0 ";
+
+                    break;
+                case '3':
+                    $sqllevel = " JOIN  	  {ks_company}		ks  ON  ks.companyid  = mr.levelthree ";
+                    $sqltotal = $sql . $sqllevel . $sqlrest;
+
+                    break;
+            }
 
             // Execute
-            $rdo = $DB->get_record_sql($sql,$params);
+            $rdo = $DB->get_record_sql($sqltotal,$params);
             if ($rdo) {
                 return $rdo->total;
             }else {
                 return null;
-            }//if_rdo
+            }
 
         }catch (Exception $ex) {
             throw $ex;
@@ -403,12 +427,15 @@ class STATUS {
      * @creationDate    03/03/2017
      * @author          eFaktor     (fbv)
      */
-    public static function managers_reporters_to_delete_ks($type,$start,$limit) {
+    public static function managers_reporters_to_delete_ks($level,$type,$start,$limit) {
         /* Variables */
         global $DB;
         $table      = null;
         $field      = null;
         $sql        = null;
+        $sqltotal   = null;
+        $sqllevel   = null;
+        $sqlrest    = null;
         $todelete   = null;
         $params     = null;
 
@@ -430,17 +457,38 @@ class STATUS {
             }//switch
 
             // SQL Instruction
-            $sql = " SELECT  DISTINCT 
+            $sql = " SELECT       DISTINCT 
                                   mr.id     as 'key',
                                   mr.userid as 'user'
-                     FROM		  {" . $table . "} 		        mr
-                        LEFT JOIN {fs_imp_managers_reporters}	fs	ON  fs.FODSELSNR = mr.username
-                                                                    AND fs.action 	 = :action
-                                                                    AND fs.imported  = :imported
-                     WHERE  fs.id IS NULL ";
-            
+                     FROM		  {". $table."} 		      mr ";
+            $sqlrest = " JOIN  	  {ksfs_company}		      fsk ON  fsk.kscompany = ks.companyid
+                        LEFT JOIN {fs_imp_managers_reporters} fs  ON  fs.FODSELSNR  = mr.username
+                                                                  AND fs.action 	  = :action
+                                                                  AND fs.imported   = :imported
+                                                                  AND fsk.fscompany = fs.org_enhet_id
+                     WHERE fs.id IS NULL ";
+
+            // For level one
+            switch ($level) {
+                case '1':
+                    $sqllevel = " JOIN  	  {ks_company}	    ks  ON  ks.companyid  = mr.levelone ";
+                    $sqltotal = $sql . $sqllevel . $sqlrest . " AND mr.leveltwo = 0 AND mr.levelthree = 0 ";
+
+                    break;
+                case '2':
+                    $sqllevel = " JOIN  	  {ks_company}		ks  ON  ks.companyid  = mr.leveltwo ";
+                    $sqltotal = $sql . $sqllevel . $sqlrest . " AND mr.levelthree = 0 ";
+
+                    break;
+                case '3':
+                    $sqllevel = " JOIN  	  {ks_company}		ks  ON  ks.companyid  = mr.levelthree ";
+                    $sqltotal = $sql . $sqllevel . $sqlrest;
+
+                    break;
+            }
+
             // Execute
-            $rdo = $DB->get_records_sql($sql,$params,$start,$limit);
+            $rdo = $DB->get_records_sql($sqltotal,$params,$start,$limit);
             if ($rdo) {
                 $todelete = json_encode($rdo);
             }//if_rdo
