@@ -31,7 +31,7 @@ class STATUS_CRON {
     /* PUBLIC  */
     /***********/
 
-    public static function cron_old($plugin) {
+    public static function cron($plugin) {
         /* Varibales */
         global $CFG;
         $dblog = null;
@@ -98,13 +98,13 @@ class STATUS_CRON {
             $industry = STATUS::get_industry_code($plugin->ks_muni);
 
             // Get competence from KS
-            //self::competence_data($plugin,$industry,$dblog);
+            self::competence_data($plugin,$industry,$dblog);
 
             // Get managers reporters from KS
             self::managers_reporters($plugin,$industry,$dblog);
 
             // Repair connections
-            //self::repair_connections($dblog);
+            self::repair_connections($dblog);
 
             // Import last status from fellesdata
             self::import_status($plugin,$dblog);
@@ -256,13 +256,13 @@ class STATUS_CRON {
             $dblog .= ' START Synchronization STATUS. ' . "\n";
 
             // Synchronization FS Users
-            //self::sync_status_users_accounts($plugin,$industry,$dblog);
+            self::sync_status_users_accounts($plugin,$industry,$dblog);
             
             // Synchronization FS Companies
-            //self::sync_status_fs_organizations($plugin,$dblog);
+            self::sync_status_fs_organizations($plugin,$dblog);
 
             // Synchronization FS Job roles
-            //self::sync_status_fs_jobroles($plugin,$dblog);
+            self::sync_status_fs_jobroles($plugin,$dblog);
             
             // Synchronization FS Managers/Reporters to delete
             // Managers
@@ -281,10 +281,10 @@ class STATUS_CRON {
             STATUS::synchronize_managers_reporters_deleted(REPORTERS);
 
             // Synchronization FS User Competence to Delete
-            //self::sync_status_delete_competence($plugin,$dblog);
+            self::sync_status_delete_competence($plugin,$dblog);
 
             // Synchronization FS User Competence
-            //self::sync_status_competence($plugin,$dblog);
+            self::sync_status_competence($plugin,$dblog);
 
             // Log
             $dblog .= ' FINISH Synchronization STATUS. ' . "\n";
@@ -394,19 +394,19 @@ class STATUS_CRON {
             $dblog .= ' START Import STATUS. ' . "\n";
 
             // Import FS Users
-            //self::import_status_users($plugin,$dblog);
+            self::import_status_users($plugin,$dblog);
 
             // Import FS Companies
-            //self::import_status_orgstructure($plugin,$dblog);
+            self::import_status_orgstructure($plugin,$dblog);
 
             // Import FS Job roles
-            //self::import_status_jobroles($plugin,$dblog);
+            self::import_status_jobroles($plugin,$dblog);
 
             // Import FS User Competence
             self::import_status_managers_reporters($plugin,$dblog);
 
             // Import FS User Competence JR
-            //self::import_status_user_competence($plugin,$dblog);
+            self::import_status_user_competence($plugin,$dblog);
 
             // Log
             $dblog .= ' FINISH Import STATUS. ' . "\n";
@@ -908,9 +908,7 @@ class STATUS_CRON {
                     $response = self::process_service($plugin,WS_CLEAN_MANAGERS_REPORTERS,array('managersreporters' => $params));
 
                     if ($response) {
-                        if ($response['error'] == '200') {
-                            STATUS::synchronize_managers_reporters_deleted($type);
-                        }else {
+                        if ($response['error'] != '200') {
                             // Log
                             $dblog .= "Error WS: " . $response['message'] . "\n" ."\n";
                         }//if_no_error
