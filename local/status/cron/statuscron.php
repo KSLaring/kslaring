@@ -101,16 +101,16 @@ class STATUS_CRON {
             //self::competence_data($plugin,$industry,$dblog);
 
             // Get managers reporters from KS
-            self::managers_reporters($plugin,$industry,$dblog);
+            //self::managers_reporters($plugin,$industry,$dblog);
 
             // Repair connections
             //self::repair_connections($dblog);
 
             // Import last status from fellesdata
-            self::import_status($plugin,$dblog);
+            //self::import_status($plugin,$dblog);
 
             // Syncronization
-            //self::synchronization($plugin,$industry,$dblog);
+            self::synchronization($plugin,$industry,$dblog);
 
             // Finish Log
             $dblog .= $time . ' (' . userdate(time(),'%d.%m.%Y %H:%M', 99, false) . ') - FINISH FELLESDATA STATUS CRON' . "\n\n";
@@ -256,13 +256,13 @@ class STATUS_CRON {
             $dblog .= ' START Synchronization STATUS. ' . "\n";
 
             // Synchronization FS Users
-            self::sync_status_users_accounts($plugin,$industry,$dblog);
+            //self::sync_status_users_accounts($plugin,$industry,$dblog);
             
             // Synchronization FS Companies
-            self::sync_status_fs_organizations($plugin,$dblog);
+            //self::sync_status_fs_organizations($plugin,$dblog);
 
             // Synchronization FS Job roles
-            self::sync_status_fs_jobroles($plugin,$dblog);
+            //self::sync_status_fs_jobroles($plugin,$dblog);
             
             // Synchronization FS Managers/Reporters to delete
             // Managers
@@ -274,10 +274,10 @@ class STATUS_CRON {
             self::sync_status_managers_reporters($plugin,$dblog);
 
             // Synchronization FS User Competence to Delete
-            self::sync_status_delete_competence($plugin,$dblog);
+            //self::sync_status_delete_competence($plugin,$dblog);
 
             // Synchronization FS User Competence
-            self::sync_status_competence($plugin,$dblog);
+            //self::sync_status_competence($plugin,$dblog);
 
             // Log
             $dblog .= ' FINISH Synchronization STATUS. ' . "\n";
