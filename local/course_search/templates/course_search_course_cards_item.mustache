@@ -2,9 +2,7 @@
     data-sortdate="{{{sortdate}}}" data-availnumber="{{{availnumber}}}" data-deadline="{{{deadline}}}"
     data-municipality="{{{municipality}}}" data-location="{{{location}}}">
     <a href="{{{link}}}">
-        <div class="course-img">
-            {{#img}}<img src="{{{.}}}" alt="" class="img-responsive">{{/img}}
-        </div>
+        <div class="course-img"{{#img}} style="background-image: url('{{{.}}}');"{{/img}}>&nbsp;</div>
         <div class="course-desc">
             <h4 class="course-title">{{{name}}}</h4>
             <div class="course-summary">{{{summary}}}</div>
