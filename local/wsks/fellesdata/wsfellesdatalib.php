@@ -1081,7 +1081,7 @@ class WS_FELLESDATA {
                               IF(re.leveltwo,re.leveltwo,0)     as 'leveltwo',
                               IF(re.levelthree,re.levelthree,0) as 'levelthree'
                      FROM	    {" . $table . "}	re
-                         JOIN	{user}							u	ON  u.id  			= re.reporterid
+                         JOIN	{user}							u	ON  u.id  			= $field
                          JOIN	{report_gen_company_relation}	cr  ON	cr.parentid 	= re.levelzero
                          JOIN	{report_gen_companydata}		co	ON  co.id 			= cr.companyid 
                                                                     AND co.industrycode = :industry
@@ -1099,15 +1099,6 @@ class WS_FELLESDATA {
                      ORDER by $field, u.username ";
 
             // Execute
-            // Log
-            global $CFG;
-            $dblog  =  "\n" . "\n";
-            $dblog .= $sql . "\n\n";
-            $dblog .= "ONE: " . $one . "\n\n";
-            $dblog .= "TWO: " . $two . "\n\n";
-            $dblog .= "THREE: " . $three . "\n\n";
-
-            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 foreach ($rdo as $instance) {
