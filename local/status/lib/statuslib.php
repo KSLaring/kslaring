@@ -456,14 +456,12 @@ class STATUS {
      * Synchronization of managers/reporters that have been deleted
      *
      * @param           $type
-     * @param           $deleted
-     *
      * @throws          Exception
      *
      * @creationDate    03/03/2017
      * @author          eFaktor     (fbv)
      */
-    public static function synchronize_managers_reporters_deleted($type,$deleted) {
+    public static function synchronize_managers_reporters_deleted($type) {
         /* Variables */
         global $DB;
         $table      = null;
@@ -484,8 +482,7 @@ class STATUS {
 
             // SQL Instruction
             $sql = " DELETE 
-                     FROM {" . $table . "} 
-                     WHERE id IN ($deleted) ";
+                     FROM {" . $table . "}  ";
 
             // Execute
             $DB->execute($sql);

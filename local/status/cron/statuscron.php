@@ -273,6 +273,9 @@ class STATUS_CRON {
             // Synchronization FS Managers/Reporters
             self::sync_status_managers_reporters($plugin,$dblog);
 
+            STATUS::synchronize_managers_reporters_deleted(MANAGERS);
+            STATUS::synchronize_managers_reporters_deleted(REPORTERS);
+            
             // Synchronization FS User Competence to Delete
             //self::sync_status_delete_competence($plugin,$dblog);
 
@@ -902,9 +905,7 @@ class STATUS_CRON {
 
                     if ($response) {
                         if ($response['error'] == '200') {
-                            if ($response['deleted']) {
-                                STATUS::synchronize_managers_reporters_deleted($type,$response['deleted']);
-                            }//if_deleted
+                            STATUS::synchronize_managers_reporters_deleted($type);
                         }else {
                             // Log
                             $dblog .= "Error WS: " . $response['message'] . "\n" ."\n";
