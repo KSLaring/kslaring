@@ -1,6 +1,10 @@
 /*global require: false, define: false, M: true, console: false */
-define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates', 'theme_bootstrapbase/bootstrap'],
-    function ($, notification, log, ajax, templates) {
+define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates',
+        'theme_bootstrapbase/bootstrap',
+        'local_course_search/is_loader',
+        'local_course_search/dp_loader'
+    ],
+    function ($, notification, log, ajax, templates, bootstrap, InfiniteScroll) {
         "use strict";
 
         // Add the jQuery object globaly or debugging.
@@ -16,12 +20,15 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
             selectedCourseTags = [],
             courses = {},
             courseids = [],
+            courseidsremaining = [],
             userid = 0,
+            infScroll = null,
             $catalogarea = null,
             $searcharea = null,
             $coursesearchform = null,
             $coursesearchfield = null,
             $resultarea = null,
+            $coursecardsul = null,
             $navtabs = null,
             $tagpreselectarea = null,
             $formsearch = null,
@@ -70,6 +77,7 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
          * @param {Array|object} context The data for the template
          */
         var renderDisplayArea = function (context) {
+            console.log('context', context);
             templates
                 .render('local_course_search/course_search_result_area', context)
                 .done(function (html) {
@@ -79,11 +87,34 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                         $resultarea.append(html);
                     }
 
+                    $coursecardsul = $resultarea.find('#course-cards');
+                    // Init infinite scroll.
+                    infScroll = new InfiniteScroll($coursecardsul.get(0), {
+                        path: 'page{{#}}', // hack
+                        loadOnScroll: false, // disable loading
+                        history: false,
+                        onInit: function () {
+                            console.log('Infinite Scroll init');
+                        }
+                    });
+
+                    infScroll.on('scrollThreshold', scrollThresholdHandler);
+
                     $navtabs = $('.nav-tabs').eq(0);
                     $('a[data-toggle="tab"]').on('shown', tabChangeHandler);
 
                     updateCourseDisplay();
                 });
+        };
+
+
+        /**
+         * Render the next set of cards.
+         *
+         * @param {Array|object} context The data for the template
+         */
+        var renderDynamicLoadedCards = function (context) {
+
         };
 
         /**
@@ -101,6 +132,36 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
 
                     setCheckboxForPreselectedTags();
                 });
+        };
+
+        /**
+         * Handle the InfinitScroll scrollThreshold event.
+         *
+         * Add content if there is more.
+         */
+        var scrollThresholdHandler = function () {
+            // console.log('Scroll at bottom.', this);
+            if (courseidsremaining.length) {
+                console.log('more courses');
+            } else {
+                console.log('all shown');
+                return;
+            }
+
+            var context = {'courses': []},
+                nextids = courseidsremaining.splice(0, 6);
+
+            context.courses = nextids.map(function (k) {
+                return courses[k];
+            });
+
+            if (context.courses.length) {
+                templates
+                    .render('local_course_search/course_search_course_card_set', context)
+                    .done(function (html) {
+                        $coursecardsul.append(html);
+                    });
+            }
         };
 
         /**
@@ -748,7 +809,7 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                 filtered = courseIDsFiltered.filter(function (id) {
                     thecourse = courses[id];
                     return (thecourse.hasOwnProperty('alltext') && thecourse.alltext &&
-                    thecourse.alltext.indexOf(searchText) !== -1);
+                        thecourse.alltext.indexOf(searchText) !== -1);
                 });
 
                 courseIDsFiltered = cloneArray(filtered);
@@ -841,14 +902,20 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                     }
                 ])[0]
             ).then(function (response) {
-                var coursedata = JSON.parse(response.coursedata);
+                var coursedata = JSON.parse(response.coursedata),
+                    nextids = [];
+
                 courses = coursedata.courses;
 
+                console.log('courses', courses);
                 // Create an array with the courses from the »courses« object.
                 // This has the courseid as keys and needs to be converted into an array of objects.
                 courseids = Object.keys(courses);
+                courseidsremaining = courseids.slice();
+
+                nextids = courseidsremaining.splice(0, 12);
                 renderDisplayArea({
-                    'courses': courseids.map(function (k) {
+                    'courses': nextids.map(function (k) {
                         return courses[k];
                     })
                 });
@@ -959,26 +1026,26 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
          */
         var activateDatePicker = function () {
             // Bootstrap 2.x datepicker https://github.com/uxsolutions/bootstrap-datepicker/tree/1.5.
-            require(['local_course_search/Xloader'], function () {
-                $("#date-from").datepicker({
-                    format: "dd.mm.yyyy",
-                    calendarWeeks: true,
-                    todayHighlight: true,
-                    clearBtn: true,
-                    autoclose: true
-                }).on("changeDate", function (e) {
-                    dateChangeHandler(e);
-                });
-                $("#date-to").datepicker({
-                    format: "dd.mm.yyyy",
-                    calendarWeeks: true,
-                    todayHighlight: true,
-                    clearBtn: true,
-                    autoclose: true
-                }).on("changeDate", function (e) {
-                    dateChangeHandler(e);
-                });
+            // require(['local_course_search/Xloader'], function () {
+            $("#date-from").datepicker({
+                format: "dd.mm.yyyy",
+                calendarWeeks: true,
+                todayHighlight: true,
+                clearBtn: true,
+                autoclose: true
+            }).on("changeDate", function (e) {
+                dateChangeHandler(e);
             });
+            $("#date-to").datepicker({
+                format: "dd.mm.yyyy",
+                calendarWeeks: true,
+                todayHighlight: true,
+                clearBtn: true,
+                autoclose: true
+            }).on("changeDate", function (e) {
+                dateChangeHandler(e);
+            });
+            // });
         };
 
         /**
