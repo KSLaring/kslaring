@@ -60,6 +60,8 @@ class local_friadmin_coursedetail_linklist extends local_friadmin_widget impleme
      * Add button for 'Manual enrolments'
      */
     protected function create_linklist($courseid) {
+        global $DB;
+
         /* Variables    */
         $strback       = null;
         $urlback       = null;
@@ -91,6 +93,8 @@ class local_friadmin_coursedetail_linklist extends local_friadmin_widget impleme
         $list4         = null;
 
         try {
+            // Get the waitinglist instance id.
+            $waitlistinstid = $DB->get_field('enrol', 'id', array('courseid' => $courseid, 'enrol' => 'waitinglist'));
             /* Set up variables */
             $strback               = get_string('coursedetail_back', 'local_friadmin');
             $strgo                 = get_string('coursedetail_go', 'local_friadmin');
@@ -116,7 +120,13 @@ class local_friadmin_coursedetail_linklist extends local_friadmin_widget impleme
             $urlconfirmed          = new moodle_url('/enrol/waitinglist/manageconfirmed.php', array('id' => $courseid));
             $urlwaitlist           = new moodle_url('/enrol/waitinglist/managequeue.php', array('id' => $courseid));
             $urlemail              = '#';
-            $urlmanual             = new moodle_url('/enrol/waitinglist/managemanual.php', array('co' => $courseid));
+            $urlmanual             = "#";
+            if ($waitlistinstid) {
+                $urlmanual = new moodle_url('/enrol/waitinglist/managemanual.php', array('id' => $waitlistinstid,
+                    'co' => $courseid));
+            } else {
+                $urlmanual = new moodle_url('/enrol/users.php', array('id' => $courseid));
+            }
             $urlduplicate          = new moodle_url('/local/friadmin/duplicatecourse.php', array('id' => $courseid));
 
             // Check if the course has completion criteria set.
