@@ -91,6 +91,7 @@ class cron_task extends \core\task\scheduled_task {
             $alltext = $this->course_search_alltext($row);
             $indexrecord = (object)array(
                 'course' => $row->id,
+                'fullname' => $row->fullname,
                 'alltext' => $alltext,
                 'json' => $courses->get_course_json_for_cron($row, $alltext, $sortcounter),
                 'timemodified' => time(),

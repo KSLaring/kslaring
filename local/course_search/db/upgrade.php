@@ -72,5 +72,48 @@ function xmldb_local_course_search_upgrade($oldversion) {
         upgrade_plugin_savepoint(true, 2017091900, 'local', 'course_search');
     }
 
+    if ($oldversion < 2017092400) {
+
+        // Define field json to be added to local_course_search.
+        $table = new xmldb_table('local_course_search');
+
+        $field = new xmldb_field('fullname', XMLDB_TYPE_CHAR, '254', null, null, null,
+            null, 'course');
+        // Conditionally launch add field fullname.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        $field = new xmldb_field('cards', XMLDB_TYPE_TEXT, null, null, null, null,
+            null, 'json');
+        // Conditionally launch add field cards.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        $field = new xmldb_field('list', XMLDB_TYPE_TEXT, null, null, null, null,
+            null, 'cards');
+        // Conditionally launch add field list.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        $field = new xmldb_field('tags', XMLDB_TYPE_TEXT, null, null, null, null,
+            null, 'list');
+        // Conditionally launch add field tags.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        $index = new xmldb_index('fullname', XMLDB_INDEX_NOTUNIQUE, array('fullname'));
+        // Conditionally launch add index fullname.
+        if (!$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
+
+        // Course_search savepoint reached.
+        upgrade_plugin_savepoint(true, 2017092400, 'local', 'course_search');
+    }
+
     return true;
 }

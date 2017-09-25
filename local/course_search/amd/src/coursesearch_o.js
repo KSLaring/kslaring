@@ -1,4 +1,4 @@
-/*global define: false, M: true, console: false */
+/*global require: false, define: false, M: true, console: false */
 define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates',
         'theme_bootstrapbase/bootstrap',
         'local_course_search/is_loader',
@@ -20,26 +20,15 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
             selectedCourseTags = [],
             courses = {},
             courseids = [],
-            cardsfirst = 12,
-            cardsset = 6,
-            listfirst = 16,
-            listset = 8,
-            cardsrendered = false,
-            listrendered = false,
-            cardcourseidsremaining = [],
-            listcourseidsremaining = [],
+            courseidsremaining = [],
             userid = 0,
-            cardsInfScroll = null,
-            listInfScroll = null,
+            infScroll = null,
             $catalogarea = null,
             $searcharea = null,
             $coursesearchform = null,
             $coursesearchfield = null,
             $resultarea = null,
-            $cardsarea = null,
-            $listarea = null,
             $coursecardsul = null,
-            $courselisttable = null,
             $navtabs = null,
             $tagpreselectarea = null,
             $formsearch = null,
@@ -88,43 +77,28 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
          * @param {Array|object} context The data for the template
          */
         var renderDisplayArea = function (context) {
+            console.log('context', context);
             templates
-                .render('local_course_search/course_search_result_area', {})
+                .render('local_course_search/course_search_result_area', context)
                 .done(function (html) {
-                    $resultarea.html(html);
-                    $cardsarea = $resultarea.find('#tabcards');
-                    $listarea = $resultarea.find('#tablist');
-
-                    renderCardsArea(context);
-                });
-        };
-
-        /**
-         * Render the cards area with a template with the given data.
-         *
-         * @param {Array|object} context The data for the template
-         */
-        var renderCardsArea = function (context) {
-            console.log('cards context', context);
-            templates
-                .render('local_course_search/course_search_course_cards', context)
-                .done(function (html) {
-                    $cardsarea.html(html);
+                    if (context.hasOwnProperty('courses') && context.courses.length) {
+                        $resultarea.html(html);
+                    } else {
+                        $resultarea.append(html);
+                    }
 
                     $coursecardsul = $resultarea.find('#course-cards');
-                    cardsrendered = true;
-
                     // Init infinite scroll.
-                    cardsInfScroll = new InfiniteScroll($coursecardsul.get(0), {
+                    infScroll = new InfiniteScroll($coursecardsul.get(0), {
                         path: 'page{{#}}', // hack
                         loadOnScroll: false, // disable loading
                         history: false,
                         onInit: function () {
-                            console.log('cardsInfScroll init');
+                            console.log('Infinite Scroll init');
                         }
                     });
 
-                    cardsScrollEventHandlerOn(true);
+                    infScroll.on('scrollThreshold', scrollThresholdHandler);
 
                     $navtabs = $('.nav-tabs').eq(0);
                     $('a[data-toggle="tab"]').on('shown', tabChangeHandler);
@@ -133,70 +107,6 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                 });
         };
 
-        /**
-         * Render the list area with a template with the given data.
-         *
-         * @param {Array|object} context The data for the template
-         */
-        var renderListArea = function (context) {
-            console.log('list context', context);
-            templates
-                .render('local_course_search/course_search_course_list', context)
-                .done(function (html) {
-                    $listarea.html(html);
-
-                    $courselisttable = $resultarea.find('#course-list');
-                    listrendered = true;
-
-                    // Init infinite scroll.
-                    listInfScroll = new InfiniteScroll($courselisttable.get(0), {
-                        path: 'page{{#}}', // hack
-                        loadOnScroll: false, // disable loading
-                        history: false,
-                        onInit: function () {
-                            console.log('listInfScroll init');
-                        }
-                    });
-
-                    listScrollEventHandlerOn(true);
-
-                    updateCourseDisplay();
-                });
-        };
-
-        /**
-         * Turn the card scroll event handler on/off.
-         *
-         * param {bool} state The desired state
-         */
-        var cardsScrollEventHandlerOn = function (state) {
-            if (!cardsInfScroll) {
-                return;
-            }
-
-            if (state) {
-                cardsInfScroll.on('scrollThreshold', cardsScrollThresholdHandler);
-            } else {
-                cardsInfScroll.off('scrollThreshold', cardsScrollThresholdHandler);
-            }
-        };
-
-        /**
-         * Turn the list scroll event handler on/off.
-         *
-         * param {bool} state The desired state
-         */
-        var listScrollEventHandlerOn = function (state) {
-            if (!listInfScroll) {
-                return;
-            }
-
-            if (state) {
-                listInfScroll.on('scrollThreshold', listScrollThresholdHandler);
-            } else {
-                listInfScroll.off('scrollThreshold', listScrollThresholdHandler);
-            }
-        };
 
         /**
          * Render the next set of cards.
@@ -229,17 +139,17 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
          *
          * Add content if there is more.
          */
-        var cardsScrollThresholdHandler = function () {
+        var scrollThresholdHandler = function () {
             // console.log('Scroll at bottom.', this);
-            if (cardcourseidsremaining.length) {
-                console.log('card more courses');
+            if (courseidsremaining.length) {
+                console.log('more courses');
             } else {
-                console.log('card all shown');
+                console.log('all shown');
                 return;
             }
 
             var context = {'courses': []},
-                nextids = cardcourseidsremaining.splice(0, cardsset);
+                nextids = courseidsremaining.splice(0, 6);
 
             context.courses = nextids.map(function (k) {
                 return courses[k];
@@ -250,36 +160,6 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                     .render('local_course_search/course_search_course_card_set', context)
                     .done(function (html) {
                         $coursecardsul.append(html);
-                    });
-            }
-        };
-
-        /**
-         * Handle the InfinitScroll scrollThreshold event.
-         *
-         * Add content if there is more.
-         */
-        var listScrollThresholdHandler = function () {
-            // console.log('Scroll at bottom.', this);
-            if (listcourseidsremaining.length) {
-                console.log('list more courses');
-            } else {
-                console.log('list all shown');
-                return;
-            }
-
-            var context = {'courses': []},
-                nextids = listcourseidsremaining.splice(0, listset);
-
-            context.courses = nextids.map(function (k) {
-                return courses[k];
-            });
-
-            if (context.courses.length) {
-                templates
-                    .render('local_course_search/course_search_course_list_set', context)
-                    .done(function (html) {
-                        $courselisttable.children('tbody').append(html);
                     });
             }
         };
@@ -379,21 +259,8 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
 
             if (target === '#tabcards') {
                 $showtagscheckbox.addClass('hidden');
-                listScrollEventHandlerOn(false);
-                cardsScrollEventHandlerOn(true);
             } else if (target === '#tablist') {
                 $showtagscheckbox.removeClass('hidden');
-                cardsScrollEventHandlerOn(false);
-                listScrollEventHandlerOn(true);
-
-                if (!listrendered) {
-                    var nextids = listcourseidsremaining.splice(0, listfirst);
-                    renderListArea({
-                        'courses': nextids.map(function (k) {
-                            return courses[k];
-                        })
-                    });
-                }
             }
         };
 
@@ -1043,13 +910,12 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                 // Create an array with the courses from the »courses« object.
                 // This has the courseid as keys and needs to be converted into an array of objects.
                 courseids = Object.keys(courses);
-                cardcourseidsremaining = courseids.slice();
-                listcourseidsremaining = courseids.slice();
+                courseidsremaining = courseids.slice();
 
                 // console.log('courses', courses);
-                // console.log('courseids', courseids.slice());
+                console.log('courseids', courseids.slice());
 
-                nextids = cardcourseidsremaining.splice(0, cardsfirst);
+                nextids = courseidsremaining.splice(0, 12);
                 renderDisplayArea({
                     'courses': nextids.map(function (k) {
                         return courses[k];
