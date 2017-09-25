@@ -1577,7 +1577,7 @@ class CompetenceManager {
 
             // SQL Instruction
             $sql = " SELECT  re.levelzero AS 'levelzero',
-                             GROUP_CONCAT(DISTINCT cr.companyid	 	ORDER BY cr.companyid ASC SEPARATOR ',')     AS 'levelone`',
+                             GROUP_CONCAT(DISTINCT cr.companyid	 	ORDER BY cr.companyid ASC SEPARATOR ',')     AS 'levelone',
                              GROUP_CONCAT(DISTINCT cr_two.companyid ORDER BY cr_two.companyid ASC SEPARATOR ',') AS 'leveltwo',
                              GROUP_CONCAT(DISTINCT cr_tre.companyid ORDER BY cr_tre.companyid ASC SEPARATOR ',') AS 'levelthree',
                              re.hierarchylevel as 'level'
