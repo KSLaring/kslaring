@@ -231,7 +231,7 @@ class manager_course_report_level_form extends moodleform {
             // Get right companies based on the report level access
             $aux = array();
             foreach ($levelZero as $zero) {
-                if ($myHierarchy->competence[$zero]->level == $report_level) {
+                if ($myHierarchy->competence[$zero]->level <= $report_level) {
                     $aux[$zero] = $zero;
                }
             }//for_each
@@ -252,7 +252,7 @@ class manager_course_report_level_form extends moodleform {
             }//if_onlyOne
 
             if ($parentZero) {
-                if ($myHierarchy->competence[$parentZero]->level == $report_level) {
+                if ($myHierarchy->competence[$parentZero]->level <= $report_level) {
                     $levelOne   = $myHierarchy->competence[$parentZero]->levelone;
                     $levelTwo   = $myHierarchy->competence[$parentZero]->leveltwo;
                     $levelThree = $myHierarchy->competence[$parentZero]->levelthree;
@@ -272,9 +272,9 @@ class manager_course_report_level_form extends moodleform {
 
         switch ($level) {
             case 0:
-                if ($levelZero) {
+                //if ($levelZero) {
                     $options = CompetenceManager::GetCompanies_LevelList($level,null,$levelZero);
-                }
+                //}
 
                 break;
             case 1:
