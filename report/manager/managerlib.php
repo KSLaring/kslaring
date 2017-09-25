@@ -1594,6 +1594,7 @@ class CompetenceManager {
                      ORDER BY $field ";
 
             // Execute
+            echo $sql . "</br>";
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 foreach ($rdo as $instance) {
@@ -1698,6 +1699,7 @@ class CompetenceManager {
                      ORDER BY $field ";
 
             // Execute
+            echo "SQL 1: " . $sql . "</br>";
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 foreach ($rdo as $instance) {
