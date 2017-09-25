@@ -232,15 +232,12 @@ class manager_course_report_level_form extends moodleform {
             $aux = array();
             foreach ($levelZero as $zero) {
                 if ($myHierarchy->competence[$zero]->level == $report_level) {
-                    echo "ZERO : " . $zero . " REPORT LEVEL : " .  $report_level . " LEVEL : " . $level . "</br>";
                     $aux[$zero] = $zero;
                }
             }//for_each
             if ($aux) {
-                echo "1" . "</br>";
                 $levelZero = implode(',',$aux);
             }else {
-                echo "2" . "</br>";
                 $levelZero = implode(',',$levelZero);
             }//if_aux
 
@@ -275,7 +272,9 @@ class manager_course_report_level_form extends moodleform {
 
         switch ($level) {
             case 0:
-                $options = CompetenceManager::GetCompanies_LevelList($level,null,$levelZero);
+                if ($levelZero) {
+                    $options = CompetenceManager::GetCompanies_LevelList($level,null,$levelZero);
+                }
 
                 break;
             case 1:

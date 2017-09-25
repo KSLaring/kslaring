@@ -1583,18 +1583,17 @@ class CompetenceManager {
                              re.hierarchylevel as 'level'
                      FROM	 {". $table ."} 	            re
 						-- Level One
-                        JOIN {report_gen_company_relation} 	cr  	ON  cr.parentid 	= re.levelzero
+                        LEFT JOIN {report_gen_company_relation} 	cr  	ON  cr.parentid 	= re.levelzero
 						-- Level Two
-                        JOIN {report_gen_company_relation} 	cr_two  ON  cr_two.parentid =  cr.companyid
+                        LEFT JOIN {report_gen_company_relation} 	cr_two  ON  cr_two.parentid =  cr.companyid
 						-- Level Three
-                        JOIN {report_gen_company_relation} 	cr_tre 	ON  cr_tre.parentid = cr_two.companyid
+                        LEFT JOIN {report_gen_company_relation} 	cr_tre 	ON  cr_tre.parentid = cr_two.companyid
                      WHERE	$field 		= :reporter
                         AND re.hierarchylevel  	= 0
                      GROUP BY re.levelzero
                      ORDER BY $field ";
 
             // Execute
-            echo $sql . "</br>";
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 foreach ($rdo as $instance) {
@@ -1689,9 +1688,9 @@ class CompetenceManager {
                               re.hierarchylevel as 'level'
                      FROM	  {". $table ."}                  re
                         -- Level two
-                        JOIN  {report_gen_company_relation}   cr_two  ON  cr_two.parentid = re.levelone
+                        LEFT JOIN  {report_gen_company_relation}   cr_two  ON  cr_two.parentid = re.levelone
                         -- Level three
-                        JOIN  {report_gen_company_relation}   cr_tre  ON  cr_tre.parentid = cr_two.companyid
+                        LEFT JOIN  {report_gen_company_relation}   cr_tre  ON  cr_tre.parentid = cr_two.companyid
                      WHERE	  $field 	= :reporter
                         AND   re.levelzero NOT IN ($notin)
                         AND   re.hierarchylevel = :one
@@ -1699,7 +1698,6 @@ class CompetenceManager {
                      ORDER BY $field ";
 
             // Execute
-            echo "SQL 1: " . $sql . "</br>";
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 foreach ($rdo as $instance) {
@@ -1802,7 +1800,7 @@ class CompetenceManager {
                               re.hierarchylevel as 'level'
                      FROM	  {". $table ."}                  re
                         -- Level three
-                        JOIN  {report_gen_company_relation}   cr_tre  ON  cr_tre.parentid = re.leveltwo
+                        LEFT JOIN  {report_gen_company_relation}   cr_tre  ON  cr_tre.parentid = re.leveltwo
                      WHERE	  $field 	= :reporter
                         AND   re.levelzero NOT IN ($notin)
                         AND   re.levelone  NOT IN ($notone)
