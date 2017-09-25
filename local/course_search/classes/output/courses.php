@@ -96,7 +96,7 @@ class courses implements \renderable, \templatable {
     }
 
     public function get_course_json_for_cron($course, $alltext, $sortcounter) {
-        return '"' . $course->id . '": ' . json_encode($this->get_one_course($course, $alltext, $sortcounter));
+        return '"c' . $course->id . '": ' . json_encode($this->get_one_course($course, $alltext, $sortcounter));
     }
 
     /**
@@ -135,11 +135,18 @@ class courses implements \renderable, \templatable {
             }
         }
 
+
+        $collatedanish = '';
+        if (current_language() === "no" || current_language() === "da" || current_language() === "sv") {
+            $collatedanish = 'collate utf8_danish_ci';
+        }
+
         list($insql, $inparams) = $DB->get_in_or_equal($courseids);
         $sql = "SELECT 
                  course, json
             FROM {local_course_search}
-            WHERE course " . $insql;
+            WHERE course $insql
+            ORDER BY fullname $collatedanish ASC";
 
         if ($result = $DB->get_records_sql($sql, $inparams)) {
             foreach ($result as $row) {
