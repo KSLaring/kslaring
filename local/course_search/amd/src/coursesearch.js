@@ -15,15 +15,12 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
         var sortbystate = 'name',
             sortascstate = true,
             showtagliststate = false,
-            preselectedTagsAddedState = false,
-            searcharearenderedstate = false,
-            selectedCourseTags = [],
             courses = {},
             courseids = [],
             cardsfirst = 12,
             cardsset = 6,
-            listfirst = 16,
-            listset = 8,
+            listfirst = 30,
+            listset = 15,
             cardsrendered = false,
             listrendered = false,
             cardcourseidsremaining = [],
@@ -235,6 +232,7 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                 console.log('card more courses');
             } else {
                 console.log('card all shown');
+                cardsScrollEventHandlerOn(false);
                 return;
             }
 
@@ -265,6 +263,7 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                 console.log('list more courses');
             } else {
                 console.log('list all shown');
+                listScrollEventHandlerOn(false);
                 return;
             }
 
@@ -905,7 +904,7 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
             // If no search criterion is set show all courses.
             if (!Object.keys(selectedCourseTagsGrouped).length && '' === searchText &&
                 fromtoDates.from === null && fromtoDates.to === null) {
-                showHideCourses(courseIDsFiltered);
+                showFilteredCourses(courseIDsFiltered);
                 return;
             }
 
@@ -983,7 +982,55 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                 courseIDsFiltered = [-1];
             }
 
-            showHideCourses(courseIDsFiltered);
+            showFilteredCourses(courseIDsFiltered);
+        };
+
+        /**
+         * Set the visibility of the courses in the cards and list view.
+         *
+         * @param {Array} courseIDsToShow The list of course ids to show
+         */
+        var showFilteredCourses = function (courseIDsToShow) {
+            var context,
+                nextids;
+
+            if ($cardsarea.hasClass('active')) {
+                cardcourseidsremaining = cloneArray(courseIDsToShow);
+
+                context = {'courses': []};
+                nextids = cardcourseidsremaining.splice(0, cardsfirst);
+
+                context.courses = nextids.map(function (k) {
+                    return courses[k];
+                });
+
+                if (context.courses.length) {
+                    templates
+                        .render('local_course_search/course_search_course_card_set', context)
+                        .done(function (html) {
+                            $coursecardsul.html(html);
+                            cardsScrollEventHandlerOn(true);
+                        });
+                }
+            } else if ($listarea.hasClass('active')) {
+                listcourseidsremaining = cloneArray(courseIDsToShow);
+
+                context = {'courses': []};
+                nextids = listcourseidsremaining.splice(0, listfirst);
+
+                context.courses = nextids.map(function (k) {
+                    return courses[k];
+                });
+
+                if (context.courses.length) {
+                    templates
+                        .render('local_course_search/course_search_course_list_set', context)
+                        .done(function (html) {
+                            $courselisttable.children('tbody').html(html);
+                            listScrollEventHandlerOn(true);
+                        });
+                }
+            }
         };
 
         /**
@@ -1046,8 +1093,8 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                 cardcourseidsremaining = courseids.slice();
                 listcourseidsremaining = courseids.slice();
 
-                // console.log('courses', courses);
-                // console.log('courseids', courseids.slice());
+                console.log('courses', courses);
+                console.log('courseids', courseids.slice());
 
                 nextids = cardcourseidsremaining.splice(0, cardsfirst);
                 renderDisplayArea({
