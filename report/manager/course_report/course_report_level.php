@@ -37,7 +37,7 @@ require_once( '../managerlib.php');
 require_once('course_report_level_form.php');
 
 // Params
-global $PAGE,$CFG,$SESSION,$SITE,$USER;
+global $PAGE,$CFG,$SESSION,$SITE,$USER,$OUTPUT;
 $report_level           = optional_param('rpt',0,PARAM_INT);
 $company_id             = optional_param('co',0,PARAM_INT);
 $parentTwo              = optional_param('lt',0,PARAM_INT);
@@ -118,7 +118,7 @@ if (empty($CFG->loginhttps)) {
 $PAGE->verify_https_required();
 
 // My hierarchy
-$myHierarchy = CompetenceManager::get_MyHierarchyLevel($USER->id,$site_context,$IsReporter,$report_level);
+$myHierarchy = CompetenceManager::get_MyHierarchyLevel($USER->id,$site_context,$IsReporter,$report_level);;
 
 // Show form
 $SESSION->onlyCompany = array();

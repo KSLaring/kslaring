@@ -34,6 +34,8 @@
  *
  */
 
+global $CFG,$SESSION,$PAGE,$USER,$SITE,$OUTPUT;
+
 require_once('../../../config.php');
 require_once( '../managerlib.php');
 require_once('companyrptlib.php');
@@ -85,6 +87,7 @@ $PAGE->set_heading($SITE->fullname);
 $PAGE->navbar->add(get_string('report_manager','local_tracker_manager'),$return_url);
 $PAGE->navbar->add(get_string('company_report_link','report_manager'),$url);
 
+/**
 // My hierarchy
 $my_hierarchy = CompetenceManager::get_MyHierarchyLevel($USER->id,$site_context,$IsReporter,0);
 
@@ -213,10 +216,16 @@ if ($form->is_cancelled()) {
 
     $SESSION->bulk_users = array();
 }//if_else
-
+**/
 // Header
 echo $OUTPUT->header();
 
+// Print tabs at the top
+$current_tab = 'manager_reports';
+$show_roles = 1;
+require('../tabs.php');
+
+/**
 if (!empty($out)) {
     // Print report
     echo $out;
@@ -251,6 +260,11 @@ if (!empty($out)) {
     // Initialise Organization Structure
     CompetenceManager::Init_Organization_Structure(COMPANY_STRUCTURE_LEVEL,null,null,0,null,false);
 }//if_else
+**/
 
+echo $OUTPUT->heading(get_string('company_report_link','report_manager'));
+echo get_string('underconstruction','report_manager');
+echo "</br></br></br>";
+echo "<a href='" . $return_url ."' class='button_reports'>" . get_string('back') . "</a>";
 // Footer
 echo $OUTPUT->footer();
