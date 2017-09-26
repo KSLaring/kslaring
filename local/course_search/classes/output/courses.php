@@ -135,6 +135,10 @@ class courses implements \renderable, \templatable {
             }
         }
 
+        // If no courses preselected return empty collection.
+        if (count($courseids) === 0) {
+            return $this->coursecollection;
+        }
 
         $collatedanish = '';
         if (current_language() === "no" || current_language() === "da" || current_language() === "sv") {
