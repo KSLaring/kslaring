@@ -84,6 +84,9 @@
   background: #0e7b9e;
   color: #fff;
 }
+#page-course-search #display-area #actualCourseCountInfo {
+  display: none;
+}
 #page-course-search #display-area .section-hidden {
   display: none;
 }

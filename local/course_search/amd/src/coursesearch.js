@@ -17,6 +17,7 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
             showtagliststate = false,
             actualCourseCount = 0,
             $actualCourseCount = null,
+            $actualCourseCountInfo = null,
             courses = {},
             coursesSortArray = [],
             courseids = [],
@@ -364,6 +365,7 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                     .find('[data-group="tags"]')
                     .addClass('hidden');
 
+                $actualCourseCountInfo.hide();
                 cardsScrollEventHandlerOn(false);
                 listScrollEventHandlerOn(false);
 
@@ -1211,6 +1213,7 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
 
                 actualCourseCount = courseids.length;
                 $actualCourseCount.text(actualCourseCount);
+                $actualCourseCountInfo.show();
 
                 console.log('courses', courses);
                 console.log('courseids', courseids.slice());
@@ -1256,6 +1259,7 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
 
                 actualCourseCount = courseids.length;
                 $actualCourseCount.text(actualCourseCount);
+                $actualCourseCountInfo.show();
 
                 console.log('changed courses', courses);
                 console.log('changed courseids', courseids.slice());
@@ -1415,6 +1419,7 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
 
                 // Get the relevant DOM elements.
                 $actualCourseCount = $("#actualCourseCount");
+                $actualCourseCountInfo = $("#actualCourseCountInfo");
                 $catalogarea = $('#catalog-area');
                 userid = parseInt($catalogarea.data('userid'), 10);
                 $searcharea = $('#search-area');
