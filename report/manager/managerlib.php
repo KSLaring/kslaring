@@ -598,7 +598,7 @@ class CompetenceManager {
             $out .= self::Get_ThirdLevelLink($tab);
         }else {
             if (is_siteadmin($USER->id)) {
-                $out .= self::Get_ZeroLevelLink($tab);
+                $out = self::Get_ZeroLevelLink($tab);
                 $out .= self::Get_FirstLevelLink($tab);
                 $out .= self::Get_SecondLevelLink($tab);
                 $out .= self::Get_ThirdLevelLink($tab);
