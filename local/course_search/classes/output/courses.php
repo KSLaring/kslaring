@@ -211,7 +211,7 @@ class courses implements \renderable, \templatable {
         $date = '';
         $timestamp = 0;
         $availseats = '';
-        $availnumber = '';
+        $availnumber = 0;
         $deadline = '';
         $location = '';
         $municipality = '';
@@ -227,7 +227,11 @@ class courses implements \renderable, \templatable {
                 $availseats = '';
             } else {
                 if (\core_text::strpos($availseats, ' ') !== false) {
-                    $availnumber = \core_text::substr($availseats, 0, \core_text::strpos($availseats, ' '));
+                    $availnumber = intval(\core_text::substr($availseats, 0, \core_text::strpos($availseats, ' ')));
+                } else {
+                    if (\core_text::strlen($availseats) > 1) {
+                        $availnumber = 100000;
+                    }
                 }
             }
             $deadline = \course_page::deadline_course($course->id);

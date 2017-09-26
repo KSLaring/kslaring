@@ -870,7 +870,7 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                             'id': courses[prop].id,
                             'sortorder': courses[prop].sortorder,
                             'sortdate': courses[prop].sortdate,
-                            'availnumber': parseInt(courses[prop].availnumber, 10),
+                            'availnumber': courses[prop].availnumber,
                             'deadline': courses[prop].deadline,
                             'municipality': (courses[prop].municipality) ?
                                 courses[prop].municipality.toLowerCase() : '',
