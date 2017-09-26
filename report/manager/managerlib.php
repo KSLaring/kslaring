@@ -589,28 +589,25 @@ class CompetenceManager {
         /* Create links - It's depend on View permissions */
         $out = '<ul class="unlist report-selection">' . "\n";
         if (self::IsReporter($USER->id,0)) {
-            $out .= self::Get_ZeroLevelLink($tab);
+            $out = self::Get_ZeroLevelLink($tab);
         }else if (self::IsReporter($USER->id,1)) {
-            $out .= self::Get_FirstLevelLink($tab);
+            $out = self::Get_FirstLevelLink($tab);
         }else if (self::IsReporter($USER->id,2)) {
-            $out .= self::Get_SecondLevelLink($tab);
+            $out = self::Get_SecondLevelLink($tab);
         }else if (self::IsReporter($USER->id,3)) {
-            $out .= self::Get_ThirdLevelLink($tab);
+            $out = self::Get_ThirdLevelLink($tab);
         }else {
             if (is_siteadmin($USER->id)) {
                 $out = self::Get_ZeroLevelLink($tab);
-                $out .= self::Get_FirstLevelLink($tab);
-                $out .= self::Get_SecondLevelLink($tab);
-                $out .= self::Get_ThirdLevelLink($tab);
             }else {
                 if (has_capability('report/manager:viewlevel0', $site_context)) {
-                    $out .= self::Get_ZeroLevelLink($tab);
+                    $out = self::Get_ZeroLevelLink($tab);
                 }else if (has_capability('report/manager:viewlevel1', $site_context)) {
-                    $out .= self::Get_FirstLevelLink($tab);
+                    $out = self::Get_FirstLevelLink($tab);
                 }else if(has_capability('report/manager:viewlevel2', $site_context)) {
-                    $out .= self::Get_SecondLevelLink($tab);
+                    $out = self::Get_SecondLevelLink($tab);
                 }else if (has_capability('report/manager:viewlevel3', $site_context)) {
-                    $out .= self::Get_ThirdLevelLink($tab);
+                    $out = self::Get_ThirdLevelLink($tab);
                 }//if_capabitity
             }
         }
