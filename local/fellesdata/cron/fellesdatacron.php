@@ -1325,7 +1325,7 @@ class FELLESDATA_CRON {
 
                     // Send notifications
                     // Notification manual synchronization
-                    if ($pluginInfo->automatic) {
+                    if (!$pluginInfo->automatic) {
                         if ($notifyTo) {
                             // Get companies to send notifications
                             $toMail = FSKS_COMPANY::get_companiesfs_to_mail();
