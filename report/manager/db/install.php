@@ -72,6 +72,10 @@ function xmldb_report_manager_install() {
         /* Manager && Reporter Tables   */
         CompetenceManager_Install::ManagerReporterTables($db_man);
 
+        // Create views
+        CompetenceManager_Install::view_companies_with_users();
+        CompetenceManager_Install::view_course_company_user_enrol();
+
         /* For Kommit   */
         /* Level Zero */
         Kommit_CompetenceManager::InsertLevelZero();
@@ -110,6 +114,94 @@ function xmldb_report_manager_install() {
 }//xmldb_report_manager_install
 
 class CompetenceManager_Install {
+
+    /**
+     * Description
+     * Create companies_with_users view
+     *
+     * @throws      Exception
+     *
+     * @creationDate    22/09/2017
+     * @author          eFaktor     (fbv)
+     */
+    public static function view_companies_with_users() {
+        /* Variables */
+        global $DB;
+        $view       = null;
+        $sql        = null;
+
+        try {
+            // SQL for the view
+            $sql = " SELECT DISTINCT
+                              co.id 		  AS 'levelthree',
+                              cr_tre.parentid AS 'leveltwo',
+                              cr_two.parentid AS 'levelone',
+                              cr_one.parentid AS 'levelzero',
+                              co.industrycode AS 'industrycode'
+                     FROM 	  {report_gen_companydata} co
+                        JOIN  {user_info_competence_data} 	uic 	ON uic.companyid 	= co.id
+                        JOIN  {report_gen_company_relation} cr_tre  ON cr_tre.companyid = uic.companyid
+                        JOIN  {report_gen_company_relation} cr_two  ON cr_two.companyid = cr_tre.parentid
+                        JOIN  {report_gen_company_relation} cr_one  ON cr_one.companyid = cr_two.parentid
+                     WHERE	co.hierarchylevel = 3
+                     ORDER bY co.industrycode, cr_one.parentid,cr_two.parentid,cr_tre.parentid ";
+
+            // Create view
+            $view = " CREATE OR REPLACE VIEW companies_with_users 
+                                        AS ($sql) ";
+
+            // Execute
+            $DB->execute($view);
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//view_companies_with_users
+
+    /**
+     * Description
+     * Create course_company_user_enrol view
+     *
+     * @throws      Exception
+     *
+     * @creationDate    22/09/2017
+     * @author          eFaktor     (fbv)
+     */
+    public static function view_course_company_user_enrol() {
+        /* Variables */
+        global $DB;
+        $view       = null;
+        $sql        = null;
+
+        try {
+            // SQL for view
+            $sql = " SELECT       CONCAT(e.courseid,'_',uic.companyid,'_',u.id) AS 'id',
+                                  e.courseid                                    AS 'courseid',
+                                  uic.companyid                                 AS 'companyid',
+                                  u.id                                          AS 'user',
+                                  CONCAT(u.firstname, ' ', u.lastname)          AS 'name',
+                                  uic.jobroles                                  AS 'jobroles',
+                                  IF(cc.timecompleted,cc.timecompleted,0)       AS 'timecompleted'
+                     FROM		  {user_enrolments}		      ue
+                        JOIN 	  {enrol}					  e   ON  e.id 	 		= ue.enrolid
+                                                                  AND e.status 		= 0
+                        JOIN 	  {user} 					  u   ON  u.id 	 		= ue.userid
+                                                                  AND u.deleted 	= 0
+                        JOIN 	  {user_info_competence_data} uic ON  uic.userid  	= u.id
+                        JOIN 	  companies_with_users 		  co  ON  co.levelthree = uic.companyid
+                        LEFT JOIN {course_completions}	      cc  ON  cc.userid 	= uic.userid
+                                                                  AND cc.course 	= e.courseid
+                     ORDER BY e.courseid , uic.companyid , u.id ";
+
+            // Create view
+            $view = " CREATE OR REPLACE VIEW course_company_user_enrol 
+                                        AS ($sql) ";
+
+            // Execute
+            $DB->execute($view);
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//view_course_company_user_enrol
 
     /**
      * @param           $db_man

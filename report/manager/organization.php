@@ -32,7 +32,9 @@ define('AJAX_SCRIPT', true);
 require_once('../../config.php');
 require_once('managerlib.php');
 
-/* PARAMS   */
+global $PAGE,$SITE,$OUTPUT,$USER,$SESSION;
+
+// Params
 $parent         = optional_param('parent',0,PARAM_INT);
 $levelZero      = optional_param('levelZero',0,PARAM_INT);
 $level          = required_param('level',PARAM_INT);
@@ -57,24 +59,39 @@ $url            = new moodle_url('/report/manager/organization.php');
 $PAGE->set_context($context);
 $PAGE->set_url($url);
 
-/* Check the correct access */
+// Check the correct access
 require_login();
 require_sesskey();
 
 echo $OUTPUT->header();
 
-/* Get Companies connected with super user  */
+// Get Companies connected with super user
 $IsReporter = CompetenceManager::IsReporter($USER->id);
 if ($superUser) {
     $myAccess   = CompetenceManager::Get_MyAccess($USER->id);
 }else {
-    /* My Hierarchy */
-    $myHierarchy = CompetenceManager::get_MyHierarchyLevel($USER->id,$context,$IsReporter,0);
+    // Hierarchy
+    if (!isset($SESSION[$USER->id]['reporter'])) {
+        $SESSION[$USER->id]['reporter'] = CompetenceManager::get_MyHierarchyLevel($USER->id,$context,$IsReporter,$level);
+    }
+    $myHierarchy = $SESSION[$USER->id]['reporter'];
+
     if ($IsReporter) {
-        $myLevelZero  = array_keys($myHierarchy->competence);
-        $myLevelOne   = $myHierarchy->competence[$levelZero]->levelOne;
-        $myLevelTwo   = $myHierarchy->competence[$levelZero]->levelTwo;
-        $myLevelThree = $myHierarchy->competence[$levelZero]->levelThree;
+        $myZeros  = array_keys($myHierarchy->competence);
+        $aux = array();
+        foreach ($myZeros as $zero) {
+            if ($myHierarchy->competence[$zero]->level <= $report_level) {
+                $aux[$zero] = $zero;
+            }
+        }//for_each
+        if ($aux) {
+            $myZeros = $aux;
+        }//if_aux
+
+        $myLevelZero  = array_keys($myZeros);
+        $myLevelOne   = $myHierarchy->competence[$levelZero]->levelone;
+        $myLevelTwo   = $myHierarchy->competence[$levelZero]->leveltwo;
+        $myLevelThree = $myHierarchy->competence[$levelZero]->levelthree;
     }else {
         list($myLevelZero,$myLevelOne,$myLevelTwo,$myLevelThree) = CompetenceManager::GetMyCompanies_By_Level($myHierarchy->competence,$myHierarchy->my_level);
     }//if_IsReporter

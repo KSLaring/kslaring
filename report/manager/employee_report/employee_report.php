@@ -34,13 +34,15 @@
  *
  */
 
+global $CFG, $PAGE,$OUTPUT,$USER,$SITE,$SESSION;
+
 require_once('../../../config.php');
 require_once( '../managerlib.php');
 require_once($CFG->libdir . '/adminlib.php');
 require_once('employee_report_form.php');
 require_once( 'employeelib.php');
 
-/* Params */
+// Params
 $url                = new moodle_url('/report/manager/employee_report/employee_report.php');
 $return             = new moodle_url('/report/manager/index.php');
 $my_hierarchy       = null;
@@ -50,11 +52,10 @@ $out                = '';
 
 require_login();
 
-/* Start the page */
+// Settings page
 $site_context = context_system::instance();
 $PAGE->https_required();
 $PAGE->set_context($site_context);
-
 $PAGE->set_pagelayout('report');
 $PAGE->set_url($url);
 $PAGE->set_title($SITE->fullname);
@@ -75,10 +76,12 @@ if (empty($CFG->loginhttps)) {
 
 $PAGE->verify_https_required();
 
-/* My Hierarchy */
+
+/**
+// My hierarchy
 $myHierarchy = CompetenceManager::get_MyHierarchyLevel($USER->id,$site_context,$IsReporter,4);
 
-/* Show Form    */
+// Show form
 $form = new manager_employee_report_form(null,array($myHierarchy,$IsReporter));
 if ($form->is_cancelled()) {
     unset($SESSION->selection);
@@ -86,30 +89,36 @@ if ($form->is_cancelled()) {
     $_POST = array();
     redirect($return);
 }else if($data = $form->get_data()) {
-    /* Get Data */
+    // Get data
     $data_form = (Array)$data;
 
-    /* Keep selection data --> when it returns to the main page */
+    // Keep selection data --> when it return to the main page
     $SESSION->selection = array();
     $SESSION->selection[EMPLOYEE_REPORT_STRUCTURE_LEVEL . '0']   = (isset($data_form[EMPLOYEE_REPORT_STRUCTURE_LEVEL . '0']) ? $data_form[EMPLOYEE_REPORT_STRUCTURE_LEVEL . '0'] : 0);
     $SESSION->selection[EMPLOYEE_REPORT_STRUCTURE_LEVEL . '1']   = (isset($data_form[EMPLOYEE_REPORT_STRUCTURE_LEVEL . '1']) ? $data_form[EMPLOYEE_REPORT_STRUCTURE_LEVEL . '1'] : 0);
     $SESSION->selection[EMPLOYEE_REPORT_STRUCTURE_LEVEL . '2']   = (isset($data_form[EMPLOYEE_REPORT_STRUCTURE_LEVEL . '2']) ? $data_form[EMPLOYEE_REPORT_STRUCTURE_LEVEL . '2'] : 0);
     $SESSION->selection[EMPLOYEE_REPORT_STRUCTURE_LEVEL . '3']   = (isset($data_form[EMPLOYEE_REPORT_STRUCTURE_LEVEL . '3']) ? $data_form[EMPLOYEE_REPORT_STRUCTURE_LEVEL . '3'] : 0);
 
-    /* Get Company Tracker Info */
+    // Get company tracker info
     $company        = $data_form[EMPLOYEE_REPORT_STRUCTURE_LEVEL . '3'];
 
-    /* Get Employee Tracker */
+    // Get employee tracker
     $employeeTracker = EmployeeReport::Get_EmployeeTracker($company,$data_form[REPORT_MANAGER_OUTCOME_LIST ]);
-    /* Print Report         */
+
+    // Print report
     $out = EmployeeReport::Print_EmployeeTracker($employeeTracker,$data_form[REPORT_MANAGER_COMPLETED_LIST]);
 }//if_form
 
-/* Print Header */
+ * **/
+
+// Header
 echo $OUTPUT->header();
-/* Print tabs at the top */
+// tabs at the top
 $current_tab = 'manager_reports';
 
+require('../tabs.php');
+
+/**
 if (!empty($out)) {
     echo $out;
 }else {
@@ -117,9 +126,13 @@ if (!empty($out)) {
 
     $form->display();
 
-    /* Initialise Organization Structure    */
+    // Initialise Organization Structure
     CompetenceManager::Init_Organization_Structure(COMPANY_STRUCTURE_LEVEL,null,REPORT_MANAGER_OUTCOME_LIST,0,null,false);
 }//if_out
-
-/* Print Footer */
+**/
+echo $OUTPUT->heading(get_string('employee_report_link','report_manager'));
+echo get_string('underconstruction','report_manager');
+echo "</br></br></br>";
+echo "<a href='" . $return ."' class='button_reports'>" . get_string('back') . "</a>";
+// Footer
 echo $OUTPUT->footer();

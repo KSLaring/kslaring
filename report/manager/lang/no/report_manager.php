@@ -502,3 +502,8 @@ $string['rpt_male']                 = 'Mann';
 $string['rpt_produce']              = 'Tilbyder';
 $string['rpt_enrolled']             = 'Påmeldt dato';
 $string['rpt_days']                 = 'Antall dager';
+
+$string['cat_selected']         = 'Category selected';
+$string['cat_required']         = 'The category is required. You have to select one.';
+
+$string['selectone']            = 'Select one...';

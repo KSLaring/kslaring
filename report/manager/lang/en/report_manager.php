@@ -494,3 +494,8 @@ $string['rpt_male']                 = 'Man';
 $string['rpt_produce']              = 'Produced by';
 $string['rpt_enrolled']             = 'Enrolled date';
 $string['rpt_days']                 = 'Number of days';
+
+$string['cat_selected']         = 'Category selected';
+$string['cat_required']         = 'The category is required. You have to select one.';
+
+$string['selectone']            = 'Select one...';

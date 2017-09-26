@@ -28,6 +28,7 @@
  *
  */
 
+global $CFG,$OUTPUT,$SITE,$PAGE,$SITE,$SESSION,$USER;
 require_once('../../../config.php');
 require_once( 'outcomerptlib.php');
 require_once( '../managerlib.php');
@@ -36,7 +37,7 @@ require_once($CFG->libdir . '/adminlib.php');
 
 require_login();
 
-/* Params */
+// Params
 $url        = new moodle_url('/report/manager/outcome_report/outcome_report.php');
 $return_url = new moodle_url('/report/manager/index.php');
 
@@ -57,7 +58,7 @@ $PAGE->navbar->add(get_string('outcome_report', 'report_manager'),$url);
 unset($SESSION->parents);
 unset($SESSION->selection);
 
-/* ADD require_capability */
+// Capability
 if (!CompetenceManager::IsReporter($USER->id)) {
     require_capability('report/manager:viewlevel3', $site_context);
 }
@@ -68,24 +69,28 @@ if (empty($CFG->loginhttps)) {
     $secure_www_root = str_replace('http:','https:',$CFG->wwwroot);
 }//if_security
 
-/* Start the page */
+// Settings page
 $PAGE->verify_https_required();
 
-/* Print Header */
+// Header
 echo $OUTPUT->header();
-/* Print tabs at the top */
+
+// Tabs at the top
 $current_tab = 'manager_reports';
 $show_roles = 1;
 require('../tabs.php');
 
-/* Print Title */
+// Title
 echo $OUTPUT->heading(get_string('outcome_report', 'report_manager'));
 
-/* Report Levels Links  */
+/**
+// Report levels links
 outcome_report::CleanTemporary();
 CompetenceManager::GetLevelLink_ReportPage('outcome_report',$site_context);
 
-echo "</br>";
+**/
+echo get_string('underconstruction','report_manager');
+echo "</br></br></br>";
 echo "<a href='" . $return_url ."' class='button_reports'>" . get_string('back') . "</a>";
 
 /* Print Foot */
