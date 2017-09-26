@@ -370,7 +370,7 @@ class courses implements \renderable, \templatable {
         $date = '';
         $timestamp = 0;
         $availseats = '';
-        $availnumber = '';
+        $availnumber = 0;
         $deadline = '';
         $location = '';
         $municipality = '';
@@ -507,7 +507,7 @@ class courses implements \renderable, \templatable {
             "date" => $date,
             "sortdate" => $sortdate,
             "availseats" => $availseats,
-            "availnumber" => $availnumber,
+            "availnumber" => intval($availnumber),
             "deadline" => $deadline,
             "municipality" => $municipality,
             "location" => $location,
