@@ -48,3 +48,4 @@ $string['sortdesc'] = 'Sortér synkende';
 $string['showtags'] = 'Vise kurstagger';
 $string['preselectcriteria'] = 'Velg interesser';
 $string['typehere'] = 'Skriv her å filtrere tagger';
+$string['actualCourseCount'] = 'Courses found: ';

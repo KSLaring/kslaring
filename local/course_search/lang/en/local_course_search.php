@@ -48,3 +48,4 @@ $string['sortdesc'] = 'Sort descending';
 $string['showtags'] = 'Show course tags';
 $string['preselectcriteria'] = 'Preselect the search criteria';
 $string['typehere'] = 'Type here to filter tags';
+$string['actualCourseCount'] = 'Courses found: ';
