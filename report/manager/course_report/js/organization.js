@@ -98,8 +98,13 @@ var level_structure = {
         var valueThree = 0;
 
         this.hZero.set('value',this.levelZero.get('value'));
-        this.hOne.set('value',this.levelOne.get('value'));
-        this.hTwo.set('value',this.levelTwo.get('value'));
+        if (this.levelOne) {
+            this.hOne.set('value',this.levelOne.get('value'));
+        }
+        if (this.levelTwo) {
+            this.hTwo.set('value',this.levelTwo.get('value'));
+        }
+
         if (this.levelThree) {
             this.levelThree.all('option').each(function(option){
                 if (option.get('selected') && (option.get('value') != 0)) {

@@ -42,6 +42,145 @@ class course_report {
     /* PUBLIC FUNCTIONS */
     /********************/
 
+    /**
+     * Description
+     * Initialize javascript
+     *
+     * @param           $parent
+     * @param           $category
+     * @param           $course
+     * @param           $depth
+     *
+     * @throws          Exception
+     *
+     * @creationDate    26/09/2017
+     * @author          eFaktor     (fbv)
+     */
+    public static function ini_data_reports($parent,$category,$course,$depth) {
+        /* Variables */
+        global $PAGE;
+        $name       = null;
+        $path       = null;
+        $requires   = null;
+        $jsmodule   = null;
+
+        try {
+            // Initialise variables
+            $name       = 'data_rpt';
+            $path       = '/report/manager/course_report/js/categoriescourses.js';
+            $requires   = array('node', 'event-custom', 'datasource', 'json', 'moodle-core-notification','datatype-number');
+
+            // Initialise js module
+            $jsmodule = array('name'        => $name,
+                'fullpath'    => $path,
+                'requires'    => $requires
+            );
+
+            // Javascript
+            $PAGE->requires->js_init_call('M.core_user.init_managercourse_report',
+                array($parent,$category,$course,$depth),
+                false,
+                $jsmodule
+            );
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//ini_data_reports
+
+    /**
+     * Description
+     * Get categories by depth
+     *
+     * @param           $depth
+     * @param      null $parent
+     *
+     * @return          array
+     * @throws          Exception
+     *
+     * @creationDate    26/09/2+17
+     * @author          eFaktor     (fbv)
+     */
+    public static function get_my_categories_by_depth($depth,$parent=null) {
+        /* Variables */
+        global $DB;
+        $sql    = null;
+        $rdo    = null;
+        $params = null;
+        $lstcat = array();
+
+        try {
+            // First Element of the list
+            $lstcat[0] = get_string('selectone', 'report_manager');
+
+            // Search criteria
+            $params = array();
+            $params['depth'] = $depth;
+
+            // SQL Instruction
+            $sql = " SELECT ca.id,
+                            ca.name
+                     FROM   {course_categories} ca 
+                     WHERE  ca.depth = :depth ";
+
+
+            // Criteria parent
+            $dblog = " PARENT : " . $parent . "\n\n";
+            if ($parent) {
+                $params['parent'] = $parent;
+
+                $sql .= " AND ca.parent = :parent ";
+            }//if_parent
+
+            // Execute
+            $sql .= " ORDER BY ca.name ";
+
+            $rdo = $DB->get_records_sql($sql,$params);
+            if ($rdo) {
+                foreach ($rdo as $instance) {
+                    $lstcat[$instance->id] = $instance->name;
+                }//for_rdo
+            }//if_rdo
+
+            return $lstcat;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//get_my_categories_by_depth
+
+    /**
+     * Description
+     * Get category name
+     *
+     * @param           $category
+     *
+     * @return          null
+     * @throws          Exception
+     *
+     * @creationDate    26/09/2017
+     * @author          eFaktor     (fbv)
+     */
+    public static function get_category_name($category) {
+        // Variables
+        global $DB;
+        $rdo = null;
+
+        try {
+            // Search criteria
+            $params = array();
+            $params['id'] = $category;
+
+            $rdo = $DB->get_record('course_categories', $params,'name');
+
+            // Gets the category.
+            if ($rdo) {
+                return $rdo->name;
+            } else {
+                return null;
+            }
+        } catch (Exception $ex) {
+            Throw $ex;
+        }  // end try_catch
+    } // end get_categories
 
     /**
      * Description
@@ -53,24 +192,51 @@ class course_report {
      * @creationDate    17/03/2015
      * @author          eFaktor     (fbv)
      */
-    public static function Get_CoursesList() {
+    public static function Get_CoursesList($category=null) {
         /* Variables    */
         global $DB;
-        $courses_list = array();
+        $lstcourses = array();
+        $sql        = null;
+        $sqlcat     = null;
+        $rdo        = null;
 
         try {
+            // First element
+            $lstcourses[0] = get_string('selectone', 'report_manager');
+
+
+            // SQL Instrution - category part
+            if ($category) {
+                $sqlcat = "  JOIN  {course_categories}	cat ON  cat.id = c.category
+                                                            AND (cat.path like '%/$category%' OR cat.path like '%/$category/%')";
+            }else {
+                $sqlcat = '';
+
+            }
+
+            // SQL Instruction
+            $sql = " SELECT   c.id,
+                              c.fullname
+                     FROM	  {course}    c
+                              $sqlcat
+                     WHERE	  c.visible = 1 
+                        AND   c.id != 1 ";
+
+           $dblog = $sql . "\n";
+
             // Get courses
-            $rdo = $DB->get_records('course',array('visible' => 1),'fullname','id,fullname');
+            $rdo = $DB->get_records_sql($sql);
             if ($rdo) {
-                $courses_list[0] = get_string('select') . '...';
                 foreach ($rdo as $course) {
-                    if ($course->id > 1) {
-                        $courses_list[$course->id] =  $course->fullname;
-                    }
+                    $dblog .= $course->id . " - " . $course->fullname . "\n\n";
+
+                    $lstcourses[$course->id] =  $course->fullname;
                 }//for_rdo
             }//if_Rdo
 
-            return $courses_list;
+            global $CFG;
+            error_log($dblog, 3, $CFG->dataroot . "/rpt_manager.log");
+            return $lstcourses;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch

@@ -45,12 +45,23 @@ class manager_course_report_level_form extends moodleform {
                                   );
 
         $form = $this->_form;
-        list($report_level,$myHierarchy,$IsReporter) = $this->_customdata;
+        list($report_level,$myHierarchy,$IsReporter,$parentcat,$depth) = $this->_customdata;
+
+        // Parent Category name
+        $form->addElement('text','parent',get_string('cat_selected','report_manager'),'readonly style="width:100%;border:0px;outline:0 none;"');
+        $form->setType('parent',PARAM_TEXT);
+        $form->setDefault('parent', '');
+        $form->addRule('parent', get_string('cat_required','report_manager'), 'required');
+
+        // Category.
+        $categorylist = course_report::get_my_categories_by_depth($depth,$parentcat);
+        $form->addElement('select', 'category', get_string('category', 'local_friadmin'), $categorylist);
 
         // Course list
         $form->addElement('header', 'course', get_string('course'));
         $form->addElement('html', '<div class="level-wrapper">');
-            $options = course_report::Get_CoursesList();
+            $options = array();
+            $options[0] = get_string('selectone', 'report_manager');
             $form->addElement('select',REPORT_MANAGER_COURSE_LIST,get_string('select_course_to_report', 'report_manager'),$options);
             if (isset($SESSION->selection)) {
                 $default = $SESSION->selection[REPORT_MANAGER_COURSE_LIST];
@@ -112,6 +123,15 @@ class manager_course_report_level_form extends moodleform {
         self::add_hide_selection($form,2);
         // Level three
         self::add_hide_selection($form,3);
+
+        // Parent Category id
+        $form->addElement('text','parentcat',null,'style=visibility:hidden;height:0px;');
+        $form->setType('parentcat',PARAM_INT);
+        $form->setDefault('parentcat',0);
+
+        $form->addElement('text','depth',null,'style=visibility:hidden;height:0px;');
+        $form->setType('depth',PARAM_INT);
+        $form->setDefault('depth',$depth);
     }//definition
 
     /**

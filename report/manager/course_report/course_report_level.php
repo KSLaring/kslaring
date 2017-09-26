@@ -43,6 +43,8 @@ $company_id             = optional_param('co',0,PARAM_INT);
 $parentTwo              = optional_param('lt',0,PARAM_INT);
 $parentOne              = optional_param('lo',0,PARAM_INT);
 $completed_option       = optional_param('opt',0,PARAM_INT);
+$parentcat              = optional_param('parentcat', 0,PARAM_INT);
+$depth                  = optional_param('depth', 1,PARAM_INT);
 $return_url             = new moodle_url('/report/manager/course_report/course_report.php',array('rpt' => $report_level));
 $url                    = new moodle_url('/report/manager/course_report/course_report_level.php',array('rpt' => $report_level));
 $course_report          = null;
@@ -155,7 +157,7 @@ if ($company_id) {
     course_report::CleanTemporary();
 }
 
-$form = new manager_course_report_level_form(null,array($report_level,$myHierarchy,$IsReporter));
+$form = new manager_course_report_level_form(null,array($report_level,$myHierarchy,$IsReporter,$parentcat,$depth));
 if ($form->is_cancelled()) {
     unset($SESSION->selection);
 
@@ -237,6 +239,10 @@ if (!empty($out)) {
 
     /* Initialise Organization Structure    */
     CompetenceManager::Init_OrganizationStructure_CourseReport(COMPANY_STRUCTURE_LEVEL,REPORT_MANAGER_JOB_ROLE_LIST,$report_level);
+
+
+    // Javascript to et categories and courses
+    course_report::ini_data_reports('parent','category',REPORT_MANAGER_COURSE_LIST,'depth');
 }//if_else
 
 /* Print Footer */
