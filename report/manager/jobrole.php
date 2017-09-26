@@ -44,7 +44,7 @@ $outcome        = optional_param('outcome',0,PARAM_INT);
 $json           = array();
 $data           = array();
 $options        = array();
-$jobRoles       = array();
+$jobRoles       = null;
 $infoJR         = null;
 $jrOutcomes     = array();
 
@@ -128,16 +128,20 @@ if ($outcome) {
     }//if_jr_outcomes
 }//if_outcome_selected
 
-foreach ($options as $id => $jr) {
-    // Company info
-    $infoJR            = new stdClass;
-    $infoJR->id        = $id;
-    $infoJR->name      = $jr;
+if ($options) {
+    foreach ($options as $id => $jr) {
+        // Company info
+        $infoJR            = new stdClass;
+        $infoJR->id        = $id;
+        $infoJR->name      = $jr;
 
-    /* Add Company*/
-    $jobRoles[$infoJR->name] = $infoJR;
+        /* Add Company*/
+        $jobRoles[$infoJR->name] = $infoJR;
+    }
+
+    $data['jr'] = $jobRoles;
 }
 
-$data['jr'] = $jobRoles;
+
 $json[]     = $data;
 echo json_encode(array('results' => $json));

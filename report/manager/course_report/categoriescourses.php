@@ -103,12 +103,8 @@ switch ($type) {
             }
         }//if_lstcategories
 
-        $dblog .= " COURSES " . "\n";
-
         break;
 }
-
-//error_log($dblog, 3, $CFG->dataroot . "/rpt_manager.log");
 
 // Encode and send
 $json[] = $data;
