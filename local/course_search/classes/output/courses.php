@@ -211,7 +211,7 @@ class courses implements \renderable, \templatable {
         $date = '';
         $timestamp = 0;
         $availseats = '';
-        $availnumber = 0;
+        $availnumber = -100000;
         $deadline = '';
         $location = '';
         $municipality = '';
@@ -225,6 +225,7 @@ class courses implements \renderable, \templatable {
             $availseats = $formatoptions['enrolledusers']->value;
             if ($availseats === 'hide') {
                 $availseats = '';
+                $availnumber = -100000;
             } else {
                 if (\core_text::strpos($availseats, ' ') !== false) {
                     $availnumber = intval(\core_text::substr($availseats, 0, \core_text::strpos($availseats, ' ')));
