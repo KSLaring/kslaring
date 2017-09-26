@@ -364,6 +364,9 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                     .find('[data-group="tags"]')
                     .addClass('hidden');
 
+                cardsScrollEventHandlerOn(false);
+                listScrollEventHandlerOn(false);
+
                 // Remove all search criteria.
                 $coursesearchfield.blur();
                 $tagarea
@@ -1225,6 +1228,46 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
         };
 
         /**
+         * Get the course data for the user viewable courses via ajax.
+         */
+        var get_changed_coursedata = function () {
+            $.when(
+                ajax.call([
+                    {
+                        methodname: 'local_course_search_get_course_data',
+                        args: {
+                            userid: userid
+                        }
+                    }
+                ])[0]
+            ).then(function (response) {
+                var coursedata = JSON.parse(response.coursedata),
+                    context = {},
+                    nextids = [];
+
+                courses = coursedata.courses;
+
+                // Create an array with the courses from the »courses« object.
+                // This has the courseid as keys and needs to be converted into an array of objects.
+                coursesSortArray = [];
+                courseids = Object.keys(courses);
+                cardcourseidsremaining = courseids.slice();
+                listcourseidsremaining = courseids.slice();
+
+                actualCourseCount = courseids.length;
+                $actualCourseCount.text(actualCourseCount);
+
+                console.log('changed courses', courses);
+                console.log('changed courseids', courseids.slice());
+
+                // View the cards and list the first set.
+                $navtabs.find('[href="#tabcards"]').trigger('click');
+                cardsScrollEventHandlerOn(true);
+                cardsAddNextItems(cardsfirst);
+            });
+        };
+
+        /**
          * Save the user preselected tags via ajax.
          *
          * @param {Array} tagarray The array with the selected tag ids
@@ -1247,8 +1290,14 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                 var result = JSON.parse(response.result);
                 showtagliststate = !showtagliststate;
 
-                $resultarea.html('');
-                get_coursedata(false);
+                // Clear the course display.
+                $coursecardsul.html('');
+                if ($courselisttable) {
+                    $courselisttable.children('tbody').html('');
+                }
+
+                // Get the changed course data.
+                get_changed_coursedata();
 
                 $coursesearchform.find('.tag-group')
                     .not(':has(label.checkbox)')
