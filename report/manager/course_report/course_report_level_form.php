@@ -56,6 +56,7 @@ class manager_course_report_level_form extends moodleform {
         // Category.
         $categorylist = course_report::get_my_categories_by_depth($depth,$parentcat);
         $form->addElement('select', 'category', get_string('category', 'local_friadmin'), $categorylist);
+        $form->setDefault('category',$parentcat);
 
         // Course list
         $form->addElement('header', 'course', get_string('course'));
@@ -63,10 +64,6 @@ class manager_course_report_level_form extends moodleform {
             $options = array();
             $options[0] = get_string('selectone', 'report_manager');
             $form->addElement('select',REPORT_MANAGER_COURSE_LIST,get_string('select_course_to_report', 'report_manager'),$options);
-            if (isset($SESSION->selection)) {
-                $default = $SESSION->selection[REPORT_MANAGER_COURSE_LIST];
-            }//if_selection
-            $form->setDefault(REPORT_MANAGER_COURSE_LIST,$default);
             $form->addRule(REPORT_MANAGER_COURSE_LIST, get_string('required','report_manager'), 'required', 'nonzero', 'client');
             $form->addRule(REPORT_MANAGER_COURSE_LIST, get_string('required','report_manager'), 'nonzero', null, 'client');
         $form->addElement('html', '</div>');
@@ -132,6 +129,11 @@ class manager_course_report_level_form extends moodleform {
         $form->addElement('text','depth',null,'style=visibility:hidden;height:0px;');
         $form->setType('depth',PARAM_INT);
         $form->setDefault('depth',$depth);
+
+        // Hide course selected
+        $form->addElement('text','hcourse',null,'style=visibility:hidden;height:0px;');
+        $form->setType('hcourse',PARAM_INT);
+        $form->setDefault('hcourse',0);
     }//definition
 
     /**
@@ -292,9 +294,7 @@ class manager_course_report_level_form extends moodleform {
 
         switch ($level) {
             case 0:
-                //if ($levelZero) {
-                    $options = CompetenceManager::GetCompanies_LevelList($level,null,$levelZero);
-                //}
+                $options = CompetenceManager::GetCompanies_LevelList($level,null,$levelZero);
 
                 break;
             case 1:

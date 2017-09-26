@@ -73,20 +73,20 @@ var level_structure = {
      * @constructor
      */
     init : function() {
-        /* Level Zero       */
+        // Level zero
         this.levelZero.on('change', this.Activate_LevelOne, this);
 
-        /* Level One    */
+        // Level one
         if (this.levelOne) {
             this.levelOne.on('change', this.Activate_LevelTwo, this);
         }
 
-        /* Level Two    */
+        // Level two
         if (this.levelTwo) {
             this.levelTwo.on('change', this.Activate_LevelThree, this);
         }
 
-        /* Level Three  */
+        // Level three
         if (this.levelThree) {
             this.levelThree.on('change', this.Load_JobRoles, this);
         }
@@ -240,13 +240,13 @@ var level_structure = {
         // Clear out the existing options, keeping any ones that are already selected.
         for (index in data.results) {
 
-            /* Get Data */
+            // Get data
             dataSelector = data.results[index];
 
-            /* Get level to update  */
+            // Level to update
             level       = dataSelector.name;
 
-            /* To Clean */
+            // To clean
             var toClean = dataSelector.clean;
             for (var indexClean in toClean) {
                 var clean = toClean[indexClean];
@@ -261,7 +261,7 @@ var level_structure = {
                 }
             }//for_clean
 
-            /* Remove companies */
+            // Remove companies
             Y.one("#id_" + level).all('option').each(function(option){
                 if (option.get('selected')) {
                    selected[option.get('value')] = option.get('value');
@@ -269,7 +269,7 @@ var level_structure = {
                 option.remove();
             });
 
-            /* Add the new companies    */
+            // Add new companies
             companies = dataSelector.items;
             for (indexCompany in companies) {
                 infoCompany = companies[indexCompany];
@@ -376,10 +376,10 @@ var level_structure = {
         // Clear out the existing options, keeping any ones that are already selected.
         for (index in data.results) {
 
-            /* Get Data */
+            // Get data
             jrSelector = data.results[index];
 
-            /* Clean Selector */
+            // Clean selector
             this.jobRoleLst.all('option').each(function(option){
                 if (option.get('selected')) {
                     selected[option.get('value')] = option.get('test');
@@ -387,7 +387,7 @@ var level_structure = {
                 option.remove();
             });
 
-            /* Add new Job Roles    */
+            // Add new job roles
             jobRoles = jrSelector.jr;
             for (indexJR in jobRoles) {
                 infoJR = jobRoles[indexJR];

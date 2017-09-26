@@ -94,6 +94,60 @@ class CompetenceManager {
     /********************/
 
     /**
+     * Description
+     * Check capabilities to see report
+     *
+     * @param           $isreporter
+     * @param           $level
+     * @param           $contenxt
+     *
+     * @throws          Exception
+     *
+     * @creationDate    26/09/2017
+     * @author          eFaktor     (fbv)
+     */
+    public static function check_capability_reports($isreporter,$level,$contenxt) {
+        try {
+            switch ($level) {
+                case 0:
+                    if (!has_capability('report/manager:viewlevel0', $contenxt)) {
+                        if (!$isreporter) {
+                            print_error('nopermissions', 'error', '', 'report/manager:viewlevel0');
+                        }//ifReporter
+                    }
+
+                    break;
+                case 1:
+                    if (!has_capability('report/manager:viewlevel1', $contenxt)) {
+                        if (!$isreporter) {
+                            print_error('nopermissions', 'error', '', 'report/manager:viewlevel1');
+                        }//ifReporter
+                    }
+
+                    break;
+                case 2:
+                    if (!has_capability('report/manager:viewlevel2', $contenxt)) {
+                        if (!$isreporter) {
+                            print_error('nopermissions', 'error', '', 'report/manager:viewlevel2');
+                        }//ifReporter
+                    }
+
+                    break;
+                case 3:
+                    if (!has_capability('report/manager:viewlevel3', $contenxt)) {
+                        if (!$isreporter) {
+                            print_error('nopermissions', 'error', '', 'report/manager:viewlevel3');
+                        }//ifReporter
+                    }
+
+                    break;
+            }//switch
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//check_capability_reports
+
+    /**
      * @param           $userId
      * @param           $level
      *

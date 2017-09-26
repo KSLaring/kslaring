@@ -47,6 +47,7 @@ M.core_user.init_managercourse_report = function (Y, parent, category, course,de
 
         // Course Selector!
         course: Y.one('#id_' + course),
+        hcourse: Y.one('#id_hcourse'),
 
         // depth
         depth: Y.one('#id_' + depth),
@@ -56,8 +57,15 @@ M.core_user.init_managercourse_report = function (Y, parent, category, course,de
         iotransactions : {},
 
         init : function() {
+            // Category change
             this.category.on('change', this.get_data_report, this);
 
+            // Course change
+            this.course.on('change',this.get_data_course,this);
+        },
+
+        get_data_course : function (e) {
+            this.hcourse.set('value',this.course.get('value'));
         },
 
         get_data_report : function(e) {
