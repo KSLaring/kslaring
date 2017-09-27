@@ -318,9 +318,9 @@ class course_report {
 
         try {
             // Course Report - Basic Information
-            $course_id      = $data_form[REPORT_MANAGER_COURSE_LIST];
+            $course_id  = $data_form[REPORT_MANAGER_COURSE_LIST];
             $rptcourse  = self::Get_CourseBasicInfo($course_id);
-
+            echo "rptcourse : " . $rptcourse->id . "</br>";
 
             // Get the rest of data to displat
             // Users and status of each user by company
