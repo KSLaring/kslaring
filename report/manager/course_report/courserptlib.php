@@ -1212,6 +1212,7 @@ class course_report {
             /* Execute  */
             $rdo = $DB->get_record_sql($sql,$params);
             if ($rdo) {
+                echo "1 --> Get_CourseBasicInfo " . $course_id . "</br>";
                 /* Course Report    */
                 $course_report = new stdClass();
                 $course_report->id             = $rdo->id;
