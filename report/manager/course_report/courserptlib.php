@@ -385,7 +385,6 @@ class course_report {
                             // Level zero
                             // Get info connected with level zero
                             if ($coemployees->levelone) {
-                                echo "COURSE LEVEL O --> " . $rptcourse->id . "</br>";
                                 self::get_reportinfo_levelone($rptcourse,$coemployees);
                             }else {
                                 $rptcourse->levelone = null;
@@ -763,7 +762,6 @@ class course_report {
         $two            = null;
 
         try {
-            echo "get_reportinfo_levelone " . "Course : " . $courserpt->id . "</br>";
             // Get information connected with level one
             $one       = CompetenceManager::GetCompaniesInfo($coemployees->levelone);
 
@@ -773,7 +771,6 @@ class course_report {
                 $two   = self::get_companies_by_level(2,$company->id,$coemployees->leveltwo);
 
                 if ($two) {
-                    echo "TWO " . "Course : " . $courserpt->id . "</br>";
                     $two       = self::get_reportinfo_leveltwo($courserpt->id,$two,$coemployees->levelthree);
                     if ($two) {
                         // Info level two
