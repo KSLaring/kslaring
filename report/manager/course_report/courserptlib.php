@@ -1469,6 +1469,7 @@ class course_report {
                     // Toogle
                     $url_img  = new moodle_url('/pix/t/expanded.png');
                     $out_report .= html_writer::start_tag('div',array('class' => 'outcome_content'));
+                        $urlthree = new moodle_url('/report/manager/course_report/course_report_level.php');
                         foreach ($levelOne as $idOne=>$one) {
                             $levelTwo = $one->leveltwo;
                             if ($levelTwo) {
@@ -1494,10 +1495,13 @@ class course_report {
                                                     $out_report .= self::Add_HeaderTable_LevelTwo_Screen();
                                                     // Content table
                                                     $out_report .= html_writer::start_tag('table');
+
                                                         foreach ($levelThree as $id_three=>$company) {
-                                                            $url_level_three = new moodle_url('/report/manager/course_report/course_report_level.php',
-                                                                                              array('rpt' => '3','co' => $id_three,'lt' => $level->id,'lo'=>$idOne,'lz' =>$course_report->levelzero, 'opt' => $completed_option));
-                                                            $out_report .= self::Add_ContentTable_LevelTwo_Screen($url_level_three,$company,$color);
+                                                            $urlthree->remove_params();
+                                                            $urlthree->params(array('rpt' => '3','co' => $id_three,'lt' => $level->id,'lo'=>$idOne,
+                                                                'lz' =>$course_report->levelzero, 'c' => $course_report->id, 'opt' => $completed_option));
+
+                                                            $out_report .= self::Add_ContentTable_LevelTwo_Screen($urlthree,$company,$color);
 
                                                             // Change color
                                                             if ($color == 'r0') {
@@ -1633,6 +1637,7 @@ class course_report {
 
                     // Report info
                     $out_report .= html_writer::start_tag('div',array('class' => 'outcome_content'));
+                        $urlthree = new moodle_url('/report/manager/course_report/course_report_level.php');
                         foreach ($levelTwo as $id=>$level) {
                             $color = 'r0';
                             $levelThree = $level->levelthree;
@@ -1651,11 +1656,12 @@ class course_report {
                                         // Content table
                                         $out_report .= html_writer::start_tag('table');
                                             foreach ($levelThree as $id_three=>$company) {
-                                                $url_level_three = new moodle_url('/report/manager/course_report/course_report_level.php',
-                                                                                  array('rpt' => '3','co' => $id_three,'lt' => $level->id,'lo'=>$levelOne->id,'lz' =>$course_report->levelzero,'opt' => $completed_option));
+                                                $urlthree->remove_params();
+                                                $urlthree->params(array('rpt' => '3','co' => $id_three,'lt' => $level->id,'lo'=>$levelOne->id,
+                                                                        'lz' =>$course_report->levelzero,'c' => $course_report->id,'opt' => $completed_option));
 
                                                 // Company header
-                                                $out_report .= self::Add_ContentTable_LevelTwo_Screen($url_level_three,$company,$color);
+                                                $out_report .= self::Add_ContentTable_LevelTwo_Screen($urlthree,$company,$color);
 
                                                 // Change color
                                                 if ($color == 'r0') {
@@ -1800,10 +1806,12 @@ class course_report {
                             $out_report .= self::Add_HeaderTable_LevelTwo_Screen();
                             // Content table
                             $out_report .= html_writer::start_tag('table');
+                                $urlthree = new moodle_url('/report/manager/course_report/course_report_level.php');
                                 foreach ($levelThree as $id_three=>$company) {
-                                    $url_level_three = new moodle_url('/report/manager/course_report/course_report_level.php',
-                                                                      array('rpt' => '3','co' => $id_three,'lt' => $levelTwo->id,'lo'=>$levelOne->id,'lz' =>$course_report->levelzero,'opt' => $completed_option));
-                                    $out_report .= self::Add_ContentTable_LevelTwo_Screen($url_level_three,$company,$color);
+                                    $urlthree->remove_params();
+                                    $urlthree->params(array('rpt' => '3','co' => $id_three,'lt' => $levelTwo->id,'lo'=>$levelOne->id,
+                                                            'lz' =>$course_report->levelzero,'c' => $course_report->id,'opt' => $completed_option));
+                                    $out_report .= self::Add_ContentTable_LevelTwo_Screen($urlthree,$company,$color);
 
                                     // Change color
                                     if ($color == 'r0') {
