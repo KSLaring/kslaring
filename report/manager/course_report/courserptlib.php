@@ -380,10 +380,6 @@ class course_report {
                         $rptcourse->leveltwo[$levelTwo->id] = $levelTwo;
 
                         break;
-                    default:
-                        $rptcourse = null;
-
-                        break;
                 }//switch_rpt
 
                 echo "rptcourse last : " . $rptcourse->id . "</br>";
