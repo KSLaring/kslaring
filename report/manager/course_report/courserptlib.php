@@ -319,9 +319,6 @@ class course_report {
             $course_id      = $data_form[REPORT_MANAGER_COURSE_LIST];
             $course_report  = self::Get_CourseBasicInfo($course_id);
 
-            // Clean temporary data
-            self::CleanTemporary($course_id);
-
             // Get the rest of data to displat
             // Users and status of each user by company
             if ($course_report) {
@@ -776,6 +773,7 @@ class course_report {
                 $two   = self::get_companies_by_level(2,$company->id,$coemployees->leveltwo);
 
                 if ($two) {
+                    echo "TWO " . "Course : " . $courserpt->id . "</br>";
                     $two       = self::get_reportinfo_leveltwo($courserpt->id,$two,$coemployees->levelthree);
                     if ($two) {
                         // Info level two
