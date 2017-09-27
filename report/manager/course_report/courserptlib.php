@@ -319,6 +319,7 @@ class course_report {
             $course_id      = $data_form[REPORT_MANAGER_COURSE_LIST];
             $course_report  = self::Get_CourseBasicInfo($course_id);
 
+
             // Get the rest of data to displat
             // Users and status of each user by company
             if ($course_report) {
@@ -387,6 +388,7 @@ class course_report {
                             // Level zero
                             // Get info connected with level zero
                             if ($coemployees->levelone) {
+                                echo "COURSE LEVEL O " . $course_report->id . "</br>";
                                 self::get_reportinfo_levelone($course_report,$coemployees);
                             }else {
                                 $course_report->levelone = null;
@@ -764,6 +766,7 @@ class course_report {
         $two            = null;
 
         try {
+            echo "get_reportinfo_levelone " . "Course : " . $courserpt->id . "</br>";
             // Get information connected with level one
             $one       = CompetenceManager::GetCompaniesInfo($coemployees->levelone);
 
@@ -1197,39 +1200,34 @@ class course_report {
         $params         = array();
 
         try {
-            /* Search Criteria  */
+            // Search criteria
             $params['course_id'] = $course_id;
 
-            /* SQL Instruction   */
-            $sql = " SELECT			DISTINCT c.id,
-                                             c.fullname,
-                                             GROUP_CONCAT(DISTINCT go.id ORDER BY go.fullname SEPARATOR ',') as 'outcomesid'
+            // SQL Instruction
+            $sql = " SELECT			DISTINCT 
+                                    c.id,
+                                    c.name,
+                                    GROUP_CONCAT(DISTINCT go.id ORDER BY go.fullname SEPARATOR ',') as 'outcomesid'
                      FROM 			{course}						c
                         LEFT JOIN	{grade_outcomes_courses}		oc		ON 		oc.courseid 	= c.id
                         LEFT JOIN	{grade_outcomes}				go		ON		go.id			= oc.outcomeid
                      WHERE		c.id = :course_id ";
 
-            /* Execute  */
+            // Execute
             $rdo = $DB->get_record_sql($sql,$params);
             if ($rdo) {
-                echo "1 --> Get_CourseBasicInfo " . $course_id . "</br>";
-                /* Course Report    */
-                $course_report = new stdClass();
-                $course_report->id             = $rdo->id;
-                $course_report->name           = $rdo->fullname;
-                $course_report->job_roles      = null;
-                $course_report->outcomes       = null;
+                $rdo->job_roles     = null;
+                $rdo->levelZero     = null;
+                $rdo->levelOne      = null;
+                $rdo->levelTwo      = null;
+                $rdo->levelThree    = null;
+                $rdo->outcomes      = null;
                 if ($rdo->outcomesid) {
-                    $course_report->outcomes   = self::Get_OutcomeDetail($rdo->outcomesid);
+                    $rdo->outcomes   = self::Get_OutcomeDetail($rdo->outcomesid);
                 }//if_outcomes
+            }
 
-                $course_report->levelZero       = null;
-                $course_report->levelOne        = null;
-                $course_report->levelTwo        = null;
-                $course_report->levelThree      = null;
-            }//if_rdo
-
-            return $course_report;
+            return $rdo;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -1249,33 +1247,21 @@ class course_report {
     private static function Get_OutcomeDetail($outcomes) {
         /* Variables    */
         global $DB;
-        $outcomes_lst = array();
-        $outcome_info = null;
 
         try {
-            /* SQL Instruction */
+            // SQL Instruction
             $sql = " SELECT			DISTINCT  o.id,
-                                              o.fullname,
-                                              oe.expirationperiod
+                                              o.fullname          as 'name',
+                                              oe.expirationperiod as 'expiration'
                      FROM			{grade_outcomes}		    o
                         LEFT JOIN	{report_gen_outcome_exp}	oe	ON oe.outcomeid = o.id
                      WHERE			o.id IN ($outcomes)
                      ORDER BY		o.fullname ";
 
-            /* Execute  */
+            // Execute
             $rdo = $DB->get_records_sql($sql);
-            if ($rdo) {
-                foreach ($rdo as $outcome) {
-                    /* Outcome Info */
-                    $outcome_info = new stdClass();
-                    $outcome_info->name         = $outcome->fullname;
-                    $outcome_info->expiration   = $outcome->expirationperiod;
 
-                    $outcomes_lst[$outcome->id] = $outcome_info;
-                }//for_outcomes
-            }//if_rdo
-
-            return $outcomes_lst;
+            return $rdo;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
