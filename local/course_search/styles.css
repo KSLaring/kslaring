@@ -84,6 +84,9 @@
   background: #0e7b9e;
   color: #fff;
 }
+#page-course-search #display-area #actualCourseCountInfo {
+  display: none;
+}
 #page-course-search #display-area .section-hidden {
   display: none;
 }
@@ -146,11 +149,11 @@
   cursor: pointer;
 }
 #page-course-search #course-list .course-list-col-titles th.sortasc {
-  background: transparent url("/pix/t/down.svg") 0 50% no-repeat;
+  background: transparent url([[pix:t/down]]) 0 50% no-repeat;
   padding-left: 16px;
 }
 #page-course-search #course-list .course-list-col-titles th.sortdesc {
-  background: transparent url("/pix/t/up.svg") 0 50% no-repeat;
+  background: transparent url([[pix:t/up]]) 0 50% no-repeat;
   padding-left: 16px;
 }
 #page-course-search #course-list .course-tag-list {
@@ -192,12 +195,16 @@
   min-height: 17em;
   padding: .5em 2%;
   vertical-align: top;
-  width: 27%;
+  width: 26.5%;
 }
 #page-course-search #course-cards .course-card-item.hide-item {
   display: none;
 }
 #page-course-search #course-cards .course-card-item .course-img {
+  background: #f9f9f9 50% 50% no-repeat;
+  background-size: cover;
+  border: 1px solid #e8e8e8;
+  height: 8em;
   text-align: center;
 }
 #page-course-search #course-cards .course-card-item .course-img img {

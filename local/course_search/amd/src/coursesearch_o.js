@@ -1,4 +1,4 @@
-/*global define: false, M: true, console: false */
+/*global require: false, define: false, M: true, console: false */
 define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates',
         'theme_bootstrapbase/bootstrap',
         'local_course_search/is_loader',
@@ -15,32 +15,20 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
         var sortbystate = 'name',
             sortascstate = true,
             showtagliststate = false,
-            actualCourseCount = 0,
-            $actualCourseCount = null,
-            $actualCourseCountInfo = null,
+            preselectedTagsAddedState = false,
+            searcharearenderedstate = false,
+            selectedCourseTags = [],
             courses = {},
-            coursesSortArray = [],
             courseids = [],
-            cardsfirst = 12,
-            cardsset = 6,
-            listfirst = 30,
-            listset = 15,
-            cardsrendered = false,
-            listrendered = false,
-            cardcourseidsremaining = [],
-            listcourseidsremaining = [],
+            courseidsremaining = [],
             userid = 0,
-            cardsInfScroll = null,
-            listInfScroll = null,
+            infScroll = null,
             $catalogarea = null,
             $searcharea = null,
             $coursesearchform = null,
             $coursesearchfield = null,
             $resultarea = null,
-            $cardsarea = null,
-            $listarea = null,
             $coursecardsul = null,
-            $courselisttable = null,
             $navtabs = null,
             $tagpreselectarea = null,
             $formsearch = null,
@@ -89,113 +77,36 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
          * @param {Array|object} context The data for the template
          */
         var renderDisplayArea = function (context) {
+            console.log('context', context);
             templates
-                .render('local_course_search/course_search_result_area', {})
+                .render('local_course_search/course_search_result_area', context)
                 .done(function (html) {
-                    $resultarea.html(html);
-                    $cardsarea = $resultarea.find('#tabcards');
-                    $listarea = $resultarea.find('#tablist');
-
-                    renderCardsArea(context);
-                });
-        };
-
-        /**
-         * Render the cards area with a template with the given data.
-         *
-         * @param {Array|object} context The data for the template
-         */
-        var renderCardsArea = function (context) {
-            templates
-                .render('local_course_search/course_search_course_cards', context)
-                .done(function (html) {
-                    $cardsarea.html(html);
+                    if (context.hasOwnProperty('courses') && context.courses.length) {
+                        $resultarea.html(html);
+                    } else {
+                        $resultarea.append(html);
+                    }
 
                     $coursecardsul = $resultarea.find('#course-cards');
-                    cardsrendered = true;
-
                     // Init infinite scroll.
-                    cardsInfScroll = new InfiniteScroll($coursecardsul.get(0), {
+                    infScroll = new InfiniteScroll($coursecardsul.get(0), {
                         path: 'page{{#}}', // hack
                         loadOnScroll: false, // disable loading
                         history: false,
                         onInit: function () {
-                            console.log('cardsInfScroll init');
+                            console.log('Infinite Scroll init');
                         }
                     });
 
-                    cardsScrollEventHandlerOn(true);
+                    infScroll.on('scrollThreshold', scrollThresholdHandler);
 
                     $navtabs = $('.nav-tabs').eq(0);
                     $('a[data-toggle="tab"]').on('shown', tabChangeHandler);
 
-                    // sortedCourseDisplayUpdate();
+                    updateCourseDisplay();
                 });
         };
 
-        /**
-         * Render the list area with a template with the given data.
-         *
-         * @param {Array|object} context The data for the template
-         */
-        var renderListArea = function (context) {
-            templates
-                .render('local_course_search/course_search_course_list', context)
-                .done(function (html) {
-                    $listarea.html(html);
-
-                    $courselisttable = $resultarea.find('#course-list');
-                    listrendered = true;
-
-                    // Init infinite scroll.
-                    listInfScroll = new InfiniteScroll($courselisttable.get(0), {
-                        path: 'page{{#}}', // hack
-                        loadOnScroll: false, // disable loading
-                        history: false,
-                        onInit: function () {
-                            console.log('listInfScroll init');
-                        }
-                    });
-
-                    listScrollEventHandlerOn(true);
-
-                    // sortedCourseDisplayUpdate();
-                });
-        };
-
-        /**
-         * Turn the card scroll event handler on/off.
-         *
-         * param {bool} state The desired state
-         */
-        var cardsScrollEventHandlerOn = function (state) {
-            if (!cardsInfScroll) {
-                return;
-            }
-
-            if (state) {
-                cardsInfScroll.on('scrollThreshold', cardsScrollThresholdHandler);
-            } else {
-                cardsInfScroll.off('scrollThreshold', cardsScrollThresholdHandler);
-            }
-        };
-
-        /**
-         * Turn the list scroll event handler on/off.
-         *
-         * param {bool} state The desired state
-         */
-        var listScrollEventHandlerOn = function (state) {
-            if (!listInfScroll) {
-                return;
-            }
-
-            if (state) {
-                listInfScroll.on('scrollThreshold', listScrollThresholdHandler);
-            } else {
-                listInfScroll.off('scrollThreshold', listScrollThresholdHandler);
-            }
-        };
 
         /**
          * Render the next set of cards.
@@ -228,25 +139,17 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
          *
          * Add content if there is more.
          */
-        var cardsScrollThresholdHandler = function () {
-            if (cardcourseidsremaining.length) {
-                console.log('card more courses');
+        var scrollThresholdHandler = function () {
+            // console.log('Scroll at bottom.', this);
+            if (courseidsremaining.length) {
+                console.log('more courses');
             } else {
-                console.log('card all shown');
-                cardsScrollEventHandlerOn(false);
+                console.log('all shown');
                 return;
             }
 
-            cardsAddNextItems();
-        };
-
-        /**
-         * Add the next cards to the view if there is more.
-         */
-        var cardsAddNextItems = function (amount) {
-            var set = amount === undefined ? cardsset : amount,
-                context = {'courses': []},
-                nextids = cardcourseidsremaining.splice(0, set);
+            var context = {'courses': []},
+                nextids = courseidsremaining.splice(0, 6);
 
             context.courses = nextids.map(function (k) {
                 return courses[k];
@@ -257,44 +160,6 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                     .render('local_course_search/course_search_course_card_set', context)
                     .done(function (html) {
                         $coursecardsul.append(html);
-                    });
-            }
-        };
-
-        /**
-         * Handle the InfinitScroll scrollThreshold event.
-         *
-         * Add content if there is more.
-         */
-        var listScrollThresholdHandler = function () {
-            if (listcourseidsremaining.length) {
-                console.log('list more courses');
-            } else {
-                console.log('list all shown');
-                listScrollEventHandlerOn(false);
-                return;
-            }
-
-            listAddNextRows();
-        };
-
-        /**
-         * Add the next rows to the view if there is more.
-         */
-        var listAddNextRows = function (amount) {
-            var set = amount === undefined ? listset : amount,
-                context = {'courses': []},
-                nextids = listcourseidsremaining.splice(0, set);
-
-            context.courses = nextids.map(function (k) {
-                return courses[k];
-            });
-
-            if (context.courses.length) {
-                templates
-                    .render('local_course_search/course_search_course_list_set', context)
-                    .done(function (html) {
-                        $courselisttable.children('tbody').append(html);
                     });
             }
         };
@@ -365,10 +230,6 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                     .find('[data-group="tags"]')
                     .addClass('hidden');
 
-                $actualCourseCountInfo.hide();
-                cardsScrollEventHandlerOn(false);
-                listScrollEventHandlerOn(false);
-
                 // Remove all search criteria.
                 $coursesearchfield.blur();
                 $tagarea
@@ -398,29 +259,8 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
 
             if (target === '#tabcards') {
                 $showtagscheckbox.addClass('hidden');
-                listScrollEventHandlerOn(false);
-                cardsScrollEventHandlerOn(true);
-
-                if (!$coursecardsul.children('li').length) {
-                    cardsAddNextItems(cardsfirst);
-                }
             } else if (target === '#tablist') {
                 $showtagscheckbox.removeClass('hidden');
-                cardsScrollEventHandlerOn(false);
-                listScrollEventHandlerOn(true);
-
-                if (!listrendered) {
-                    var nextids = listcourseidsremaining.splice(0, listfirst);
-                    renderListArea({
-                        'courses': nextids.map(function (k) {
-                            return courses[k];
-                        })
-                    });
-                } else {
-                    if (!$courselisttable.children('tbody').children('tr').length) {
-                        listAddNextRows(listfirst);
-                    }
-                }
             }
         };
 
@@ -464,7 +304,7 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
             }
 
             filterCourses();
-            // sortedCourseDisplayUpdate();
+            updateCourseDisplay();
         };
 
         /**
@@ -530,7 +370,7 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                 filterCourses();
             }
 
-            sortedCourseDisplayUpdate();
+            updateCourseDisplay();
         };
 
         /**
@@ -626,7 +466,7 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
             } else if ($ele.data('type') === 'course') {
                 filterCourses();
             } else if ($ele.data('type') === 'display') {
-                // sortedCourseDisplayUpdate();
+                updateCourseDisplay();
             }
         };
 
@@ -853,84 +693,7 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
          *
          * Get the active sort criteria and sort the courses.
          */
-        var sortedCourseDisplayUpdate = function () {
-            var $list = null,
-                $sortedlist = null,
-                selectedDisplayTags = getSelectedDisplayTags(),
-                what = 'name',
-                $coltitle = null;
-
-            // Check if the coursesSortArray has been prepared.
-            if (!coursesSortArray.length) {
-                var prop;
-
-                for (prop in courses) {
-                    if (courses.hasOwnProperty(prop)) {
-                        coursesSortArray.push({
-                            'id': courses[prop].id,
-                            'sortorder': courses[prop].sortorder,
-                            'sortdate': courses[prop].sortdate,
-                            'availnumber': courses[prop].availnumber,
-                            'deadline': courses[prop].deadline,
-                            'municipality': (courses[prop].municipality) ?
-                                courses[prop].municipality.toLowerCase() : '',
-                            'location': (courses[prop].location) ?
-                                courses[prop].location.toLowerCase() : ''
-                        });
-                    }
-                }
-            }
-
-            // The sort function for the course sort, compare on the defined data attribute.
-            var sortFkt = function (a, b) {
-                if (sortascstate) {
-                    return (b[col2sortfieldmap[what]] < a[col2sortfieldmap[what]]) ? 1 : -1;
-                } else {
-                    return (b[col2sortfieldmap[what]] > a[col2sortfieldmap[what]]) ? 1 : -1;
-                }
-            };
-
-            if (selectedDisplayTags.indexOf('tags') !== -1) {
-                $resultarea.find(".course-list").removeClass('tags-hidden');
-            } else {
-                $resultarea.find(".course-list").addClass('tags-hidden');
-            }
-
-            sortascstate = selectedDisplayTags.indexOf('sortdesc') === -1;
-
-            selectedDisplayTags.forEach(function (item) {
-                if (item.indexOf('sort-') !== -1) {
-                    what = item.replace('sort-', '');
-                }
-            });
-
-            // Set the CSS class to show the sort arrow.
-            $resultarea.find('.course-list-col-titles').find('.sortasc').removeClass('sortasc');
-            $resultarea.find('.course-list-col-titles').find('.sortdesc').removeClass('sortdesc');
-
-            $coltitle = $resultarea.find('.course-list-col-titles').find('[data-sort="' + what + '"]');
-            if (sortascstate) {
-                $coltitle.addClass('sortasc');
-            } else {
-                $coltitle.addClass('sortdesc');
-            }
-
-            coursesSortArray.sort(sortFkt);
-
-            courseids = [];
-            coursesSortArray.forEach(function (item) {
-                courseids.push('c' + item.id);
-            });
-
-            filterCourses();
-        };
-
-        /**
-         * Sort the displayed courses.
-         *
-         * Get the active sort criteria and sort the courses.
-         */
-        var sortedCourseDisplayUpdate_o = function () {
+        var updateCourseDisplay = function () {
             var $list = null,
                 $sortedlist = null,
                 selectedDisplayTags = getSelectedDisplayTags(),
@@ -1009,7 +772,7 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
             // If no search criterion is set show all courses.
             if (!Object.keys(selectedCourseTagsGrouped).length && '' === searchText &&
                 fromtoDates.from === null && fromtoDates.to === null) {
-                showFilteredCourses(courseIDsFiltered);
+                showHideCourses(courseIDsFiltered);
                 return;
             }
 
@@ -1087,68 +850,7 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                 courseIDsFiltered = [-1];
             }
 
-            showFilteredCourses(courseIDsFiltered);
-        };
-
-        /**
-         * Set the visibility of the courses in the cards and list view.
-         *
-         * @param {Array} courseIDsToShow The list of course ids to show
-         */
-        var showFilteredCourses = function (courseIDsToShow) {
-            var context,
-                nextids;
-
-            // Clear the course display.
-            $coursecardsul.html('');
-            if ($courselisttable) {
-                $courselisttable.children('tbody').html('');
-            }
-
-            if (!courseIDsToShow.length || courseIDsToShow[0] === -1) {
-                cardcourseidsremaining = [];
-                listcourseidsremaining = [];
-                actualCourseCount = 0;
-                $actualCourseCount.text(actualCourseCount);
-            } else {
-                cardcourseidsremaining = cloneArray(courseIDsToShow);
-                listcourseidsremaining = cloneArray(courseIDsToShow);
-                actualCourseCount = courseIDsToShow.length;
-                $actualCourseCount.text(actualCourseCount);
-                context = {'courses': []};
-
-                if ($cardsarea.hasClass('active')) {
-                    nextids = cardcourseidsremaining.splice(0, cardsfirst);
-
-                    context.courses = nextids.map(function (k) {
-                        return courses[k];
-                    });
-
-                    if (context.courses.length) {
-                        templates
-                            .render('local_course_search/course_search_course_card_set', context)
-                            .done(function (html) {
-                                $coursecardsul.html(html);
-                                cardsScrollEventHandlerOn(true);
-                            });
-                    }
-                } else if ($listarea.hasClass('active')) {
-                    nextids = listcourseidsremaining.splice(0, listfirst);
-
-                    context.courses = nextids.map(function (k) {
-                        return courses[k];
-                    });
-
-                    if (context.courses.length) {
-                        templates
-                            .render('local_course_search/course_search_course_list_set', context)
-                            .done(function (html) {
-                                $courselisttable.children('tbody').html(html);
-                                listScrollEventHandlerOn(true);
-                            });
-                    }
-                }
-            }
+            showHideCourses(courseIDsFiltered);
         };
 
         /**
@@ -1208,17 +910,12 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                 // Create an array with the courses from the »courses« object.
                 // This has the courseid as keys and needs to be converted into an array of objects.
                 courseids = Object.keys(courses);
-                cardcourseidsremaining = courseids.slice();
-                listcourseidsremaining = courseids.slice();
+                courseidsremaining = courseids.slice();
 
-                actualCourseCount = courseids.length;
-                $actualCourseCount.text(actualCourseCount);
-                $actualCourseCountInfo.show();
-
-                console.log('courses', courses);
+                // console.log('courses', courses);
                 console.log('courseids', courseids.slice());
 
-                nextids = cardcourseidsremaining.splice(0, cardsfirst);
+                nextids = courseidsremaining.splice(0, 12);
                 renderDisplayArea({
                     'courses': nextids.map(function (k) {
                         return courses[k];
@@ -1227,47 +924,6 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
 
                 // And now get the course tags.
                 get_all_course_tags();
-            });
-        };
-
-        /**
-         * Get the course data for the user viewable courses via ajax.
-         */
-        var get_changed_coursedata = function () {
-            $.when(
-                ajax.call([
-                    {
-                        methodname: 'local_course_search_get_course_data',
-                        args: {
-                            userid: userid
-                        }
-                    }
-                ])[0]
-            ).then(function (response) {
-                var coursedata = JSON.parse(response.coursedata),
-                    context = {},
-                    nextids = [];
-
-                courses = coursedata.courses;
-
-                // Create an array with the courses from the »courses« object.
-                // This has the courseid as keys and needs to be converted into an array of objects.
-                coursesSortArray = [];
-                courseids = Object.keys(courses);
-                cardcourseidsremaining = courseids.slice();
-                listcourseidsremaining = courseids.slice();
-
-                actualCourseCount = courseids.length;
-                $actualCourseCount.text(actualCourseCount);
-                $actualCourseCountInfo.show();
-
-                console.log('changed courses', courses);
-                console.log('changed courseids', courseids.slice());
-
-                // View the cards and list the first set.
-                $navtabs.find('[href="#tabcards"]').trigger('click');
-                cardsScrollEventHandlerOn(true);
-                cardsAddNextItems(cardsfirst);
             });
         };
 
@@ -1294,14 +950,8 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                 var result = JSON.parse(response.result);
                 showtagliststate = !showtagliststate;
 
-                // Clear the course display.
-                $coursecardsul.html('');
-                if ($courselisttable) {
-                    $courselisttable.children('tbody').html('');
-                }
-
-                // Get the changed course data.
-                get_changed_coursedata();
+                $resultarea.html('');
+                get_coursedata(false);
 
                 $coursesearchform.find('.tag-group')
                     .not(':has(label.checkbox)')
@@ -1418,8 +1068,6 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                 log.debug('AMD module init.');
 
                 // Get the relevant DOM elements.
-                $actualCourseCount = $("#actualCourseCount");
-                $actualCourseCountInfo = $("#actualCourseCountInfo");
                 $catalogarea = $('#catalog-area');
                 userid = parseInt($catalogarea.data('userid'), 10);
                 $searcharea = $('#search-area');

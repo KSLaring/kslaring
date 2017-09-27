@@ -37,7 +37,7 @@
 @mediumWidth: 768px;
 
 #page-course-search {
-    #page-header {
+    #page-navbar {
         display: none;
     }
     // Basic rules.
@@ -153,6 +153,9 @@
     }
     // Display area.
     #display-area {
+        #actualCourseCountInfo {
+            display: none;
+        }
         .section-hidden {
             display: none;
         }
@@ -229,11 +232,11 @@
                 cursor: pointer;
 
                 &.sortasc {
-                    background: transparent url("/pix/t/down.svg") 0 50% no-repeat;
+                    background: transparent url(~"[[pix:t/down]]") 0 50% no-repeat;
                     padding-left: 16px;
                 }
                 &.sortdesc {
-                    background: transparent url("/pix/t/up.svg") 0 50% no-repeat;
+                    background: transparent url(~"[[pix:t/up]]") 0 50% no-repeat;
                     padding-left: 16px;
                 }
             }
@@ -298,12 +301,17 @@
             min-height: 17em;
             padding: .5em 2%;
             vertical-align: top;
-            width: 27%;
+            width: 26.5%;
 
             &.hide-item {
                 display: none;
             }
             .course-img {
+                //background-color: @kommitMenuBg;
+                background: @kommitMenuBg 50% 50% no-repeat;
+                background-size: cover;
+                border: 1px solid @kommitGrayWarm;
+                height: 8em;
                 text-align: center;
 
                 img {

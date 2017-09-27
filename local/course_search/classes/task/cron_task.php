@@ -60,32 +60,44 @@ class cron_task extends \core\task\scheduled_task {
      * Save a lowercase text of the course infromation for a fulltext search.
      */
     protected function course_search_cron() {
-        global $CFG, $USER, $DB, $PAGE;
+        global $DB;
         $indexrecord = null;
         $sql = 'SELECT
         	id,
         	fullname,
         	shortname,
         	summary,
+        	startdate,
         	summaryformat
         FROM
         	{course}
         WHERE
-        	category != 0';
+        	category != 0
+        ORDER BY 
+            fullname collate utf8_danish_ci ASC';
+
+        mtrace('Indexing courses ...');
 
         if (!$result = $DB->get_records_sql($sql)) {
             mtrace('No courses to index.');
             return null;
         };
 
-        mtrace('Indexing courses ...');
+        $courseids = array_keys($result);
 
+        $sortcounter = 0;
+        $courses = new \local_course_search\output\courses();
         foreach ($result as $row) {
+            $alltext = $this->course_search_alltext($row);
             $indexrecord = (object)array(
                 'course' => $row->id,
-                'alltext' => $this->course_search_alltext($row),
+                'fullname' => $row->fullname,
+                'alltext' => $alltext,
+                'json' => $courses->get_course_json_for_cron($row, $alltext, $sortcounter),
                 'timemodified' => time(),
             );
+
+            $sortcounter++;
 
             if ($id = $DB->get_field('local_course_search', 'id', array('course' => $row->id))) {
                 $indexrecord->id = $id;
@@ -94,6 +106,13 @@ class cron_task extends \core\task\scheduled_task {
                 $DB->insert_record('local_course_search', $indexrecord);
             }
         }
+
+        // Delete old entries from not exisitng courses.
+        list($insql, $inparams) = $DB->get_in_or_equal($courseids);
+        $sql =  "Delete from {local_course_search}
+                 WHERE course NOT " . $insql;
+
+        $DB->execute($sql, $inparams);
     }
 
     /**
@@ -124,7 +143,7 @@ class cron_task extends \core\task\scheduled_task {
         }
 
         // Remove all carriage returns.
-        $text = str_replace("\n", ' ', $text);
+        $text = str_replace(array("\n", "\r"), ' ', $text);
 
         return $text;
     }

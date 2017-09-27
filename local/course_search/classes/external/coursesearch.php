@@ -61,7 +61,8 @@ class coursesearch extends external_api {
         } else {
             $PAGE->set_context(\context_system::instance());
             $courses = new \local_course_search\output\courses();
-            $coursedata = json_encode(array('courses' => $courses->export_course_data()));
+            //$coursedata = json_encode(array('courses' => $courses->export_course_data()));
+            $coursedata = $courses->export_json_course_data();
         }
 
         $result['coursedata'] = $coursedata;

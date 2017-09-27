@@ -9,6 +9,15 @@ define(['core/url'], function (url) {
             'bootstrap-datepicker.min': {
                 deps: ['jquery', 'theme_bootstrapbase/bootstrap'],
                 exports: 'bootstrap-datepicker'
+            },
+            'infinite-scroll.pkgd': {
+                deps: ['jquery'],
+                // exports: 'InfiniteScroll'
+                exports: 'jQuery.fn.infiniteScroll'
+            },
+            'jquery-bridget/jquery-bridget': {
+                deps: ['jquery'],
+                exports: 'jQueryBridget'
             }
         }
     });
