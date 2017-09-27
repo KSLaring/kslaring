@@ -785,6 +785,7 @@
 }
 
 .outcome_rpt_div .course_list td.head_first,
+.outcome_rpt_div .course_list th.head_first,
 .outcome_rpt_div .company_level td.head_first {
     width: 2%;
     text-align: left;
@@ -792,6 +793,7 @@
 }
 
 .outcome_rpt_div .course_list td.head_course,
+.outcome_rpt_div .course_list th.head_course,
 .outcome_rpt_div .company_level td.head_company {
     width: 35%;
     text-align: left;
@@ -799,6 +801,7 @@
 }
 
 .outcome_rpt_div .course_list td.head_status,
+.outcome_rpt_div .course_list th.head_status,
 .outcome_rpt_div .company_level td.head_status {
     width: 15%;
     text-align: center;
