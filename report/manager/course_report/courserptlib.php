@@ -325,6 +325,8 @@ class course_report {
             // Get the rest of data to displat
             // Users and status of each user by company
             if ($rptcourse) {
+                echo "rptcourse I : " . $rptcourse->id . "</br>";
+
                 $selzero = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'0'];
 
                 // Get companies connected with user by level
@@ -345,6 +347,7 @@ class course_report {
                 $rptcourse->rpt                 = $data_form['rpt'];
                 $rptcourse->completed_before    = $data_form[REPORT_MANAGER_COMPLETED_LIST];
 
+                // Get level basic info
                 switch ($data_form['rpt']) {
                     case 1:
                         // Level one
@@ -379,93 +382,7 @@ class course_report {
                         break;
                 }//switch_rpt
 
-                // Companies with employees
-                $coemployees = self::GetCompaniesEmployees($data_form,$inOne,$inTwo,$inThree);
-                if ($coemployees) {
-                    // Check level
-                    switch ($data_form['rpt']) {
-                        case 0:
-                            // Level zero
-                            // Get info connected with level zero
-                            if ($coemployees->levelone) {
-                                echo "COURSE LEVEL O --> " . $rptcourse->id . "</br>";
-                                self::get_reportinfo_levelone($rptcourse,$coemployees);
-                            }else {
-                                $rptcourse->levelone = null;
-                            }//if_levelOne
-
-                            break;
-                        case 1:
-                            // Get info connected with level one
-                            if ($coemployees->leveltwo) {
-                                $levelTwo = CompetenceManager::GetCompaniesInfo($coemployees->leveltwo);
-                                if ($levelTwo) {
-                                    $levelOne->leveltwo = self::get_reportinfo_leveltwo($rptcourse->id,$levelTwo,$coemployees->levelthree);
-
-                                    if ($levelOne->leveltwo) {
-                                        $rptcourse->levelone[$levelOne->id] = $levelOne;
-                                    } else {
-                                        $levelOne->leveltwo = null;
-                                        $rptcourse->levelone[$levelOne->id] = $levelOne;
-                                    }
-                                } else {
-                                    $levelOne->leveltwo = null;
-                                    $rptcourse->levelone[$levelOne->id] = $levelOne;
-                                }//if_level_two_companies
-                            }//if_leveltwo
-
-                            break;
-
-                        case 2:
-                            // Get level three connected with
-                            if ($coemployees->levelthree) {
-                                $levelthree = self::get_companies_by_level(3,$levelTwo->id ,$coemployees->levelthree);
-
-                                if ($levelthree) {
-                                    $levelTwo->levelthree      = self::get_reportinfo_levelthree_by_two($rptcourse->id,$levelthree);
-                                    if ($levelTwo->levelthree) {
-                                        $rptcourse->leveltwo[$levelTwo->id] = $levelTwo;
-                                    }else {
-                                        $levelTwo->levelthree = null;
-                                        $rptcourse->leveltwo[$levelTwo->id] = $levelTwo;
-                                    }
-                                }else {
-                                    $levelTwo->levelthree = null;
-                                    $rptcourse->leveltwo[$levelTwo->id] = $levelTwo;
-                                }//if_level_two_companies
-                            }else {
-                                $levelTwo->levelthree = null;
-                                $rptcourse->leveltwo[$levelTwo->id] = $levelTwo;
-                            }//if_companies_employees_levelthree
-
-                            break;
-                        case 3:
-
-                            // Get level three connected with
-                            if ($coemployees->levelthree) {
-                                $levelthree = self::get_companies_by_level(3,$levelTwo->id ,$coemployees->levelthree);
-
-                                if ($levelthree) {
-                                    $three     = self::get_reportinfo_levelthree($rptcourse->id,$levelthree);
-                                    if ($three) {
-                                        $rptcourse->levelthree = $three;
-                                    }else {
-                                        $rptcourse->levelthree = null;
-                                    }
-                                }else {
-                                    $rptcourse->levelthree = null;
-                                }//if_level_two_companies
-                            }else {
-                                $rptcourse->levelthree = null;
-                            }//if_companies_employees_levelthree
-
-                            break;
-                        default:
-                            $rptcourse = null;
-
-                            break;
-                    }//switch_rpt
-                }//if_companies_with employees
+                echo "rptcourse II : " . $rptcourse->id . "</br>";
             }//if_course_report
 
             return $rptcourse;
