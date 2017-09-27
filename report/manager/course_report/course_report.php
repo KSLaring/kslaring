@@ -31,8 +31,6 @@
  *
  */
 
-global $CFG,$PAGE,$SESSION,$SITE,$OUTPUT,$USER;
-
 require_once('../../../config.php');
 require_once( 'courserptlib.php');
 require_once( '../managerlib.php');
@@ -40,14 +38,13 @@ require_once($CFG->libdir . '/adminlib.php');
 
 require_login();
 
-// Params
+/* Params */
 $url        = new moodle_url('/report/manager/course_report/course_report.php');
 $return_url = new moodle_url('/report/manager/index.php');
 
 $site_context = CONTEXT_SYSTEM::instance();
 $site = get_site();
 
-// Page settings
 $PAGE->https_required();
 $PAGE->set_context($site_context);
 
@@ -59,40 +56,39 @@ $PAGE->set_heading($SITE->fullname);
 $PAGE->navbar->add(get_string('report_manager','local_tracker_manager'),$return_url);
 $PAGE->navbar->add(get_string('course_report', 'report_manager'),$url);
 
+unset($SESSION->parents);
+unset($SESSION->selection);
+
+/* ADD require_capability */
+if (!CompetenceManager::IsReporter($USER->id)) {
+    require_capability('report/manager:viewlevel3', $site_context);
+}
+
 if (empty($CFG->loginhttps)) {
     $secure_www_root = $CFG->wwwroot;
 } else {
     $secure_www_root = str_replace('http:','https:',$CFG->wwwroot);
 }//if_security
 
-
+/* Start the page */
 $PAGE->verify_https_required();
 
-unset($SESSION->parents);
-unset($SESSION->selection);
-
-// Capability
-if (!CompetenceManager::IsReporter($USER->id)) {
-    require_capability('report/manager:viewlevel3', $site_context);
-}
-
-// Header
+/* Print Header */
 echo $OUTPUT->header();
-
-// Tabs at the top
+/* Print tabs at the top */
 $current_tab = 'manager_reports';
 $show_roles = 1;
 require('../tabs.php');
 
-// Heading - title
+/* Print Title */
 echo $OUTPUT->heading(get_string('course_report', 'report_manager'));
 
-// Levels report links
+/* Report Levels Links  */
 course_report::CleanTemporary();
 CompetenceManager::GetLevelLink_ReportPage('course_report',$site_context);
 
 echo "</br>";
 echo "<a href='" . $return_url ."' class='button_reports'>" . get_string('back') . "</a>";
 
-// Footer
+/* Print Fo>r */
 echo $OUTPUT->footer();

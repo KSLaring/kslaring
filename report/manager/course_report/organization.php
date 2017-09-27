@@ -32,9 +32,7 @@ define('AJAX_SCRIPT', true);
 require_once('../../../config.php');
 require_once('../managerlib.php');
 
-global $PAGE,$USER,$OUTPUT;
-
-// Params
+/* PARAMS   */
 $parent         = optional_param('parent',0,PARAM_INT);
 $levelZero      = optional_param('levelZero',0,PARAM_INT);
 $level          = required_param('level',PARAM_INT);
@@ -52,17 +50,18 @@ $infoCompany    = null;
 $context        = context_system::instance();
 $url            = new moodle_url('/report/manager/course_report/organization.php');
 
+global $PAGE,$USER;
 
 $PAGE->set_context($context);
 $PAGE->set_url($url);
 
-// Check correct access
+/* Check the correct access */
 require_login();
 require_sesskey();
 
 echo $OUTPUT->header();
 
-// Get data
+/* Get Data */
 $data       = array('name' => COMPANY_STRUCTURE_LEVEL . $level, 'items' => array(),'clean' => array());
 $toClean    = array();
 
@@ -117,55 +116,64 @@ switch ($reportLevel) {
 }//switch_reportLevel
 $data['clean'] = $toClean;
 
-// Get comapnies by level
-// My hierarchy
-$IsReporter     = CompetenceManager::IsReporter($USER->id);
-$myHierarchy    = CompetenceManager::get_MyHierarchyLevel($USER->id,$context,$IsReporter,$reportLevel);
+/* Get My Companies by Level    */
+/* My Hierarchy */
+$IsReporter = CompetenceManager::IsReporter($USER->id);
+$myHierarchy = CompetenceManager::get_MyHierarchyLevel($USER->id,$context,$IsReporter,$reportLevel);
 if ($IsReporter) {
-    $myLevelZero  = implode(',',array_keys($myHierarchy->competence));
-    $myLevelOne   = $myHierarchy->competence[$levelZero]->levelone;
-    $myLevelTwo   = $myHierarchy->competence[$levelZero]->leveltwo;
-    $myLevelThree = $myHierarchy->competence[$levelZero]->levelthree;
+    $myLevelZero  = array_keys($myHierarchy->competence);
+    $myLevelOne   = $myHierarchy->competence[$levelZero]->levelOne;
+    $myLevelTwo   = $myHierarchy->competence[$levelZero]->levelTwo;
+    $myLevelThree = $myHierarchy->competence[$levelZero]->levelThree;
 }else {
-    list($myLevelZero,$myLevelOne,$myLevelTwo,$myLevelThree) = CompetenceManager::get_mycompanies_by_level($myHierarchy->competence);
+    list($myLevelZero,$myLevelOne,$myLevelTwo,$myLevelThree) = CompetenceManager::GetMyCompanies_By_Level($myHierarchy->competence,$myHierarchy->my_level);
 }//if_IsReporter
 
 switch ($level) {
     case 0:
-        $myCompanies = $myLevelZero;
+        if ($myLevelZero) {
+            $myCompanies = implode(',',$myLevelZero);
+        }//if_myLevelZero
 
         break;
     case 1:
-        $myCompanies = $myLevelOne;
+        if ($myLevelOne) {
+            $myCompanies = implode(',',$myLevelOne);
+        }//if_myLevelZero
 
         break;
     case 2:
-        $myCompanies = $myLevelTwo;
+        if ($myLevelTwo) {
+            $myCompanies = implode(',',$myLevelTwo);
+        }//if_myLevelZero
 
         break;
     case 3:
-        $myCompanies = $myLevelThree;
+        if ($myLevelThree) {
+            $myCompanies = implode(',',$myLevelThree);
+        }//if_myLevelZero
 
         break;
 }//switch_level
 
-// Get companies list
+/* Get Companies List   */
 if ($parent) {
     $options = CompetenceManager::GetCompanies_LevelList($level,$parent,$myCompanies);
 }else {
     $options[0] = get_string('select_level_list','report_manager');
 }//if_parent
+
 foreach ($options as $companyId => $company) {
-    // Company info
+    /* Info Company */
     $infoCompany            = new stdClass;
     $infoCompany->id        = $companyId;
     $infoCompany->name      = $company;
 
-    // Add company
+    /* Add Company*/
     $data['items'][$infoCompany->name] = $infoCompany;
 }
 
-// Encode and send
+/* Encode and Send */
 $json[] = $data;
 echo json_encode(array('results' => $json));
 
