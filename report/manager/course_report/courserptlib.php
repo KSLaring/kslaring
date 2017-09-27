@@ -300,7 +300,9 @@ class course_report {
     public static function Get_CourseReportLevel($data_form,$my_hierarchy,$IsReporter) {
         /* Variables    */
         $companies_report   = null;
-        $course_report      = null;
+
+        $rptcourse      = null;
+
         $course_id          = null;
         $job_role_list      = null;
         $levelZero          = null;
@@ -316,15 +318,12 @@ class course_report {
 
         try {
             // Course Report - Basic Information
-            $course_id      = $data_form[REPORT_MANAGER_COURSE_LIST];
-            $course_report  = self::Get_CourseBasicInfo($course_id);
-
-            // Clean temporary data
-            self::CleanTemporary($course_id);
+            $course_id  = $data_form[REPORT_MANAGER_COURSE_LIST];
+            $rptcourse  = self::Get_CourseBasicInfo($course_id);
 
             // Get the rest of data to displat
             // Users and status of each user by company
-            if ($course_report) {
+            if ($rptcourse) {
                 $selzero = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'0'];
 
                 // Get companies connected with user by level
@@ -337,16 +336,16 @@ class course_report {
                 }//if_reporter
 
                 // Job roles selected
-                $course_report->job_roles = self::Get_JobRolesCourse_Report($data_form);
+                $rptcourse->job_roles = self::Get_JobRolesCourse_Report($data_form);
+
 
                 //Common for all levels
-                $course_report->levelzero           = $selzero;
-                $course_report->zero_name           = CompetenceManager::GetCompany_Name($selzero);
-                $course_report->rpt                 = $data_form['rpt'];
-                $course_report->completed_before    = $data_form[REPORT_MANAGER_COMPLETED_LIST];
-                $course_report->levelone            = null;
-                $course_report->leveltwo            = null;
-                $course_report->levelthree          = null;
+                $rptcourse->levelzero           = $selzero;
+                $rptcourse->zero_name           = CompetenceManager::GetCompany_Name($selzero);
+                $rptcourse->rpt                 = $data_form['rpt'];
+                $rptcourse->completed_before    = $data_form[REPORT_MANAGER_COMPLETED_LIST];
+
+                // Get level basic info
                 switch ($data_form['rpt']) {
                     case 1:
                         // Level one
@@ -354,7 +353,7 @@ class course_report {
                         $levelOne->id                           = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'1'];
                         $levelOne->name                         = CompetenceManager::GetCompany_Name($levelOne->id);
                         $levelOne->leveltwo                     = null;
-                        $course_report->levelone[$levelOne->id] = $levelOne;
+                        $rptcourse->levelone[$levelOne->id] = $levelOne;
 
                         break;
 
@@ -365,18 +364,14 @@ class course_report {
                         $levelOne->id                               = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'1'];
                         $levelOne->name                             = CompetenceManager::GetCompany_Name($levelOne->id);
                         $levelOne->leveltwo                         = null;
-                        $course_report->levelone[$levelOne->id]     = $levelOne;
+                        $rptcourse->levelone[$levelOne->id]     = $levelOne;
 
                         // Level two
                         $levelTwo = new stdClass();
                         $levelTwo->id                           = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'2'];
                         $levelTwo->name                         = CompetenceManager::GetCompany_Name($levelTwo->id );
                         $levelTwo->levelthree                   = null;
-                        $course_report->leveltwo[$levelTwo->id] = $levelTwo;
-
-                        break;
-                    default:
-                        $course_report = null;
+                        $rptcourse->leveltwo[$levelTwo->id] = $levelTwo;
 
                         break;
                 }//switch_rpt
@@ -390,9 +385,9 @@ class course_report {
                             // Level zero
                             // Get info connected with level zero
                             if ($coemployees->levelone) {
-                                self::get_reportinfo_levelone($course_report,$coemployees);
+                                self::get_reportinfo_levelone($rptcourse,$coemployees);
                             }else {
-                                $course_report->levelone = null;
+                                $rptcourse->levelone = null;
                             }//if_levelOne
 
                             break;
@@ -401,17 +396,17 @@ class course_report {
                             if ($coemployees->leveltwo) {
                                 $levelTwo = CompetenceManager::GetCompaniesInfo($coemployees->leveltwo);
                                 if ($levelTwo) {
-                                    $levelOne->leveltwo = self::get_reportinfo_leveltwo($course_report->id,$levelTwo,$coemployees->levelthree);
+                                    $levelOne->leveltwo = self::get_reportinfo_leveltwo($rptcourse->id,$levelTwo,$coemployees->levelthree);
 
                                     if ($levelOne->leveltwo) {
-                                        $course_report->levelone[$levelOne->id] = $levelOne;
+                                        $rptcourse->levelone[$levelOne->id] = $levelOne;
                                     } else {
                                         $levelOne->leveltwo = null;
-                                        $course_report->levelone[$levelOne->id] = $levelOne;
+                                        $rptcourse->levelone[$levelOne->id] = $levelOne;
                                     }
                                 } else {
                                     $levelOne->leveltwo = null;
-                                    $course_report->levelone[$levelOne->id] = $levelOne;
+                                    $rptcourse->levelone[$levelOne->id] = $levelOne;
                                 }//if_level_two_companies
                             }//if_leveltwo
 
@@ -423,20 +418,20 @@ class course_report {
                                 $levelthree = self::get_companies_by_level(3,$levelTwo->id ,$coemployees->levelthree);
 
                                 if ($levelthree) {
-                                    $levelTwo->levelthree      = self::get_reportinfo_levelthree_by_two($course_report->id,$levelthree);
+                                    $levelTwo->levelthree      = self::get_reportinfo_levelthree_by_two($rptcourse->id,$levelthree);
                                     if ($levelTwo->levelthree) {
-                                        $course_report->leveltwo[$levelTwo->id] = $levelTwo;
+                                        $rptcourse->leveltwo[$levelTwo->id] = $levelTwo;
                                     }else {
                                         $levelTwo->levelthree = null;
-                                        $course_report->leveltwo[$levelTwo->id] = $levelTwo;
+                                        $rptcourse->leveltwo[$levelTwo->id] = $levelTwo;
                                     }
                                 }else {
                                     $levelTwo->levelthree = null;
-                                    $course_report->leveltwo[$levelTwo->id] = $levelTwo;
+                                    $rptcourse->leveltwo[$levelTwo->id] = $levelTwo;
                                 }//if_level_two_companies
                             }else {
                                 $levelTwo->levelthree = null;
-                                $course_report->leveltwo[$levelTwo->id] = $levelTwo;
+                                $rptcourse->leveltwo[$levelTwo->id] = $levelTwo;
                             }//if_companies_employees_levelthree
 
                             break;
@@ -447,29 +442,29 @@ class course_report {
                                 $levelthree = self::get_companies_by_level(3,$levelTwo->id ,$coemployees->levelthree);
 
                                 if ($levelthree) {
-                                    $three     = self::get_reportinfo_levelthree($course_report->id,$levelthree);
+                                    $three     = self::get_reportinfo_levelthree($rptcourse->id,$levelthree);
                                     if ($three) {
-                                        $course_report->levelthree = $three;
+                                        $rptcourse->levelthree = $three;
                                     }else {
-                                        $course_report->levelthree = null;
+                                        $rptcourse->levelthree = null;
                                     }
                                 }else {
-                                    $course_report->levelthree = null;
+                                    $rptcourse->levelthree = null;
                                 }//if_level_two_companies
                             }else {
-                                $course_report->levelthree = null;
+                                $rptcourse->levelthree = null;
                             }//if_companies_employees_levelthree
 
                             break;
                         default:
-                            $course_report = null;
+                            $rptcourse = null;
 
                             break;
                     }//switch_rpt
                 }//if_companies_with employees
             }//if_course_report
 
-            return $course_report;
+            return $rptcourse;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -834,7 +829,7 @@ class course_report {
                 }//if_$three
             }//for_companies_level_Two
 
-            return $two;
+            return $leveltwo;
         }catch (Exception $ex) {
             throw $ex;
         }//try_cath
@@ -1075,7 +1070,7 @@ class course_report {
                         AND cue.id IS NULL ";
 
             // Execute
-            $rdo = $DB->get_record_sql($sql,$params);
+            $rdo = $DB->get_records_sql($sql,$params);
 
             return $rdo;
         }catch (Exception $ex) {
@@ -1195,42 +1190,37 @@ class course_report {
     private static function Get_CourseBasicInfo($course_id) {
         /* Variables    */
         global $DB;
-        $course_report  = null;
         $params         = array();
 
         try {
-            /* Search Criteria  */
+            // Search criteria
             $params['course_id'] = $course_id;
 
-            /* SQL Instruction   */
-            $sql = " SELECT			DISTINCT c.id,
-                                             c.fullname,
-                                             GROUP_CONCAT(DISTINCT go.id ORDER BY go.fullname SEPARATOR ',') as 'outcomesid'
+            // SQL Instruction
+            $sql = " SELECT			DISTINCT 
+                                    c.id,
+                                    c.fullname as 'name',
+                                    GROUP_CONCAT(DISTINCT go.id ORDER BY go.fullname SEPARATOR ',') as 'outcomesid'
                      FROM 			{course}						c
                         LEFT JOIN	{grade_outcomes_courses}		oc		ON 		oc.courseid 	= c.id
                         LEFT JOIN	{grade_outcomes}				go		ON		go.id			= oc.outcomeid
                      WHERE		c.id = :course_id ";
 
-            /* Execute  */
+            // Execute
             $rdo = $DB->get_record_sql($sql,$params);
             if ($rdo) {
-                /* Course Report    */
-                $course_report = new stdClass();
-                $course_report->id             = $rdo->id;
-                $course_report->name           = $rdo->fullname;
-                $course_report->job_roles      = null;
-                $course_report->outcomes       = null;
+                $rdo->job_roles     = null;
+                $rdo->levelzero     = null;
+                $rdo->levelone      = null;
+                $rdo->leveltwo      = null;
+                $rdo->levelthree    = null;
+                $rdo->outcomes      = null;
                 if ($rdo->outcomesid) {
-                    $course_report->outcomes   = self::Get_OutcomeDetail($rdo->outcomesid);
+                    $rdo->outcomes   = self::Get_OutcomeDetail($rdo->outcomesid);
                 }//if_outcomes
+            }
 
-                $course_report->levelZero       = null;
-                $course_report->levelOne        = null;
-                $course_report->levelTwo        = null;
-                $course_report->levelThree      = null;
-            }//if_rdo
-
-            return $course_report;
+            return $rdo;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -1250,33 +1240,21 @@ class course_report {
     private static function Get_OutcomeDetail($outcomes) {
         /* Variables    */
         global $DB;
-        $outcomes_lst = array();
-        $outcome_info = null;
 
         try {
-            /* SQL Instruction */
+            // SQL Instruction
             $sql = " SELECT			DISTINCT  o.id,
-                                              o.fullname,
-                                              oe.expirationperiod
+                                              o.fullname          as 'name',
+                                              oe.expirationperiod as 'expiration'
                      FROM			{grade_outcomes}		    o
                         LEFT JOIN	{report_gen_outcome_exp}	oe	ON oe.outcomeid = o.id
                      WHERE			o.id IN ($outcomes)
                      ORDER BY		o.fullname ";
 
-            /* Execute  */
+            // Execute
             $rdo = $DB->get_records_sql($sql);
-            if ($rdo) {
-                foreach ($rdo as $outcome) {
-                    /* Outcome Info */
-                    $outcome_info = new stdClass();
-                    $outcome_info->name         = $outcome->fullname;
-                    $outcome_info->expiration   = $outcome->expirationperiod;
 
-                    $outcomes_lst[$outcome->id] = $outcome_info;
-                }//for_outcomes
-            }//if_rdo
-
-            return $outcomes_lst;
+            return $rdo;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -1491,6 +1469,7 @@ class course_report {
                     // Toogle
                     $url_img  = new moodle_url('/pix/t/expanded.png');
                     $out_report .= html_writer::start_tag('div',array('class' => 'outcome_content'));
+                        $urlthree = new moodle_url('/report/manager/course_report/course_report_level.php');
                         foreach ($levelOne as $idOne=>$one) {
                             $levelTwo = $one->leveltwo;
                             if ($levelTwo) {
@@ -1516,10 +1495,13 @@ class course_report {
                                                     $out_report .= self::Add_HeaderTable_LevelTwo_Screen();
                                                     // Content table
                                                     $out_report .= html_writer::start_tag('table');
+
                                                         foreach ($levelThree as $id_three=>$company) {
-                                                            $url_level_three = new moodle_url('/report/manager/course_report/course_report_level.php',
-                                                                                              array('rpt' => '3','co' => $id_three,'lt' => $level->id,'lo'=>$idOne,'opt' => $completed_option));
-                                                            $out_report .= self::Add_ContentTable_LevelTwo_Screen($url_level_three,$company,$color);
+                                                            $urlthree->remove_params();
+                                                            $urlthree->params(array('rpt' => '3','co' => $id_three,'lt' => $level->id,'lo'=>$idOne,
+                                                                'lz' =>$course_report->levelzero, 'c' => $course_report->id, 'opt' => $completed_option));
+
+                                                            $out_report .= self::Add_ContentTable_LevelTwo_Screen($urlthree,$company,$color);
 
                                                             // Change color
                                                             if ($color == 'r0') {
@@ -1655,6 +1637,7 @@ class course_report {
 
                     // Report info
                     $out_report .= html_writer::start_tag('div',array('class' => 'outcome_content'));
+                        $urlthree = new moodle_url('/report/manager/course_report/course_report_level.php');
                         foreach ($levelTwo as $id=>$level) {
                             $color = 'r0';
                             $levelThree = $level->levelthree;
@@ -1673,11 +1656,12 @@ class course_report {
                                         // Content table
                                         $out_report .= html_writer::start_tag('table');
                                             foreach ($levelThree as $id_three=>$company) {
-                                                $url_level_three = new moodle_url('/report/manager/course_report/course_report_level.php',
-                                                                                  array('rpt' => '3','co' => $id_three,'lt' => $level->id,'lo'=>$levelOne->id,'opt' => $completed_option));
+                                                $urlthree->remove_params();
+                                                $urlthree->params(array('rpt' => '3','co' => $id_three,'lt' => $level->id,'lo'=>$levelOne->id,
+                                                                        'lz' =>$course_report->levelzero,'c' => $course_report->id,'opt' => $completed_option));
 
                                                 // Company header
-                                                $out_report .= self::Add_ContentTable_LevelTwo_Screen($url_level_three,$company,$color);
+                                                $out_report .= self::Add_ContentTable_LevelTwo_Screen($urlthree,$company,$color);
 
                                                 // Change color
                                                 if ($color == 'r0') {
@@ -1822,10 +1806,12 @@ class course_report {
                             $out_report .= self::Add_HeaderTable_LevelTwo_Screen();
                             // Content table
                             $out_report .= html_writer::start_tag('table');
+                                $urlthree = new moodle_url('/report/manager/course_report/course_report_level.php');
                                 foreach ($levelThree as $id_three=>$company) {
-                                    $url_level_three = new moodle_url('/report/manager/course_report/course_report_level.php',
-                                                                      array('rpt' => '3','co' => $id_three,'lt' => $levelTwo->id,'lo'=>$levelOne->id,'opt' => $completed_option));
-                                    $out_report .= self::Add_ContentTable_LevelTwo_Screen($url_level_three,$company,$color);
+                                    $urlthree->remove_params();
+                                    $urlthree->params(array('rpt' => '3','co' => $id_three,'lt' => $levelTwo->id,'lo'=>$levelOne->id,
+                                                            'lz' =>$course_report->levelzero,'c' => $course_report->id,'opt' => $completed_option));
+                                    $out_report .= self::Add_ContentTable_LevelTwo_Screen($urlthree,$company,$color);
 
                                     // Change color
                                     if ($color == 'r0') {
