@@ -1216,6 +1216,7 @@ class course_report {
             // Execute
             $rdo = $DB->get_record_sql($sql,$params);
             if ($rdo) {
+                echo "RDO COurse --> " . $rdo->id . "</br>";
                 $rdo->job_roles     = null;
                 $rdo->levelZero     = null;
                 $rdo->levelOne      = null;
