@@ -829,7 +829,7 @@ class course_report {
                 }//if_$three
             }//for_companies_level_Two
 
-            return $two;
+            return $leveltwo;
         }catch (Exception $ex) {
             throw $ex;
         }//try_cath
