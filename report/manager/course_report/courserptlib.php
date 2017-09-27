@@ -1206,7 +1206,7 @@ class course_report {
             // SQL Instruction
             $sql = " SELECT			DISTINCT 
                                     c.id,
-                                    c.name,
+                                    c.fullaname as 'name',
                                     GROUP_CONCAT(DISTINCT go.id ORDER BY go.fullname SEPARATOR ',') as 'outcomesid'
                      FROM 			{course}						c
                         LEFT JOIN	{grade_outcomes_courses}		oc		ON 		oc.courseid 	= c.id
