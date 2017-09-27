@@ -1070,7 +1070,7 @@ class course_report {
                         AND cue.id IS NULL ";
 
             // Execute
-            $rdo = $DB->get_record_sql($sql,$params);
+            $rdo = $DB->get_records_sql($sql,$params);
 
             return $rdo;
         }catch (Exception $ex) {
