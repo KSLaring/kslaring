@@ -1496,7 +1496,7 @@ class course_report {
                                                     $out_report .= html_writer::start_tag('table');
                                                         foreach ($levelThree as $id_three=>$company) {
                                                             $url_level_three = new moodle_url('/report/manager/course_report/course_report_level.php',
-                                                                                              array('rpt' => '3','co' => $id_three,'lt' => $level->id,'lo'=>$idOne,'opt' => $completed_option));
+                                                                                              array('rpt' => '3','co' => $id_three,'lt' => $level->id,'lo'=>$idOne,'lz' =>$course_report->levelzero, 'opt' => $completed_option));
                                                             $out_report .= self::Add_ContentTable_LevelTwo_Screen($url_level_three,$company,$color);
 
                                                             // Change color
@@ -1652,7 +1652,7 @@ class course_report {
                                         $out_report .= html_writer::start_tag('table');
                                             foreach ($levelThree as $id_three=>$company) {
                                                 $url_level_three = new moodle_url('/report/manager/course_report/course_report_level.php',
-                                                                                  array('rpt' => '3','co' => $id_three,'lt' => $level->id,'lo'=>$levelOne->id,'opt' => $completed_option));
+                                                                                  array('rpt' => '3','co' => $id_three,'lt' => $level->id,'lo'=>$levelOne->id,'lz' =>$course_report->levelzero,'opt' => $completed_option));
 
                                                 // Company header
                                                 $out_report .= self::Add_ContentTable_LevelTwo_Screen($url_level_three,$company,$color);
@@ -1802,7 +1802,7 @@ class course_report {
                             $out_report .= html_writer::start_tag('table');
                                 foreach ($levelThree as $id_three=>$company) {
                                     $url_level_three = new moodle_url('/report/manager/course_report/course_report_level.php',
-                                                                      array('rpt' => '3','co' => $id_three,'lt' => $levelTwo->id,'lo'=>$levelOne->id,'opt' => $completed_option));
+                                                                      array('rpt' => '3','co' => $id_three,'lt' => $levelTwo->id,'lo'=>$levelOne->id,'lz' =>$course_report->levelzero,'opt' => $completed_option));
                                     $out_report .= self::Add_ContentTable_LevelTwo_Screen($url_level_three,$company,$color);
 
                                     // Change color
