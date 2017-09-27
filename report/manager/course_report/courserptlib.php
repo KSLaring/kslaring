@@ -341,11 +341,15 @@ class course_report {
                 // Job roles selected
                 $rptcourse->job_roles = self::Get_JobRolesCourse_Report($data_form);
 
+                echo "rptcourse II : " . $rptcourse->id . "</br>";
+
                 //Common for all levels
                 $rptcourse->levelzero           = $selzero;
                 $rptcourse->zero_name           = CompetenceManager::GetCompany_Name($selzero);
                 $rptcourse->rpt                 = $data_form['rpt'];
                 $rptcourse->completed_before    = $data_form[REPORT_MANAGER_COMPLETED_LIST];
+
+                echo "rptcourse III : " . $rptcourse->id . "</br>";
 
                 // Get level basic info
                 switch ($data_form['rpt']) {
@@ -382,7 +386,7 @@ class course_report {
                         break;
                 }//switch_rpt
 
-                echo "rptcourse II : " . $rptcourse->id . "</br>";
+                echo "rptcourse last : " . $rptcourse->id . "</br>";
             }//if_course_report
 
             return $rptcourse;
