@@ -110,7 +110,8 @@ class cron_task extends \core\task\scheduled_task {
         // Delete old entries from not exisitng courses.
         list($insql, $inparams) = $DB->get_in_or_equal($courseids);
         $sql =  "Delete from {local_course_search}
-                 WHERE course NOT " . $insql;
+                 WHERE course NOT " . $insql . "
+                    OR json IS NULL";
 
         $DB->execute($sql, $inparams);
     }
