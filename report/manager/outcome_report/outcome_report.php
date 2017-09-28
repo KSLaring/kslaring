@@ -83,15 +83,10 @@ require('../tabs.php');
 // Title
 echo $OUTPUT->heading(get_string('outcome_report', 'report_manager'));
 
-/**
 // Report levels links
 outcome_report::CleanTemporary();
 CompetenceManager::GetLevelLink_ReportPage('outcome_report',$site_context);
 
-**/
-echo get_string('underconstruction','report_manager');
-echo "</br></br></br>";
-echo "<a href='" . $return_url ."' class='button_reports'>" . get_string('back') . "</a>";
 
 /* Print Foot */
 echo $OUTPUT->footer();
