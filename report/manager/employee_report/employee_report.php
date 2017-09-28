@@ -111,14 +111,12 @@ if ($form->is_cancelled()) {
 
 // Header
 echo $OUTPUT->header();
-// tabs at the top
-$current_tab = 'manager_reports';
-
-require('../tabs.php');
 
 if (!empty($out)) {
     echo $out;
 }else {
+    // tabs at the top
+    $current_tab = 'manager_reports';
     require('../tabs.php');
 
     $form->display();

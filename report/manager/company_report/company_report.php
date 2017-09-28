@@ -220,11 +220,6 @@ if ($form->is_cancelled()) {
 // Header
 echo $OUTPUT->header();
 
-// Print tabs at the top
-$current_tab = 'manager_reports';
-$show_roles = 1;
-require('../tabs.php');
-
 if (!empty($out)) {
     // Print report
     echo $out;
