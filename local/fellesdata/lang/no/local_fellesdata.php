@@ -187,18 +187,18 @@ $string['sel_level']        = 'Nivå';
 $string['no_mapped'] = 'Ikke mappet ennå';
 $string['to_delete'] = 'Skal slettes fra KS Læring';
 
-$string['status']       = 'Get last status';
-$string['day']          = 'Day to get last status';
-$string['stweekly']     = 'Weekly';
-$string['stmonthly']    = 'Monthly';
+$string['status']       = 'Hent siste status';
+$string['day']          = 'Dager for å hente siste status';
+$string['stweekly']     = 'Ukentlig';
+$string['stmonthly']    = 'Månedlig';
 
 $string['error_response_subject']           = ' {$a}: Integrasjon TARDIS - FEILMELDING';
 $string['error_response_status_subject']    = ' {$a}: Integrasjon STATUS TARDIS - FEILMELDING';
 $string['error_reponse_body']               = ' <p>Vi vil gjerne informere deg om at det har oppstått et problem i oppkoblingen med <strong>TARDIS</strong>-tjenestene.</p> 
                                                 <p>Prosessen <strong>{$a}</strong> har mottatt en ugyldig respons</p> ';
-$string['error_process_subject'] = '{$a->SITE}: {$a->type} Integration - ERROR ';
-$string['error_process_body']    = '<p>We would like to inform you, that there has been a problem during the integration between {$a} and KS.</p>
-                                    <p>So, the {$a} cron has been de-activated meanwhile the problem is being fixed.Please contact the Weblogin support for assistance.</p>';
+$string['error_process_subject'] = '{$a->SITE}: {$a->type} Integrasjonsfeil';
+$string['error_process_body']    = '<p>Dette er en melding om at det har oppstått et problem under integrasjonen mellom {$a} og KS Læring.</p>
+                                    <p>Vi har derfor deaktivert {$a} cron-jobben inntil problemet er løst. Vennligst kontakt Weblogin brukerstøtte for hjelp.</p>';
 
-$string['map_automatically']        = 'Map automatically';
-$string['map_automatically_desc']   = 'Map automatically will not applied for the first execution. The first time the mapping has to be done manually';
+$string['map_automatically']        = 'Automatisk mapping';
+$string['map_automatically_desc']   = 'Automatisk mapping kan kun aktiveres ETTER første gangs manuell synkronisering og mapping. Deretter vil alle nye org-elementer bli mappet automatisk.';
