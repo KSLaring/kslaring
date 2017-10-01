@@ -212,6 +212,9 @@ M.core_user.init_managercourse_report = function (Y, parent, category, course,de
 
             if (toclean) {
                 parent = 0;
+                depth  = 0;
+                this.parentcat.set('value',0);
+
                 // Clean courses selector
                 if (this.course) {
                     this.course.all('option').each(function(option){
@@ -222,8 +225,6 @@ M.core_user.init_managercourse_report = function (Y, parent, category, course,de
                     });
                     this.course.set('selectedIndex',0);
                     this.depth.set('value',0);
-                    depth  = 1;
-                    parent = 0;
                 }//if_this_Course
             }else {
                 // Get category selected
