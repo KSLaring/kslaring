@@ -150,6 +150,7 @@ class courses implements \renderable, \templatable {
                  course, json
             FROM {local_course_search}
             WHERE course $insql
+              AND json IS NOT NULL
             ORDER BY fullname $collatedanish ASC";
 
         if ($result = $DB->get_records_sql($sql, $inparams)) {
