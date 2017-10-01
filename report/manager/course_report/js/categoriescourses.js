@@ -228,6 +228,10 @@ M.core_user.init_managercourse_report = function (Y, parent, category, course,de
             }else {
                 // Get category selected
                 parent = this.category.get('value');
+                if (parent.indexOf('#') != -1) {
+                    parent = parent.substr(parent.indexOf('#') +1);
+                }//if_else
+
                 depth  = parseInt(this.depth.get('value')) + 1;
             }
 
