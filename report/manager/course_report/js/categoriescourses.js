@@ -212,7 +212,7 @@ M.core_user.init_managercourse_report = function (Y, parent, category, course,de
 
             if (toclean) {
                 parent = 0;
-                depth  = 0;
+                depth  = 1;
                 this.parentcat.set('value',0);
 
                 // Clean courses selector
