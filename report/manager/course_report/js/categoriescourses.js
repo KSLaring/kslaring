@@ -229,7 +229,6 @@ M.core_user.init_managercourse_report = function (Y, parent, category, course,de
                 // Get category selected
                 parent = this.category.get('value');
                 depth  = parseInt(this.depth.get('value')) + 1;
-                this.depth.set('value',depth);
             }
 
             var iotrans = Y.io(M.cfg.wwwroot + '/report/manager/course_report/categoriescourses.php',
