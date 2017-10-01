@@ -499,3 +499,4 @@ $string['cat_selected']         = 'Category selected';
 $string['cat_required']         = 'The category is required. You have to select one.';
 
 $string['selectone']            = 'Select one...';
+$string['clean']                = 'Clean';

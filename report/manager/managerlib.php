@@ -1556,29 +1556,38 @@ class CompetenceManager {
      */
     private static function get_myreporter_competence($userid) {
         /* Variables */
-        $zero   = array();
-        $one    = null;
-        $two    = null;
-        $three  = null;
+        $allzero   = array();
+        $allone    = array();
+        $alltwo    = array();
+        $allthree  = array();
 
         try {
+            // Competence
+            $competence = new stdClass();
+            $competence->zero       = null;
+            $competence->one        = null;
+            $competence->two        = null;
+            $competence->three      = null;
+            $competence->allzero    = null;
+            $competence->allone     = null;
+            $competence->alltwo     = null;
+            $competence->allthree   = null;
+
             // Level zero
-            self::get_myreporter_zero(TBL_REPORTERS,$userid,$zero,$one,$two,$three);
-            self::get_myreporter_zero(TBL_MANAGERS,$userid,$zero,$one,$two,$three);
-
+            CompetenceManager::get_myreporter_competence_by_level(0,$userid,$competence,$allzero,$allone,$alltwo,$allthree);
             // Level one
-            self::get_myreporter_one(TBL_REPORTERS,$userid,$zero,$one,$two,$three);
-            self::get_myreporter_one(TBL_MANAGERS,$userid,$zero,$one,$two,$three);
-
+            CompetenceManager::get_myreporter_competence_by_level(1,$userid,$competence,$allzero,$allone,$alltwo,$allthree);
             // Level two
-            self::get_myreporter_two(TBL_REPORTERS,$userid,$zero,$one,$two,$three);
-            self::get_myreporter_two(TBL_MANAGERS,$userid,$zero,$one,$two,$three);
-
+            CompetenceManager::get_myreporter_competence_by_level(2,$userid,$competence,$allzero,$allone,$alltwo,$allthree);
             // Level three
-            self::get_myreporter_three(TBL_REPORTERS,$userid,$zero,$one,$two,$three);
-            self::get_myreporter_three(TBL_MANAGERS,$userid,$zero,$one,$two,$three);
+            CompetenceManager::get_myreporter_competence_by_level(3,$userid,$competence,$allzero,$allone,$alltwo,$allthree);
 
-            return $zero;
+            $competence->allzero    = $allzero;
+            $competence->allone     = $allone;
+            $competence->alltwo     = $alltwo;
+            $competence->allthree   = $allthree;
+
+            return $competence;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -1586,432 +1595,338 @@ class CompetenceManager {
 
     /**
      * Description
-     * Reporter competence level zero
-     * 
-     * @param           $table
-     * @param           $reporter
-     * @param           $zero
-     * @param           $one
-     * @param           $two
-     * @param           $three
+     * Get the competence connected with reporter by level
+     *
+     * @param           $level
+     * @param           $user
+     * @param           $competence
+     * @param           $allzero
+     * @param           $allone
+     * @param           $alltwo
+     * @param           $allthree
      *
      * @throws          Exception
      *
-     * @creationDate    20/09/2017
+     * @creationDate    28/09/2017
      * @author          eFaktor     (fbv)
      */
-    private static function get_myreporter_zero($table,$reporter,&$zero,&$one,&$two,&$three) {
+    private static function get_myreporter_competence_by_level($level,$user,&$competence,&$allzero,&$allone,&$alltwo,&$allthree) {
         /* Variables */
         global  $DB;
-        $rdo    = null;
-        $sql    = null;
-        $params = null;
-        $field  = null;
+        $rdo        = null;
+        $sqlre      = null;
+        $sqlma      = null;
+        $sql        = null;
+        $params     = null;
+        $field      = null;
 
         try {
-            // Select right table
-            switch ($table) {
-                case TBL_REPORTERS:
-                    $field = 're.reporterid';
-
-                    break;
-                case TBL_MANAGERS:
-                    $field = 're.managerid';
-
-                    break;
-            }//select field_table
 
             // Search criteria
             $params = array();
-            $params['zero']     = 0;
-            $params['reporter'] = $reporter;
+            $params['reporter'] = $user;
+            $params['manager'] = $user;
+            $params['lere']    = $level;
+            $params['lema']    = $level;
 
-            // SQL Instruction
-            $sql = " SELECT  re.levelzero AS 'levelzero',
-                             GROUP_CONCAT(DISTINCT cr.companyid	 	ORDER BY cr.companyid ASC SEPARATOR ',')     AS 'levelone',
-                             GROUP_CONCAT(DISTINCT cr_two.companyid ORDER BY cr_two.companyid ASC SEPARATOR ',') AS 'leveltwo',
-                             GROUP_CONCAT(DISTINCT cr_tre.companyid ORDER BY cr_tre.companyid ASC SEPARATOR ',') AS 'levelthree',
-                             re.hierarchylevel as 'level'
-                     FROM	 {". $table ."} 	            re
-						-- Level One
-                        LEFT JOIN {report_gen_company_relation} 	cr  	ON  cr.parentid 	= re.levelzero
-						-- Level Two
-                        LEFT JOIN {report_gen_company_relation} 	cr_two  ON  cr_two.parentid =  cr.companyid
-						-- Level Three
-                        LEFT JOIN {report_gen_company_relation} 	cr_tre 	ON  cr_tre.parentid = cr_two.companyid
-                     WHERE	$field 		= :reporter
-                        AND re.hierarchylevel  	= 0
-                     GROUP BY re.levelzero
-                     ORDER BY $field ";
+            switch ($level) {
+                case 0:
+                    // SQL Isntruction - Reporters
+                    $sqlre = " SELECT  DISTINCT
+                                           re.levelzero,
+                                           cr.companyid 		  AS 'levelone',
+                                           cr_two.companyid 	  AS 'leveltwo',
+                                           cr_tre.companyid    AS 'levelthree',
+                                           re.hierarchylevel   AS 'level'
+                               FROM	       {report_gen_company_reporter}	re
+                                  -- Level One
+                                  LEFT JOIN {report_gen_company_relation} 	cr  	ON  cr.parentid 	= re.levelzero
+                                  -- Level Two
+                                  LEFT JOIN {report_gen_company_relation} 	cr_two  ON  cr_two.parentid =  cr.companyid
+                                  -- Level Three
+                                  LEFT JOIN {report_gen_company_relation} 	cr_tre 	ON  cr_tre.parentid = cr_two.companyid
+                               WHERE	    re.reporterid     = :reporter
+                                    AND     re.hierarchylevel = :lere ";
+
+                    // SQL Isntruction - Managers
+                    $sqlma = " SELECT  DISTINCT
+                                           re.levelzero,
+                                           cr.companyid 		  AS 'levelone',
+                                           cr_two.companyid 	  AS 'leveltwo',
+                                           cr_tre.companyid    AS 'levelthree',
+                                           re.hierarchylevel   AS 'level'
+                               FROM	       {report_gen_company_manager}	re
+                                  -- Level One
+                                  LEFT JOIN {report_gen_company_relation} 	cr  	ON  cr.parentid 	= re.levelzero
+                                  -- Level Two
+                                  LEFT JOIN {report_gen_company_relation} 	cr_two  ON  cr_two.parentid =  cr.companyid
+                                  -- Level Three
+                                  LEFT JOIN {report_gen_company_relation} 	cr_tre 	ON  cr_tre.parentid = cr_two.companyid
+                               WHERE	    re.managerid      = :manager
+                                    AND     re.hierarchylevel = :lema ";
+
+                    break;
+                case 1:
+                    // Exclude
+                    $notzero = ($allzero ? implode(',',array_keys($allzero)):0);
+
+                    // SQL Isntruction - Reporters
+                    $sqlre = " SELECT  DISTINCT 
+                                            re.levelzero,
+                                            re.levelone,
+                                            cr_two.companyid 	AS 'leveltwo',
+                                            cr_tre.companyid    AS 'levelthree',
+                                            re.hierarchylevel 	AS 'level'
+                               FROM	        {report_gen_company_reporter} 	re
+                                  -- Level Two
+                                  LEFT JOIN {report_gen_company_relation} 	cr_two  ON  cr_two.parentid = re.levelone
+                                  -- Level Three
+                                  LEFT JOIN {report_gen_company_relation} 	cr_tre 	ON  cr_tre.parentid = cr_two.companyid
+                               WHERE	    re.reporterid 		= :reporter
+                                    AND     re.hierarchylevel  	= :lere
+                                    AND     re.levelzero NOT IN ($notzero) ";
+
+                    // SQL Instruction - managers
+                    $sqlma = " SELECT   DISTINCT 
+                                            re.levelzero,
+                                            re.levelone,
+                                            cr_two.companyid 	AS 'leveltwo',
+                                            cr_tre.companyid    AS 'levelthree',
+                                            re.hierarchylevel 	AS 'level'
+                               FROM	        {report_gen_company_manager} 	re
+                                  -- Level Two
+                                  LEFT JOIN {report_gen_company_relation} 	cr_two  ON  cr_two.parentid = re.levelone
+                                  -- Level Three
+                                  LEFT JOIN {report_gen_company_relation} 	cr_tre 	ON  cr_tre.parentid = cr_two.companyid
+                               WHERE	    re.managerid 		= :manager
+                                    AND     re.hierarchylevel  	= :lema
+                                    AND     re.levelzero NOT IN ($notzero) ";
+
+                    break;
+                case 2:
+                    // Exclude
+                    $notzero = ($allzero ? implode(',',array_keys($allzero)):0);
+                    $notone  = ($allone ? implode(',',$allone):0);
+
+                    // SQL Isntruction - reporters
+                    $sqlre = " SELECT   DISTINCT 
+                                            re.levelzero,
+                                            re.levelone,
+                                            re.leveltwo,
+                                            cr_tre.companyid  AS 'levelthree',
+                                            re.hierarchylevel AS 'level'
+                               FROM	        {report_gen_company_reporter} 	            re
+                                  -- Level Three
+                                  LEFT JOIN {report_gen_company_relation} cr_tre 	ON  cr_tre.parentid = re.leveltwo
+                               WHERE	    re.reporterid		= :reporter
+                                  AND       re.hierarchylevel  	= :lere
+                                  AND       re.levelzero  NOT IN ($notzero)
+                                  AND       re.levelone   NOT IN ($notone) ";
+
+                    // SQL instruction - managers
+                    $sqlma = " SELECT   DISTINCT 
+                                            re.levelzero,
+                                            re.levelone,
+                                            re.leveltwo,
+                                            cr_tre.companyid  AS 'levelthree',
+                                            re.hierarchylevel AS 'level'
+                               FROM	        {report_gen_company_manager} 	            re
+                                  -- Level Three
+                                  LEFT JOIN {report_gen_company_relation} cr_tre 	ON  cr_tre.parentid = re.leveltwo
+                               WHERE	    re.managerid		= :manager
+                                  AND       re.hierarchylevel  	= :lema
+                                  AND       re.levelzero  NOT IN ($notzero)
+                                  AND       re.levelone   NOT IN ($notone) ";
+
+
+                    break;
+                case 3:
+                    // Exclude
+                    $notzero = ($allzero ? implode(',',array_keys($allzero)):0);
+                    $notone  = ($allone ? implode(',',$allone):0);
+                    $nottwo  = ($alltwo ? implode(',',$alltwo):0);
+                    $nottre  = ($allthree ? implode(',',$allthree):0);
+
+                    // SQL Isntruction - reporters
+                    $sqlre = " SELECT  DISTINCT 
+                                          re.levelzero,
+                                          re.levelone,
+                                          re.leveltwo,
+                                          re.levelthree,
+                                          re.hierarchylevel as 'level'
+                               FROM	      {report_gen_company_reporter} 	 re
+                               WHERE	  re.reporterid 		= :reporter
+                                  AND     re.hierarchylevel  	= :lere
+                                  AND     re.levelzero    NOT IN ($notzero)
+                                  AND     re.levelone     NOT IN ($notone) 
+                                  AND     re.leveltwo     NOT IN ($nottwo) 
+                                  AND     re.levelthree   NOT IN ($nottre)";
+
+                    // SQL Instruction - manager
+                    $sqlma = " SELECT  DISTINCT 
+                                          re.levelzero,
+                                          re.levelone,
+                                          re.leveltwo,
+                                          re.levelthree,
+                                          re.hierarchylevel as 'level'
+                               FROM	      {report_gen_company_manager} 	 re
+                               WHERE	  re.managerid 		= :manager
+                                  AND     re.hierarchylevel = :lema
+                                  AND     re.levelzero    NOT IN ($notzero)
+                                  AND     re.levelone     NOT IN ($notone) 
+                                  AND     re.leveltwo     NOT IN ($nottwo) 
+                                  AND     re.levelthree   NOT IN ($nottre)";
+
+                    break;
+            }//switch
 
             // Execute
-            $rdo = $DB->get_records_sql($sql,$params);
+            $sql = $sqlre . " UNION ALL " . $sqlma;
+            $rdo = $DB->get_recordset_sql($sql,$params);
             if ($rdo) {
+                // Get previous values
+                $zero   = $competence->zero;
+                $one    = $competence->one;
+                $two    = $competence->two;
+                $three  = $competence->three;
+
                 foreach ($rdo as $instance) {
+                    // Zero
+                    $allzero[$instance->levelzero] = $instance->levelzero;
                     $zero[$instance->levelzero] = $instance;
-                    // Level one
+                    // One
                     if ($instance->levelone) {
-                        if ($one) {
-                            $one .= ',';
-                        }//if_one
+                        $allone[$instance->levelone] = $instance->levelone;
+                        $one[$instance->levelzero][$instance->levelone] = $instance->levelone;
+                    }
 
-                        $one .= $instance->levelone;
-                    }//if_levelone
-
-                    // Level two
+                    // Two
                     if ($instance->leveltwo) {
-                        if ($two) {
-                            $two .= ',';
-                        }//if_two
+                        $alltwo[$instance->leveltwo] = $instance->leveltwo;
+                        $two[$instance->levelone][$instance->leveltwo] = $instance->leveltwo;
+                    }
 
-                        $two .= $instance->leveltwo;
-                    }//if_leveltwo
-
-                    // Level three
+                    // Three
                     if ($instance->levelthree) {
-                        if ($three) {
-                            $three .= ',';
-                        }//if_three
+                        $allthree[$instance->levelthree] = $instance->levelthree;
+                        $three[$instance->leveltwo][$instance->levelthree] = $instance->levelthree;
+                    }
+                }//for
 
-                        $three .= $instance->levelthree;
-                    }//if_levelthree
-                }//for_Rdo
+                // New values
+                $competence->zero   = $zero;
+                $competence->one    = $one;
+                $competence->two    = $two;
+                $competence->three  = $three;
             }//if_rdo
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//get_myreporter_zero
+    }//get_myreporter_competence_by_level
 
     /**
      * Description
-     * Reporter competence by level one
+     * Extract one level from the report competence
      *
-     * @param           $table
-     * @param           $reporter
+     * @param           $competence
+     * @param           $level
      * @param           $zero
-     * @param           $one
-     * @param           $two
-     * @param           $three
+     * @param       null $one
+     * @param       null $two
      *
+     * @return          array
      * @throws          Exception
      *
-     * @creationDate    20/09/2017
+     * @creationDate    29/09/2017
      * @author          eFaktor     (fbv)
      */
-    private static function get_myreporter_one($table,$reporter,&$zero,&$one,&$two,&$three) {
+    public static function extract_level_reporter_competence($competence,$level,$zero,$one=null,$two=null) {
         /* Variables */
-        global  $DB;
-        $rdo    = null;
-        $sql    = null;
-        $params = null;
-        $notin  = null;
-        $field  = null;
+        $keys       = null;
+        $myzero     = null;
+        $myones     = null;
+        $mytwo      = null;
+        $mythree    = null;
+        $mylevel    = null;
 
         try {
-            // Select right table
-            switch ($table) {
-                case TBL_REPORTERS:
-                    $field = 're.reporterid';
+            switch ($level) {
+                case 0:
+                    // Get ones
+                    $myzero = $zero;
+                    $myones = ($competence->one ? $competence->one[$zero] : null);
+
+                    // Get two
+                    if ($myones) {
+                        $mytwo  = array();
+                        $keys   = array_intersect_key($myones,$competence->two);
+                        if ($keys) {
+                            foreach ($keys as $one) {
+                                foreach ($competence->two[$one] as $two) {
+                                    $mytwo[$two] = $two;
+                                }//for_competence_two
+                            }//for_keys
+                        }//if_keys
+                    }//if_ones
+
+                    // Get three
+                    if ($mytwo) {
+                        $mythree    = array();
+                        $keys       = array_intersect_key($mytwo,$competence->three);
+                        if ($keys) {
+                            foreach ($keys as $two) {
+                                foreach ($competence->three[$two] as $three) {
+                                    $mythree[$three] = $three;
+                                }//for_mytre
+                            }//for_two
+                        }//if_keys
+                    }//if_two
+
+                    $myones     = ($myones ? implode(',',$myones) : 0);
+                    $mytwo      = ($mytwo ? implode(',',$mytwo) : 0);
+                    $mythree    = ($mythree ? implode(',',$mythree) : 0);
 
                     break;
-                case TBL_MANAGERS:
-                    $field = 're.managerid';
+                case 1:
+                    // Get two
+                    $myzero = $zero;
+                    $myones = $one;
+                    $mytwo  = ($competence->two ? $competence->two[$one] : null);
+
+                    // Get three
+                    if ($mytwo) {
+                        $mythree    = array();
+                        $keys       = array_intersect_key($mytwo,$competence->three);
+                        if ($keys) {
+                            foreach ($keys as $two) {
+                                foreach ($competence->three[$two] as $three) {
+                                    $mythree[$three] = $three;
+                                }//for_mytre
+                            }//for_two
+                        }//if_keys
+                    }//if_two
+
+                    $mytwo      = ($mytwo ? implode(',',$mytwo) : 0);
+                    $mythree    = ($mythree ? implode(',',$mythree) : 0);
 
                     break;
-            }//select field_table
+                case 2:
+                    // Get three
+                    $myzero = $zero;
+                    $myones = $one;
+                    $mytwo  = $two;
+                    $mythree = ($competence->three ? $competence->three[$two] : null);
 
-            // get not in
-            $notin = 0;
-            if ($zero) {
-                $notin = implode(',',array_keys($zero));
-            }
+                    $mythree    = ($mythree ? implode(',',$mythree) : 0);
 
-            // Search criteria
-            $params = array();
-            $params['one']      = 1;
-            $params['reporter'] = $reporter;
+                    break;
+            }//switch_elvel
 
-            // SQL Instruction
-            $sql = " SELECT   re.levelzero 	as 'levelzero',
-                              re.levelone 	as 'levelone',
-                              GROUP_CONCAT(DISTINCT cr_two.companyid ORDER BY cr_two.companyid ASC SEPARATOR ',') AS 'leveltwo',
-                              GROUP_CONCAT(DISTINCT cr_tre.companyid ORDER BY cr_tre.companyid ASC SEPARATOR ',') AS 'levelthree',
-                              re.hierarchylevel as 'level'
-                     FROM	  {". $table ."}                  re
-                        -- Level two
-                        LEFT JOIN  {report_gen_company_relation}   cr_two  ON  cr_two.parentid = re.levelone
-                        -- Level three
-                        LEFT JOIN  {report_gen_company_relation}   cr_tre  ON  cr_tre.parentid = cr_two.companyid
-                     WHERE	  $field 	= :reporter
-                        AND   re.levelzero NOT IN ($notin)
-                        AND   re.hierarchylevel = :one
-                     GROUP BY re.levelzero
-                     ORDER BY $field ";
-
-            // Execute
-            $rdo = $DB->get_records_sql($sql,$params);
-            if ($rdo) {
-                foreach ($rdo as $instance) {
-                    $zero[$instance->levelzero] = $instance;
-                    // Level one
-                    if ($instance->levelone) {
-                        if ($one) {
-                            $one .= ',';
-                        }//if_one
-
-                        $one .= $instance->levelone;
-                    }//if_levelone
-
-                    // Level two
-                    if ($instance->leveltwo) {
-                        if ($two) {
-                            $two .= ',';
-                        }//if_two
-
-                        $two .= $instance->leveltwo;
-                    }//if_leveltwo
-
-                    // Level three
-                    if ($instance->levelthree) {
-                        if ($three) {
-                            $three .= ',';
-                        }//if_three
-
-                        $three .= $instance->levelthree;
-                    }//if_levelthree
-                }//for_rdo
-            }//if_rdo
+            return array($myzero,$myones,$mytwo,$mythree);
         }catch (Exception $ex) {
-            throw  $ex;
+            throw $ex;
         }//try_catch
-    }//get_myreporter_one
-
-    /**
-     * Description
-     * Reporter competence level two
-     *
-     * @param           $table
-     * @param           $reporter
-     * @param           $zero
-     * @param           $one
-     * @param           $two
-     * @param           $three
-     *
-     * @throws          Exception
-     *
-     * @creationDate    20/09/2017
-     * @author          eFaktor     (fbv)
-     */
-    private static function get_myreporter_two($table,$reporter,&$zero,&$one,&$two,&$three) {
-        /* Variables */
-        global  $DB;
-        $rdo    = null;
-        $sql    = null;
-        $params = null;
-        $notin  = null;
-        $notone = null;
-        $field  = null;
-
-        try {
-            // Select right table
-            switch ($table) {
-                case TBL_REPORTERS:
-                    $field = 're.reporterid';
-
-                    break;
-                case TBL_MANAGERS:
-                    $field = 're.managerid';
-
-                    break;
-            }//select field_table
-
-            // get not in
-            $notin = 0;
-            if ($zero) {
-                $notin = implode(',',array_keys($zero));
-            }
-
-            // not lvel one
-            $notone = 0;
-            if ($one) {
-                $notone = $one;
-            }
-
-
-            // Search criteria
-            $params = array();
-            $params['two']      = 2;
-            $params['reporter'] = $reporter;
-
-            // SQL Instruction
-            $sql = " SELECT   re.levelzero 	as 'levelzero',
-                              re.levelone 	as 'levelone',
-                              re.leveltwo   as 'leveltwo',
-                              GROUP_CONCAT(DISTINCT cr_tre.companyid ORDER BY cr_tre.companyid ASC SEPARATOR ',') AS 'levelthree',
-                              re.hierarchylevel as 'level'
-                     FROM	  {". $table ."}                  re
-                        -- Level three
-                        LEFT JOIN  {report_gen_company_relation}   cr_tre  ON  cr_tre.parentid = re.leveltwo
-                     WHERE	  $field 	= :reporter
-                        AND   re.levelzero NOT IN ($notin)
-                        AND   re.levelone  NOT IN ($notone)
-                        AND   re.hierarchylevel = :two
-                     GROUP BY re.levelzero
-                     ORDER BY $field ";
-
-            // Execute
-            $rdo = $DB->get_records_sql($sql,$params);
-            if ($rdo) {
-                foreach ($rdo as $instance) {
-                    $zero[$instance->levelzero] = $instance;
-                    // Level one
-                    if ($instance->levelone) {
-                        if ($one) {
-                            $one .= ',';
-                        }//if_one
-
-                        $one .= $instance->levelone;
-                    }//if_levelone
-
-                    // Level two
-                    if ($instance->leveltwo) {
-                        if ($two) {
-                            $two .= ',';
-                        }//if_two
-
-                        $two .= $instance->leveltwo;
-                    }//if_leveltwo
-
-                    // Level three
-                    if ($instance->levelthree) {
-                        if ($three) {
-                            $three .= ',';
-                        }//if_three
-
-                        $three .= $instance->levelthree;
-                    }//if_levelthree
-                }//for_rdo
-            }//if_rdo
-        }catch (Exception $ex) {
-            throw  $ex;
-        }//try_catch
-    }//get_myreporter_two
-
-    /**
-     * Description
-     * Reporter competence level three
-     *
-     * @param           $table
-     * @param           $reporter
-     * @param           $zero
-     * @param           $one
-     * @param           $two
-     * @param           $three
-     *
-     * @throws          Exception
-     *
-     * @creationDate    20/09/2017
-     * @author          eFaktor     (fbv)
-     */
-    private static function get_myreporter_three($table,$reporter,&$zero,&$one,&$two,&$three) {
-        /* Variables */
-        global  $DB;
-        $rdo    = null;
-        $sql    = null;
-        $params = null;
-        $notin  = null;
-        $notone = null;
-        $nottwo = null;
-        $field  = null;
-
-        try {
-            // Select right table
-            switch ($table) {
-                case TBL_REPORTERS:
-                    $field = 're.reporterid';
-
-                    break;
-                case TBL_MANAGERS:
-                    $field = 're.managerid';
-
-                    break;
-            }//select field_table
-
-            // get not in
-            $notin = 0;
-            if ($zero) {
-                $notin = implode(',',array_keys($zero));
-            }
-
-            // not lvel one
-            $notone = 0;
-            if ($one) {
-                $notone = $one;
-            }
-
-            // not level two
-            $nottwo = 0;
-            if ($two) {
-                $nottwo = $two;
-            }
-
-            // Search criteria
-            $params = array();
-            $params['three']    = 1;
-            $params['reporter'] = $reporter;
-
-            // SQL Instruction
-            $sql = " SELECT   re.levelzero 	    as 'levelzero',
-                              re.levelone 	    as 'levelone',
-                              re.leveltwo       as 'leveltwo',
-                              re.levelthree     as 'levelthree',
-                              re.hierarchylevel as 'level'
-                     FROM	  {". $table ."}  re
-                     WHERE	  $field 	= :reporter
-                        AND   re.levelzero NOT IN ($notin)
-                        AND   re.levelone  NOT IN ($notone)
-                        AND   re.leveltwo  NOT IN ($nottwo)
-                        AND   re.hierarchylevel = :three
-                     GROUP BY re.levelzero
-                     ORDER BY $field ";
-
-            // Execute
-            $rdo = $DB->get_records_sql($sql,$params);
-            if ($rdo) {
-                foreach ($rdo as $instance) {
-                    $zero[$instance->levelzero] = $instance;
-                    // Level one
-                    if ($instance->levelone) {
-                        if ($one) {
-                            $one .= ',';
-                        }//if_one
-
-                        $one .= $instance->levelone;
-                    }//if_levelone
-
-                    // Level two
-                    if ($instance->leveltwo) {
-                        if ($two) {
-                            $two .= ',';
-                        }//if_two
-
-                        $two .= $instance->leveltwo;
-                    }//if_leveltwo
-
-                    // Level three
-                    if ($instance->levelthree) {
-                        if ($three) {
-                            $three .= ',';
-                        }//if_three
-
-                        $three .= $instance->levelthree;
-                    }//if_levelthree
-                }//for_rdo
-            }//if_rdo
-        }catch (Exception $ex) {
-            throw  $ex;
-        }//try_catch
-    }//get_myreporter_three
+    }//extract_level_reporter_competence
 
     /**
      * @static

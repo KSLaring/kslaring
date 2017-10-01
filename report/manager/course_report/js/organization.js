@@ -126,11 +126,10 @@ var level_structure = {
         this.hTwo.set('value',0);
         this.hThree.set('value',0);
         if (this.report_level > 0) {
-            var parent  = this.levelZero.get('value');
             var level   = 1;
             //  Trigger an ajax search after a delay.
             this.cancel_timeout();
-            this.timeoutid  = Y.later(this.querydelay * 1000, e, function(obj){obj.send_query(false,parent,level)}, this);
+            this.timeoutid  = Y.later(this.querydelay * 1000, e, function(obj){obj.send_query(false,level)}, this);
         }else {
             this.Load_JobRoles();
         }
@@ -141,11 +140,10 @@ var level_structure = {
         this.hTwo.set('value',0);
         this.hThree.set('value',0);
         if (this.report_level > 1) {
-            var parent      = this.levelOne.get('value');
             var level       = 2;
             //  Trigger an ajax search after a delay.
             this.cancel_timeout();
-            this.timeoutid = Y.later(this.querydelay * 1000, e, function(obj){obj.send_query(false,parent,level)}, this);
+            this.timeoutid = Y.later(this.querydelay * 1000, e, function(obj){obj.send_query(false,level)}, this);
         }else {
             this.Load_JobRoles();
         }
@@ -155,11 +153,10 @@ var level_structure = {
         this.hTwo.set('value',this.levelTwo.get('value'));
         this.hThree.set('value',0);
         if (this.report_level > 2) {
-            var parent  = this.levelTwo.get('value');
             var level   = 3;
             //  Trigger an ajax search after a delay.
             this.cancel_timeout();
-            this.timeoutid = Y.later(this.querydelay * 1000, e, function(obj){obj.send_query(false,parent,level)}, this);
+            this.timeoutid = Y.later(this.querydelay * 1000, e, function(obj){obj.send_query(false,level)}, this);
         }else {
             this.Load_JobRoles();
         }
@@ -175,7 +172,7 @@ var level_structure = {
     /**
      * Fires off the ajax search request.
      */
-    send_query : function(forceresearch,parent,level) {
+    send_query : function(forceresearch,level) {
         var levelZero = this.levelZero.get('value');
         // Cancel any pending timeout.
         this.cancel_timeout();
@@ -185,10 +182,35 @@ var level_structure = {
             trans.abort();
         });
 
+        var zero;
+        var one;
+        var two;
+
+        switch (level) {
+            case 1:
+                zero = this.levelZero.get('value');
+                one = 0;
+                two = 0;
+
+                break;
+            case 2:
+                zero = this.levelZero.get('value');
+                one = this.levelOne.get('value');
+                two = 0;
+
+                break;
+            case 3:
+                zero = this.levelZero.get('value');
+                one = this.levelOne.get('value');
+                two = this.levelTwo.get('value');
+
+                break;
+
+        }
         var iotrans = Y.io(M.cfg.wwwroot + '/report/manager/course_report/organization.php',
                            {
                             method: 'POST',
-                            data: 'parent=' + parent + '&levelZero=' + levelZero + '&level' + '=' + level + '&rpt=' + this.report_level + '&sesskey=' + M.cfg.sesskey,
+                            data: 'level' + '=' + level + '&zero=' + zero + '&one=' + one + '&two=' + two + '&rpt=' + this.report_level + '&sesskey=' + M.cfg.sesskey,
                             on: {
                                     complete: this.handle_response,
                                     end: this.Load_JobRoles

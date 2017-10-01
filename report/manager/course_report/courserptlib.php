@@ -68,7 +68,7 @@ class course_report {
             // Initialise variables
             $name       = 'data_rpt';
             $path       = '/report/manager/course_report/js/categoriescourses.js';
-            $requires   = array('node', 'event-custom', 'datasource', 'json', 'moodle-core-notification','datatype-number');
+            $requires   = array('node', 'event-custom', 'datasource', 'json', 'moodle-core-notification','datatype-number','arraysort');
 
             // Initialise js module
             $jsmodule = array('name'        => $name,
@@ -124,7 +124,6 @@ class course_report {
 
 
             // Criteria parent
-            $dblog = " PARENT : " . $parent . "\n\n";
             if ($parent) {
                 $params['parent'] = $parent;
 
@@ -133,7 +132,43 @@ class course_report {
 
             // Execute
             $sql .= " ORDER BY ca.name ";
+            $rdo = $DB->get_records_sql($sql,$params);
+            if ($rdo) {
+                foreach ($rdo as $instance) {
+                    $lstcat[$instance->id] = $instance->name;
+                }//for_rdo
+            }//if_rdo
 
+            return $lstcat;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//get_my_categories_by_depth
+
+    public static function get_my_categories_by_parent($parent) {
+        /* Variables */
+        global $DB;
+        $sql    = null;
+        $rdo    = null;
+        $params = null;
+        $lstcat = array();
+
+        try {
+            // First Element of the list
+            $lstcat[0] = get_string('selectone', 'report_manager');
+
+            // Search criteria
+            $params = array();
+            $params['parent'] = $parent;
+
+            // SQL Instruction
+            $sql = " SELECT ca.id,
+                            ca.name
+                     FROM   {course_categories} ca 
+                     WHERE  ca.parent = :parent ";
+
+            // Execute
+            $sql .= " ORDER BY ca.name ";
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 foreach ($rdo as $instance) {
@@ -297,7 +332,7 @@ class course_report {
      *                          --> not_enrol.      Array
      *                                              --> name
      */
-    public static function Get_CourseReportLevel($data_form,$my_hierarchy,$IsReporter) {
+    public static function Get_CourseReportLevel($data_form,$mycompetence,$IsReporter) {
         /* Variables    */
         $companies_report   = null;
 
@@ -326,15 +361,6 @@ class course_report {
             if ($rptcourse) {
                 $selzero = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'0'];
 
-                // Get companies connected with user by level
-                if ($IsReporter) {
-                    $inOne   = $my_hierarchy->competence[$selzero]->levelone;
-                    $inTwo   = $my_hierarchy->competence[$selzero]->leveltwo;
-                    $inThree = $my_hierarchy->competence[$selzero]->levelthree;
-                }else {
-                    list($inZero,$inOne,$inTwo,$inThree) = CompetenceManager::get_mycompanies_by_level($my_hierarchy->competence);
-                }//if_reporter
-
                 // Job roles selected
                 $rptcourse->job_roles = self::Get_JobRolesCourse_Report($data_form);
 
@@ -350,10 +376,14 @@ class course_report {
                     case 1:
                         // Level one
                         $levelOne = new stdClass();
-                        $levelOne->id                           = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'1'];
-                        $levelOne->name                         = CompetenceManager::GetCompany_Name($levelOne->id);
-                        $levelOne->leveltwo                     = null;
+                        $levelOne->id                       = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'1'];
+                        $levelOne->name                     = CompetenceManager::GetCompany_Name($levelOne->id);
+                        $levelOne->leveltwo                 = null;
                         $rptcourse->levelone[$levelOne->id] = $levelOne;
+
+                        if ($IsReporter) {
+                            list($inZero,$inOne,$inTwo,$inThree) = CompetenceManager::extract_level_reporter_competence($mycompetence,$data_form['rpt'],$selzero,$levelOne->id);
+                        }
 
                         break;
 
@@ -361,9 +391,9 @@ class course_report {
                     case 3:
                         // Level one
                         $levelOne = new stdClass();
-                        $levelOne->id                               = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'1'];
-                        $levelOne->name                             = CompetenceManager::GetCompany_Name($levelOne->id);
-                        $levelOne->leveltwo                         = null;
+                        $levelOne->id                           = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'1'];
+                        $levelOne->name                         = CompetenceManager::GetCompany_Name($levelOne->id);
+                        $levelOne->leveltwo                     = null;
                         $rptcourse->levelone[$levelOne->id]     = $levelOne;
 
                         // Level two
@@ -373,8 +403,18 @@ class course_report {
                         $levelTwo->levelthree                   = null;
                         $rptcourse->leveltwo[$levelTwo->id] = $levelTwo;
 
+
+                        if ($IsReporter) {
+                            list($inZero,$inOne,$inTwo,$inThree) = CompetenceManager::extract_level_reporter_competence($mycompetence,$data_form['rpt'],
+                                                                                                                        $selzero,$levelOne->id,$levelTwo->id);
+                        }
+
                         break;
                 }//switch_rpt
+
+                if (!$IsReporter) {
+                    list($inZero,$inOne,$inTwo,$inThree) = CompetenceManager::get_mycompanies_by_level($mycompetence->competence);
+                }
 
                 // Companies with employees
                 $coemployees = self::GetCompaniesEmployees($data_form,$inOne,$inTwo,$inThree);

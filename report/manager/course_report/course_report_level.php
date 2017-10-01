@@ -97,7 +97,6 @@ $SESSION->onlyCompany = array();
 
 
 if ($company_id) {
-    echo "Course: " . $course . "</br>";
     $data_form = array();
     if (isset($SESSION->job_roles)) {
         $data_form[REPORT_MANAGER_JOB_ROLE_LIST]    = $SESSION->job_roles;
@@ -148,7 +147,7 @@ if ($form->is_cancelled()) {
     }
     $data_form[MANAGER_COURSE_STRUCTURE_LEVEL . '3'] = $three;
     $data_form['h3']                                 = $three;
-    
+
     // Report data
     $data_form[REPORT_MANAGER_COURSE_LIST] = $data_form['hcourse'];
     $course_report = course_report::Get_CourseReportLevel($data_form,$myHierarchy,$IsReporter);
@@ -192,6 +191,7 @@ if ($form->is_cancelled()) {
 
 // Header
 echo $OUTPUT->header();
+
 
 if (!empty($out)) {
     echo $OUTPUT->heading($out);

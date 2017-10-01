@@ -35,8 +35,9 @@ require_once('../managerlib.php');
 global $PAGE,$USER,$OUTPUT;
 
 // Params
-$parent         = optional_param('parent',0,PARAM_INT);
-$levelZero      = optional_param('levelZero',0,PARAM_INT);
+$zero           = required_param('zero',PARAM_INT);
+$one            = required_param('one',PARAM_INT);
+$two            = required_param('two',PARAM_INT);
 $level          = required_param('level',PARAM_INT);
 $reportLevel    = required_param('rpt',PARAM_INT);
 $myLevelZero    = null;
@@ -80,6 +81,7 @@ switch ($reportLevel) {
         switch ($level) {
             case 1:
                 $toClean[0] = COMPANY_STRUCTURE_LEVEL . 1;
+                $toClean[0] = COMPANY_STRUCTURE_LEVEL . 2;
 
 
                 break;
@@ -122,10 +124,28 @@ $data['clean'] = $toClean;
 $IsReporter     = CompetenceManager::IsReporter($USER->id);
 $myHierarchy    = CompetenceManager::get_MyHierarchyLevel($USER->id,$context,$IsReporter,$reportLevel);
 if ($IsReporter) {
-    $myLevelZero  = implode(',',array_keys($myHierarchy->competence));
-    $myLevelOne   = $myHierarchy->competence[$levelZero]->levelone;
-    $myLevelTwo   = $myHierarchy->competence[$levelZero]->leveltwo;
-    $myLevelThree = $myHierarchy->competence[$levelZero]->levelthree;
+    switch ($level) {
+        case 0:
+            break;
+        case 1:
+            $parent = $zero;
+            $myLevelOne = $myHierarchy->competence->one[$zero];
+            $myLevelOne = implode(',',$myLevelOne);
+
+            break;
+        case 2:
+            $parent = $one;
+            $myLevelTwo = $myHierarchy->competence->two[$one];
+            $myLevelTwo = implode(',',$myLevelTwo);
+
+            break;
+        case 3:
+            $parent = $two;
+            $myLevelThree = $myHierarchy->competence->three[$two];
+            $myLevelThree = implode(',',$myLevelThree);
+
+            break;
+    }
 }else {
     list($myLevelZero,$myLevelOne,$myLevelTwo,$myLevelThree) = CompetenceManager::get_mycompanies_by_level($myHierarchy->competence);
 }//if_IsReporter
@@ -136,14 +156,17 @@ switch ($level) {
 
         break;
     case 1:
+
         $myCompanies = $myLevelOne;
 
         break;
     case 2:
+
         $myCompanies = $myLevelTwo;
 
         break;
     case 3:
+
         $myCompanies = $myLevelThree;
 
         break;

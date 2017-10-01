@@ -114,7 +114,7 @@ function xmldb_report_manager_upgrade($old_version) {
         }
 
         // Create views
-        if ($old_version < 2017092200) {
+        if ($old_version < 2017100100) {
             CompetenceManager_Update::view_companies_with_users();
             CompetenceManager_Update::view_course_company_user_enrol();
         }
@@ -126,7 +126,6 @@ function xmldb_report_manager_upgrade($old_version) {
 }//xmldb_report_manager_upgrade
 
 class CompetenceManager_Update {
-
     /**
      * Description
      * Create companies_with_users view

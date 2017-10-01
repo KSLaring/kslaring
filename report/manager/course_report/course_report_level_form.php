@@ -61,12 +61,14 @@ class manager_course_report_level_form extends moodleform {
         // Course list
         $form->addElement('header', 'course', get_string('course'));
         $form->addElement('html', '<div class="level-wrapper">');
-            $options = array();
             $options[0] = get_string('selectone', 'report_manager');
+            $options = course_report::get_my_categories_by_parent($parentcat);
             $form->addElement('select',REPORT_MANAGER_COURSE_LIST,get_string('select_course_to_report', 'report_manager'),$options);
+
             $form->addRule(REPORT_MANAGER_COURSE_LIST, get_string('required','report_manager'), 'required', 'nonzero', 'client');
-            $form->addRule(REPORT_MANAGER_COURSE_LIST, get_string('required','report_manager'), 'nonzero', null, 'client');
-        $form->addElement('html', '</div>');
+            //$form->addRule(REPORT_MANAGER_COURSE_LIST, get_string('required','report_manager'), 'nonzero', null, 'client');
+
+            $form->addElement('html', '</div>');
 
         // Company hierarchy levels
         $form->addElement('header', 'company', get_string('company', 'report_manager'));
@@ -109,7 +111,17 @@ class manager_course_report_level_form extends moodleform {
         $form->setDefault('rpt',$report_level);
         $form->setType('rpt',PARAM_INT);
 
-        $this->add_action_buttons(true, get_string('create_report', 'report_manager'));
+        // Buttons
+        $buttons = array();
+        $buttons[] = $form->createElement('submit','submitbutton',get_string('create_report', 'report_manager'));
+        $buttons[] = $form->createElement('button','submitbutton2',get_string('clean', 'report_manager'));
+        $buttons[] = $form->createElement('cancel');
+
+        $form->addGroup($buttons, 'buttonar', '', array(' '), false);
+        $form->setType('buttonar', PARAM_RAW);
+        $form->closeHeaderBefore('buttonar');
+
+        //$this->add_action_buttons(true, get_string('create_report', 'report_manager'));
 
         // Add selected levels
         // Level Zero
@@ -136,6 +148,18 @@ class manager_course_report_level_form extends moodleform {
         $form->setDefault('hcourse',0);
     }//definition
 
+    /**
+    public function validation($data, $files) {
+        $errors = parent::validation($data, $files);
+
+        // Checks the data.
+        if ($data[REPORT_MANAGER_COURSE_LIST] == 0) {
+            $errors[REPORT_MANAGER_COURSE_LIST] = 'required';
+        }
+
+
+        return $errors;
+    } **/
     /**
      * @param           $form
      * @param           $level
@@ -248,20 +272,22 @@ class manager_course_report_level_form extends moodleform {
 
         // Get my companies by level
         if ($IsReporter) {
-            $levelZero  = array_keys($myHierarchy->competence);
+            $levelZero = $myHierarchy->competence->zero;
 
             // Get right companies based on the report level access
             $aux = array();
             foreach ($levelZero as $zero) {
-                if ($myHierarchy->competence[$zero]->level <= $report_level) {
-                    $aux[$zero] = $zero;
-               }
+                if ($zero->level <= $report_level) {
+                    $aux[$zero->levelzero] = $zero->levelzero;
+                }
             }//for_each
+
             if ($aux) {
                 $levelZero = implode(',',$aux);
             }else {
                 $levelZero = implode(',',$levelZero);
             }//if_aux
+
 
             // If only one company
             if (count($aux) == 1) {
@@ -273,12 +299,37 @@ class manager_course_report_level_form extends moodleform {
                 }
             }//if_onlyOne
 
-            if ($parentZero) {
-                if ($myHierarchy->competence[$parentZero]->level <= $report_level) {
-                    $levelOne   = $myHierarchy->competence[$parentZero]->levelone;
-                    $levelTwo   = $myHierarchy->competence[$parentZero]->leveltwo;
-                    $levelThree = $myHierarchy->competence[$parentZero]->levelthree;
-                }
+            switch ($level) {
+                case 1:
+                    $levelOne = $myHierarchy->competence->one[$parentZero];
+                    $levelOne = implode(',',$levelOne);
+
+                    break;
+                case 2:
+                    $levelOne = optional_param(MANAGER_COURSE_STRUCTURE_LEVEL . 1, 0, PARAM_INT);
+                    if ((!$levelOne) && isset($SESSION->selection)) {
+                        $levelOne = $SESSION->selection[MANAGER_COURSE_STRUCTURE_LEVEL . 1];
+                    }
+
+                    $levelTwo = $myHierarchy->competence->two[$levelOne];
+                    $levelTwo = implode(',',$levelTwo);
+
+                    break;
+                case 3:
+                    $levelOne = optional_param(MANAGER_COURSE_STRUCTURE_LEVEL . 1, 0, PARAM_INT);
+                    if ((!$levelOne) && isset($SESSION->selection)) {
+                        $levelOne = $SESSION->selection[MANAGER_COURSE_STRUCTURE_LEVEL . 1];
+                    }
+                    $levelTwo = optional_param(MANAGER_COURSE_STRUCTURE_LEVEL . 2, 0, PARAM_INT);
+                    if ((!$levelTwo) && isset($SESSION->selection)) {
+                        $levelTwo = $SESSION->selection[MANAGER_COURSE_STRUCTURE_LEVEL . 2];
+                    }
+
+                    $levelThree = $myHierarchy->competence->three[$levelTwo];
+                    $levelThree = implode(',',$levelThree);
+
+                    break;
+
             }
         }else {
             list($levelZero,$levelOne,$levelTwo,$levelThree) = CompetenceManager::get_mycompanies_by_level($myHierarchy->competence);

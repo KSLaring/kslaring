@@ -114,7 +114,6 @@ function xmldb_report_manager_install() {
 }//xmldb_report_manager_install
 
 class CompetenceManager_Install {
-
     /**
      * Description
      * Create companies_with_users view
