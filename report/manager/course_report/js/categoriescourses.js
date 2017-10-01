@@ -214,7 +214,7 @@ M.core_user.init_managercourse_report = function (Y, parent, category, course,de
                 parent = 0;
                 depth  = 1;
                 this.parentcat.set('value',0);
-
+                this.depth.set('value',0);
                 // Clean courses selector
                 if (this.course) {
                     this.course.all('option').each(function(option){
