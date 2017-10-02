@@ -214,7 +214,7 @@ M.core_user.init_managercourse_report = function (Y, parent, category, course,de
                 parent = 0;
                 depth  = 1;
                 this.parentcat.set('value',0);
-                this.depth.set('value',0);
+                this.depth.set('value',1);
                 // Clean courses selector
                 if (this.course) {
                     this.course.all('option').each(function(option){
@@ -224,7 +224,7 @@ M.core_user.init_managercourse_report = function (Y, parent, category, course,de
 
                     });
                     this.course.set('selectedIndex',0);
-                    this.depth.set('value',0);
+                    this.depth.set('value',1);
                 }//if_this_Course
             }else {
                 // Get category selected
@@ -234,6 +234,7 @@ M.core_user.init_managercourse_report = function (Y, parent, category, course,de
                 }//if_else
 
                 depth  = parseInt(this.depth.get('value')) + 1;
+                this.depth.set('value',depth);
             }
 
             var iotrans = Y.io(M.cfg.wwwroot + '/report/manager/course_report/categoriescourses.php',
