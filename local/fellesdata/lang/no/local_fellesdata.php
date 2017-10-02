@@ -205,3 +205,4 @@ $string['map_automatically_desc']   = 'Automatisk mapping kan kun aktiveres ETTE
 
 $string['parentlevel']  = 'Parent';
 $string['leveltomap']   = 'Level to map: {$a}';
+$string['errorpaernt']  = 'Please, you must select a parent to map level {$a}';

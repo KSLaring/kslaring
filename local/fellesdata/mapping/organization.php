@@ -45,6 +45,7 @@ $step       = 50;
 $fstomap    = null;
 $total      = 0;
 $matched    = false;
+$out        = null;
 
 // Set page
 $siteContext = context_system::instance();
@@ -82,34 +83,46 @@ if (isset($SESSION->notIn) && count($SESSION->notIn)) {
 }
 
 // Get info parent
-$parent = FS_MAPPING::get_company_ks_info($parentid);
-list($fstomap,$total) = FS_MAPPING::fs_companies_to_map($level,$parent,$pattern,$notin,$start,$step);
+if (($level >= 1) && (!$parentid)) {
+    $out = get_string('errorpaernt','local_fellesdata',$level);
+}else {
+    $parent = FS_MAPPING::get_company_ks_info($parentid);
+    list($fstomap,$total) = FS_MAPPING::fs_companies_to_map($level,$parent,$pattern,$notin,$start,$step);
 
-$form    = new organization_map_form(null,array($level,$parent,$pattern,$fstomap,$total));
-if ($form->is_cancelled()) {
-    unset($SESSION->notIn);
+    $form    = new organization_map_form(null,array($level,$parent,$pattern,$fstomap,$total));
+    if ($form->is_cancelled()) {
+        unset($SESSION->notIn);
 
-    $_POST = array();
-    redirect($return);
-}else if ($data = $form->get_data()) {
-    // Matching
-    list($matched,$notin) = FS_MAPPING::mapping_fs_companies($fstomap,$parent,$data);
+        $_POST = array();
+        redirect($return);
+    }else if ($data = $form->get_data()) {
+        // Matching
+        list($matched,$notin) = FS_MAPPING::mapping_fs_companies($fstomap,$parent,$data);
 
-    // Redirect
-    if ($matched) {
-        if (count($notin)) {
-            $SESSION->notIn = $notin;
-        }
+        // Redirect
+        if ($matched) {
+            if (count($notin)) {
+                $SESSION->notIn = $notin;
+            }
 
-        redirect($url);
-    }//matched
-}//if_form
+            redirect($url);
+        }//matched
+    }//if_form
+    $out = null;
+}
+
 
 // Header
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('nav_map_org', 'local_fellesdata'));
 
-$form->display();
+if ($out) {
+    echo $OUTPUT->notification($out, 'notifysuccess');
+    echo $OUTPUT->continue_button($return);
+}else {
+    $form->display();
+}
+
 
 // Footer
 echo $OUTPUT->footer();
