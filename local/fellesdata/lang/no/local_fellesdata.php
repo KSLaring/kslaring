@@ -204,4 +204,4 @@ $string['map_automatically']        = 'Automatisk mapping';
 $string['map_automatically_desc']   = 'Automatisk mapping kan kun aktiveres ETTER første gangs manuell synkronisering og mapping. Deretter vil alle nye org-elementer bli mappet automatisk.';
 
 $string['parentlevel']  = 'Parent';
-$string['leveltomap']   = 'Level to map: {$a}';
+$string['leveltomap']   = 'Level to map: {$a}';$string['errorpaernt']  = 'Please, you must select a parent to map level {$a}';

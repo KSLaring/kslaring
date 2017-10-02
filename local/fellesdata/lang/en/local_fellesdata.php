@@ -204,4 +204,4 @@ $string['map_automatically']        = 'Map automatically';
 $string['map_automatically_desc']   = 'Map automatically will not applied for the first execution. The first time the mapping has to be done manually';
 
 $string['parentlevel']  = 'Parent ';
-$string['leveltomap']   = 'Level to map: {$a}';
+$string['leveltomap']   = 'Level to map: {$a}';$string['errorpaernt']  = 'Please, you must select a parent to map level {$a}';
