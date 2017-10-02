@@ -47,6 +47,52 @@ class FS_MAPPING {
     /**********/
 
     /**
+     * Description
+     * Initialize parent selector
+     *
+     * @param           $selectorlevel
+     * @param           $hidelevel
+     * @param           $selectorparent
+     * @param           $hideparent
+     *
+     * @throws          Exception
+     *
+     * @creationDate    02/10/2017
+     * @author          eFaktor     (fbv)
+     */
+    public static function init_fsks_parent_selector($selectorlevel,$hidelevel,$selectorparent,$hideparent) {
+        /* Variables */
+        global $PAGE;
+        $name       = null;
+        $path       = null;
+        $requires   = null;
+        $jsmodule   = null;
+
+
+        try {
+            // Initialise variables
+            $name       = 'fs_company';
+            $path       = '/local/fellesdata/js/mapping.js';
+            $requires   = array('node', 'event-custom', 'datasource', 'json', 'moodle-core-notification','datatype-number','arraysort');
+
+            // Initialise js module
+            $jsmodule = array('name'        => $name,
+                'fullpath'    => $path,
+                'requires'    => $requires
+            );
+
+            // Javascript
+            $PAGE->requires->js_init_call('M.core_user.init_fs_company_to_map',
+                array($selectorlevel,$hidelevel,$selectorparent,$hideparent),
+                false,
+                $jsmodule
+            );
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//init_fsks_parent_selector
+
+    /**
      * @param           $ks
      * @param           $level
      * @param           $scompaniesSelector
@@ -380,195 +426,6 @@ class FS_MAPPING {
         }//try_catch
     }//clean_new_companies
 
-    /**
-     * @param           $level
-     * @param           $parent
-     * @param           $search
-     *
-     * @return          array
-     * @throws          Exception
-     *
-     * @creationDate    07/06/2016
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Companies connected with the parent
-     */
-    public static function FindFSCompanies_WithParent($level,$search,$parent) {
-        /* Variables */
-        global $DB;
-        $rdo            = null;
-        $sql            = null;
-        $sqlExtra       = null;
-        $extra          = null;
-        $locate         = null;
-        $params         = null;
-        $fsCompanies    = array();
-
-        try {
-            /* Search Criteria  */
-            $params = array();
-            $params['level']        = $level;
-            $params['parent']       = $parent;
-            $params['new']          = 1;
-            $params['synchronized'] = 0;
-
-            /* SQL Instruction */
-            $sql = " SELECT	DISTINCT 
-                            fs.id,
-                            fs.name
-                     FROM	{fs_company} fs
-                     WHERE	fs.parent       = :parent
-                        AND fs.parent       != 0
-                        AND	fs.level 		= :level
-                        AND fs.new 			= :new
-                        AND fs.synchronized = :synchronized ";
-
-            /* Search   */
-            if ($search) {
-                $extra = explode(' ',$search);
-                foreach ($extra as $str) {
-                    if ($locate) {
-                        $locate .= " OR ";
-                    }
-                    $locate .= " LOCATE('" . $str . "',fs.name) > 0";
-                }//if_search_opt
-
-                $sql .= $sqlExtra . " AND ($locate) ";
-            }//if_search
-
-            /* Execute */
-            $sql .= " ORDER By fs.name ";
-
-            $rdo = $DB->get_records_sql($sql,$params);
-            if ($rdo) {
-                foreach ($rdo as $instance) {
-                    $fsCompanies[$instance->id] = $instance->name;
-                }
-            }//if_Rdo
-
-            return $fsCompanies;
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_cathc
-    }//FindFSCompanies_WithParent
-
-    /**
-     * @param           $level
-     * @param           $search
-     * @param           $parent
-     *
-     * @return          array
-     * @throws          Exception
-     *
-     * @creationDate    07/06/2016
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * All companies without parents
-     */
-    public static function FindFSCompanies_WithoutParent($level,$search,$parent=0) {
-        /* Variables */
-        global $DB;
-        $rdo            = null;
-        $sql            = null;
-        $sqlExtra       = null;
-        $extra          = null;
-        $locate         = null;
-        $params         = null;
-        $fsCompanies    = array();
-        $granpaName     = null;
-        $name           = null;
-        $plugin         = null;
-        $granpalevel    = null;
-
-        try {
-            // Plugin info
-            $plugin     = get_config('local_fellesdata');
-
-            // Search criteria
-            $params = array();
-            $params['level']        = $level;
-            $params['new']          = 1;
-            $params['synchronized'] = 0;
-
-            // Level of the parent
-            switch ($level) {
-                case FS_LE_2:
-                    $granpalevel     = $plugin->map_one;
-
-                    break;
-
-                case FS_LE_5;
-                    $granpalevel     = $plugin->map_two;
-
-                    break;
-
-                default:
-                    $granpalevel = '0';
-
-                    break;
-            }//level
-
-            // SQL Instruction
-            $sql = " SELECT	 DISTINCT 
-                                  fs.id,
-                                  fs.fs_parent,
-                                  fs.name,
-                                  fs_granpa.ORG_NIVAA 		as 'parentnivaa',
-                                  fs_granpa.ORG_ENHET_OVER	as 'parentparent',
-                                  fs_granpa.ORG_NAVN		as 'parentname'
-                     FROM		  {fs_company} 		fs
-                        LEFT JOIN {fs_imp_company}	fs_granpa	ON fs_granpa.org_enhet_id 	= fs.fs_parent
-                     WHERE	(fs.parent IS NULL
-                             OR
-                             fs.parent = 0)
-                        AND	fs.level 		= :level
-                        AND fs.new 			= :new
-                        AND fs.synchronized = :synchronized ";
-
-            // Search
-            if ($search) {
-                $extra = explode(' ',$search);
-                foreach ($extra as $str) {
-                    if ($locate) {
-                        $locate .= " OR ";
-                    }
-                    $locate .= " LOCATE('" . $str . "',fs.name) > 0";
-                }//if_search_opt
-
-                $sql .= $sqlExtra . " AND ($locate) ";
-            }//if_search
-
-            // Execute
-            $sql .= " ORDER By fs.name ";
-            $rdo = $DB->get_records_sql($sql,$params);
-            if ($rdo) {
-                foreach ($rdo as $instance) {
-                    if ($instance->fs_parent) {
-                        if ($granpalevel == $instance->parentnivaa) {
-                            $name = $instance->parentname . ' > ' . $instance->name ;
-                        }else {
-                            if ($instance->parentparent) {
-                                $granpaName = self::GetGranparentName($instance->parentparent,$granpalevel);
-                                if ($granpaName) {
-                                    $name = $granpaName . ' > ' . $instance->name;
-                                }
-                            }//if_parentparent
-                        }
-                    }else {
-                        $name = $instance->name;
-                    }//if_org_enhet_over
-
-                    $fsCompanies[$instance->id] = $name;
-                }
-            }//if_Rdo
-
-            return $fsCompanies;
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//FindFSCompanies_WithoutParent
 
     /**
      * @param           $level
@@ -621,6 +478,104 @@ class FS_MAPPING {
             throw $ex;
         }//try_catch
     }//GetParents
+
+    /**
+     * Description
+     * Parents synchronized
+     *
+     * @param           $level
+     *
+     * @return          array|null
+     * @throws          Exception
+     *
+     * @creationDate    02/10/2017
+     * @author          eFaktor     (fbv)
+     */
+    public static function get_parents_synchronized($level) {
+        /* Variables */
+        global $DB;
+        $sql        = null;
+        $rdo        = null;
+        $lstparents = null;
+        $params     = null;
+
+        try {
+            // First element
+            $lstparents = array();
+            $lstparents[0] = get_string('sel_parent','local_fellesdata');
+
+            // Search criteria
+            $params          = array();
+            if ($level != FS_LE_1) {
+                $params['level'] =  ($level - 1);
+            }else if ($level == FS_LE_1) {
+                $params['level'] =  0;
+            }
+
+            // SQL Instruction
+            $sql = " SELECT		ks.companyid,
+                                ks.name
+                     FROM		{ks_company}	ks
+                        JOIN	{ksfs_company}	ksfs 	ON ksfs.kscompany = ks.companyid
+                        JOIN	{fs_company}	fs		ON fs.companyid	= ksfs.fscompany
+                     WHERE		ks.hierarchylevel = :level
+                     ORDER BY 	ks.name  ";
+
+            // Execute
+            $rdo = $DB->get_recordset_sql($sql,$params);
+            if ($rdo) {
+                foreach ($rdo as $instance) {
+                    $lstparents[$instance->companyid] = $instance->name;
+                }
+            }
+
+            return $lstparents;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//get_parents_synchronized
+
+    /**
+     * Description
+     * Get company info connected
+     *
+     * @param           $company
+     *
+     * @return          mixed|null
+     * @throws          Exception
+     *
+     * @creationDate    02/10/2017
+     * @author          eFaktor     (fbv)
+     */
+    public static function get_company_ks_info($company) {
+        /* Variables */
+        global $DB;
+        $rdo    = null;
+        $sql    = null;
+        $params = null;
+
+        try {
+            // Search criteria
+            $params = array();
+            $params['companyid'] = $company;
+
+            // SQL Instruction
+            $sql = " SELECT		ks.companyid,
+                                ks.name,
+                                ksfs.fscompany
+                     FROM		{ks_company}    ks
+                        JOIN	{ksfs_company}	ksfs 	ON ksfs.kscompany = ks.companyid
+                        JOIN	{fs_company}	fs		ON fs.companyid	  = ksfs.fscompany
+                     WHERE		ks.companyid = :companyid ";
+
+            // Execute
+            $rdo = $DB->get_record_sql($sql,$params);
+
+            return $rdo;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//get_company_ks_info
 
     /**
      * @param           $ks_jobrole
@@ -841,46 +796,36 @@ class FS_MAPPING {
         }//
     }//getLevelsMapping
 
-    /**
-     * @param           $level
-     * @param           $sector
-     * @param           $notIn
-     * @param           $start
-     * @param           $length
-     *
-     * @return          array
-     *
-     * @throws          Exception
-     *
-     * @creationDate    08/02/2016
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get companies to map
-     */
-    public static function FSCompaniesToMap($level,$sector,$notIn,$start,$length) {
-        /* Variables    */
-        $fsCompanies    = null;
+    public static function fs_companies_to_map($level,$parent,$sector,$notin,$start,$length) {
+        /* Variables */
+        $fscompanies    = null;
         $total          = null;
         $plugin         = null;
+        $fsparent       = null;
 
         try {
             // Plugin info
             $plugin     = get_config('local_fellesdata');
 
             // Get Companies to Map
-            $fsCompanies = self::GetFSCompaniesToMap($plugin,$level,$sector,$notIn,$start,$length);
+            $fscompanies = self::get_fscompanies_to_map($plugin,$level,$parent,$sector,$notin,$start,$length);
             // Get Total
-            $total = self::GetTotalFSCompaniesToMap($plugin,$level,$sector,$notIn);
+            if ($parent) {
+                $fsparent = $parent->fscompany;
+            }else {
+                $fsparent = 0;
+            }
+            $total = self::get_total_fscompanies_to_map($plugin,$level,$fsparent,$sector,$notin);
 
-            return array($fsCompanies,$total);
+            return array($fscompanies,$total);
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//FSCompaniesToMap
+    }//fs_companies_to_map
 
     /**
-     * @param           $toMap
+     * @param           $tomap
+     * @param           $parent
      * @param           $data
      *
      * @return          array
@@ -892,45 +837,45 @@ class FS_MAPPING {
      * Description
      * Mapping Companies
      */
-    public static function MappingFSCompanies($toMap,$data) {
+    public static function mapping_fs_companies($tomap,$parent,$data) {
         /* Variables */
         global $SESSION;
-        $possibleMatch  = null;
-        $refFS          = null;
-        $infoMatch      = null;
+        $possiblematch  = null;
+        $reffs          = null;
+        $info           = null;
+        $fscompany      = null;
         $match          = null;
-        $notIn          = array();
+        $notin          = array();
 
         try {
             // Check not in
             if (isset($SESSION->notIn)) {
-                $notIn = $SESSION->notIn;
+                $notin = $SESSION->notIn;
             }//notIn
 
             // Companies to map
-            foreach ($toMap as $fsCompany) {
+            foreach ($tomap as $fscompany) {
                 // Reference
-                $refFS = 'FS_' . $fsCompany->fscompany;
+                $reffs = 'FS_' . $fscompany->fscompany;
 
                 // Get Possible Match
-                if (isset($data->$refFS)) {
-                    $possibleMatch = $data->$refFS;
+                if (isset($data->$reffs)) {
+                    $possiblematch = $data->$reffs;
 
-                    if ($possibleMatch == '0') {
-                       self::NewMapFSCompany($fsCompany,$data->le);
-                    }else if ($possibleMatch == 'no_sure') {
-                       $notIn["'" . $fsCompany->fscompany . "'"] = "'" . $fsCompany->fscompany . "'";
+                    if ($possiblematch == '0') {
+                        self::new_map_fs_company($fscompany,$parent->companyid,$data->le);
+                    }else if ($possiblematch == 'no_sure') {
+                        $notin["'" . $fscompany->fscompany . "'"] = "'" . $fscompany->fscompany . "'";
                     }else {
                         // Mapping between FSand KS
-                        $infoMatch = explode('#KS#',$data->$refFS);
-                        $match = $fsCompany->matches[$infoMatch[1]];
-                        self::MapFSCompany($fsCompany,$match,$data->le);
-                    }//if_possibleMatch
+                        $info = explode('#KS#',$data->$reffs);
+                        $match = $fscompany->matches[$info[1]];
+                        self::map_fs_company($fscompany,$match,$data->le);
+                    }
+                }//if_reffs
+            }//for_tomap
 
-                }
-            }//fs_company
-
-            return array(true,$notIn);
+            return array(true,$notin);
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -1127,24 +1072,25 @@ class FS_MAPPING {
     }//GetUnMappedJR
 
     /**
-     * @param           $fsCompany
+     * Description
+     * Map a FS Company with the 'new' option
+     *
+     * @param           $fscompany
+     * @param           $parent
      * @param           $level
      *
      * @throws          Exception
      *
      * @creationDate    08/02/2016
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Map a FS Company with the 'new' option
      */
-    private static function NewMapFSCompany($fsCompany,$level) {
-        /* Variables    */
-        global $DB,$SESSION;
+    private static function new_map_fs_company($fscompany,$parent,$level) {
+        /* Variables */
+        global $DB;
         $rdo            = null;
         $params         = null;
-        $infoCompany    = null;
-        $infoImp        = null;
+        $infocompany    = null;
+        $infoimp        = null;
         $trans          = null;
         $time           = null;
 
@@ -1155,48 +1101,48 @@ class FS_MAPPING {
             // Local time
             $time = time();
 
+            // Company to update or create
+            $infocompany = new stdClass();
+            $infocompany->companyid     = $fscompany->fscompany;
+            $infocompany->name          = str_replace("'"," ",$fscompany->name);
+            $infocompany->fs_parent     = $fscompany->fs_parent;
+            $infocompany->parent        = $parent;
+            $infocompany->level         = $level;
+            $infocompany->privat        = $fscompany->privat;
+            // Invoice data
+            $infocompany->ansvar        = $fscompany->ansvar;
+            $infocompany->tjeneste      = $fscompany->tjeneste;
+            $infocompany->adresse1      = $fscompany->adresse1;
+            $infocompany->adresse2      = $fscompany->adresse2;
+            $infocompany->adresse3      = $fscompany->adresse3;
+            $infocompany->postnr        = $fscompany->postnr;
+            $infocompany->poststed      = $fscompany->poststed;
+            $infocompany->epost         = $fscompany->epost;
+            $infocompany->synchronized  = 0;
+            $infocompany->new           = 1;
+            $infocompany->timemodified  = time();
+
             // Check if already exist
             $params = array();
-            $params['companyid'] = $fsCompany->fscompany;
+            $params['companyid'] = $fscompany->fscompany;
             $rdo = $DB->get_record('fs_company',$params);
-
             if (!$rdo) {
-                // create company
-                $infoCompany = new stdClass();
-                $infoCompany->companyid     = $fsCompany->fscompany;
-                $infoCompany->name          = str_replace("'"," ",$fsCompany->real_name);
-                $infoCompany->fs_parent     = ($fsCompany->fs_parent ? $fsCompany->fs_parent : 0);
-                $infoCompany->parent        = 0;
-                $infoCompany->level         = $level;
-                $infoCompany->privat        = $fsCompany->privat;
-                // Invoice data
-                $infoCompany->ansvar        = $fsCompany->ansvar;
-                $infoCompany->tjeneste      = $fsCompany->tjeneste;
-                $infoCompany->adresse1      = $fsCompany->adresse1;
-                $infoCompany->adresse2      = $fsCompany->adresse2;
-                $infoCompany->adresse3      = $fsCompany->adresse3;
-                $infoCompany->postnr        = $fsCompany->postnr;
-                $infoCompany->poststed      = $fsCompany->poststed;
-                $infoCompany->epost         = $fsCompany->epost;
-                $infoCompany->synchronized  = 0;
-                $infoCompany->new           = 1;
-                $infoCompany->timemodified  = time();
+                // Execute
+                $infocompany->id = $DB->insert_record('fs_company',$infocompany);
+            }else {
+                $infocompany->id = $rdo->id;
 
                 // Execute
-                $infoCompany->id = $DB->insert_record('fs_company',$infoCompany);
-
-                // Save
-                $SESSION->FS_COMP["'" . $infoCompany->companyid . "'"] = $infoCompany;
+                $DB->update_record('fs_company',$infocompany);
             }//if_rdo
 
             // Update records as imported
-            $infoImp = new stdClass();
-            $infoImp->id            = $fsCompany->id;
-            $infoImp->org_enhet_id  = $fsCompany->fscompany;
-            $infoImp->org_navn      = str_replace("'"," ",$fsCompany->real_name);
-            $infoImp->imported      = 1;
-            $infoImp->timemodified  = $time;
-            $DB->update_record('fs_imp_company',$infoImp);
+            $infoimp = new stdClass();
+            $infoimp->id            = $fscompany->id;
+            $infoimp->org_enhet_id  = $fscompany->fscompany;
+            $infoimp->imported      = 1;
+            $infoimp->timemodified  = $time;
+            $DB->update_record('fs_imp_company',$infoimp);
 
             // Commit
             $trans->allow_commit();
@@ -1206,29 +1152,27 @@ class FS_MAPPING {
 
             throw $ex;
         }//try_catch
-    }//NewMapFSCompany
+    }//new_map_fs_company
+
 
     /**
-     * @param           $fsCompany
-     * @param           $ksCompany
+     * @param           $fscompany
+     * @param           $kscompany
      * @param           $level
      *
      * @throws          Exception
      *
-     * @creationDate    08/02/2016
+     * @updateDate      02/10/2017
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Mapping between FS and KS company
      */
-    private static function MapFSCompany($fsCompany,$ksCompany,$level) {
+    private static function map_fs_company($fscompany,$kscompany,$level) {
         /* Variables */
         global $DB;
         $rdo            = null;
         $params         = null;
-        $infoCompany    = null;
-        $infoRelation   = null;
-        $infoImp        = null;
+        $infocompany    = null;
+        $inforel        = null;
+        $infoimp        = null;
         $time           = null;
         $trans          = null;
 
@@ -1239,69 +1183,48 @@ class FS_MAPPING {
             // Local time
             $time = time();
 
+            // to create or to update
+            // FS company
+            $infocompany = new stdClass();
+            $infocompany->companyid     = $fscompany->fscompany;
+            $infocompany->name          = str_replace("'"," ",$fscompany->name);
+            $infocompany->fs_parent     = $fscompany->fs_parent; ;
+            $infocompany->parent        = $kscompany->parent;
+            // Invoice data
+            $infocompany->privat        = $fscompany->privat;
+            $infocompany->ansvar        = $fscompany->ansvar;
+            $infocompany->tjeneste      = $fscompany->tjeneste;
+            $infocompany->adresse1      = $fscompany->adresse1;
+            $infocompany->adresse2      = $fscompany->adresse2;
+            $infocompany->adresse3      = $fscompany->adresse3;
+            $infocompany->postnr        = $fscompany->postnr;
+            $infocompany->poststed      = $fscompany->poststed;
+            $infocompany->epost         = $fscompany->epost;
+            $infocompany->level         = $level;
+            $infocompany->synchronized  = 1;
+            $infocompany->new           = 0;
+            $infocompany->timemodified  = $time;
+
             // Check if already exist
             $params = array();
-            $params['companyid'] = $fsCompany->fscompany;
+            $params['companyid'] = $fscompany->fscompany;
             $rdo = $DB->get_record('fs_company',$params);
-
             if (!$rdo) {
-                // FS company
-                $infoCompany = new stdClass();
-                $infoCompany->companyid     = $fsCompany->fscompany;
-                $infoCompany->name          = str_replace("'"," ",$fsCompany->real_name);
-                $infoCompany->fs_parent     = ($fsCompany->fs_parent ? $fsCompany->fs_parent : 0);
-                $infoCompany->parent        = $ksCompany->parent;
-                // Invoice data
-                $infoCompany->privat        = $fsCompany->privat;
-                $infoCompany->ansvar        = $fsCompany->ansvar;
-                $infoCompany->tjeneste      = $fsCompany->tjeneste;
-                $infoCompany->adresse1      = $fsCompany->adresse1;
-                $infoCompany->adresse2      = $fsCompany->adresse2;
-                $infoCompany->adresse3      = $fsCompany->adresse3;
-                $infoCompany->postnr        = $fsCompany->postnr;
-                $infoCompany->poststed      = $fsCompany->poststed;
-                $infoCompany->epost         = $fsCompany->epost;
-                $infoCompany->level         = $level;
-                $infoCompany->synchronized  = 1;
-                $infoCompany->new           = 0;
-                $infoCompany->timemodified  = $time;
-
                 // Execute
-                $DB->insert_record('fs_company',$infoCompany);
+                $DB->insert_record('fs_company',$infocompany);
             }else {
-                $rdo->name          = str_replace("'"," ",$fsCompany->real_name);
-                $rdo->fs_parent     = $fsCompany->fs_parent;
-                $rdo->parent        = $ksCompany->parent;
-                $rdo->level         = $level;
-                $rdo->synchronized  = 1;
-                $rdo->timemodified  = $time;
+                $infocompany->id = $rdo->id;
 
                 // Execute
-                $DB->update_record('fs_company',$rdo);
+                $DB->update_record('fs_company',$infocompany);
             }//if_rdo
-
-            // Relation
-            // Check if already exist
-            $params = array();
-            $params['fscompany'] = $fsCompany->fscompany;
-            $params['kscompany'] = $ksCompany->kscompany;
-            $rdo = $DB->get_record('ksfs_company',$params);
-            if (!$rdo) {
-                // Create relation
-                $infoRelation = new stdClass();
-                $infoRelation->fscompany = $fsCompany->fscompany;
-                $infoRelation->kscompany = $ksCompany->kscompany;
-
-                // Execute
-                $DB->insert_record('ksfs_company',$infoRelation);
-            }//if_no_exists
 
             // Update record as importer
             $infoImp = new stdClass();
-            $infoImp->id            = $fsCompany->id;
-            $infoImp->org_enhet_id  = $fsCompany->fscompany;
+            $infoImp->id            = $fscompany->id;
+            $infoImp->org_enhet_id  = $fscompany->fscompany;
             $infoImp->imported      = 1;
-            $infoImp->org_navn      = str_replace("'"," ",$fsCompany->real_name);
+            $infoImp->org_navn      = str_replace("'"," ",$fscompany->name);
             $infoImp->timemodified  = $time;
 
             // Execute
@@ -1315,37 +1238,34 @@ class FS_MAPPING {
 
             throw $ex;
         }//try_catch
-    }//MapFSCompany
-
+    }//map_fs_company
 
     /**
-     * @param    Object $plugin     Plugin info. Settings
+     * Description
+     * Get companies to map
+     *
+     * @param           $plugin
      * @param           $level
+     * @param           $parent
      * @param           $sector
-     * @param           $notIn
+     * @param           $notin
      * @param           $start
      * @param           $length
      *
      * @return          array
      * @throws          Exception
      *
-     * @creationDate    08/02/2016
+     * @updateDate      02/10/2017
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get companies to map
      */
-    private static function GetFSCompaniesToMap($plugin,$level,$sector,$notIn,$start,$length) {
-        /* Variables    */
+    private static function get_fscompanies_to_map($plugin,$level,$parent,$sector,$notin,$start,$length) {
+        /* Variables */
         global $DB;
-        $granpa         = false;
-        $granpaName     = null;
-        $fsCompanies    = array();
-        $infoCompany    = null;
-        $sql            = null;
-        $rdo            = null;
-        $params         = null;
-        $granpalevel    = null;
+        $rdo         = null;
+        $rdo         = null;
+        $params      = null;
+        $fscompanies = array();
+        $infocompany = null;
 
         try {
             // Search criteria
@@ -1362,15 +1282,11 @@ class FS_MAPPING {
 
                 case FS_LE_2:
                     $params['level'] = $plugin->map_two;
-                    $granpalevel     = $plugin->map_one;
-                    $granpa = true;
 
                     break;
 
                 case FS_LE_5;
                     $params['level'] = $plugin->map_three;
-                    $granpalevel     = $plugin->map_two;
-                    $granpa = true;
 
                     break;
 
@@ -1380,13 +1296,13 @@ class FS_MAPPING {
                     break;
             }//level
 
-            // SQL Instruction
+            // SQL instruction
             $sql = " SELECT DISTINCT 
                                   fs_imp.id,
                                   fs_imp.org_enhet_id   		as 'fscompany',
-                                  fs_imp.org_nivaa,
+                                  fs_imp.org_nivaa              as 'nivaa',
                                   fs_imp.org_navn	    		as 'name',
-                                  fs_imp.org_enhet_over,
+                                  fs_imp.org_enhet_over         as 'fs_parent',
                                   fs_imp.privat,
                                   fs_imp.ansvar,
                                   fs_imp.tjeneste,
@@ -1395,22 +1311,23 @@ class FS_MAPPING {
                                   fs_imp.adresse3,
                                   fs_imp.postnr,
                                   fs_imp.poststed,
-                                  fs_imp.epost,
-                                  fs_granpa.ORG_NIVAA 		as 'parentnivaa',
-                                  fs_granpa.ORG_ENHET_OVER	as 'parentparent',
-                                  fs_granpa.ORG_NAVN			as 'parentname'
+                                  fs_imp.epost
                      FROM		  {fs_imp_company}  fs_imp
-                        LEFT JOIN {fs_company}	    fs	  		ON fs.companyid 			= fs_imp.org_enhet_id
-                        -- Granparent information
-                        LEFT JOIN {fs_imp_company}	fs_granpa	ON fs_granpa.org_enhet_id 	= fs_imp.org_enhet_over
-                     WHERE	      fs_imp.imported  = :imported
-                          AND     fs_imp.action   != :action
+                        LEFT JOIN {fs_company}	  	fs	  		ON fs.companyid 			= fs_imp.org_enhet_id
+                     WHERE	      fs_imp.imported  		= :imported
+                          AND     fs_imp.action   	   != :action
                           AND	  fs.id IS NULL
-                          AND	  fs_imp.org_nivaa = :level ";
+                          AND	  fs_imp.org_nivaa 		= :level ";
+
+            // Parent criteria
+            if ($parent) {
+                $params['parent']   = $parent->fscompany;
+                $sql = " AND	  fs_imp.org_enhet_over = :parent ";
+            }
 
             // Add notIn criteria
-            if ($notIn) {
-                $sql .= " AND fs_imp.org_enhet_id NOT IN ($notIn) ";
+            if ($notin) {
+                $sql .= " AND fs_imp.org_enhet_id NOT IN ($notin) ";
             }//if_notIn
 
             if ($sector) {
@@ -1444,135 +1361,23 @@ class FS_MAPPING {
             if ($rdo) {
                 foreach ($rdo as $instance) {
                     // Info company
-                    $infoCompany = new stdClass();
-                    $infoCompany->id            = $instance->id;
-                    $infoCompany->fscompany     = $instance->fscompany;
-                    $infoCompany->nivaa         = $instance->org_nivaa;
-                    $infoCompany->name          = $instance->name;
-                    $infoCompany->real_name     = $instance->name;
-                    // Granparent name
-                    if ($granpa) {
-                        if ($instance->org_enhet_over) {
-                            if ($granpalevel == $instance->parentnivaa) {
-                                $infoCompany->name = $instance->parentname . ' > ' . $infoCompany->name;
-                            }else {
-                                if ($instance->parentparent) {
-                                    $granpaName = self::GetGranparentName($instance->parentparent,$granpalevel);
-                                    if ($granpaName) {
-                                        $infoCompany->name = $granpaName . ' > ' . $infoCompany->name;
-                                    }
-                                }//if_parentparent
-                            }
-                        }
-                    }//if_ganpa
-
-                    $infoCompany->fs_parent     = $instance->org_enhet_over;
-                    // Invoice data
-                    $infoCompany->privat        = $instance->privat;
-                    $infoCompany->ansvar        = $instance->ansvar;
-                    $infoCompany->tjeneste      = $instance->tjeneste;
-                    $infoCompany->adresse1      = $instance->adresse1;
-                    $infoCompany->adresse2      = $instance->adresse2;
-                    $infoCompany->adresse3      = $instance->adresse3;
-                    $infoCompany->postnr        = $instance->postnr;
-                    $infoCompany->poststed      = $instance->poststed;
-                    $infoCompany->epost         = $instance->epost;
-                    $infoCompany->matches       = self::GetPossibleOrgMatches($instance->name,$level,$sector);
+                    $instance->matches       = self::get_possible_org_matches($instance->name,$level,$parent->companyid,$sector);
 
                     // Add FS Company
-                    $fsCompanies[$instance->id] = $infoCompany;
+                    $fscompanies[$instance->id] = $instance;
                 }//for_Rdo
             }//if_rdo
 
-            return $fsCompanies;
+            return $fscompanies;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//GetFSCompaniesToMap
-
-    /**
-     * @param           $parent
-     * @param           $granpalevel
-     *
-     * @return          null
-     * @throws          Exception
-     *
-     * @creationDate    11/06/2016
-     * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Return the granparent name
-     */
-    private static function GetGranparentName($parent,$granpalevel) {
-        /* Variables */
-        $name    = null;
-        $grandpa = null;
-
-        try {
-            // Get granpa object
-            self::get_parent($parent,$granpalevel,$grandpa);
-
-            if ($grandpa) {
-                $name = $grandpa->name;
-            }
-
-            return $name;
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//GetGranparentName
-
-    /**
-     * Description
-     * Get parent object connected with
-     * @param           $parent
-     * @param           $parentlevel
-     * @param           $grandpa
-     *
-     * @throws          Exception
-     *
-     * @creationDate    20/04/17
-     * @author          eFaktor     (fbv)
-     */
-    private static function get_parent($parent,$parentlevel,&$grandpa) {
-        /* Variables */
-        global $DB;
-        $granpalevel = null;
-        $granpa      = null;
-        $sql         = null;
-        $rdo         = null;
-        $params      = null;
-
-        try {
-            // Search criteria
-            $params = array();
-            $params['parent'] = $parent;
-
-            // SQL Instruction
-            $sql = " SELECT       fs_imp.ORG_NIVAA 			as 'level',
-                                  fs_imp.ORG_NAVN			as 'name',
-                                  fs_imp.ORG_ENHET_OVER		as 'fs_parent'
-                     FROM	      {fs_imp_company}	fs_imp
-                     WHERE	      fs_imp.org_enhet_id	= :parent ";
-
-            // Execute
-            $rdo = $DB->get_record_sql($sql,$params);
-            if ($rdo) {
-                if ($parentlevel != $rdo->level) {
-                    self::get_parent($rdo->fs_parent,$parentlevel,$grandpa);
-                }else {
-                    $grandpa = $rdo;
-                }
-            }//if_rdo
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//get_parent
-
+    }//get_fscompanies_to_map
 
     /**
      * @param       Object  $plugin
      * @param               $level
+     * @param               $parent
      * @param               $sector
      * @param               $notIn
      *
@@ -1585,7 +1390,7 @@ class FS_MAPPING {
      * Description
      * Get total companies to map
      */
-    private static function GetTotalFSCompaniesToMap($plugin,$level,$sector,$notIn) {
+    private static function get_total_fscompanies_to_map($plugin,$level,$parent,$sector,$notIn) {
         /* Variables    */
         global $DB;
         $sql            = null;
@@ -1597,6 +1402,7 @@ class FS_MAPPING {
             $params = array();
             $params['imported'] = 0;
             $params['action']   = ACT_DELETE;
+            $params['parent']   = $parent;
 
             // Get level
             switch ($level) {
@@ -1615,13 +1421,14 @@ class FS_MAPPING {
             }//level
 
             // SQL Instruction
-            $sql = " SELECT count(DISTINCT  fs_imp.id) as 'total'
+            $sql = " SELECT         count(DISTINCT  fs_imp.id) as 'total'
                      FROM			{fs_imp_company}  fs_imp
                         LEFT JOIN	{fs_company}	  fs	  ON fs.companyid = fs_imp.org_enhet_id
-                     WHERE	fs_imp.imported  = :imported
-                        AND fs_imp.action   != :action
-                        AND	fs.id IS NULL
-                        AND	fs_imp.org_nivaa = :level ";
+                     WHERE	        fs_imp.imported  = :imported
+                          AND       fs_imp.action   != :action
+                          AND	    fs.id IS NULL
+                          AND	    fs_imp.org_nivaa      = :level
+                          AND       fs_imp.org_enhet_over = :parent";
 
             // Add notIn criteria
             if ($notIn) {
@@ -1661,7 +1468,7 @@ class FS_MAPPING {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//GetTotalFSCompaniesToMap
+    }//get_total_fscompanies_to_map
 
     /**
      * @param           $fscompany
@@ -1678,7 +1485,7 @@ class FS_MAPPING {
      * Description
      * Get possible matches - Companies
      */
-    private static function GetPossibleOrgMatches($fscompany,$level,$sector) {
+    private static function get_possible_org_matches($fscompany,$level,$parent,$sector) {
         /* Variables    */
         global $DB;
         $sql        = null;
@@ -1695,7 +1502,8 @@ class FS_MAPPING {
 
             // Search criteria
             $params = array();
-            $params['level'] = $level;
+            $params['level']    = $level;
+            $params['parent']   = $parent;
 
             // SQL Instruction
             $sql = " SELECT	ks.id,
@@ -1704,7 +1512,8 @@ class FS_MAPPING {
                             ks.industrycode,
                             ks.parent
                     FROM	{ks_company} ks
-                    WHERE 	ks.hierarchylevel = :level ";
+                    WHERE 	ks.hierarchylevel = :level 
+                      AND   ks.parent = :parent ";
 
             // Pattern
             if ($sector) {
@@ -1752,7 +1561,7 @@ class FS_MAPPING {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//GetPossibleOrgMatches
+    }//get_possible_org_matches
 
 
     /**

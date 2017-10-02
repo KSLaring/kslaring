@@ -42,6 +42,11 @@ class map_org_form extends moodleform {
         $options = FS_MAPPING::getLevelsMapping();
         $form->addElement('select','level',get_string('level_map','local_fellesdata'),$options);
         $form->addRule('level','required','required', null, 'client');
+        /* Parents */
+        $options = FS_MAPPING::get_parents_synchronized(0);
+        $form->addElement('select','ksparent',get_string('parent','local_fellesdata'),$options);
+        $form->setDefault('ksparent',0);
+
         /* Pattern  */
         $form->addElement('text','pattern',get_string('pattern','local_fellesdata'));
         $form->addHelpButton('pattern','pattern','local_fellesdata');
@@ -49,6 +54,16 @@ class map_org_form extends moodleform {
 
         /* Add Action Buttons   */
         $this->add_action_buttons(true,get_string('continue'));
+
+        // Hide level selected
+        $form->addElement('text','hlevel',null,'style=visibility:hidden;height:0px;');
+        $form->setType('hlevel',PARAM_INT);
+        $form->setDefault('hlevel',0);
+
+        // Hide parent selected
+        $form->addElement('text','hparent',null,'style=visibility:hidden;height:0px;');
+        $form->setType('hparent',PARAM_INT);
+        $form->setDefault('hparent',0);
     }//definition
 }//map_org_form
 
@@ -122,43 +137,58 @@ class organization_map_form extends moodleform {
         $level          = null;
         $pattern        = null;
         $remain         = 0;
-        $class          = '';
 
         $form = $this->_form;
-        list($level,$pattern,$toMatch,$total) = $this->_customdata;
+        list($level,$parent,$pattern,$toMatch,$total) = $this->_customdata;
 
-        /* Get how many remains to map */
+        // Get how many remains to map
         $tomap = new stdClass();
-        $tomap->of = count($toMatch);
-        $tomap->total = $total;
-        //$remain = $total - count($toMatch);
+        $tomap->of      = count($toMatch);
+        $tomap->total   = $total;
+
+        $form->addElement('text','level',get_string('level_map','local_fellesdata'),'size=5 readonly');
+        $form->setDefault('level',$level);
+        $form->setType('level',PARAM_TEXT);
+        $form->addElement('text','ksparent',get_string('parentlevel','local_fellesdata'),'readonly');
+        if ($parent) {
+            $form->setDefault('ksparent',$parent->name);
+        }
+
+        $form->setType('ksparent',PARAM_TEXT);
 
         $form->addElement('html','<div class="matching_process_title">');
-            //if ($remain) {
-                $titleRemain = get_string('remain_match','local_fellesdata',$tomap);
-                $titleLeft .= '. ' . $titleRemain;
-            //}//if_remain
+            $titleRemain = get_string('remain_match','local_fellesdata',$tomap);
+            $titleLeft .= '. ' . $titleRemain;
 
-            /* Title        */
+            // Left
             $form->addElement('html','<div class="area_left title_matching ">');
                 $form->addElement('html','<h6>' . $titleLeft . '</h6>');
             $form->addElement('html','</div>');//area_left
 
-            /* Title Right  */
+            // Right
             $form->addElement('html','<div class="area_right title_matching ">');
                 $form->addElement('html','<h6>' . $titleRight . '</h6>');
             $form->addElement('html','</div>');//area_right
         $form->addElement('html','</div>');//matching_process
 
-        /* Add data to Map  */
+        // Data to map
         $this->MatchOrganization($toMatch,$form,$level);
 
-        /* Level */
+        // Level
         $form->addElement('hidden','le');
         $form->setDefault('le',$level);
         $form->setType('le',PARAM_INT);
 
-        /* Add Action Buttons   */
+        // Parent
+        $form->addElement('hidden','ks');
+        if ($parent) {
+            $form->setDefault('ks',$parent->companyid);
+        }else {
+            $form->setDefault('ks',0);
+        }
+        $form->setType('ks',PARAM_INT);
+
+        // Add action buttons
         $this->add_action_buttons(true,get_string('btn_match','local_fellesdata'));
     }//definition
 
@@ -182,48 +212,48 @@ class organization_map_form extends moodleform {
         $options    = null;
 
         try {
-            /* FR ORganization  */
+            // FR Organization
             foreach ($fsToMap as $fsCompany) {
-                /* Reference    */
+                // Reference
                 $refFS = "FS_" . $fsCompany->fscompany;
 
                 /* Display  */
                 $form->addElement('html','<div class="matching_process ">');
-                    /* To Match */
-                    $form->addElement('html','<div class="area_left ">');
-                        $form->addElement('html',$fsCompany->fscompany . ' - ' . $fsCompany->name);
-                    $form->addElement('html','</div>');//area_left
+                /* To Match */
+                $form->addElement('html','<div class="area_left ">');
+                $form->addElement('html',$fsCompany->fscompany . ' - ' . $fsCompany->name);
+                $form->addElement('html','</div>');//area_left
 
-                    /* Possible Matches */
-                    $form->addElement('html','<div class="area_right">');
-                        if ($level != 1) {
-                            /* Option new company */
-                            $options   = array();
-                            $index  = 'new';
-                            $options[$index] = $form->createElement('radio', $refFS,'',get_string('new_comp','local_fellesdata'),$index);
-                            $options[$index]->setValue(0);
-                            $grp = $form->addElement('group', 'grp', null, $options,null , false);
-                        }
+                /* Possible Matches */
+                $form->addElement('html','<div class="area_right">');
+                if ($level != 1) {
+                    /* Option new company */
+                    $options   = array();
+                    $index  = 'new';
+                    $options[$index] = $form->createElement('radio', $refFS,'',get_string('new_comp','local_fellesdata'),$index);
+                    $options[$index]->setValue(0);
+                    $grp = $form->addElement('group', 'grp', null, $options,null , false);
+                }
 
-                        /* Not Sure Option  */
-                        $options    = array();
-                        $index      = 'no_sure';
-                        $options[$index] = $form->createElement('radio', $refFS,'',get_string('no_match','local_fellesdata'),$index);
-                        $options[$index]->setValue($index);
-                        $grp = $form->addElement('group', 'grp', null, $options,null , false);
+                /* Not Sure Option  */
+                $options    = array();
+                $index      = 'no_sure';
+                $options[$index] = $form->createElement('radio', $refFS,'',get_string('no_match','local_fellesdata'),$index);
+                $options[$index]->setValue($index);
+                $grp = $form->addElement('group', 'grp', null, $options,null , false);
 
-                        /* Match Options  */
-                        foreach ($fsCompany->matches as $match) {
-                            /* Data to match    */
-                            $options = array();
-                            $refKS = $fsCompany->fscompany . "#KS#" . $match->kscompany;
+                /* Match Options  */
+                foreach ($fsCompany->matches as $match) {
+                    /* Data to match    */
+                    $options = array();
+                    $refKS = $fsCompany->fscompany . "#KS#" . $match->kscompany;
 
-                            $options[$refKS] = $form->createElement('radio', $refFS,'',$match->name,$refKS);
-                            $options[$refKS]->setValue($refKS);
+                    $options[$refKS] = $form->createElement('radio', $refFS,'',$match->name,$refKS);
+                    $options[$refKS]->setValue($refKS);
 
-                            $grp = $form->addElement('group', 'grp', null, $options,null , false);
-                        }//for_matches
-                    $form->addElement('html','</div>');//area_right
+                    $grp = $form->addElement('group', 'grp', null, $options,null , false);
+                }//for_matches
+                $form->addElement('html','</div>');//area_right
                 $form->addElement('html','</div>');//matching_process
 
                 /* Line */

@@ -26,7 +26,7 @@
  * @author          eFaktor     (fbv)
  *
  */
-global $CFG,$PAGE,$OUTPUT;
+global $CFG,$PAGE,$OUTPUT,$SITE,$SESSION;
 require_once('../../../config.php');
 require_once('../lib/mappinglib.php');
 require_once('mapping_forms.php');
@@ -34,19 +34,19 @@ require_once($CFG->libdir . '/adminlib.php');
 
 require_login();
 
-/* PARAMS   */
+// Params
 $level      = required_param('le',PARAM_INT);
+$parentid   = optional_param('ks',0,PARAM_INT);
 $pattern    = null;
-$url        = new moodle_url('/local/fellesdata/mapping/organization.php',array('le' => $level));
-$urlNew     = new moodle_url('/local/fellesdata/mapping/organization_new.php',array('le' => $level));
+$url        = new moodle_url('/local/fellesdata/mapping/organization.php',array('le' => $level,'ks' => $parentid));
 $return     = new moodle_url('/local/fellesdata/mapping/mapping_org.php');
 $start      = 0;
 $step       = 50;
-$fsToMap    = null;
+$fstomap    = null;
 $total      = 0;
 $matched    = false;
 
-/* Start the page */
+// Set page
 $siteContext = context_system::instance();
 
 //HTTPS is required in this page when $CFG->loginhttps enabled
@@ -60,7 +60,7 @@ $PAGE->set_heading($SITE->fullname);
 $PAGE->navbar->add(get_string('nav_mapping','local_fellesdata'),$return);
 $PAGE->navbar->add(get_string('nav_map_org','local_fellesdata'));
 
-/* ADD require_capability */
+// Capability
 require_capability('local/fellesdata:manage', $siteContext);
 
 if (empty($CFG->loginhttps)) {
@@ -71,80 +71,47 @@ if (empty($CFG->loginhttps)) {
 
 $PAGE->verify_https_required();
 
-/* Get Search Pattern   */
 if (isset($SESSION->pattern)) {
     $pattern = $SESSION->pattern;
 }//if_pattern
 
-/* To save the new companies */
-if (!isset($SESSION->FS_COMP)) {
-    $SESSION->FS_COMP = array();
-}//isset
-
-if (!isset($SESSION->notIn)) {
-    $SESSION->notIn = array();
+// Get companies to map
+$notin      = 0;
+if (isset($SESSION->notIn) && count($SESSION->notIn)) {
+    $notin = implode(',',$SESSION->notIn);
 }
 
-/* Get Companies to Map */
-$notIn      = 0;
-if (($SESSION->notIn) && count($SESSION->notIn)) {
-    $notIn = implode(',',$SESSION->notIn);
-}
+// Get info parent
+$parent = FS_MAPPING::get_company_ks_info($parentid);
+list($fstomap,$total) = FS_MAPPING::fs_companies_to_map($level,$parent,$pattern,$notin,$start,$step);
 
-list($fsToMap,$total) = FS_MAPPING::FSCompaniesToMap($level,$pattern,$notIn,$start,$step);
-asort($fsToMap);
-$form    = new organization_map_form(null,array($level,$pattern,$fsToMap,$total));
+$form    = new organization_map_form(null,array($level,$parent,$pattern,$fstomap,$total));
 if ($form->is_cancelled()) {
-    unset($SESSION->FS_COMP);
     unset($SESSION->notIn);
 
     $_POST = array();
     redirect($return);
 }else if ($data = $form->get_data()) {
     // Matching
-    list($matched,$notIn) = FS_MAPPING::MappingFSCompanies($fsToMap,$data);
+    list($matched,$notin) = FS_MAPPING::mapping_fs_companies($fstomap,$parent,$data);
 
     // Redirect
     if ($matched) {
-        if (count($notIn)) {
-            $SESSION->notIn = $notIn;
+        if (count($notin)) {
+            $SESSION->notIn = $notin;
         }
-
-        if (isset($SESSION->FS_COMP)) {
-            if ($SESSION->FS_COMP) {
-                $urlNew->param('o',1);
-                redirect($urlNew);
-            }
-        }//FS_COMP
 
         redirect($url);
     }//matched
-}//if_Else
+}//if_form
 
-if (!$fsToMap) {
-    if (($SESSION->notIn) && count($SESSION->notIn)) {
-        unset($SESSION->FS_COMP);
-        unset($SESSION->notIn);
-        redirect($url);
-    }
-}//if_tomap
-
-/* Header   */
+// Header
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('nav_map_org', 'local_fellesdata'));
 
-if ($fsToMap) {
-    unset($SESSION->FS_COMP);
-    unset($SESSION->notIn);
-    $form->display();
-}else {
-    unset($SESSION->FS_COMP);
-    unset($SESSION->notIn);
-    echo $OUTPUT->notification(get_string('no_companies_to_map','local_fellesdata'), 'notifysuccess');
-    echo $OUTPUT->continue_button($return);
-}
+$form->display();
 
-/* Footer   */
+// Footer
 echo $OUTPUT->footer();
 
 
