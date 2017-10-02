@@ -26,6 +26,8 @@
  * @author          eFaktor     (fbv)
  *
  */
+
+global $CFG, $PAGE,$SITE,$OUTPUT,$SESSION;
 require_once('../../../config.php');
 require_once('../lib/mappinglib.php');
 require_once('mapping_forms.php');
@@ -33,12 +35,12 @@ require_once($CFG->libdir . '/adminlib.php');
 
 require_login();
 
-/* PARAMS   */
+// Params
 $url    = new moodle_url('/local/fellesdata/mapping/mapping_org.php');
 $urlOrg = new moodle_url('/local/fellesdata/mapping/organization.php');
 $return = $CFG->wwwroot;
 
-/* Start the page */
+// Set page
 $siteContext = context_system::instance();
 
 //HTTPS is required in this page when $CFG->loginhttps enabled
@@ -51,7 +53,7 @@ $PAGE->set_title($SITE->fullname);
 $PAGE->set_heading($SITE->fullname);
 $PAGE->navbar->add(get_string('nav_mapping','local_fellesdata'));
 
-/* ADD require_capability */
+// Capability
 require_capability('local/fellesdata:manage', $siteContext);
 
 if (empty($CFG->loginhttps)) {
@@ -62,7 +64,7 @@ if (empty($CFG->loginhttps)) {
 
 $PAGE->verify_https_required();
 
-/* Clean Tables */
+// Clean data
 unset($SESSION->FS_COMP);
 unset($SESSION->notIn);
 
@@ -73,15 +75,17 @@ if ($form->is_cancelled()) {
 }else if ($data = $form->get_data()) {
     $SESSION->pattern = $data->pattern;
 
-    $urlOrg->param('le',$data->level);
+    $urlOrg->param('le',$data->hlevel);
+    $urlOrg->param('ks',$data->hparent);
     redirect($urlOrg);
 }//if_Else
 
-/* Header   */
+// Header
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('nav_map_org', 'local_fellesdata'));
 
 $form->display();
 
-/* Footer   */
+FS_MAPPING::init_fsks_parent_selector('level','hlevel','ksparent','hparent');
+// Footer
 echo $OUTPUT->footer();
