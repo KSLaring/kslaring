@@ -1182,7 +1182,7 @@ class TrackerManager {
                             if ($plugin->allow_unenrol_user($instance,$ue) && has_capability($capability, $context)) {
                                 $unEnrol  = $unEnrol && true;
                             }else if ($plugin->allow_unenrol_user($instance,$ue) && has_capability($capabilityself, $context)) {
-
+                                $unEnrol  = $unEnrol && true;
                             }else {
                                 $unEnrol = false;
                             }
