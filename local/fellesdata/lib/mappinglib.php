@@ -508,16 +508,21 @@ class FS_MAPPING {
             $params          = array();
             if ($level != FS_LE_1) {
                 $params['level'] =  ($level - 1);
+                $params['nivaa'] = $level;
             }else if ($level == FS_LE_1) {
                 $params['level'] =  0;
+                $params['nivaa'] =  0;
             }
 
             // SQL Instruction
             $sql = " SELECT		ks.companyid,
                                 ks.name
-                     FROM		{ks_company}	ks
-                        JOIN	{ksfs_company}	ksfs 	ON ksfs.kscompany = ks.companyid
-                        JOIN	{fs_company}	fs		ON fs.companyid	= ksfs.fscompany
+                     FROM		{ks_company}	  ks
+                        JOIN	{ksfs_company}	  ksfs 	  ON  ksfs.kscompany        = ks.companyid
+                        JOIN	{fs_company}	  fs	  ON  fs.companyid	        = ksfs.fscompany
+                        JOIN	{fs_imp_company}  fs_imp  ON  fs_imp.org_enhet_over = fs.companyid
+							 							  AND fs_imp.org_nivaa      = :nivaa
+                                                          AND fs_imp.imported       = 0
                      WHERE		ks.hierarchylevel = :level
                      ORDER BY 	ks.name  ";
 

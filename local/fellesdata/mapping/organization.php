@@ -83,7 +83,7 @@ if (isset($SESSION->notIn) && count($SESSION->notIn)) {
 }
 
 // Get info parent
-if (($level >= 1) && (!$parentid)) {
+if (($level > 1) && (!$parentid)) {
     $out = get_string('errorpaernt','local_fellesdata',$level);
 }else {
     $parent = FS_MAPPING::get_company_ks_info($parentid);
