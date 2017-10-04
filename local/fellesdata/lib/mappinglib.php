@@ -1219,6 +1219,22 @@ class FS_MAPPING {
                 $DB->update_record('fs_company',$infocompany);
             }//if_rdo
 
+            // Relation
+            // Check if already exist
+            $params = array();
+            $params['fscompany'] = $fscompany->fscompany;
+            $params['kscompany'] = $kscompany->kscompany;
+            $rdo = $DB->get_record('ksfs_company',$params);
+            if (!$rdo) {
+                // Create relation
+                $inforelation = new stdClass();
+                $inforelation->fscompany = $fscompany->fscompany;
+                $inforelation->kscompany = $kscompany->kscompany;
+
+                // Execute
+                $DB->insert_record('ksfs_company',$inforelation);
+            }//if_no_exists
+
             // Update record as importer
             $infoImp = new stdClass();
             $infoImp->id            = $fscompany->id;
