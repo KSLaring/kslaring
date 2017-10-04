@@ -1287,6 +1287,7 @@ class FS_MAPPING {
         $params      = null;
         $fscompanies = array();
         $infocompany = null;
+        $parentid    = null;
 
         try {
             // Search criteria
@@ -1380,9 +1381,10 @@ class FS_MAPPING {
             // Execute
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
+                $parentid = ($parent->companyid ? $parent->companyid : 0);
                 foreach ($rdo as $instance) {
                     // Info company
-                    $instance->matches       = self::get_possible_org_matches($instance->name,$level,$parent->companyid,$sector);
+                    $instance->matches       = self::get_possible_org_matches($instance->name,$level,$parentid,$sector);
 
                     // Add FS Company
                     $fscompanies[$instance->id] = $instance;
