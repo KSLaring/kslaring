@@ -50,10 +50,16 @@ $string['cron_deactivate']          = 'Deaktivert';
 $string['basic_notify']             = 'Varsle med e-post til';
 
 $string['subject']              = '{$a}: Integrasjon mellom TARDIS og KS Læring';
-$string['body_company_to_sync'] = '<p>Vi vil gjerne informere deg om at det nå er dukket opp org-elementer som må mappes manuelt.</p>
-                                   <p>Org-elementer det gjelder er: {$a->companies}</p>
+//$string['body_company_to_sync'] = '<p>Vi vil gjerne informere deg om at det nå er dukket opp org-elementer som må mappes manuelt.</p>
+//                                   <p>Org-elementer det gjelder er: {$a->companies}</p>
+//                                   </br>
+//                                   <p>Vi ber deg se over: <strong>{$a->mapping}</strong></p>';
+
+$string['body_company_to_sync'] = '<p>We would like to inform you that there are levels that contain companies to synchronize manually.</p>
+                                   <p>Levels such as </p><p>{$a->companies}</p>
                                    </br>
-                                   <p>Vi ber deg se over: <strong>{$a->mapping}</strong></p>';
+                                   <p>Please, you should take a look on <strong>{$a->mapping}</strong></p>';
+
 $string['body_jr_to_sync']      = '<p>Vi vil gjerne informere deg om  at det nå er dukket opp jobbroller som må mappes manuelt.</p>
                                    <p>Jobbrollene det gjelder er: {$a->jobroles}</p>
                                    </br>

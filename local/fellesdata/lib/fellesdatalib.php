@@ -1260,15 +1260,56 @@ class FSKS_COMPANY {
      * Description
      * Get all companies that have to be synchronized manually.
      *
-     * @param           $notIn
-     *
      * @return          array
      * @throws          Exception
      *
      * @creationDate    03/02/2016
      * @author          eFaktor     (fbv)
      */
-    public static function get_companiesfs_to_mail($notIn = 0) {
+    public static function get_companiesfs_to_mail() {
+        /* Variables */
+        global $DB;
+        $sql        = null;
+        $rdo        = null;
+        $params     = null;
+        $companies  = array();
+
+        try {
+            // Search Criteria
+            $params = array();
+            $params['add'] = ADD;
+
+            // SQL Instruction
+            $sql = " SELECT	DISTINCT 
+                                  ks.companyid,
+                                  ks.name
+                     FROM		  {ks_company}	    ks
+                        JOIN	  {ksfs_company}	ksfs 	ON  ksfs.kscompany        = ks.companyid
+                        JOIN	  {fs_company}	    fs	    ON  fs.companyid	        = ksfs.fscompany
+                        JOIN	  {fs_imp_company}  fs_imp  ON  fs_imp.org_enhet_over = fs.companyid
+                                                            AND fs_imp.imported       = 0
+                        -- Already synchronized
+                        LEFT JOIN {fs_company}	    syc	  	ON  syc.companyid 		= fs_imp.org_enhet_id
+                                                            AND syc.level 			= fs_imp.org_nivaa
+                                                            AND syc.synchronized 	= 1
+                     WHERE	      syc.id IS NULL
+                     ORDER BY     ks.hierarchylevel, ks.name ";
+
+            // Execute
+            $rdo = $DB->get_records_sql($sql,$params);
+            if ($rdo) {
+                foreach ($rdo as $instance) {
+                    $companies[$instance->companyid] = $instance->name;
+                }//for_rdo
+            }
+
+            return $companies;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//get_companiesfs_to_mail
+
+    public static function get_companiesfs_to_mail_old($notIn = 0) {
         /* Variables    */
         global $DB;
         $sql            = null;
@@ -1285,15 +1326,21 @@ class FSKS_COMPANY {
             $sql = " SELECT   DISTINCT
                                   fs_imp.id,
                                   fs_imp.org_navn,
+                                  fs_imp.org_enhet_over as  'fsparent',
+                                  ks.companyid 			as  'ksparent',
+                                  ks.name 				as  'ksname',
                                   fs.companyid,
                                   fs.synchronized
                      FROM 	      {fs_imp_company}	fs_imp
                         LEFT JOIN {fs_company}		fs		ON  fs.companyid    = fs_imp.ORG_ENHET_ID
-                                                            AND fs.synchronized = 0
+                        -- Parent KS
+                        LEFT JOIN {ksfs_company}	ksfs 	ON ksfs.fscompany 	= fs_imp.org_enhet_over
+                        JOIN	  {ks_company} 		ks 		ON ks.companyid  	= ksfs.kscompany
                      WHERE 	      fs_imp.imported 	 = 0
                           AND     fs_imp.org_nivaa 	!= 4
                           AND     fs_imp.action      = :add
-                          AND     fs_imp.id NOT IN ($notIn) 
+                          AND     fs_imp.id NOT IN ($notIn)
+                          AND     fs_imp.id IS NULL
                      ORDER BY   fs_imp.org_navn 
                      LIMIT 0,5 ";
 
@@ -1301,7 +1348,12 @@ class FSKS_COMPANY {
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 foreach ($rdo as $instance) {
-                    $companiesFS[$instance->id] = $instance->org_navn;
+                    if ($instance->ksparent) {
+                        $name = $instance->ksname . "/" . $instance->org_navn;
+                    }else {
+                        $name = $instance->org_navn;
+                    }
+                    $companiesFS[$instance->id] = $name;
                 }//for_rdo
             }//if_rdo
 
@@ -3263,9 +3315,9 @@ class FS {
 
             case IMP_COMPANIES:
                 // FS Companies
-                $sql = " DELETE FROM {fs_imp_company} WHERE org_nivaa = $plugin->map_three";
-                $DB->execute($sql);
-                //$DB->delete_records('fs_imp_company');
+                //$sql = " DELETE FROM {fs_imp_company} WHERE org_nivaa = $plugin->map_three";
+                //$DB->execute($sql);
+                $DB->delete_records('fs_imp_company');
 
                 break;
 

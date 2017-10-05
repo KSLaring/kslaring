@@ -61,6 +61,7 @@ try {
         $toDate     = gmdate('Y-m-d\TH:i:s\Z',$toDate);
 
         echo $toDate . "</br>";
+
         //echo " --> " . FS_CRON::can_run();
     }
 }catch (Exception $ex) {

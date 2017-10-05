@@ -1312,10 +1312,12 @@ class FELLESDATA_CRON {
                     // Apply company changes inside the same level
                     FSKS_COMPANY::update_company_changes_same_level();
 
+                    /**
                     // Companies to create automatically
                     if ($pluginInfo->automatic) {
-                        self::companies_automatically_synchronized($pluginInfo,$dblog);
+                    self::companies_automatically_synchronized($pluginInfo,$dblog);
                     }//if_automatic
+                     * */
 
                     // Synchronize new companies
                     self::companies_new_fs_synchronization($pluginInfo,$dblog);
@@ -1325,16 +1327,16 @@ class FELLESDATA_CRON {
 
                     // Send notifications
                     // Notification manual synchronization
-                    if (!$pluginInfo->automatic) {
-                        if ($notifyTo) {
-                            // Get companies to send notifications
-                            $toMail = FSKS_COMPANY::get_companiesfs_to_mail();
+                    //if (!$pluginInfo->automatic) {
+                    if ($notifyTo) {
+                        // Get companies to send notifications
+                        $toMail = FSKS_COMPANY::get_companiesfs_to_mail();
 
-                            if ($toMail) {
-                                self::send_notifications(SYNC_COMP,$toMail,$notifyTo,$pluginInfo->fs_source);
-                            }//if_toMail
-                        }//if_notify
-                    }//if_automatic
+                        if ($toMail) {
+                            self::send_notifications(SYNC_COMP,$toMail,$notifyTo,$pluginInfo->fs_source);
+                        }//if_toMail
+                    }//if_notify
+                    //}//if_automatic
                 }//if_else
             }//if_synchronization
 
@@ -2004,7 +2006,7 @@ class FELLESDATA_CRON {
                     $urlMapping = new moodle_url('/local/fellesdata/mapping/mapping_org.php');
 
                     if ($toMail) {
-                        $info->companies = implode(',',$toMail);
+                        $info->companies = implode('<br/>',$toMail);
                     }else {
                         $info->companies = null;
                     }//if_ToMail
