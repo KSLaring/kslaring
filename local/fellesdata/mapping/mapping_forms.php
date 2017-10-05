@@ -46,7 +46,7 @@ class map_org_form extends moodleform {
         $form->setDefault('level',$level);
 
         /* Parents */
-        $options = FS_MAPPING::get_parents_synchronized($level);
+        $options = FS_MAPPING::get_parents_synchronized(0);
         $form->addElement('select','ksparent',get_string('parent','local_fellesdata'),$options);
         $form->setDefault('ksparent',0);
 
