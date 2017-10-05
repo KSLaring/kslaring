@@ -2004,7 +2004,7 @@ class FELLESDATA_CRON {
                     $urlMapping = new moodle_url('/local/fellesdata/mapping/mapping_org.php');
 
                     if ($toMail) {
-                        $info->companies = implode(',',$toMail);
+                        $info->companies = implode('<br/>',$toMail);
                     }else {
                         $info->companies = null;
                     }//if_ToMail

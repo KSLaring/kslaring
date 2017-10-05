@@ -117,6 +117,7 @@ echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('nav_map_org', 'local_fellesdata'));
 
 if ($out) {
+    $return->param('le',$level);
     echo $OUTPUT->notification($out, 'notifysuccess');
     echo $OUTPUT->continue_button($return);
 }else {

@@ -34,6 +34,7 @@ class map_org_form extends moodleform {
         /* Variables    */
         $form       = null;
         $form               = $this->_form;
+        $level = $this->_customdata;
 
         /* Options Mapping */
         $form->addElement('header','header_map',get_string('map_opt','local_fellesdata'));
@@ -42,8 +43,10 @@ class map_org_form extends moodleform {
         $options = FS_MAPPING::getLevelsMapping();
         $form->addElement('select','level',get_string('level_map','local_fellesdata'),$options);
         $form->addRule('level','required','required', null, 'client');
+        $form->setDefault('level',$level);
+
         /* Parents */
-        $options = FS_MAPPING::get_parents_synchronized(0);
+        $options = FS_MAPPING::get_parents_synchronized($level);
         $form->addElement('select','ksparent',get_string('parent','local_fellesdata'),$options);
         $form->setDefault('ksparent',0);
 

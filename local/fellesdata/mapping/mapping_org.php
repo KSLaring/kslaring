@@ -36,6 +36,7 @@ require_once($CFG->libdir . '/adminlib.php');
 require_login();
 
 // Params
+$level  = optional_param('le',0,PARAM_INT);
 $url    = new moodle_url('/local/fellesdata/mapping/mapping_org.php');
 $urlOrg = new moodle_url('/local/fellesdata/mapping/organization.php');
 $return = $CFG->wwwroot;
@@ -68,7 +69,7 @@ $PAGE->verify_https_required();
 unset($SESSION->FS_COMP);
 unset($SESSION->notIn);
 
-$form    = new map_org_form(null,null);
+$form    = new map_org_form(null,$level);
 if ($form->is_cancelled()) {
     $_POST = array();
     redirect($return);

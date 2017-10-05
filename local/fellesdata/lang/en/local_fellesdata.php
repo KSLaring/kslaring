@@ -50,10 +50,11 @@ $string['cron_deactivate']          = 'Disabled';
 $string['basic_notify']             = 'Notify by email to';
 
 $string['subject']              = '{$a}: Integration FELLESDATA KS';
-$string['body_company_to_sync'] = '<p>We would like to inform you that there are companies that have to be synchronized manually.</p>
-                                   <p>Companies such as {$a->companies}</p>
+$string['body_company_to_sync'] = '<p>We would like to inform you that there are levels that contain companies to synchronize manually.</p>
+                                   <p>Levels such as </p><p>{$a->companies}</p>
                                    </br>
                                    <p>Please, you should take a look on <strong>{$a->mapping}</strong></p>';
+
 $string['body_jr_to_sync']      = '<p>We would like to inform you that there are job roles that have to be synchronized manually.</p>
                                    <p>Job roles such as {$a->jobroles}</p>
                                    </br>
@@ -204,4 +205,5 @@ $string['map_automatically']        = 'Map automatically';
 $string['map_automatically_desc']   = 'Map automatically will not applied for the first execution. The first time the mapping has to be done manually';
 
 $string['parentlevel']  = 'Parent ';
-$string['leveltomap']   = 'Level to map: {$a}';$string['errorpaernt']  = 'Please, you must select a parent to map level {$a}';
+$string['leveltomap']   = 'Level to map: {$a}';
+$string['errorpaernt']  = 'Please, you must select a parent to map level {$a}';

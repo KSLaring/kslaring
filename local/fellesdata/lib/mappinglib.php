@@ -515,15 +515,20 @@ class FS_MAPPING {
             }
 
             // SQL Instruction
-            $sql = " SELECT		ks.companyid,
-                                ks.name
-                     FROM		{ks_company}	  ks
-                        JOIN	{ksfs_company}	  ksfs 	  ON  ksfs.kscompany        = ks.companyid
-                        JOIN	{fs_company}	  fs	  ON  fs.companyid	        = ksfs.fscompany
-                        JOIN	{fs_imp_company}  fs_imp  ON  fs_imp.org_enhet_over = fs.companyid
-							 							  AND fs_imp.org_nivaa      = :nivaa
-                                                          AND fs_imp.imported       = 0
+            $sql = " SELECT		  ks.companyid,
+                                  ks.name
+                     FROM		  {ks_company}	    ks
+                        JOIN	  {ksfs_company}	ksfs 	ON  ksfs.kscompany        = ks.companyid
+                        JOIN	  {fs_company}	    fs	    ON  fs.companyid	        = ksfs.fscompany
+                        JOIN	  {fs_imp_company}  fs_imp  ON  fs_imp.org_enhet_over = fs.companyid
+							 							    AND fs_imp.org_nivaa      = :nivaa
+                                                            AND fs_imp.imported       = 0
+						-- Already synchronized
+						LEFT JOIN {fs_company}	    syc	  	ON  syc.companyid 		= fs_imp.org_enhet_id
+                                                            AND syc.level 			= fs_imp.org_nivaa
+															AND syc.synchronized 	= 1
                      WHERE		ks.hierarchylevel = :level
+                        AND     syc.id IS NULL
                      ORDER BY 	ks.name  ";
 
             // Execute
