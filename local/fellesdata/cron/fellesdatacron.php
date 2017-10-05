@@ -1312,12 +1312,10 @@ class FELLESDATA_CRON {
                     // Apply company changes inside the same level
                     FSKS_COMPANY::update_company_changes_same_level();
 
-                    /**
                     // Companies to create automatically
                     if ($pluginInfo->automatic) {
                     self::companies_automatically_synchronized($pluginInfo,$dblog);
                     }//if_automatic
-                     * */
 
                     // Synchronize new companies
                     self::companies_new_fs_synchronization($pluginInfo,$dblog);
@@ -1327,16 +1325,16 @@ class FELLESDATA_CRON {
 
                     // Send notifications
                     // Notification manual synchronization
-                    //if (!$pluginInfo->automatic) {
-                    if ($notifyTo) {
-                        // Get companies to send notifications
-                        $toMail = FSKS_COMPANY::get_companiesfs_to_mail();
+                    if (!$pluginInfo->automatic) {
+                        if ($notifyTo) {
+                            // Get companies to send notifications
+                            $toMail = FSKS_COMPANY::get_companiesfs_to_mail();
 
-                        if ($toMail) {
-                            self::send_notifications(SYNC_COMP,$toMail,$notifyTo,$pluginInfo->fs_source);
-                        }//if_toMail
-                    }//if_notify
-                    //}//if_automatic
+                            if ($toMail) {
+                                self::send_notifications(SYNC_COMP,$toMail,$notifyTo,$pluginInfo->fs_source);
+                            }//if_toMail
+                        }//if_notify
+                    }//if_automatic
                 }//if_else
             }//if_synchronization
 
