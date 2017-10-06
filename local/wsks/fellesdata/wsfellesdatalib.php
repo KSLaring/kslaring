@@ -161,24 +161,30 @@ class WS_FELLESDATA {
             if (file_exists($path)) {
                 // Get content
                 $data = file_get_contents($path);
+                $dblog .= "\n\n" . $data . "\n\n";
                 $content = json_decode($data);
 
                 // Synchronization between FS and KS
-                foreach ($content as $company) {
-                    // Process the company
-                    $companyId = self::process_fs_company($company);
+                if ($content) {
+                    foreach ($content as $company) {
+                        // Process the company
+                        $companyId = self::process_fs_company($company);
 
-                    // Mark as imported
-                    if ($companyId) {
-                        $infoImported = new stdClass();
-                        $infoImported->fsId     = $company->fsid;
-                        $infoImported->ksId     = $companyId;
-                        $infoImported->imported = 1;
-                        $infoImported->key      = $company->fsid;
+                        // Mark as imported
+                        if ($companyId) {
+                            $infoImported = new stdClass();
+                            $infoImported->fsId     = $company->fsid;
+                            $infoImported->ksId     = $companyId;
+                            $infoImported->imported = 1;
+                            $infoImported->key      = $company->fsid;
 
-                        $imported["'" . $company->fsid . "'"] = $infoImported;
-                    }//if_companyId
-                }//company
+                            $imported["'" . $company->fsid . "'"] = $infoImported;
+                        }//if_companyId
+                    }//company
+                }else {
+                    $dblog .= " No Content " . "\n\n";
+                }
+
             }//if_path
 
             // Add result
