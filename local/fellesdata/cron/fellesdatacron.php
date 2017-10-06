@@ -1510,7 +1510,7 @@ class FELLESDATA_CRON {
         try {
             // To avoid problems timeout
             if (isset($SESSION->manual) && ($SESSION->manual)) {
-                $limit          = 15;
+                $limit          = 150;
             }//if_session_manul
 
             // Log
@@ -1520,12 +1520,11 @@ class FELLESDATA_CRON {
             $total = FSKS_COMPANY::get_total_new_companiesfs_to_synchronize();
 
             // Synchronize
-            //if ($total) {
-            $total = 5;
-                //for ($i=0;$i<=$total;$i=$i+$limit) {
+            if ($total) {
+                for ($i=0;$i<=$total;$i=$i+$limit) {
                     // Get companies to synchronize
-                    list($toSynchronize,$rdocompanies) = FSKS_COMPANY::get_new_companiesfs_to_synchronize(0,1);
-                    
+                    list($toSynchronize,$rdocompanies) = FSKS_COMPANY::get_new_companiesfs_to_synchronize($start,$limit);
+
                     // Call webs service
                     if ($toSynchronize) {
                         $params     = array('companiesFS' => $toSynchronize);
@@ -1540,8 +1539,8 @@ class FELLESDATA_CRON {
                             }//if_no_error
                         }//if_response
                     }//if_toSynchronize
-                //}//for
-            //}//if_total
+                }//for
+            }//if_total
 
             // Log
             $dblog .= ' FINSIH NEW Companies . ' . "\n";
