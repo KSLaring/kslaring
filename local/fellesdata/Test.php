@@ -63,6 +63,38 @@ try {
         echo $toDate . "</br>";
 
         //echo " --> " . FS_CRON::can_run();
+
+        $notifyTo   = explode(',',$pluginInfo->mail_notification);
+        if ($notifyTo) {
+            // Get companies to send notifications
+            $toMail = FSKS_COMPANY::get_companiesfs_to_mail();
+
+            if ($toMail) {
+                // Subject
+                $subject = (string)new lang_string('subject','local_fellesdata',$SITE->shortname,$USER->lang);
+
+                // url mapping
+                $urlMapping = new moodle_url('/local/fellesdata/mapping/mapping_org.php');
+
+                $info = new stdClass();
+                if ($toMail) {
+                    $info->companies = implode('<br/>',$toMail);
+                }else {
+                    $info->companies = null;
+                }//if_ToMail
+
+                $urlMapping->param('m','co');
+                $info->mapping  = $urlMapping;
+
+                $body = (string)new lang_string('body_company_to_sync','local_fellesdata',$info,$USER->lang);
+
+                // send
+                foreach ($notifyTo as $to) {
+                    $USER->email    = $to;
+                    email_to_user($USER, $SITE->shortname, $subject, $body,$body);
+                }//for_Each
+            }//if_toMail
+        }//if_notify
     }
 }catch (Exception $ex) {
     throw $ex;
