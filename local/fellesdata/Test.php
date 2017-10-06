@@ -93,6 +93,8 @@ try {
                     $USER->email    = $to;
                     email_to_user($USER, $SITE->shortname, $subject, $body,$body);
                 }//for_Each
+            }else {
+                echo " No notifications " . "</br>";
             }//if_toMail
         }//if_notify
     }
