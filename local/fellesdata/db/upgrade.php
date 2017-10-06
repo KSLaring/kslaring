@@ -248,6 +248,7 @@ function xmldb_local_fellesdata_upgrade($oldVersion) {
 }//xmldb_local_fellesdata_upgrade
 
 class Fellesdata_Update {
+
     /**
      * @param           $dbMan
      * @throws          Exception
