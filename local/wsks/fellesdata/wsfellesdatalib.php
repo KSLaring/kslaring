@@ -161,7 +161,6 @@ class WS_FELLESDATA {
             if (file_exists($path)) {
                 // Get content
                 $data = file_get_contents($path);
-                $dblog .= "\n\n" . $data . "\n\n";
                 $content = json_decode($data);
 
                 // Synchronization between FS and KS
