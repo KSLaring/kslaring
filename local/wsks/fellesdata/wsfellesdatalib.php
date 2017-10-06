@@ -190,6 +190,7 @@ class WS_FELLESDATA {
         }catch (Exception $ex) {
             /* Log  */
             $dblog  = $ex->getMessage() . "\n\n";
+            $dblog .= $ex->getTraceAsString() . "\n\n";
             $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH ERROR Synchronize FSKS Companies . ' . "\n";
             error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
 
