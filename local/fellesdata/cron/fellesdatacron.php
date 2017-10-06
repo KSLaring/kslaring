@@ -1520,7 +1520,8 @@ class FELLESDATA_CRON {
             $total = FSKS_COMPANY::get_total_new_companiesfs_to_synchronize();
 
             // Synchronize
-            if ($total) {
+            //if ($total) {
+            $total = 5;
                 for ($i=0;$i<=$total;$i=$i+$limit) {
                     // Get companies to synchronize
                     list($toSynchronize,$rdocompanies) = FSKS_COMPANY::get_new_companiesfs_to_synchronize($start,$limit);
@@ -1540,7 +1541,7 @@ class FELLESDATA_CRON {
                         }//if_response
                     }//if_toSynchronize
                 }//for
-            }//if_total
+            //}//if_total
 
             // Log
             $dblog .= ' FINSIH NEW Companies . ' . "\n";
