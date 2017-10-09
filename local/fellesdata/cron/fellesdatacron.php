@@ -720,17 +720,11 @@ class FELLESDATA_CRON {
             // Log
             $dblog .= ' START Import FS ORG Structure . ' . "\n";
 
-
-
             // Call web service
             $fsResponse = self::process_tradis_service($plugin,TRADIS_FS_COMPANIES,$dblog);
 
             // Import data into temporary tables
             if ($fsResponse) {
-                // Clean temporary table
-                FS::clean_temporary_fellesdata(IMP_COMPANIES,$plugin);
-
-/**
                 // Open file
                 $pathFile = $CFG->dataroot . '/fellesdata/' . TRADIS_FS_COMPANIES . '.txt';
 
@@ -767,14 +761,10 @@ class FELLESDATA_CRON {
 
                         self::save_temporary_fs($content,IMP_COMPANIES);
                     }///if_suspicous_path
-
-                    // Clean repeat companies
-                    FS::clean_repeat_companies();
                 }else {
                     // Log
                     $dblog .= 'FILE DOES NOT EXIST ' . "\n";
                 }//if_exists
- * */
             }//if_fsResponse
 
             // Log
@@ -1318,7 +1308,7 @@ class FELLESDATA_CRON {
 
                     // Companies to create automatically
                     if ($pluginInfo->automatic) {
-                    self::companies_automatically_synchronized($pluginInfo,$dblog);
+                        self::companies_automatically_synchronized($pluginInfo,$dblog);
                     }//if_automatic
 
                     // Synchronize new companies
