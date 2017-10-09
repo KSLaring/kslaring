@@ -103,14 +103,21 @@ class Fellesdata_Install {
         try {
             /* Create Fellesdata temporary tables */
             self::ImpCompany_FSTable($dbMan);
+            self::fs_imp_company_log($dbMan);
 
             self::ImpJobRoles_FSTable($dbMan);
+            self::fs_imp_jobroles_log($dbMan);
+            self::fs_jobroles_sync_log($dbMan);
 
             self::ImpUsersJR_FSTable($dbMan);
+            self::fs_imp_users_jr_log($dbMan);
 
             self::ImpManagersReporters_FSTable($dbMan);
+            self::fs_imp_managers_reporters_log($dbMan);
 
             self::ImpUsers_FSTable($dbMan);
+            self::fs_imp_users_log($dbMan);
+            self::fs_users_sync_log($dbMan);
         }catch (Exception $ex) {
             /* Delete Tables    */
             self::DeleteFellesdata_Tables($dbMan);
@@ -387,6 +394,75 @@ class Fellesdata_Install {
     }//ImpCompany_FSTable
 
     /**
+     * Description
+     * Log/historical of all companies coming from TARDIS
+     *
+     * @param           $dbman
+     *
+     * @throws          Exception
+     *
+     * @creationDate    09/10/2017
+     * @author          eFaktor     (fbv)
+     */
+    private static function fs_imp_company_log($dbman) {
+        /* Variables */
+        $tbl = null;
+
+        try {
+            // Table
+            $tbl = new xmldb_table('fs_imp_company_log');
+
+            // Fields
+            // Id --> primary key
+            $tbl->add_field('id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
+            // org_enhet_id     --> Company Id from fellesdata
+            $tbl->add_field('org_enhet_id',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
+            // org_nivaa        --> Hierarchy level from fellesdata
+            $tbl->add_field('org_nivaa',XMLDB_TYPE_INTEGER,'2',null, XMLDB_NOTNULL, null,null);
+            // org_navn         --> Company name
+            $tbl->add_field('org_navn',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
+            // org_enhet_over   --> Parent company
+            $tbl->add_field('org_enhet_over',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
+            // privat --> public
+            $tbl->add_field('privat',XMLDB_TYPE_INTEGER,'1',null, null, null,null);
+            // ansvar
+            $tbl->add_field('ansvar',XMLDB_TYPE_CHAR,'50',null, null, null,null);
+            // tjeneste
+            $tbl->add_field('tjeneste',XMLDB_TYPE_CHAR,'50',null, null, null,null);
+            // adresse1
+            $tbl->add_field('adresse1',XMLDB_TYPE_CHAR,'255',null, null, null,null);
+            // adresse2
+            $tbl->add_field('adresse2',XMLDB_TYPE_CHAR,'255',null, null, null,null);
+            // adresse3
+            $tbl->add_field('adresse3',XMLDB_TYPE_CHAR,'255',null, null, null,null);
+            // postnr
+            $tbl->add_field('postnr',XMLDB_TYPE_CHAR,'50',null, null, null,null);
+            // poststed
+            $tbl->add_field('poststed',XMLDB_TYPE_CHAR,'50',null, null, null,null);
+            // epost
+            $tbl->add_field('epost',XMLDB_TYPE_CHAR,'255',null, null, null,null);
+            // action
+            $tbl->add_field('action',XMLDB_TYPE_CHAR,'25',null, XMLDB_NOTNULL, null,null);
+            // time sent
+            $tbl->add_field('timesent',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
+
+            // Keys
+            $tbl->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+            // Index
+            $tbl->add_index('org_enhet_id',XMLDB_INDEX_NOTUNIQUE,array('org_enhet_id'));
+            $tbl->add_index('org_nivaa',XMLDB_INDEX_NOTUNIQUE,array('org_nivaa'));
+            $tbl->add_index('org_enhet_over',XMLDB_INDEX_NOTUNIQUE,array('org_enhet_over'));
+            $tbl->add_index('timesent',XMLDB_INDEX_NOTUNIQUE,array('timesent'));
+
+            if (!$dbman->table_exists('fs_imp_company_log')) {
+                $dbman->create_table($tbl);
+            }//if_exists
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//fs_imp_company_log
+
+    /**
      * @param           $dbMan
      *
      * @throws          Exception
@@ -423,7 +499,6 @@ class Fellesdata_Install {
             /* Time modified */
             $tblFSImpJR->add_field('timemodified',XMLDB_TYPE_INTEGER,'10',null, null, null,null);
 
-
             /* Keys     */
             $tblFSImpJR->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
             /* Index    */
@@ -436,6 +511,104 @@ class Fellesdata_Install {
             throw $ex;
         }//try_catch
     }//ImpJobRoles_FSTable
+
+    /**
+     * Description
+     * Log/historical for jobroles coming from TARDIS
+     *
+     * @param           $dbman
+     *
+     * @throws          Exception
+     *
+     * @creationDate    09/10/2017
+     * @author          eFaktor     (fbv)
+     */
+    private static function fs_imp_jobroles_log($dbman) {
+        /* Variables */
+        $tbl = null;
+
+        try {
+            if (!$dbman->table_exists('fs_imp_jobroles_log')) {
+                // fs_imp_jobroles_log table
+                $tbl = new xmldb_table('fs_imp_jobroles_log');
+
+                // Fields
+                // Id primary key
+                $tbl->add_field('id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
+                // stillingskode    --> Job Role code
+                $tbl->add_field('stillingskode',XMLDB_TYPE_CHAR,'50',null, XMLDB_NOTNULL, null,null);
+                // stillingstekst   --> Job Role Name
+                $tbl->add_field('stillingsstekst',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
+                // alternative      --> alternative name
+                $tbl->add_field('stillingsstekst_alternativ',XMLDB_TYPE_CHAR,'255',null, null, null,null);
+                // action           --> Action to apply
+                $tbl->add_field('action',XMLDB_TYPE_CHAR,'25',null, XMLDB_NOTNULL, null,null);
+                // time sent
+                $tbl->add_field('timesent',XMLDB_TYPE_INTEGER,'10',null, null, null,null);
+
+                // Keys
+                $tbl->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+                // Index
+                $tbl->add_index('stillingskode',XMLDB_INDEX_NOTUNIQUE,array('stillingskode'));
+                $tbl->add_index('timesent',XMLDB_INDEX_NOTUNIQUE,array('timesent'));
+
+                // Create table
+                $dbman->create_table($tbl);
+            }//if_exists
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//fs_imp_jobroles_log
+
+    /**
+     * Description
+     * Log for jobroles mapped
+     *
+     * @param           $dbman
+     *
+     * @throws          Exception
+     *
+     * @creationDate    09/10/2017
+     * @author          eFaktor     (fbv)
+     */
+    private static function fs_jobroles_sync_log($dbman) {
+        /* Variables */
+        $tbl = null;
+
+        try {
+            if (!$dbman->table_exists('fs_jobroles_sync_log')) {
+                // fs_jobroles_sync_log table
+                $tbl = new xmldb_table('fs_jobroles_sync_log');
+
+                // Fields
+                // Id primary key
+                $tbl->add_field('id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
+                // fsjobrole
+                $tbl->add_field('fsjobrole',XMLDB_TYPE_CHAR,'50',null, XMLDB_NOTNULL, null,null);
+                // ksjobrole
+                $tbl->add_field('ksjobrole',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
+                // name
+                $tbl->add_field('name',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
+                // action
+                $tbl->add_field('action',XMLDB_TYPE_INTEGER,'2',null, XMLDB_NOTNULL, null,null);
+                // time mapped
+                $tbl->add_field('timemapped',XMLDB_TYPE_INTEGER,'10',null, null, null,null);
+
+                // Keys
+                $tbl->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+                // Index
+                $tbl->add_index('fsjobrole',XMLDB_INDEX_NOTUNIQUE,array('fsjobrole'));
+                $tbl->add_index('ksjobrole',XMLDB_INDEX_NOTUNIQUE,array('ksjobrole'));
+                $tbl->add_index('timemapped',XMLDB_INDEX_NOTUNIQUE,array('timemapped'));
+
+                // Create table
+                $dbman->create_table($tbl);
+            }
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//fs_jobroles_sync_log
+
 
     /**
      * @param           $dbMan
@@ -498,6 +671,69 @@ class Fellesdata_Install {
         }//try_catch
     }//ImpUsersJR_FSTable
 
+    /**
+     * Description
+     * Log/historical for users competence
+     *
+     * @param           $dbman
+     *
+     * @throws          Exception
+     *
+     * @creationDate    09/10/2017
+     * @auhtor          eFaktor     (fbv)
+     */
+    private static function fs_imp_users_jr_log($dbman) {
+        /* Variables */
+        $tbl = null;
+
+        try {
+            if (!$dbman->table_exists('fs_imp_users_jr_log')) {
+                // fs_imp_users_jr_log table
+                $tbl = new xmldb_table('fs_imp_users_jr_log');
+
+                // Fields
+                // Id --> Primary key
+                $tbl->add_field('id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
+                // stillingsnr --> Extra primary key from fellesdata
+                $tbl->add_field('stillingsnr',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
+                // fodselsnr    --> Personal number
+                $tbl->add_field('fodselsnr',XMLDB_TYPE_CHAR,'50',null, XMLDB_NOTNULL, null,null);
+                // fornavn      --> First name
+                $tbl->add_field('fornavn',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
+                // etternavn    --> Last name
+                $tbl->add_field('etternavn',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
+                // epost        --> eMail
+                $tbl->add_field('epost',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
+                // org_enhet_id     --> Company id
+                $tbl->add_field('org_enhet_id',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
+                // stillingskode    --> Job Role code
+                $tbl->add_field('stillingskode',XMLDB_TYPE_CHAR,'50',null, XMLDB_NOTNULL, null,null);
+                // stillingstekst   --> Job Role Name
+                $tbl->add_field('stillingstekst',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
+                // alternative      --> alternative name
+                $tbl->add_field('stillingstekst_alternativ',XMLDB_TYPE_CHAR,'255',null, null, null,null);
+                // hovedstilling    --> Main job role or not
+                $tbl->add_field('hovedstilling',XMLDB_TYPE_CHAR,'1',null, XMLDB_NOTNULL, null,null);
+                // action
+                $tbl->add_field('action',XMLDB_TYPE_CHAR,'25',null, XMLDB_NOTNULL, null,null);
+                // time sent
+                $tbl->add_field('timesent',XMLDB_TYPE_INTEGER,'10',null, null, null,null);
+
+                // Keys
+                $tbl->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+                // Index
+                $tbl->add_index('fodselsnr',XMLDB_INDEX_NOTUNIQUE,array('fodselsnr'));
+                $tbl->add_index('org_enhet_id',XMLDB_INDEX_NOTUNIQUE,array('org_enhet_id'));
+                $tbl->add_index('stillingskode',XMLDB_INDEX_NOTUNIQUE,array('stillingskode'));
+                $tbl->add_index('timesent',XMLDB_INDEX_NOTUNIQUE,array('timesent'));
+
+                // Create table
+                $dbman->create_table($tbl);
+            }//if_exists
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//fs_imp_users_jr_log
 
     /**
      * @param           $dbMan
@@ -552,6 +788,57 @@ class Fellesdata_Install {
         }//try_catch
     }//ImpUsersCompany_FSTable
 
+    /**
+     * Description
+     * Log/historical fro managers:reporters coming from TARDIS
+     *
+     * @param           $dbman
+     *
+     * @throws          Exception
+     *
+     * @creationDate    09/10/2017
+     * @author          eFaktor     (fbv)
+     */
+    private static function fs_imp_managers_reporters_log($dbman) {
+        /* Variables */
+        $tbl = null;
+
+        try {
+            if (!$dbman->table_exists('fs_imp_mng_rpt_log')) {
+                // fs_imp_managers_reporters_log table
+                $tbl = new xmldb_table('fs_imp_mng_rpt_log');
+
+                // Fields
+                // Id --> Primary key
+                $tbl->add_field('id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
+                // org_enhet_id --> Company id
+                $tbl->add_field('org_enhet_id',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
+                // org_nivaa --> Hierarchy level of the company
+                $tbl->add_field('org_nivaa',XMLDB_TYPE_INTEGER,'2',null, XMLDB_NOTNULL, null,null);
+                // fodselsnr --> Personal number
+                $tbl->add_field('fodselsnr',XMLDB_TYPE_CHAR,'50',null, XMLDB_NOTNULL, null,null);
+                // prioritet --> Manager or not
+                $tbl->add_field('prioritet',XMLDB_TYPE_INTEGER,'2',null, XMLDB_NOTNULL, null,null);
+                // action --> Action to apply
+                $tbl->add_field('action',XMLDB_TYPE_CHAR,'25',null, XMLDB_NOTNULL, null,null);
+                // time sent
+                $tbl->add_field('timesent',XMLDB_TYPE_INTEGER,'10',null, null, null,null);
+
+                // Keys
+                $tbl->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+                // Index
+                $tbl->add_index('fodselsnr',XMLDB_INDEX_NOTUNIQUE,array('fodselsnr'));
+                $tbl->add_index('org_enhet_id',XMLDB_INDEX_NOTUNIQUE,array('org_enhet_id'));
+                $tbl->add_index('org_nivaa',XMLDB_INDEX_NOTUNIQUE,array('org_nivaa'));
+                $tbl->add_index('timesent',XMLDB_INDEX_NOTUNIQUE,array('timesent'));
+
+                // Create table
+                $dbman->create_table($tbl);
+            }//if_exists
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//fs_imp_managers_reporters_log
 
     /**
      * @param           $dbMan
@@ -610,6 +897,117 @@ class Fellesdata_Install {
         }//try_catch
     }//ImpUsers_FSTable
 
+    /**
+     * Description
+     * Log/historical for users coming from TARDIS
+     *
+     * @param           $dbman
+     *
+     * @throws          Exception
+     *
+     * @creationDate    09/10/2017
+     * @author          eFaktor     (fbv)
+     */
+    private static function fs_imp_users_log($dbman) {
+        /* Variables */
+        $tbl = null;
+
+        try {
+            if (!$dbman->table_exists('fs_imp_users_log')) {
+                // fs_imp_users_log table
+                $tbl = new xmldb_table('fs_imp_users_log');
+
+                // Fields
+                // Id primary key
+                $tbl->add_field('id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
+                // personalnumber --> Personal number
+                $tbl->add_field('fodselsnr',XMLDB_TYPE_CHAR,'50',null, XMLDB_NOTNULL, null,null);
+                // Resource number
+                $tbl->add_field('ressursnr',XMLDB_TYPE_CHAR,'50',null, XMLDB_NOTNULL, null,null);
+                // firstname    --> First name
+                $tbl->add_field('fornavn',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
+                // middle name
+                $tbl->add_field('mellomnavn',XMLDB_TYPE_CHAR,'255',null, null, null,null);
+                // last name
+                $tbl->add_field('etternavn',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
+                // email
+                $tbl->add_field('epost',XMLDB_TYPE_CHAR,'255',null, null, null,null);
+                // ADFS ID
+                $tbl->add_field('brukernavn',XMLDB_TYPE_CHAR,'50',null, null, null,null);
+                // action
+                $tbl->add_field('action',XMLDB_TYPE_CHAR,'50',null, XMLDB_NOTNULL, null,null);
+                // time sent
+                $tbl->add_field('timesent',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
+
+                // Keys
+                $tbl->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+                // Index
+                $tbl->add_index('fodselsnr',XMLDB_INDEX_NOTUNIQUE,array('fodselsnr'));
+                $tbl->add_index('timesent',XMLDB_INDEX_NOTUNIQUE,array('timesent'));
+
+                // Crete table
+                $dbman->create_table($tbl);
+            }//if_exists
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//fs_imp_users_log
+
+    /**
+     * Description
+     * Log for synchronized users
+     *
+     * @param           $dbman
+     *
+     * @throws          Exception
+     *
+     * @creationDate    09/10/2017
+     * @author          eFaktor     (fbv)
+     */
+    private static function fs_users_sync_log($dbman) {
+        /* Variables */
+        $tbl = null;
+
+        try {
+            if (!$dbman->table_exists('fs_users_sync_log')) {
+                // fs_users_sync_log table
+                $tbl = new xmldb_table('fs_users_sync_log');
+
+                // Fields
+                // Id primary key
+                $tbl->add_field('id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
+                // username
+                $tbl->add_field('username',XMLDB_TYPE_CHAR,'255',null, null, null,null);
+                // idnumber - personal number
+                $tbl->add_field('idnumber',XMLDB_TYPE_CHAR,'50',null, null, null,null);
+                // adfs
+                $tbl->add_field('adfs',XMLDB_TYPE_CHAR,'50',null, null, null,null);
+                // firstname
+                $tbl->add_field('firstname',XMLDB_TYPE_CHAR,'255',null, null, null,null);
+                // lastname
+                $tbl->add_field('lastname',XMLDB_TYPE_CHAR,'255',null, null, null,null);
+                // email
+                $tbl->add_field('email',XMLDB_TYPE_CHAR,'255',null, null, null,null);
+                // action
+                $tbl->add_field('action',XMLDB_TYPE_INTEGER,'2',null, XMLDB_NOTNULL, null,null);
+                // time sync
+                $tbl->add_field('timesync',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
+
+                // Keys
+                $tbl->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+                // Index
+                $tbl->add_index('username',XMLDB_INDEX_NOTUNIQUE,array('username'));
+                $tbl->add_index('adfs',XMLDB_INDEX_NOTUNIQUE,array('adfs'));
+                $tbl->add_index('idnumber',XMLDB_INDEX_NOTUNIQUE,array('idnumber'));
+                $tbl->add_index('timesync',XMLDB_INDEX_NOTUNIQUE,array('timesync'));
+
+                // Crete table
+                $dbman->create_table($tbl);
+            }
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//fs_users_sync_log
 
     /**
      * @param           $dbMan
@@ -661,6 +1059,12 @@ class Fellesdata_Install {
             $tblImpUsers = new xmldb_table('fs_imp_users');
             if ($dbMan->table_exists('fs_imp_users')) {
                 $dbMan->drop_table($tblImpUsers);
+            }//if_exists
+
+
+            if ($dbMan->table_exists('fs_imp_company_log')) {
+                $tbl = new xmldb_table('fs_imp_company_log');
+                $dbMan->drop_table($tbl);
             }//if_exists
         }catch (Exception $ex) {
             throw $ex;
@@ -731,59 +1135,64 @@ class Fellesdata_Install {
      */
     private static function FSCompany_Table($dbMan) {
         /* Variables */
-        $tblFSCompany = null;
+        $tbl = null;
 
         try {
-            /* mdl_fs_company           */
-            $tblFSCompany       = new xmldb_table('fs_company');
+            // mdl_fs_company
+            $tbl       = new xmldb_table('fs_company');
 
             /* Fields   */
-            /* Id           --> Primary key                                     */
-            $tblFSCompany->add_field('id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
-            /* companyid    --> Company Id from fellesdata                      */
-            $tblFSCompany->add_field('companyid',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
-            /* name         --> Company name                                    */
-            $tblFSCompany->add_field('name',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
-            /* level        --> Level of the company inside the organization    */
-            $tblFSCompany->add_field('level',XMLDB_TYPE_INTEGER,'2',null, XMLDB_NOTNULL, null,null);
-            /* parent       --> Parent of the company                           */
-            $tblFSCompany->add_field('parent',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
-            /* fs_parent    */
-            $tblFSCompany->add_field('fs_parent',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
+            // Id           --> Primary key
+            $tbl->add_field('id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
+            // companyid    --> Company Id from fellesdata
+            $tbl->add_field('companyid',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
+            // name         --> Company name
+            $tbl->add_field('name',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
+            // level        --> Level of the company inside the organization
+            $tbl->add_field('level',XMLDB_TYPE_INTEGER,'2',null, XMLDB_NOTNULL, null,null);
+            // parent       --> Parent of the company
+            $tbl->add_field('parent',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
+            // fs_parent
+            $tbl->add_field('fs_parent',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
             // moved
-            $tblFSCompany->add_field('moved',XMLDB_TYPE_INTEGER,'2',null, XMLDB_NOTNULL, null,0);
-            /* privat --> public */
-            $tblFSCompany->add_field('privat',XMLDB_TYPE_INTEGER,'1',null, null, null,null);
-            /* ansvar   */
-            $tblFSCompany->add_field('ansvar',XMLDB_TYPE_CHAR,'50',null, null, null,null);
-            /* tjeneste */
-            $tblFSCompany->add_field('tjeneste',XMLDB_TYPE_CHAR,'50',null, null, null,null);
-            /* adresse1 */
-            $tblFSCompany->add_field('adresse1',XMLDB_TYPE_CHAR,'255',null, null, null,null);
-            /* adresse2 */
-            $tblFSCompany->add_field('adresse2',XMLDB_TYPE_CHAR,'255',null, null, null,null);
-            /* adresse3 */
-            $tblFSCompany->add_field('adresse3',XMLDB_TYPE_CHAR,'255',null, null, null,null);
-            /* postnr   */
-            $tblFSCompany->add_field('postnr',XMLDB_TYPE_CHAR,'50',null, null, null,null);
-            /* poststed */
-            $tblFSCompany->add_field('poststed',XMLDB_TYPE_CHAR,'50',null, null, null,null);
-            /* epost    */
-            $tblFSCompany->add_field('epost',XMLDB_TYPE_CHAR,'255',null, null, null,null);
-            /* synchronized                                                     */
-            $tblFSCompany->add_field('synchronized',XMLDB_TYPE_INTEGER,'2',null, XMLDB_NOTNULL, null,null);
-            /* New  --> To create a new one */
-            $tblFSCompany->add_field('new',XMLDB_TYPE_INTEGER,'2',null, XMLDB_NOTNULL, null,null);
-            /* timemodified */
-            $tblFSCompany->add_field('timemodified',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
+            $tbl->add_field('moved',XMLDB_TYPE_INTEGER,'2',null, XMLDB_NOTNULL, null,0);
+            // privat --> public
+            $tbl->add_field('privat',XMLDB_TYPE_INTEGER,'1',null, null, null,null);
+            // ansvar
+            $tbl->add_field('ansvar',XMLDB_TYPE_CHAR,'50',null, null, null,null);
+            // tjeneste
+            $tbl->add_field('tjeneste',XMLDB_TYPE_CHAR,'50',null, null, null,null);
+            // adresse1
+            $tbl->add_field('adresse1',XMLDB_TYPE_CHAR,'255',null, null, null,null);
+            // adresse2
+            $tbl->add_field('adresse2',XMLDB_TYPE_CHAR,'255',null, null, null,null);
+            // adresse3
+            $tbl->add_field('adresse3',XMLDB_TYPE_CHAR,'255',null, null, null,null);
+            // postnr
+            $tbl->add_field('postnr',XMLDB_TYPE_CHAR,'50',null, null, null,null);
+            // poststed
+            $tbl->add_field('poststed',XMLDB_TYPE_CHAR,'50',null, null, null,null);
+            // epost
+            $tbl->add_field('epost',XMLDB_TYPE_CHAR,'255',null, null, null,null);
+            // synchronized
+            $tbl->add_field('synchronized',XMLDB_TYPE_INTEGER,'2',null, XMLDB_NOTNULL, null,null);
+            // New  --> To create a new one
+            $tbl->add_field('new',XMLDB_TYPE_INTEGER,'2',null, XMLDB_NOTNULL, null,null);
+            // timemodified
+            $tbl->add_field('timemodified',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
+            // time sync
+            $tbl->add_field('timesync',XMLDB_TYPE_INTEGER,'10',null, null, null,null);
 
-            /* Keys     */
-            $tblFSCompany->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
-            /* Index    */
-            $tblFSCompany->add_index('companyid',XMLDB_INDEX_UNIQUE,array('companyid'));
+            // Keys
+            $tbl->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+            // Index
+            $tbl->add_index('companyid',XMLDB_INDEX_UNIQUE,array('companyid'));
+            $tbl->add_index('fs_parent',XMLDB_INDEX_UNIQUE,array('fs_parent'));
+            $tbl->add_index('parent',XMLDB_INDEX_UNIQUE,array('parent'));
+            $tbl->add_index('timesync',XMLDB_INDEX_UNIQUE,array('timesync'));
 
             if (!$dbMan->table_exists('fs_company')) {
-                $dbMan->create_table($tblFSCompany);
+                $dbMan->create_table($tbl);
             }//if_exists
         }catch (Exception $ex) {
             throw $ex;
@@ -844,34 +1253,39 @@ class Fellesdata_Install {
      */
     private static function UsersFSCompany_Table($dbMan) {
         /* Variables */
-        $tblUsersFSCompany = null;
+        $tbl = null;
 
         try {
-            /* mdl_fs_users_company     */
-            $tblUsersFSCompany = new xmldb_table('fs_users_company');
+            // fs_users_company table
+            $tbl = new xmldb_table('fs_users_company');
 
-            /* Fields   */
-            /* Id               --> primary key                                     */
-            $tblUsersFSCompany->add_field('id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
-            /* companyid        --> Company ID from fellesdata                      */
-            $tblUsersFSCompany->add_field('companyid',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
-            /* level            --> Level of the company inside the organization    */
-            $tblUsersFSCompany->add_field('level',XMLDB_TYPE_INTEGER,'2',null, XMLDB_NOTNULL, null,null);
-            /* personalnumber   --> Personal number                                 */
-            $tblUsersFSCompany->add_field('personalnumber',XMLDB_TYPE_CHAR,'50',null, XMLDB_NOTNULL, null,null);
-            /* priority         --> Manager or not                                  */
-            $tblUsersFSCompany->add_field('priority',XMLDB_TYPE_INTEGER,'2',null, XMLDB_NOTNULL, null,null);
-            /* synchronized                                                         */
-            $tblUsersFSCompany->add_field('synchronized',XMLDB_TYPE_INTEGER,'2',null, XMLDB_NOTNULL, null,null);
+            // Fields
+            // Id               --> primary key
+            $tbl->add_field('id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
+            // companyid        --> Company ID from fellesdata
+            $tbl->add_field('companyid',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
+            // level            --> Level of the company inside the organization
+            $tbl->add_field('level',XMLDB_TYPE_INTEGER,'2',null, XMLDB_NOTNULL, null,null);
+            // personalnumber   --> Personal number
+            $tbl->add_field('personalnumber',XMLDB_TYPE_CHAR,'50',null, XMLDB_NOTNULL, null,null);
+            // priority         --> Manager or not
+            $tbl->add_field('priority',XMLDB_TYPE_INTEGER,'2',null, XMLDB_NOTNULL, null,null);
+            // synchronized
+            $tbl->add_field('synchronized',XMLDB_TYPE_INTEGER,'2',null, XMLDB_NOTNULL, null,null);
+            // time sync
+            $tbl->add_field('timesync',XMLDB_TYPE_INTEGER,'10',null, null, null,null);
 
-            /* Keys     */
-            $tblUsersFSCompany->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
-            $tblUsersFSCompany->add_key('companyid',XMLDB_KEY_FOREIGN,array('companyid'), 'fs_company', array('companyid'));
-            $tblUsersFSCompany->add_key('personalnumber',XMLDB_KEY_FOREIGN,array('personalnumber'), 'user', array('username'));
-            /* Index    */
+            // Keys
+            $tbl->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+            $tbl->add_key('companyid',XMLDB_KEY_FOREIGN,array('companyid'), 'fs_company', array('companyid'));
+            $tbl->add_key('personalnumber',XMLDB_KEY_FOREIGN,array('personalnumber'), 'user', array('username'));
+            // Index
+            $tbl->add_index('companyid', XMLDB_INDEX_NOTUNIQUE, array('companyid'));
+            $tbl->add_index('personalnumber', XMLDB_INDEX_NOTUNIQUE, array('personalnumber'));
+            $tbl->add_index('timesync', XMLDB_INDEX_NOTUNIQUE, array('timesync'));
 
             if (!$dbMan->table_exists('fs_users_company')) {
-                $dbMan->create_table($tblUsersFSCompany);
+                $dbMan->create_table($tbl);
             }//if_exists
         }catch (Exception $ex) {
             throw $ex;
@@ -1044,7 +1458,7 @@ class Fellesdata_Install {
             /* Keys     */
             $tblKSFS_JR->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
             $tblKSFS_JR->add_key('ksjobrole',XMLDB_KEY_FOREIGN,array('ksjobrole'), 'ks_jobroles', array('jobroleid'));
-            @$tblKSFS_JR->add_key('fsjobrole',XMLDB_KEY_FOREIGN,array('fsjobrole'), 'fs_jobroles', array('jrcode'));
+            $tblKSFS_JR->add_key('fsjobrole',XMLDB_KEY_FOREIGN,array('fsjobrole'), 'fs_jobroles', array('jrcode'));
             /* index    */
 
             if (!$dbMan->table_exists('ksfs_jobroles')) {
@@ -1068,34 +1482,39 @@ class Fellesdata_Install {
      */
     private static function UsersFSCompetence_Table($dbMan) {
         /* Variables */
-        $tblUsersFSJR = null;
+        $tbl = null;
 
         try {
-            /* mdl_fs_users_competence    */
-            $tblUsersFSJR = new xmldb_table('fs_users_competence');
+            // fs_users_competence table
+            $tbl = new xmldb_table('fs_users_competence');
 
-            /* Fields */
-            /* Id               --> Primary Key                     */
-            $tblUsersFSJR->add_field('id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
-            /* personalnumber   --> Personal number                 */
-            $tblUsersFSJR->add_field('personalnumber',XMLDB_TYPE_CHAR,'50',null, XMLDB_NOTNULL, null,null);
-            /* companyid        --> Company Id from fellesdata.       */
-            $tblUsersFSJR->add_field('companyid',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
-            /* jrcode           --> Job role Id from fellesdata     */
-            $tblUsersFSJR->add_field('jrcode',XMLDB_TYPE_CHAR,'50',null, XMLDB_NOTNULL, null,null);
-            /* ksjrcode           --> Job role Id from ks     */
-            $tblUsersFSJR->add_field('ksjrcode',XMLDB_TYPE_CHAR,'50',null, XMLDB_NOTNULL, null,null);
-            /* synchronized                                         */
-            $tblUsersFSJR->add_field('synchronized',XMLDB_TYPE_INTEGER,'2',null, XMLDB_NOTNULL, null,null);
+            // Fields
+            // Id               --> Primary Key
+            $tbl->add_field('id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
+            // personalnumber   --> Personal number
+            $tbl->add_field('personalnumber',XMLDB_TYPE_CHAR,'50',null, XMLDB_NOTNULL, null,null);
+            // companyid        --> Company Id from fellesdata
+            $tbl->add_field('companyid',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
+            // jrcode           --> Job role Id from fellesdata
+            $tbl->add_field('jrcode',XMLDB_TYPE_CHAR,'50',null, XMLDB_NOTNULL, null,null);
+            // ksjrcode           --> Job role Id from ks
+            $tbl->add_field('ksjrcode',XMLDB_TYPE_CHAR,'50',null, XMLDB_NOTNULL, null,null);
+            // synchronized
+            $tbl->add_field('synchronized',XMLDB_TYPE_INTEGER,'2',null, XMLDB_NOTNULL, null,null);
+            // time sync
+            $tbl->add_field('timesync',XMLDB_TYPE_INTEGER,'10',null, null, null,null);
 
-            /* Keys     */
-            $tblUsersFSJR->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
-            $tblUsersFSJR->add_key('companyid',XMLDB_KEY_FOREIGN,array('companyid'), 'fs_company', array('companyid'));
-            $tblUsersFSJR->add_key('personalnumber',XMLDB_KEY_FOREIGN,array('personalnumber'), 'user', array('username'));
-            /* Index    */
+            // Keys
+            $tbl->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+            $tbl->add_key('companyid',XMLDB_KEY_FOREIGN,array('companyid'), 'fs_company', array('companyid'));
+            $tbl->add_key('personalnumber',XMLDB_KEY_FOREIGN,array('personalnumber'), 'user', array('username'));
+            // Index
+            $tbl->add_index('companyid',XMLDB_INDEX_UNIQUE,array('companyid'));
+            $tbl->add_index('personalnumber',XMLDB_INDEX_UNIQUE,array('personalnumber'));
+            $tbl->add_index('timesync',XMLDB_INDEX_UNIQUE,array('timesync'));
 
             if (!$dbMan->table_exists('fs_users_competence')) {
-                $dbMan->create_table($tblUsersFSJR);
+                $dbMan->create_table($tbl);
             }//if_exists
         }catch (Exception $ex) {
             throw $ex;

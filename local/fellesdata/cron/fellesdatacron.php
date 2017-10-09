@@ -720,6 +720,8 @@ class FELLESDATA_CRON {
             // Log
             $dblog .= ' START Import FS ORG Structure . ' . "\n";
 
+
+
             // Call web service
             $fsResponse = self::process_tradis_service($plugin,TRADIS_FS_COMPANIES,$dblog);
 
@@ -728,6 +730,7 @@ class FELLESDATA_CRON {
                 // Clean temporary table
                 FS::clean_temporary_fellesdata(IMP_COMPANIES,$plugin);
 
+/**
                 // Open file
                 $pathFile = $CFG->dataroot . '/fellesdata/' . TRADIS_FS_COMPANIES . '.txt';
 
@@ -771,6 +774,7 @@ class FELLESDATA_CRON {
                     // Log
                     $dblog .= 'FILE DOES NOT EXIST ' . "\n";
                 }//if_exists
+ * */
             }//if_fsResponse
 
             // Log

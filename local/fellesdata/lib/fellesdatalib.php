@@ -3298,47 +3298,80 @@ class FS {
      *
      * @param           string $type
      *
+     * @throws          Exception
+     *
      * @creationDate    04/05/2017
      * @author          eFaktor     (fbv)
      */
     public static function clean_temporary_fellesdata($type,$plugin=null) {
         /* Variables */
         global $DB;
-        $sql = null;
+        $sql    = null;
+        $time   = null;
 
-        switch ($type) {
-            case IMP_USERS:
-                // FS Users
-                $DB->delete_records('fs_imp_users');
+        // Local time
+        $time = time();
 
-                break;
+        // Start transaction
+        $trans = $DB->start_delegated_transaction();
 
-            case IMP_COMPANIES:
-                // FS Companies
-                //$sql = " DELETE FROM {fs_imp_company} WHERE org_nivaa = $plugin->map_three";
-                //$DB->execute($sql);
-                $DB->delete_records('fs_imp_company');
+        try {
+            switch ($type) {
+                case IMP_USERS:
+                    // FS Users
+                    $DB->delete_records('fs_imp_users');
 
-                break;
+                    break;
 
-            case IMP_JOBROLES:
-                // FS JOB ROLES
-                $DB->delete_records('fs_imp_jobroles');
+                case IMP_COMPANIES:
+                    // FS Companies
+                    // move data to imp_company_log
+                    $fields = "id,org_enhet_id,org_nivaa,org_navn,org_enhet_over,privat,ansvar,tjeneste,adresse1,adresse2,adresse3,postnr,poststed,epost,action";
+                    $rdo = $DB->get_records('fs_imp_company',null,'id',$fields);
+                    if ($rdo) {
+                        foreach ($rdo as $instance) {
+                            $instance->timesent = $time;
 
-                break;
+                            // Move log(historical) table
+                            $DB->insert_record('fs_imp_company_log',$instance);
 
-            case IMP_MANAGERS_REPORTERS:
-                // Managers Reporters
-                $DB->delete_records('fs_imp_managers_reporters');
+                            // Delete
+                            $DB->delete_records('fs_imp_company',array('id' =>$instance->id));
+                        }//for_Rdo
+                    }//if_rdo
 
-                break;
+                    // Delete
+                    //$DB->delete_records('fs_imp_company');
 
-            case IMP_COMPETENCE_JR:
-                // Competence Job Role
-                $DB->delete_records('fs_imp_users_jr');
+                    break;
 
-                break;
-        }//type
+                case IMP_JOBROLES:
+                    // FS JOB ROLES
+                    $DB->delete_records('fs_imp_jobroles');
+
+                    break;
+
+                case IMP_MANAGERS_REPORTERS:
+                    // Managers Reporters
+                    $DB->delete_records('fs_imp_managers_reporters');
+
+                    break;
+
+                case IMP_COMPETENCE_JR:
+                    // Competence Job Role
+                    $DB->delete_records('fs_imp_users_jr');
+
+                    break;
+            }//type
+
+            // Commit
+            $trans->allow_commit();
+        }catch (Exception $ex) {
+            // Rollback
+            $trans->rollback($ex);
+
+            throw $ex;
+        }//try_catch
     }//clean_temporary_fellesdata
 
     /**
