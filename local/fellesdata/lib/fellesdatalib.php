@@ -92,6 +92,8 @@ class FS_CRON {
             // Local time
             $time = time();
 
+            // Write log
+            asort($log);
             foreach ($log as $info) {
                 $info->timecreated = $time;
                 $DB->insert_record('fs_fellesdata_log',$info);
@@ -3114,94 +3116,6 @@ class FS {
     /* PUBLIC */
     /**********/
 
-    public static function backup_temporary_fellesdata($type) {
-        /* Variables */
-        global $CFG;
-        $file           = null;
-        $backupstatus   = null;
-        $content        = null;
-        $path           = null;
-        $time           = null;
-
-        try {
-            // Local time
-            $time = time();
-
-            $backupstatus = $CFG->dataroot . '/fellesdata/backup_status';
-            if (!file_exists($backupstatus)) {
-                mkdir($backupstatus);
-            }//if_backup
-
-            switch ($type) {
-                case IMP_USERS:
-                    // IMP USERS
-                    $path = $backupstatus . "/fs_imp_users_" . $time . ".txt";
-                    self::backup_imp_fs_tables($path,'fs_imp_users');
-
-                    break;
-
-                case IMP_COMPANIES:
-                    // IMP COMPANIES
-                    $path = $backupstatus . "/fs_imp_company_" . $time . ".txt";
-                    self::backup_imp_fs_tables($path,'fs_imp_company');
-
-                    break;
-
-                case IMP_JOBROLES:
-                    // IMP JOBROLES
-                    $path = $backupstatus . "/fs_imp_jobroles_" . $time . ".txt";
-                    self::backup_imp_fs_tables($path,'fs_imp_jobroles');
-
-                    break;
-
-                case IMP_MANAGERS_REPORTERS:
-                    // IMP MANAGERS_REPORTERS
-                    $path = $backupstatus . "/fs_imp_managers_reporters_" . $time . ".txt";
-                    self::backup_imp_fs_tables($path,'fs_imp_managers_reporters');
-
-                    break;
-
-                case IMP_COMPETENCE_JR:
-                    // IMP COMPETENCE JR
-                    $path = $backupstatus . "/fs_imp_users_jr_" . $time . ".txt";
-                    self::backup_imp_fs_tables($path,'fs_imp_users_jr');
-
-                    break;
-            }//type
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//backup_temporary_fellesdata
-
-    private static function backup_imp_fs_tables($path,$table) {
-        /* Variables */
-        global $DB;
-        $rdo    = null;
-        $file   = null;
-
-        try {
-            // get content table
-            $sql = " SELECT * FROM {" . $table . "} WHERE action != " . STATUS ;
-            $rdo = $DB->get_records_sql($sql);
-            if ($rdo) {
-                // content to string
-                $content = json_encode($rdo);
-
-                // Add content to the file
-                $file = fopen($path,'w');
-                fwrite($file,$content);
-                fclose($file);
-            }//if_rdo
-
-            // Delete all records
-            $DB->delete_records($table,array('action' => 0));
-            $DB->delete_records($table,array('action' => 1));
-            $DB->delete_records($table,array('action' => 2));
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//backup_imp_fs_users
-
     /**
      * @param            $data
      * @param            $type
@@ -3395,46 +3309,6 @@ class FS {
             throw $ex;
         }//try_catch
     }//clean_temporary_fellesdata
-
-    /**
-     * Description
-     * Clean repeat companies
-     *
-     * @throws Exception
-     *
-     * @creationDate    07/07/2017
-     * @author          eFaktor     (fbv)
-     */
-    public static function clean_repeat_companies() {
-        /* Variables    */
-        global  $DB;
-        $rdo    = null;
-        $sql    = null;
-        $in     = null;
-
-        try {
-            // Find repeat companies and deleted
-            $sql = " SELECT	  fs.id,
-                              fs.ORG_NIVAA,
-                              fs.org_enhet_id
-                     FROM	  {fs_imp_company}	fs 
-                        -- FIND REPEAT
-                        JOIN  {fs_imp_company}	fs_rep 	ON  fs_rep.ORG_NIVAA 	= fs.ORG_NIVAA
-                                                        AND fs_rep.org_enhet_id = fs.org_enhet_id
-                                                        AND	fs_rep.imported     = 1
-                     WHERE	  fs.imported = 0
-                     ORDER BY fs.ORG_NIVAA,fs.org_enhet_id ";
-            // Execute
-            $rdo = $DB->get_records_sql($sql);
-            if ($rdo) {
-                $in = implode(',',array_keys($rdo));
-                $sql = " DELETE FROM {fs_imp_company} WHERE id IN ($in) ";
-                $DB->execute($sql);
-            }//if_rdo
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//clean_repeat_companies
 
     /***********/
     /* PRIVATE */

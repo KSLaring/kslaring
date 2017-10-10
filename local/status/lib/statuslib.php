@@ -38,6 +38,37 @@ define('SYNC_STATUS_COMP','companies');
 define('SYNC_STATUS_JR','jobroles');
 
 class STATUS {
+    /**
+     * Description
+     * Write fellesdata log
+     *
+     * @param           $log
+     *
+     * @throws          Exception
+     *
+     * @creationDate    10/10/2017
+     * @author          eFaktor     (fbv)
+     */
+    public static function write_status_log($log) {
+        /* Variables */
+        global $DB;
+        $info   = null;
+        $time   = null;
+        try {
+            // Local time
+            $time = time();
+
+            // Write log
+            asort($log);
+            foreach ($log as $info) {
+                $info->timecreated = $time;
+                $DB->insert_record('fs_status_log',$info);
+            }//for_log
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//write_fellesdata_log
+
     /**********/
     /* PUBLIC */
     /**********/

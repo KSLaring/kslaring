@@ -1042,8 +1042,8 @@ class Fellesdata_Install {
 
                 // Adding keys, index, foreing keys
                 $tbl->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
-                $tbl->add_key('timecreated',XMLDB_INDEX_NOTUNIQUE,array('timecreated'));
-                $tbl->add_key('action',XMLDB_INDEX_NOTUNIQUE,array('action'));
+                $tbl->add_index('timecreated',XMLDB_INDEX_NOTUNIQUE,array('timecreated'));
+                $tbl->add_index('action',XMLDB_INDEX_NOTUNIQUE,array('action'));
 
                 // Crete table
                 $dbman->create_table($tbl);

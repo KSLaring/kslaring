@@ -27,54 +27,69 @@
  */
 
 class STATUS_CRON {
+    protected static $log           = null;
+
     /***********/
     /* PUBLIC  */
     /***********/
 
     public static function cron($plugin) {
         /* Varibales */
-        global $CFG;
-        $dblog = null;
-        $time  = null;
+        $infolog = null;
 
         try {
-            // Local time
-            $time = time();
+            // Start log
+            self::$log    =    array();
 
-            // Start Log
-            $dblog = $time . ' (' . userdate(time(),'%d.%m.%Y %H:%M', 99, false) . ') - START FELLESDATA STATUS CRON' . "\n";
+            // Log
+            $infolog = new stdClass();
+            $infolog->action      = 'Cron STATUS' . userdate(time(),'%d.%m.%Y %H:%M', 99, false);
+            $infolog->description = 'START Status Cron';
+            // Add log
+            self::$log[] = $infolog;
             
             // Get industry code
             $industry = STATUS::get_industry_code($plugin->ks_muni);
 
             // Get competence from KS
-            self::competence_data($plugin,$industry,$dblog);
+            self::competence_data($plugin,$industry);
 
             // Get managers reporters from KS
-            self::managers_reporters($plugin,$industry,$dblog);
+            self::managers_reporters($plugin,$industry);
 
             // Repair connections
-            self::repair_connections($dblog);
+            self::repair_connections();
 
             // Import last status from fellesdata
-            self::import_status($plugin,$dblog);
+            self::import_status($plugin);
 
             // Syncronization
-            self::synchronization($plugin,$industry,$dblog);
+            self::synchronization($plugin,$industry);
 
-            // Finish Log
-            $dblog .= $time . ' (' . userdate(time(),'%d.%m.%Y %H:%M', 99, false) . ') - FINISH FELLESDATA STATUS CRON' . "\n\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
+            // Log
+            $infolog = new stdClass();
+            $infolog->action      = 'Cron ' . userdate(time(),'%d.%m.%Y %H:%M', 99, false);
+            $infolog->description = 'FINSIH Status Cron';
+            // Add log
+            self::$log[] = $infolog;
+
+            // Write log
+            STATUS::write_status_log(self::$log);
         }catch (Exception $ex) {
             // Send error notification
             FS_CRON::send_notification_error_process($plugin,'TARDIS STATUS');
             FS_CRON::deactivate_cron('status');
 
-            // Finish log - error
-            $dblog .= "ERROR: " . "\n";
-            $dblog .= $ex->getTraceAsString() . "\n" ."\n";
-            $dblog .= $time . ' (' . userdate(time(),'%d.%m.%Y %H:%M', 99, false) . ') - ERROR FINISH FELLESDATA STATUS CRON' . "\n\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
+            // Log
+            $infolog = new stdClass();
+            $infolog->action      = 'ERROR Status Cron ' . userdate(time(),'%d.%m.%Y %H:%M', 99, false);
+            $infolog->description = 'FINISH ERROR: ';
+            $infolog->description .= $ex->getTraceAsString();
+            // Add log
+            self::$log[] = $infolog;
+
+            // Write log
+            STATUS::write_status_log(self::$log);
 
             throw $ex;
         }//try_catch
@@ -82,47 +97,58 @@ class STATUS_CRON {
 
     public static function test($plugin) {
         /* Variables */
-        global $CFG;
         $industry   = null;
-        $dblog      = null;
         $time       = null;
+        $infolog    = null;
 
         try {
-            // Local time
-            $time = time();
-
-            // Start Log
-            $dblog = $time . ' (' . userdate(time(),'%d.%m.%Y %H:%M', 99, false) . ') - START FELLESDATA STATUS CRON' . "\n";
+            // Log
+            $infolog = new stdClass();
+            $infolog->action 		= 'Status Cron Manual ' . userdate(time(),'%d.%m.%Y %H:%M', 99, false);
+            $infolog->description 	= 'START Status Cron Manual';
+            // Add log
+            self::$log[] = $infolog;
 
             // Get industry code
             $industry = STATUS::get_industry_code($plugin->ks_muni);
 
             // Get competence from KS
-            self::competence_data($plugin,$industry,$dblog);
+            self::competence_data($plugin,$industry);
 
             // Get managers reporters from KS
-            self::managers_reporters($plugin,$industry,$dblog);
+            self::managers_reporters($plugin,$industry);
 
             // Repair connections
-            self::repair_connections($dblog);
+            self::repair_connections();
 
             // Import last status from fellesdata
-            self::import_status($plugin,$dblog);
+            self::import_status($plugin);
 
             // Syncronization
-            self::synchronization($plugin,$industry,$dblog);
+            self::synchronization($plugin,$industry);
 
-            // Finish Log
-            $dblog .= $time . ' (' . userdate(time(),'%d.%m.%Y %H:%M', 99, false) . ') - FINISH FELLESDATA STATUS CRON' . "\n\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
+            // Log
+            $infolog = new stdClass();
+            $infolog->action 		= 'Status Cron Manual ' . userdate(time(),'%d.%m.%Y %H:%M', 99, false);
+            $infolog->description 	= 'FINISH Status Cron Manual';
+            // Add log
+            self::$log[] = $infolog;
+            asort(self::$log);
 
-            echo $dblog;
+            foreach (self::$log as $info) {
+                echo $info->description . "</br>";
+            }
+
+            // Write log
+            STATUS::write_status_log(self::$log);
         }catch (Exception $ex) {
-            // Finish log - error
-            $dblog .= "ERROR: " . "\n";
-            $dblog .= $ex->getTraceAsString() . "\n" ."\n";
-            $dblog .= $time . ' (' . userdate(time(),'%d.%m.%Y %H:%M', 99, false) . ') - ERROR FINISH FELLESDATA STATUS CRON' . "\n\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Status_Fellesdata.log");
+            // Log
+            $infolog = new stdClass();
+            $infolog->action 		= 'Status Cron Manual ' . userdate(time(),'%d.%m.%Y %H:%M', 99, false);
+            $infolog->description 	= 'FINISH ERROR: ';
+            $infolog->description  .= $ex->getTraceAsString();
+            // Add log
+            self::$log[] = $infolog;
 
             throw $ex;
         }//try_catch
@@ -138,23 +164,27 @@ class STATUS_CRON {
      *
      * @param       $plugin
      * @param       $industry
-     * @param       $dblog
      *
      * @throws      Exception
      *
      * @creationDate    25/02/2017
      * @author          eFaktor     (fbv)
      */
-    private static function competence_data($plugin,$industry,&$dblog) {
+    private static function competence_data($plugin,$industry) {
         /* Variables */
         $params     = null;
         $response   = null;
         $file       = null;
         $path       = null;
+        $infolog    = null;
 
         try {
             // Log
-            $dblog .= 'Start STATUS Get KS competence data . ' . "\n";
+            $infolog = new stdClass();
+            $infolog->action 		= 'START competence_data';
+            $infolog->description 	= 'START competence_data';
+            // Add log
+            self::$log[] = $infolog;
 
             // Cal service
             $params = array();
@@ -166,14 +196,28 @@ class STATUS_CRON {
                     STATUS::save_competence($response['competence']);
                 }else {
                     // Log
-                    $dblog .= "Error WS: " . $response['message'] . "\n" ."\n";
+                    $infolog = new stdClass();
+                    $infolog->action 		= 'competence_data';
+                    $infolog->description 	= 'Service: ' . WS_COMPETENCE;
+                    $infolog->description  .= 'Error WS: ' . $response['message'] ;
+                    // Add log
+                    self::$log[] = $infolog;
                 }//if_no_error
             }else {
-                $dblog .= ' RESPONSE NOT VALID ' . "\n";
+                // Log
+                $infolog = new stdClass();
+                $infolog->action 		= 'competence_data';
+                $infolog->description 	= 'Response not valid - Service: ' . WS_COMPETENCE;
+                // Add log
+                self::$log[] = $infolog;
             }//if_else_response
 
             // Log
-            $dblog .= ' FINISH STATUS Get KS competence data . ' . "\n";
+            $infolog = new stdClass();
+            $infolog->action 		= 'FINISH competence_data';
+            $infolog->description 	= 'FINISH competence_data';
+            // Add log
+            self::$log[] = $infolog;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -185,23 +229,27 @@ class STATUS_CRON {
      *
      * @param           Object  $plugin
      * @param           String  $industry
-     * @param           String  $dblog
      *
      * @throws          Exception
      *
      * @creationDate    02/03/2017
      * @author          eFaktor     (fbv)
      */
-    private static function managers_reporters($plugin,$industry,&$dblog) {
+    private static function managers_reporters($plugin,$industry) {
         /* Variables */
         $params     = null;
         $response   = null;
         $file       = null;
         $path       = null;
+        $infolog    = null;
 
         try {
             // Log
-            $dblog .= ' START STATUS KS Managers/Reporters . ' . "\n";
+            $infolog = new stdClass();
+            $infolog->action 		= 'START managers_reporters';
+            $infolog->description 	= 'START managers_reporters';
+            // Add log
+            self::$log[] = $infolog;
 
             // Cal service
             $params = array();
@@ -222,14 +270,27 @@ class STATUS_CRON {
                     }//reporters
                 }else {
                     // Log
-                    $dblog .= "Error WS: " . $response['message'] . "\n" ."\n";
+                    $infolog = new stdClass();
+                    $infolog->action 		= 'managers_reporters - ' . WS_MANAGERS_REPORTERS;
+                    $infolog->description 	= 'Error WS: ' . $response['message'];
+                    // Add log
+                    self::$log[] = $infolog;
                 }//if_no_error
             }else {
-                $dblog .= ' RESPONSE NOT VALID' . "\n";
+                // Log
+                $infolog = new stdClass();
+                $infolog->action 		= 'managers_reporters - ' . WS_MANAGERS_REPORTERS;
+                $infolog->description 	= 'RESPONSE NOT VALID';
+                // Add log
+                self::$log[] = $infolog;
             }//if_else_response
 
             // Log
-            $dblog .= ' FINISH STATUS KS Managers/Reporters. ' . "\n";
+            $infolog = new stdClass();
+            $infolog->action 		= 'FINISH managers_reporters';
+            $infolog->description 	= 'FINISH managers_reporters';
+            // Add log
+            self::$log[] = $infolog;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -241,53 +302,46 @@ class STATUS_CRON {
      * 
      * @param           Object  $plugin
      * @param           String  $industry
-     * @param           String  $dblog
      * 
      * @throws                  Exception
      * 
      * @creationDate    06/03/2017
      * @author          eFaktor     (fbv)
      */
-    private static function synchronization($plugin,$industry,&$dblog) {
+    private static function synchronization($plugin,$industry) {
         /* Variables */
 
         try {
-            // Log
-            $dblog .= ' START Synchronization STATUS. ' . "\n";
-
             // Synchronization FS Users
-            self::sync_status_users_accounts($plugin,$industry,$dblog);
+            self::sync_status_users_accounts($plugin,$industry);
             
             // Synchronization FS Companies
-            self::sync_status_fs_organizations($plugin,$dblog);
+            self::sync_status_fs_organizations($plugin);
 
             // Synchronization FS Job roles
-            self::sync_status_fs_jobroles($plugin,$dblog);
+            self::sync_status_fs_jobroles($plugin);
             
             // Synchronization FS Managers/Reporters to delete
             // Managers
-            self::sync_status_delete_managers_reporters($plugin,MANAGERS,1,$dblog);
-            self::sync_status_delete_managers_reporters($plugin,MANAGERS,2,$dblog);
-            self::sync_status_delete_managers_reporters($plugin,MANAGERS,3,$dblog);
+            self::sync_status_delete_managers_reporters($plugin,MANAGERS,1);
+            self::sync_status_delete_managers_reporters($plugin,MANAGERS,2);
+            self::sync_status_delete_managers_reporters($plugin,MANAGERS,3);
             // Reporters
-            self::sync_status_delete_managers_reporters($plugin,REPORTERS,1,$dblog);
-            self::sync_status_delete_managers_reporters($plugin,REPORTERS,2,$dblog);
-            self::sync_status_delete_managers_reporters($plugin,REPORTERS,3,$dblog);
+            self::sync_status_delete_managers_reporters($plugin,REPORTERS,1);
+            self::sync_status_delete_managers_reporters($plugin,REPORTERS,2);
+            self::sync_status_delete_managers_reporters($plugin,REPORTERS,3);
 
             // Synchronization FS Managers/Reporters
-            self::sync_status_managers_reporters($plugin,$dblog);
+            self::sync_status_managers_reporters($plugin);
 
             STATUS::synchronize_managers_reporters_deleted(MANAGERS);
             STATUS::synchronize_managers_reporters_deleted(REPORTERS);
 
             // Synchronization FS User Competence to Delete
-            self::sync_status_delete_competence($plugin,$dblog);
+            self::sync_status_delete_competence($plugin);
 
             // Synchronization FS User Competence
-            self::sync_status_competence($plugin,$dblog);
-
-            // Log
-            $dblog .= ' FINISH Synchronization STATUS. ' . "\n";
+            self::sync_status_competence($plugin);
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -297,39 +351,48 @@ class STATUS_CRON {
      * Description
      * Repair all missing connections
      *
-     * @param           $dblog
      * @throws          Exception
      *
      * @creationDate    03/07/2017
      * @author          eFaktor     (fbv)
      */
-    private static function repair_connections(&$dblog) {
+    private static function repair_connections() {
         /* Variables */
         global $DB;
         $connections = null;
+        $infolog     = null;
 
         try {
             // Log
-            $dblog .= ' START REPAIR CONNECTIONS STATUS. ' . "\n";
-
-            // Log
-            $dblog .= ' GET MISSING CONNECTIONS STATUS. ' . "\n";
+            $infolog = new stdClass();
+            $infolog->action 		= 'START repair_connections';
+            $infolog->description 	= 'START repair_connections';
+            // Add log
+            self::$log[] = $infolog;
 
             // Get connections missed
             $connections = self::get_connections_missing();
 
             // Add connection
             if ($connections) {
-                // Log
-                $dblog .= ' ADD CONNECTION MISSED STATUS. ' . "\n";
-
                 foreach ($connections as $connection) {
+                    // Log
+                    $infolog = new stdClass();
+                    $infolog->action 		= 'repair_connections';
+                    $infolog->description 	= 'repair_connections between ' . $connection->fscompany . ' && ' . $connection->kscompany ;
+                    // Add log
+                    self::$log[] = $infolog;
+
                     $DB->insert_record('ksfs_company',$connection);
                 }
             }//if_connections
 
             // Log
-            $dblog .= ' FINISH REPAIR CONNECTIONS STATUS. ' . "\n";
+            $infolog = new stdClass();
+            $infolog->action 		= 'FINISH repair_connections';
+            $infolog->description 	= 'FINISH repair_connections';
+            // Add log
+            self::$log[] = $infolog;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -378,7 +441,6 @@ class STATUS_CRON {
      * Import last status from tardis
      *
      * @param        object $plugin
-     * @param        String $dblog
      *
      * @return              bool
      * @throws              Exception
@@ -386,30 +448,24 @@ class STATUS_CRON {
      * @creationDate    27/02/2017
      * @author          eFaktor     (fbv)
      */
-    private static function import_status($plugin,&$dblog) {
+    private static function import_status($plugin) {
         /* Variables    */
 
         try {
-            // Log
-            $dblog .= ' START Import STATUS. ' . "\n";
-
             // Import FS Users
-            self::import_status_users($plugin,$dblog);
+            self::import_status_users($plugin);
 
             // Import FS Companies
-            self::import_status_orgstructure($plugin,$dblog);
+            self::import_status_orgstructure($plugin);
 
             // Import FS Job roles
-            self::import_status_jobroles($plugin,$dblog);
+            self::import_status_jobroles($plugin);
 
             // Import FS User Competence
-            self::import_status_managers_reporters($plugin,$dblog);
+            self::import_status_managers_reporters($plugin);
 
             // Import FS User Competence JR
-            self::import_status_user_competence($plugin,$dblog);
-
-            // Log
-            $dblog .= ' FINISH Import STATUS. ' . "\n";
+            self::import_status_user_competence($plugin);
 
             return true;
         }catch (Exception $ex) {
@@ -422,14 +478,13 @@ class STATUS_CRON {
      * Get last status of all users from tardis
      *
      * @param           object $plugin
-     * @param           String $dblog
      *
      * @throws                 Exception
      *
      * @creationDate    27/02/2017
      * @author          eFaktor (fbv)
      */
-    private static function import_status_users($plugin,&$dblog) {
+    private static function import_status_users($plugin) {
         /* Variables    */
         global $CFG;
         $path       = null;
@@ -438,10 +493,15 @@ class STATUS_CRON {
         $data       = null;
         $total      = null;
         $i          = null;
+        $infolog    = null;
 
         try {
             // Log
-            $dblog .= ' START Import STATUS Users . ' . "\n";
+            $infolog = new stdClass();
+            $infolog->action 		= 'START import_status_users';
+            $infolog->description 	= 'START import_status_users';
+            // Add log
+            self::$log[] = $infolog;
 
             // Call web service
             $response = self::process_tardis_status($plugin,TRADIS_FS_USERS,$dblog);
@@ -451,6 +511,13 @@ class STATUS_CRON {
                 // Clean temporary table
                 FS::clean_temporary_fellesdata(IMP_USERS);
 
+                // Log
+                $infolog = new stdClass();
+                $infolog->action 		= 'import_status_users';
+                $infolog->description 	= 'Clean: ' . IMP_USERS;
+                // Add log
+                self::$log[] = $infolog;
+
                 // Open file
                 $path = $CFG->dataroot . '/fellesdata/' . TRADIS_FS_USERS . '.txt';
                 if (file_exists($path)) {
@@ -459,23 +526,53 @@ class STATUS_CRON {
 
                     // Get total
                     $total = count($content);
+
+                    // Log
+                    $infolog = new stdClass();
+                    $infolog->action 		= 'import_status_users';
+                    $infolog->description 	= 'TOTAL: ' . $total;
+                    // Add log
+                    self::$log[] = $infolog;
+
                     // Split the process if it is too big
                     if ($total > MAX_IMP_FS) {
                         for($i=0;$i<=$total;$i=$i+MAX_IMP_FS) {
                             $data = array_slice($content,$i,MAX_IMP_FS,true);
                             FS::save_temporary_fellesdata($data,IMP_USERS,true);
                         }
-                        FS::backup_temporary_fellesdata(IMP_USERS);
+
+                        // Log
+                        $infolog = new stdClass();
+                        $infolog->action 		= 'import_status_users';
+                        $infolog->description 	= 'save_temporary_fellesdata: ' . IMP_USERS;
+                        // Add log
+                        self::$log[] = $infolog;
                     }else {
-                        if (FS::save_temporary_fellesdata($content,IMP_USERS,true)) {
-                            FS::backup_temporary_fellesdata(IMP_USERS);
-                        }//if_status
+                        FS::save_temporary_fellesdata($content,IMP_USERS,true);
+
+                        // Log
+                        $infolog = new stdClass();
+                        $infolog->action 		= 'import_status_users';
+                        $infolog->description 	= 'save_temporary_fellesdata: ' . IMP_USERS;
+                        // Add log
+                        self::$log[] = $infolog;
                     }//if_max_imp
+                }else {
+                    // Log
+                    $infolog = new stdClass();
+                    $infolog->action 		= 'import_status_users';
+                    $infolog->description 	= 'Fiel does not exist: ' . $path;
+                    // Add log
+                    self::$log[] = $infolog;
                 }//if_exists
             }//if_fsResponse
 
             // Log
-            $dblog .= ' FINISH Import STATUS Users . ' . "\n";
+            $infolog = new stdClass();
+            $infolog->action 		= 'FINISH import_status_users';
+            $infolog->description 	= 'FINISH import_status_users';
+            // Add log
+            self::$log[] = $infolog;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -486,14 +583,13 @@ class STATUS_CRON {
      * Get last status of all organizations from Tardis
      *
      * @param       object  $plugin
-     * @param       String  $dblog
      *
      * @throws              Exception
      *
      * @creationDate        27/02/2017
      * @author              eFaktor     (fbv)
      */
-    private static function import_status_orgstructure($plugin,&$dblog) {
+    private static function import_status_orgstructure($plugin) {
         /* Variables    */
         global $CFG;
         $path       = null;
@@ -502,10 +598,15 @@ class STATUS_CRON {
         $data       = null;
         $total      = null;
         $i          = null;
+        $infolog    = null;
 
         try {
             // Log
-            $dblog .= ' START Import STATUS ORG Structure . ' . "\n";
+            $infolog = new stdClass();
+            $infolog->action 		= 'START import_status_orgstructure';
+            $infolog->description 	= 'START import_status_orgstructure';
+            // Add log
+            self::$log[] = $infolog;
 
             // Call web service
             $response = self::process_tardis_status($plugin,TRADIS_FS_COMPANIES,$dblog);
@@ -513,7 +614,14 @@ class STATUS_CRON {
             // Import data into temporary tables
             if ($response) {
                 // Clean temporary table
-                FS::clean_temporary_fellesdata(IMP_COMPANIES,$plugin);
+                FS::clean_temporary_fellesdata(IMP_COMPANIES);
+
+                // Log
+                $infolog = new stdClass();
+                $infolog->action 		= 'import_status_orgstructure';
+                $infolog->description 	= 'Clean: ' . IMP_COMPANIES;
+                // Add log
+                self::$log[] = $infolog;
 
                 // Open file
                 $path = $CFG->dataroot . '/fellesdata/' . TRADIS_FS_COMPANIES . '.txt';
@@ -529,22 +637,39 @@ class STATUS_CRON {
                             $data = array_slice($content,$i,MAX_IMP_FS,true);
                             FS::save_temporary_fellesdata($data,IMP_COMPANIES,true);
                         }
-                        FS::backup_temporary_fellesdata(IMP_COMPANIES);
-                    }else {
-                        if (FS::save_temporary_fellesdata($content,IMP_COMPANIES,true)) {
-                            FS::backup_temporary_fellesdata(IMP_COMPANIES);
-                        }//if_status
-                    }//if_max_imp
 
-                    // Clean repeat companies
-                    FS::clean_repeat_companies();
+                        // Log
+                        $infolog = new stdClass();
+                        $infolog->action 		= 'import_status_orgstructure';
+                        $infolog->description 	= 'save_temporary_fellesdata: ' . IMP_COMPANIES;
+                        // Add log
+                        self::$log[] = $infolog;
+                    }else {
+                        FS::save_temporary_fellesdata($content,IMP_COMPANIES,true);
+
+                        // Log
+                        $infolog = new stdClass();
+                        $infolog->action 		= 'import_status_orgstructure';
+                        $infolog->description 	= 'save_temporary_fellesdata: ' . IMP_COMPANIES;
+                        // Add log
+                        self::$log[] = $infolog;
+                    }//if_max_imp
                 }else {
-                    $dblog .= ' FILE DOES NOT EXIST ' . "\n";
+                    // Log
+                    $infolog = new stdClass();
+                    $infolog->action 		= 'import_status_orgstructure';
+                    $infolog->description 	= 'File does not exist: ' . $path;
+                    // Add log
+                    self::$log[] = $infolog;
                 }//if_exists
             }//if_fsResponse
 
             // Log
-            $dblog .= 'FINISH Import STATUS ORG Structure . ' . "\n";
+            $infolog = new stdClass();
+            $infolog->action 		= 'FINISH import_status_orgstructure';
+            $infolog->description 	= 'FINISH import_status_orgstructure';
+            // Add log
+            self::$log[] = $infolog;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -555,14 +680,13 @@ class STATUS_CRON {
      * Get last satus of all jobroles from tardis
      *
      * @param       object  $plugin
-     * @param       String  $dblog
      *
      * @throws              Exception
      *
      * @creationDate        27/02/2017
      * @author              eFaktor     (fbv)
      */
-    private static function import_status_jobroles($plugin,&$dblog) {
+    private static function import_status_jobroles($plugin) {
         /* Variables    */
         global $CFG;
         $path       = null;
@@ -571,10 +695,15 @@ class STATUS_CRON {
         $data       = null;
         $total      = null;
         $i          = null;
+        $infolog    = null;
 
         try {
             // Log
-            $dblog .= ' START Import STATUS JOB ROLES . ' . "\n";
+            $infolog = new stdClass();
+            $infolog->action 		= 'START import_status_jobroles';
+            $infolog->description 	= 'START import_status_jobroles';
+            // Add log
+            self::$log[] = $infolog;
 
             // Call web service
             $response = self::process_tardis_status($plugin,TRADIS_FS_JOBROLES,$dblog);
@@ -584,6 +713,13 @@ class STATUS_CRON {
                 // Clean temporary table
                 FS::clean_temporary_fellesdata(IMP_JOBROLES);
 
+                // Log
+                $infolog = new stdClass();
+                $infolog->action 		= 'import_status_jobroles';
+                $infolog->description 	= 'Clean: ' . IMP_JOBROLES;
+                // Add log
+                self::$log[] = $infolog;
+
                 // Open file
                 $path = $CFG->dataroot . '/fellesdata/' . TRADIS_FS_JOBROLES . '.txt';
                 if (file_exists($path)) {
@@ -592,25 +728,53 @@ class STATUS_CRON {
 
                     // Get total
                     $total = count($content);
+
+                    // Log
+                    $infolog = new stdClass();
+                    $infolog->action 		= 'import_status_jobroles';
+                    $infolog->description 	= 'TOTAL: ' . $total;
+                    // Add log
+                    self::$log[] = $infolog;
+
                     // Split the process if it is too big
                     if ($total > MAX_IMP_FS) {
                         for($i=0;$i<=$total;$i=$i+MAX_IMP_FS) {
                             $data = array_slice($content,$i,MAX_IMP_FS,true);
                             FS::save_temporary_fellesdata($data,IMP_JOBROLES,true);
                         }
-                        FS::backup_temporary_fellesdata(IMP_JOBROLES);
+
+                        // Log
+                        $infolog = new stdClass();
+                        $infolog->action 		= 'import_status_jobroles';
+                        $infolog->description 	= 'save_temporary_fellesdata: ' . IMP_JOBROLES;
+                        // Add log
+                        self::$log[] = $infolog;
                     }else {
-                        if (FS::save_temporary_fellesdata($content,IMP_JOBROLES,true)) {
-                            FS::backup_temporary_fellesdata(IMP_JOBROLES);
-                        }//if_status
+                        FS::save_temporary_fellesdata($content,IMP_JOBROLES,true);
+
+                        // Log
+                        $infolog = new stdClass();
+                        $infolog->action 		= 'import_status_jobroles';
+                        $infolog->description 	= 'save_temporary_fellesdata: ' . IMP_JOBROLES;
+                        // Add log
+                        self::$log[] = $infolog;
                     }//if_max_imp
                 }else {
-                    $dblog .= 'FILE DOES NOT EXIST ' . "\n";
+                    // Log
+                    $infolog = new stdClass();
+                    $infolog->action 		= 'import_status_jobroles';
+                    $infolog->description 	= 'File does not exist: ' . $path;
+                    // Add log
+                    self::$log[] = $infolog;
                 }//if_exists
             }//if_fsResponse
 
             // Log
-            $dblog .= ' FINISH Import STATUS JOB ROLES . ' . "\n";
+            $infolog = new stdClass();
+            $infolog->action 		= 'FINISH import_status_jobroles';
+            $infolog->description 	= 'FINIDH import_status_jobroles';
+            // Add log
+            self::$log[] = $infolog;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -621,14 +785,13 @@ class STATUS_CRON {
      * Get last status of all managers/reportes from Tardis
      *
      * @param       object  $plugin
-     * @param       String  $dblog
      *
      * @throws              Exception
      *
      * @creationDate        27/02/2017
      * @author              eFaktor     (fbv)
      */
-    private static function import_status_managers_reporters($plugin,&$dblog) {
+    private static function import_status_managers_reporters($plugin) {
         /* Variables    */
         global $CFG;
         $path       = null;
@@ -637,10 +800,15 @@ class STATUS_CRON {
         $data       = null;
         $i          = null;
         $total      = null;
+        $infolog    = null;
 
         try {
             // Log
-            $dblog .= ' START Import STATUS MANAGERRS REPORTERS . ' . "\n";
+            $infolog = new stdClass();
+            $infolog->action 		= 'START import_status_managers_reporters';
+            $infolog->description 	= 'START import_status_managers_reporters';
+            // Add log
+            self::$log[] = $infolog;
 
             // Call web service
             $response = self::process_tardis_status($plugin,TRADIS_FS_MANAGERS_REPORTERS,$dblog);
@@ -650,6 +818,13 @@ class STATUS_CRON {
                 // Clean temporary table
                 FS::clean_temporary_fellesdata(IMP_MANAGERS_REPORTERS);
 
+                // Log
+                $infolog = new stdClass();
+                $infolog->action 		= 'import_status_managers_reporters';
+                $infolog->description 	= 'Clean: ' . IMP_MANAGERS_REPORTERS;
+                // Add log
+                self::$log[] = $infolog;
+
                 // Open file
                 $path = $CFG->dataroot . '/fellesdata/' . TRADIS_FS_MANAGERS_REPORTERS . '.txt';
                 if (file_exists($path)) {
@@ -658,17 +833,36 @@ class STATUS_CRON {
 
                     // Get total
                     $total = count($content);
+
+                    // Log
+                    $infolog = new stdClass();
+                    $infolog->action 		= 'import_status_managers_reporters';
+                    $infolog->description 	= 'Total: ' . $total;
+                    // Add log
+                    self::$log[] = $infolog;
+
                     // Split the process if it is too big
                     if ($total > MAX_IMP_FS) {
                         for($i=0;$i<=$total;$i=$i+MAX_IMP_FS) {
                             $data = array_slice($content,$i,MAX_IMP_FS,true);
                             FS::save_temporary_fellesdata($data,IMP_MANAGERS_REPORTERS,true);
                         }
-                        FS::backup_temporary_fellesdata(IMP_MANAGERS_REPORTERS);
+
+                        // Log
+                        $infolog = new stdClass();
+                        $infolog->action 		= 'import_status_managers_reporters';
+                        $infolog->description 	= 'save_temporary_fellesdata: ' . IMP_MANAGERS_REPORTERS;
+                        // Add log
+                        self::$log[] = $infolog;
                     }else {
-                        if (FS::save_temporary_fellesdata($content,IMP_MANAGERS_REPORTERS,true)) {
-                            FS::backup_temporary_fellesdata(IMP_MANAGERS_REPORTERS);
-                        }//if_status
+                        FS::save_temporary_fellesdata($content,IMP_MANAGERS_REPORTERS,true);
+
+                        // Log
+                        $infolog = new stdClass();
+                        $infolog->action 		= 'import_status_managers_reporters';
+                        $infolog->description 	= 'save_temporary_fellesdata: ' . IMP_MANAGERS_REPORTERS;
+                        // Add log
+                        self::$log[] = $infolog;
                     }//if_max_imp
                 }else {
                     $dblog .= 'FILE DOES NOT EXIST ' . "\n";
@@ -676,7 +870,11 @@ class STATUS_CRON {
             }//if_fsResponse
 
             // Log
-            $dblog .= ' FINISH Import STATUS MANAGERRS REPORTERS . ' . "\n";
+            $infolog = new stdClass();
+            $infolog->action 		= 'FINISH import_status_managers_reporters';
+            $infolog->description 	= 'FINISH import_status_managers_reporters';
+            // Add log
+            self::$log[] = $infolog;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -687,14 +885,13 @@ class STATUS_CRON {
      * Get competence users from tardis
      *
      * @param       object  $plugin
-     * @param       String  $dblog
      *
      * @throws              Exception
      *
      * @creationDate        27/02/2017
      * @author              eFaktor     (fbv)
      */
-    private static function import_status_user_competence($plugin,&$dblog) {
+    private static function import_status_user_competence($plugin) {
         /* Variables    */
         global $CFG;
         $path       = null;
@@ -703,10 +900,15 @@ class STATUS_CRON {
         $total      = null;
         $i          = null;
         $data       = null;
+        $infolgo    = null;
 
         try {
             // Log
-            $dblog .= ' START Import STATUS FS USERS COMPETENCE . ' . "\n";
+            $infolog = new stdClass();
+            $infolog->action 		= 'START import_status_user_competence';
+            $infolog->description 	= 'START import_status_user_competence';
+            // Add log
+            self::$log[] = $infolog;
 
             // Call web service
             $response = self::process_tardis_status($plugin,TRADIS_FS_USERS_JOBROLES,$dblog);
@@ -716,6 +918,13 @@ class STATUS_CRON {
                 // Clean temporary table
                 FS::clean_temporary_fellesdata(IMP_COMPETENCE_JR);
 
+                // Log
+                $infolog = new stdClass();
+                $infolog->action 		= 'import_status_user_competence';
+                $infolog->description 	= 'Clean: ' . IMP_COMPETENCE_JR;
+                // Add log
+                self::$log[] = $infolog;
+
                 // Open file
                 $path = $CFG->dataroot . '/fellesdata/' . TRADIS_FS_USERS_JOBROLES . '.txt';
                 if (file_exists($path)) {
@@ -724,25 +933,53 @@ class STATUS_CRON {
 
                     // Get total
                     $total = count($content);
+
+                    // Log
+                    $infolog = new stdClass();
+                    $infolog->action 		= 'import_status_user_competence';
+                    $infolog->description 	= 'Total: ' . $total;
+                    // Add log
+                    self::$log[] = $infolog;
+
                     // Split the process if it is too big
                     if ($total > MAX_IMP_FS) {
                         for($i=0;$i<=$total;$i=$i+MAX_IMP_FS) {
                             $data = array_slice($content,$i,MAX_IMP_FS,true);
                             FS::save_temporary_fellesdata($data,IMP_COMPETENCE_JR,true);
                         }
-                        FS::backup_temporary_fellesdata(IMP_COMPETENCE_JR);
+
+                        // Log
+                        $infolog = new stdClass();
+                        $infolog->action 		= 'import_status_user_competence';
+                        $infolog->description 	= 'save_temporary_fellesdata: ' . IMP_COMPETENCE_JR;
+                        // Add log
+                        self::$log[] = $infolog;
                     }else {
-                        if (FS::save_temporary_fellesdata($content,IMP_COMPETENCE_JR,true)) {
-                            FS::backup_temporary_fellesdata(IMP_COMPETENCE_JR);
-                        }//if_status
+                        FS::save_temporary_fellesdata($content,IMP_COMPETENCE_JR,true);
+
+                        // Log
+                        $infolog = new stdClass();
+                        $infolog->action 		= 'import_status_user_competence';
+                        $infolog->description 	= 'save_temporary_fellesdata: ' . IMP_COMPETENCE_JR;
+                        // Add log
+                        self::$log[] = $infolog;
                     }//if_max_imp
                 }else {
-                    $dblog .= ' FILE DOES NOT EXIST ' . "\n";
+                    // Log
+                    $infolog = new stdClass();
+                    $infolog->action 		= 'import_status_user_competence';
+                    $infolog->description 	= 'File does not exist: ' . $path;
+                    // Add log
+                    self::$log[] = $infolog;
                 }//if_exists
             }//if_data
 
             // Log
-            $dblog .= ' FINSH Import STATUS USER COMPETENCE JR . ' . "\n";
+            $infolog = new stdClass();
+            $infolog->action 		= 'FINISH import_status_user_competence';
+            $infolog->description 	= 'FINISH import_status_user_competence';
+            // Add log
+            self::$log[] = $infolog;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -753,33 +990,52 @@ class STATUS_CRON {
      * Synchronization status competence
      *
      * @param       Object  $plugin
-     * @param       String  $dblog
      *
      * @throws              Exception
      *
      * @creationDate    01/03/2017
      * @author          eFaktor     (fbv)
      */
-    private static function sync_status_competence($plugin,&$dblog) {
+    private static function sync_status_competence($plugin) {
         /* Variables    */
         $competence     = null;
         $rdocompetence  = null;
         $response       = null;
+        $infolog        = null;
         $start          = 0;
         $limit          = 1000;
 
         try {
             // Log
-            $dblog .= ' START Synchronization STATUS competence. ' . "\n";
+            $infolog = new stdClass();
+            $infolog->action 		= 'START sync_status_competence';
+            $infolog->description 	= 'START sync_status_competence';
+            // Add log
+            self::$log[] = $infolog;
 
             // User competence to synchronize
             $total = FSKS_USERS::get_total_users_competence_to_synchronize(false,true);
+
+            // Log
+            $infolog = new stdClass();
+            $infolog->action 		= 'sync_status_competence';
+            $infolog->description 	= 'Total: ' . $total;
+            // Add log
+            self::$log[] = $infolog;
+
             if ($total) {
                 for ($i=0;$i<=$total;$i=$i+$limit) {
                     list($competence,$rdocompetence) = FSKS_USERS::user_competence_to_synchronize(false,true,$start,$limit);
 
                     // Call web service
                     if ($competence) {
+                        // Log
+                        $infolog = new stdClass();
+                        $infolog->action 		= 'sync_status_competence';
+                        $infolog->description 	= 'To synchornize: ' . $competence;
+                        // Add log
+                        self::$log[] = $infolog;
+
                         // Params web service
                         $params = array();
                         $params['usersCompetence'] = $competence;
@@ -791,17 +1047,30 @@ class STATUS_CRON {
                                 FSKS_USERS::synchronize_user_competence_fs($rdocompetence,$response['usersCompetence']);
                             }else {
                                 // Log
-                                $dblog  .= "ERROR WS: " . $response['message'] . "\n\n";
+                                $infolog = new stdClass();
+                                $infolog->action 		= 'sync_status_competence';
+                                $infolog->description 	= 'ERROR WS: ' . $response['message'];
+                                // Add log
+                                self::$log[] = $infolog;
                             }//if_no_error
                         }else {
-                            $dblog .= 'RESPONSE NOT VALID' . "\n";
+                            // Log
+                            $infolog = new stdClass();
+                            $infolog->action 		= 'sync_status_competence';
+                            $infolog->description 	= 'RESPONSE NOT VALID';
+                            // Add log
+                            self::$log[] = $infolog;
                         }//if_else_response
                     }//if_competence
                }//for_rdo
             }//if_totla
 
             // Log
-            $dblog .= ' FINISH Synchronization STATUS competence. ' . "\n";
+            $infolog = new stdClass();
+            $infolog->action 		= 'FINISH sync_status_competence';
+            $infolog->description 	= 'FINISH sync_status_competence';
+            // Add log
+            self::$log[] = $infolog;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -812,34 +1081,53 @@ class STATUS_CRON {
      * Synchronization of all competence data that has to be deleted
      *
      * @param           object  $plugin
-     * @param           String  $dblog
      *
      * @throws                  Exception
      *
      * @creationDate    28/02/2017
      * @author          eFaktor     (fbv)
      */
-    private static function sync_status_delete_competence($plugin,&$dblog) {
+    private static function sync_status_delete_competence($plugin) {
         /* Variables */
         $total      = null;
         $todelete   = null;
         $params     = null;
         $response   = null;
+        $infolog    = null;
         $start      = 0;
         $limit      = 1000;
 
         try {
             // Log
-            $dblog .= ' START Synchronization STATUS delete competence. ' . "\n";
+            $infolog = new stdClass();
+            $infolog->action 		= 'START sync_status_delete_competence';
+            $infolog->description 	= 'START sync_status_delete_competence';
+            // Add log
+            self::$log[] = $infolog;
 
             // Get total to delete
             $total = STATUS::total_competence_to_delete_ks();
+
+            // Log
+            $infolog = new stdClass();
+            $infolog->action 		= 'sync_status_delete_competence';
+            $infolog->description 	= 'Total: ' . $total;
+            // Add log
+            self::$log[] = $infolog;
+
             if ($total) {
                 for ($i=0;$i<=$total;$i=$i+$limit) {
                     // get to delete
                     $todelete = STATUS::competence_to_delete_ks($start,$limit);
 
                     if ($todelete) {
+                        // Log
+                        $infolog = new stdClass();
+                        $infolog->action 		= 'sync_status_delete_competence';
+                        $infolog->description 	= 'To synchronizer: ' . $todelete;
+                        // Add log
+                        self::$log[] = $infolog;
+
                         // Params web service
                         $params = array();
                         $params['competence'] = $todelete;
@@ -852,17 +1140,30 @@ class STATUS_CRON {
                                 STATUS::synchronize_competence_deleted($response['deleted']);
                             }else {
                                 // Log
-                                $dblog .= "Error WS: " . $response['message'] . "\n" ."\n";
+                                $infolog = new stdClass();
+                                $infolog->action 		= 'sync_status_delete_competence';
+                                $infolog->description 	= 'Error WS: ' . $response['message'];
+                                // Add log
+                                self::$log[] = $infolog;
                             }//if_no_error
                         }else {
-                            $dblog .= ' RESPONSE NOT VALID' . "\n";
+                            // Log
+                            $infolog = new stdClass();
+                            $infolog->action 		= 'sync_status_delete_competence';
+                            $infolog->description 	= 'RESPONSE NOT VALID';
+                            // Add log
+                            self::$log[] = $infolog;
                         }//if_else_response
                     }
                 }//for
             }//if_total
 
             // Log
-            $dblog .= ' FINISH Synchronization STATUS delete competence. ' . "\n";
+            $infolog = new stdClass();
+            $infolog->action 		= 'FINISH sync_status_delete_competence';
+            $infolog->description 	= 'FINISH sync_status_delete_competence';
+            // Add log
+            self::$log[] = $infolog;
         }catch (Exception $ex) {
             throw $ex;
         }//try_Catch
@@ -874,14 +1175,13 @@ class STATUS_CRON {
      *
      * @param           Object  $plugin
      * @param           String  $type
-     * @param           String  $dblog
      *
      * @throws                  Exception
      *
      * @creationDate    03/03/2017
      * @author          eFaktor     (fbv)
      */
-    private static function sync_status_delete_managers_reporters($plugin,$type,$level,&$dblog) {
+    private static function sync_status_delete_managers_reporters($plugin,$type,$level) {
         /* Variables */
         $total       = null;
         $todeleted   = null;
@@ -892,34 +1192,68 @@ class STATUS_CRON {
         
         try {
             // Log
-            $dblog .= ' START Synchronization STATUS delete managers/reporters. ' . "\n";
+            $infolog = new stdClass();
+            $infolog->action 		= 'START sync_status_delete_managers_reporters - Level ' . $level;
+            $infolog->description 	= 'START sync_status_delete_managers_reporters - Level ' . $level;
+            // Add log
+            self::$log[] = $infolog;
 
             // Get total to delete
             $total = STATUS::total_managers_reporters_to_delete($level,$type);
+
+            // Log
+            $infolog = new stdClass();
+            $infolog->action 		= 'START sync_status_delete_managers_reporters - Level ' . $level;
+            $infolog->description 	= 'Total: ' . $total;
+            // Add log
+            self::$log[] = $infolog;
+
             if ($total) {
                 for ($i=0;$i<=$total;$i=$i+$limit) {
                     // Get to delete
                     $todeleted = STATUS::managers_reporters_to_delete_ks($level,$type,$start,$limit);
 
-                    // Call service
-                    $params = array();
-                    $params['type'] = $type;
-                    $params['data'] = $todeleted;
-                    $response = self::process_service($plugin,WS_CLEAN_MANAGERS_REPORTERS,array('managersreporters' => $params));
+                    if ($todeleted) {
+                        // Log
+                        $infolog = new stdClass();
+                        $infolog->action 		= 'START sync_status_delete_managers_reporters - Level ' . $level;
+                        $infolog->description 	= 'To synchronize: ' . $todeleted;
+                        // Add log
+                        self::$log[] = $infolog;
 
-                    if ($response) {
-                        if ($response['error'] != '200') {
+                        // Call service
+                        $params = array();
+                        $params['type'] = $type;
+                        $params['data'] = $todeleted;
+                        $response = self::process_service($plugin,WS_CLEAN_MANAGERS_REPORTERS,array('managersreporters' => $params));
+
+                        if ($response) {
+                            if ($response['error'] != '200') {
+                                // Log
+                                $infolog = new stdClass();
+                                $infolog->action 		= 'START sync_status_delete_managers_reporters - Level ' . $level;
+                                $infolog->description 	= 'Error WS: ' . $response['message'];
+                                // Add log
+                                self::$log[] = $infolog;
+                            }//if_no_error
+                        }else {
                             // Log
-                            $dblog .= "Error WS: " . $response['message'] . "\n" ."\n";
-                        }//if_no_error
-                    }else {
-                        $dblog .= ' RESPONSE NOT VALID. ' . "\n";
-                    }//if_else_response
+                            $infolog = new stdClass();
+                            $infolog->action 		= 'START sync_status_delete_managers_reporters - Level ' . $level;
+                            $infolog->description 	= 'RESPONSE NOT VALID';
+                            // Add log
+                            self::$log[] = $infolog;
+                        }//if_else_response
+                    }//if_todeleted
                 }//for
             }//if_total
             
             // Log
-            $dblog .= ' FINISH Synchronization STATUS delete managers/reporters. ' . "\n";
+            $infolog = new stdClass();
+            $infolog->action 		= 'FINISH sync_status_delete_managers_reporters - Level ' . $level;
+            $infolog->description 	= 'FINISH sync_status_delete_managers_reporters - Level ' . $level;
+            // Add log
+            self::$log[] = $infolog;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -930,28 +1264,40 @@ class STATUS_CRON {
      * Synchronization of managers/resporters. Status
      *
      * @param           Object  $plugin
-     * @param           String  $dblog
      *
      * @throws                  Exception
      *
      * @creationDate    03/03/2017
      * @author          eFaktor     (fbv)
      */
-    private static function sync_status_managers_reporters($plugin,&$dblog) {
+    private static function sync_status_managers_reporters($plugin) {
         /* Variables    */
         $toSynchronize  = null;
         $rdomanagers    = null;
         $response       = null;
         $total          = null;
+        $infolog        = null;
         $start          = 0;
         $limit          = 1000;
 
         try {
             // Log
-            $dblog .= ' START Manager Reporter Synchronization (STATUS) . ' . "\n";
+            $infolog = new stdClass();
+            $infolog->action 		= 'START sync_status_managers_reporters';
+            $infolog->description 	= 'START sync_status_managers_reporters';
+            // Add log
+            self::$log[] = $infolog;
 
             // Managers and reporters to synchronize
             $total = FSKS_USERS::get_total_managers_reporters_to_synchronize();
+
+            // Log
+            $infolog = new stdClass();
+            $infolog->action 		= 'sync_status_managers_reporters';
+            $infolog->description 	= 'Total: ' . $total;
+            // Add log
+            self::$log[] = $infolog;
+
             if ($total) {
                 for ($i=0;$i<=$total;$i=$i+$limit) {
                     // To synchronize
@@ -959,6 +1305,13 @@ class STATUS_CRON {
 
                     // Call webs ervice
                     if ($toSynchronize) {
+                        // Log
+                        $infolog = new stdClass();
+                        $infolog->action 		= 'sync_status_managers_reporters';
+                        $infolog->description 	= 'To synchronize: ' . $toSynchronize;
+                        // Add log
+                        self::$log[] = $infolog;
+
                         $response = self::process_service($plugin,KS_MANAGER_REPORTER,array('managerReporter' => $toSynchronize));
                         if ($response) {
                             if ($response['error'] == '200') {
@@ -966,17 +1319,30 @@ class STATUS_CRON {
                                 FSKS_USERS::synchronize_manager_reporter_fs($rdomanagers,$response['managerReporter']);
                             }else {
                                 // Log
-                                $dblog  .= "ERROR WS: " . $response['message'] . "\n\n";
+                                $infolog = new stdClass();
+                                $infolog->action 		= 'sync_status_managers_reporters';
+                                $infolog->description 	= 'ERROR WS: ' . $response['message'];
+                                // Add log
+                                self::$log[] = $infolog;
                             }//if_no_error
                         }else {
-                            $dblog .= 'RESPONSE NOT VALID' . "\n";
+                            // Log
+                            $infolog = new stdClass();
+                            $infolog->action 		= 'sync_status_managers_reporters';
+                            $infolog->description 	= 'RESPONSE NOT VALID';
+                            // Add log
+                            self::$log[] = $infolog;
                         }//if_else_response
                     }//if_toSynchronize
                 }//for
             }//if_total
 
             // Log
-            $dblog .= ' FINISH Manager Reporter Synchronization (STATUS). ' . "\n";
+            $infolog = new stdClass();
+            $infolog->action 		= 'FINISH sync_status_managers_reporters';
+            $infolog->description 	= 'FINISH sync_status_managers_reporters';
+            // Add log
+            self::$log[] = $infolog;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -988,31 +1354,24 @@ class STATUS_CRON {
      * 
      * @param           Object  $plugin
      * @param           String  $industry
-     * @param           String  $dblog
      * 
      * @throws                  Exception
      * 
      * @creationDate    06/03/2017
      * @author          eFaktor     (fbv)
      */
-    private static function sync_status_users_accounts($plugin,$industry,&$dblog) {
+    private static function sync_status_users_accounts($plugin,$industry) {
         /* Variables */
 
         try {
-            // Log
-            $dblog .= ' START Users Accounts (STATUS) . ' . "\n";
-
             // First users to delete
-            self::sync_status_users_accounts_deleted($plugin,$industry,$dblog);
+            self::sync_status_users_accounts_deleted($plugin,$industry);
 
             // New users accounts
-            self::sync_status_new_users_accounts($plugin,$industry,$dblog);
+            self::sync_status_new_users_accounts($plugin,$industry);
 
             // Existing users accounts
-            self::sync_status_existing_users_accounts($plugin,$industry,$dblog);
-
-            // Log
-            $dblog .= ' FINISH Users Accounts (STATUS) . ' . "\n";
+            self::sync_status_existing_users_accounts($plugin,$industry);
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -1024,52 +1383,84 @@ class STATUS_CRON {
      * 
      * @param       Object  $plugin
      * @param       String  $industry
-     * @param       String  $dblog
      *
      * @throws             Exception
      *
      * @creationDate    07/03/2017
      * @author          eFaktor     (fbv)
      */
-    private static function sync_status_existing_users_accounts($plugin,$industry,&$dblog) {
+    private static function sync_status_existing_users_accounts($plugin,$industry) {
         /* Variables */
         $rdousers   = null;
         $lstusers   = null;
         $response   = null;
         $total      = null;
+        $infolog    = null;
         $start      = 0;
         $limit      = 1000;
 
         try {
             // Log
-            $dblog .= ' START Existing Users Accounts (STATUS) . ' . "\n";
+            $infolog = new stdClass();
+            $infolog->action 		= 'START sync_status_existing_users_accounts';
+            $infolog->description 	= 'START sync_status_existing_users_accounts';
+            // Add log
+            self::$log[] = $infolog;
 
             // get total users accounts
             $total = STATUS::get_total_status_existing_users_accounts();
+
+            // Log
+            $infolog = new stdClass();
+            $infolog->action 		= 'sync_status_existing_users_accounts';
+            $infolog->description 	= 'Total: ' . $total;
+            // Add log
+            self::$log[] = $infolog;
+
             if ($total) {
                 for ($i=0;$i<=$total;$i=$i+$limit) {
                     // Get users accounts
                     list($lstusers,$rdousers) = STATUS::get_status_existing_users_accounts($industry,$start,$limit);
+                    if ($lstusers) {
+                        // Log
+                        $infolog = new stdClass();
+                        $infolog->action 		= 'sync_status_existing_users_accounts';
+                        $infolog->description 	= 'To synchronize: ' . $lstusers;
+                        // Add log
+                        self::$log[] = $infolog;
 
-                    // Call web service
-                    $response = self::process_service($plugin,KS_SYNC_USER_ACCOUNT,array('usersAccounts' => $lstusers));
-
-                    if ($response) {
-                        if ($response['error'] == '200') {
-                            // Synchronize users accounts FS
-                            FSKS_USERS::synchronize_users_fs($rdousers,$response['usersAccounts']);
+                        // Call web service
+                        $response = self::process_service($plugin,KS_SYNC_USER_ACCOUNT,array('usersAccounts' => $lstusers));
+                        if ($response) {
+                            if ($response['error'] == '200') {
+                                // Synchronize users accounts FS
+                                FSKS_USERS::synchronize_users_fs($rdousers,$response['usersAccounts']);
+                            }else {
+                                // Log
+                                $infolog = new stdClass();
+                                $infolog->action 		= 'sync_status_existing_users_accounts';
+                                $infolog->description 	= 'Error WS: ' . $response['message'];
+                                // Add log
+                                self::$log[] = $infolog;
+                            }//if_no_error
                         }else {
                             // Log
-                            $dblog .= "Error WS: " . $response['message'] . "\n" ."\n";
-                        }//if_no_error
-                    }else {
-                        $dblog .= 'RESPONSE NOT VALID' . "\n";
-                    }//if_response
+                            $infolog = new stdClass();
+                            $infolog->action 		= 'sync_status_existing_users_accounts';
+                            $infolog->description 	= 'RESPONSE NOT VALID';
+                            // Add log
+                            self::$log[] = $infolog;
+                        }//if_response
+                    }//if_lstusers
                 }//for
             }//if_total
 
             // Log
-            $dblog .= ' FINISH Existing Users Accounts (STATUS) . ' . "\n";
+            $infolog = new stdClass();
+            $infolog->action 		= 'FINISH sync_status_existing_users_accounts';
+            $infolog->description 	= 'FINISH sync_status_existing_users_accounts';
+            // Add log
+            self::$log[] = $infolog;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -1081,52 +1472,84 @@ class STATUS_CRON {
      *
      * @param           Object  $plugin
      * @param           String  $industry
-     * @param           String  $dblog
      *
      * @throws                 Exception
      *
      * @creationDate    07/03/2017
      * @author          eFaktor     (fbv)
      */
-    private static function sync_status_new_users_accounts($plugin,$industry,&$dblog) {
+    private static function sync_status_new_users_accounts($plugin,$industry) {
         /* Variables */
         $rdousers   = null;
         $lstusers   = null;
         $response   = null;
         $total      = null;
+        $infolog    = null;
         $start      = 0;
         $limit      = 1000;
 
         try {
             // Log
-            $dblog .= ' START Users Accounts NEW (STATUS) . ' . "\n";
+            $infolog = new stdClass();
+            $infolog->action 		= 'START sync_status_new_users_accounts';
+            $infolog->description 	= 'START sync_status_new_users_accounts';
+            // Add log
+            self::$log[] = $infolog;
 
             // get total users accounts
             $total = STATUS::get_total_status_new_users_accounts();
+
+            // Log
+            $infolog = new stdClass();
+            $infolog->action 		= 'sync_status_new_users_accounts';
+            $infolog->description 	= 'Total: ' . $total;
+            // Add log
+            self::$log[] = $infolog;
             if ($total) {
                 for ($i=0;$i<=$total;$i=$i+$limit) {
                     // Get users accounts
                     list($lstusers,$rdousers) = STATUS::get_status_new_users_accounts($industry,$start,$limit);
+                    if ($lstusers) {
+                        // Log
+                        $infolog = new stdClass();
+                        $infolog->action 		= 'sync_status_new_users_accounts';
+                        $infolog->description 	= 'To Synchronize: ' . $lstusers;
+                        // Add log
+                        self::$log[] = $infolog;
 
-                    // Call web service
-                    $response = self::process_service($plugin,KS_SYNC_USER_ACCOUNT,array('usersAccounts' => $lstusers));
+                        // Call web service
+                        $response = self::process_service($plugin,KS_SYNC_USER_ACCOUNT,array('usersAccounts' => $lstusers));
 
-                    if ($response) {
-                        if ($response['error'] == '200') {
-                            // Synchronize users accounts FS
-                            FSKS_USERS::synchronize_users_fs($rdousers,$response['usersAccounts']);
+                        if ($response) {
+                            if ($response['error'] == '200') {
+                                // Synchronize users accounts FS
+                                FSKS_USERS::synchronize_users_fs($rdousers,$response['usersAccounts']);
+                            }else {
+                                // Log
+                                $infolog = new stdClass();
+                                $infolog->action 		= 'sync_status_new_users_accounts';
+                                $infolog->description 	= 'Error WS: ' . $response['message'];
+                                // Add log
+                                self::$log[] = $infolog;
+                            }//if_no_error
                         }else {
                             // Log
-                            $dblog .= "Error WS: " . $response['message'] . "\n" ."\n";
-                        }//if_no_error
-                    }else {
-                        $dblog .= 'RESPONSE NOT VALID' . "\n";
-                    }//if_response
+                            $infolog = new stdClass();
+                            $infolog->action 		= 'sync_status_new_users_accounts';
+                            $infolog->description 	= 'RESPONSE NOT VALID';
+                            // Add log
+                            self::$log[] = $infolog;
+                        }//if_response
+                    }
                 }//for
             }//if_total
 
             // Log
-            $dblog .= ' FINISH Users Accounts NEW (STATUS) . ' . "\n";
+            $infolog = new stdClass();
+            $infolog->action 		= 'FINISH sync_status_new_users_accounts';
+            $infolog->description 	= 'FINISH sync_status_new_users_accounts';
+            // Add log
+            self::$log[] = $infolog;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -1138,52 +1561,85 @@ class STATUS_CRON {
      * 
      * @param           Object  $plugin
      * @param           String  $industry
-     * @param           String  $dblog
      *
      * @throws                  Exception
      *
      * @creationDate    07/03/2017
      * @author          eFaktor     (fbv)
      */
-    private static function sync_status_users_accounts_deleted($plugin,$industry,&$dblog) {
+    private static function sync_status_users_accounts_deleted($plugin,$industry) {
         /* Variables */
         $rdousers   = null;
         $lstusers   = null;
         $response   = null;
         $total      = null;
+        $infolog    = null;
         $start      = 0;
         $limit      = 1000;
 
         try {
             // Log
-            $dblog .= ' START Users Accounts DELETED (STATUS) . ' . "\n";
+            $infolog = new stdClass();
+            $infolog->action 		= 'START sync_status_users_accounts_deleted';
+            $infolog->description 	= 'START sync_status_users_accounts_deleted';
+            // Add log
+            self::$log[] = $infolog;
 
             // get total users accounts
             $total = STATUS::get_status_total_users_accounts_deleted();
+
+            // Log
+            $infolog = new stdClass();
+            $infolog->action 		= 'sync_status_users_accounts_deleted';
+            $infolog->description 	= 'Total to delete: ' . $total;
+            // Add log
+            self::$log[] = $infolog;
+
             if ($total) {
                 for ($i=0;$i<=$total;$i=$i+$limit) {
                     // Get users accounts
                     list($lstusers,$rdousers) = STATUS::get_status_users_accounts_deleted($industry,$start,$limit);
+                    if ($lstusers) {
+                        // Log
+                        $infolog = new stdClass();
+                        $infolog->action 		= 'sync_status_users_accounts_deleted';
+                        $infolog->description 	= 'To synchronize: ' . $lstusers;
+                        // Add log
+                        self::$log[] = $infolog;
 
-                    // Call web service
-                    $response = self::process_service($plugin,KS_SYNC_USER_ACCOUNT,array('usersAccounts' => $lstusers));
+                        // Call web service
+                        $response = self::process_service($plugin,KS_SYNC_USER_ACCOUNT,array('usersAccounts' => $lstusers));
 
-                    if ($response) {
-                        if ($response['error'] == '200') {
-                            // Synchronize users accounts FS
-                            FSKS_USERS::synchronize_users_fs($rdousers,$response['usersAccounts']);
+                        if ($response) {
+                            if ($response['error'] == '200') {
+                                // Synchronize users accounts FS
+                                FSKS_USERS::synchronize_users_fs($rdousers,$response['usersAccounts']);
+                            }else {
+                                // Log
+                                $infolog = new stdClass();
+                                $infolog->action 		= 'sync_status_users_accounts_deleted';
+                                $infolog->description 	= 'Error WS: ' . $response['message'];
+                                // Add log
+                                self::$log[] = $infolog;
+                            }//if_no_error
                         }else {
                             // Log
-                            $dblog .= "Error WS: " . $response['message'] . "\n" ."\n";
-                        }//if_no_error
-                    }else {
-                        $dblog .= 'RESPONSE NOT VALID' . "\n";
-                    }//if_response
+                            $infolog = new stdClass();
+                            $infolog->action 		= 'sync_status_users_accounts_deleted';
+                            $infolog->description 	= 'RESPONSE NOT VALID';
+                            // Add log
+                            self::$log[] = $infolog;
+                        }//if_response
+                    }//if_lstusers
                 }//for
             }//if_total
-            
+
             // Log
-            $dblog .=' FINISH Users Accounts DELETED (STATUS) . ' . "\n";
+            $infolog = new stdClass();
+            $infolog->action 		= 'START sync_status_users_accounts_deleted';
+            $infolog->description 	= 'START sync_status_users_accounts_deleted';
+            // Add log
+            self::$log[] = $infolog;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -1200,26 +1656,18 @@ class STATUS_CRON {
      * @creationDate    05/03/2017
      * @author          eFaktor     (fbv)
      */
-    private static function sync_status_fs_organizations($plugin,&$dblog) {
+    private static function sync_status_fs_organizations($plugin) {
         /* Variables */
         
         try {
-            // Log
-            $dblog .= ' START FS Organizations Synchronization (STATUS) . ' . "\n";
-
-            // First new companies --> Send notifications
-            $dblog .= ' STATUS New companies. Notifications . ' . "\n";
+            // First new companies
             STATUS::synchronization_status_new_companies($plugin);
-            $dblog .= ' FINISH STATUS New companies. Notifications . ' . "\n";
 
             // Companies don't exists any more
-            self::synchronization_status_companies_no_exist($plugin,$dblog);
+            self::synchronization_status_companies_no_exist($plugin);
 
             // Existing companies
-            self::synchronization_status_existing_companies($plugin,$dblog);
-
-            // Log
-            $dblog .= ' FINISH FS Organizations Synchronization (STATUS) . ' . "\n";
+            self::synchronization_status_existing_companies($plugin);
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -1230,28 +1678,40 @@ class STATUS_CRON {
      * Synchronize companies that don't exist any more
      * 
      * @param           Object  $plugin
-     * @param           String  $dblog
      * 
      * @throws                  Exception
      * 
      * @creationDate    05/03/2017
      * @author          eFaktor     (fbv)
      */
-    private static function synchronization_status_companies_no_exist($plugin,&$dblog) {
+    private static function synchronization_status_companies_no_exist($plugin) {
         /* Variables */
         $rdocompanies   = null;
         $todelete       = null;
         $response       = null;
         $total          = null;
+        $infolog        = null;
         $start          = 0;
         $limit          = 1000;
         
         try {
             // Log
-            $dblog .= ' STATUS  Companies to delete . ' . "\n";
+            $infolog = new stdClass();
+            $infolog->action 		= 'START synchronization_status_companies_no_exist';
+            $infolog->description 	= 'START synchronization_status_companies_no_exist';
+            // Add log
+            self::$log[] = $infolog;
 
             // Get total
             $total = STATUS::get_status_total_companies_to_delete();
+
+            // Log
+            $infolog = new stdClass();
+            $infolog->action 		= 'synchronization_status_companies_no_exist';
+            $infolog->description 	= 'Total: ' . $total;
+            // Add log
+            self::$log[] = $infolog;
+
             if ($total) {
                 for ($i=0;$i<=$total;$i=$i+$limit) {
                     // Get companies to delete
@@ -1259,6 +1719,13 @@ class STATUS_CRON {
 
                     // Call webs service
                     if ($todelete) {
+                        // Log
+                        $infolog = new stdClass();
+                        $infolog->action 		= 'synchronization_status_companies_no_exist';
+                        $infolog->description 	= 'To synchronizer: ' . $todelete;
+                        // Add log
+                        self::$log[] = $infolog;
+
                         $params     = array('companiesFS' => $todelete);
                         $response   = self::process_service($plugin,KS_SYNC_FS_COMPANY,$params);
 
@@ -1266,18 +1733,31 @@ class STATUS_CRON {
                             if ($response['error'] == '200') {
                                 FSKS_COMPANY::synchronize_companies_ksfs($rdocompanies,$response['companies']);
                             }else {
-                                /* Log  */
-                                $dblog  .= "ERROR WS: " . $response['message'] . "\n\n";
+                                // Log
+                                $infolog = new stdClass();
+                                $infolog->action 		= 'synchronization_status_companies_no_exist';
+                                $infolog->description 	= 'ERROR WS: ' . $response['message'];
+                                // Add log
+                                self::$log[] = $infolog;
                             }//if_no_error
                         }else {
-                            $dblog .= 'RESPONSE NOT VALID' . "\n";
+                            // Log
+                            $infolog = new stdClass();
+                            $infolog->action 		= 'synchronization_status_companies_no_exist';
+                            $infolog->description 	= 'RESPONSE NOT VALID';
+                            // Add log
+                            self::$log[] = $infolog;
                         }//if_response
                     }//if_toSynchronize
                 }//for
             }//if_total
 
             // Log
-            $dblog .= ' FINISH STATUS  Companies to delete . ' . "\n";
+            $infolog = new stdClass();
+            $infolog->action 		= 'FINISH synchronization_status_companies_no_exist';
+            $infolog->description 	= 'FINISH synchronization_status_companies_no_exist';
+            // Add log
+            self::$log[] = $infolog;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -1287,28 +1767,40 @@ class STATUS_CRON {
      * Description
      * Synchronize status of existing companies
      * @param           Object  $plugin
-     * @param           String  $dblog
      *
      * @throws                  Exception
      *
      * @creationDate    05/03/2017
      * @author          eFaktor     (fbv)
      */
-    private static function synchronization_status_existing_companies($plugin,&$dblog) {
+    private static function synchronization_status_existing_companies($plugin) {
         /* Variables */
         $rdocompanies   = null;
         $toSynchronize  = null;
         $response       = null;
         $total          = null;
+        $infolog        = null;
         $start          = 0;
         $limit          = 1000;
 
         try {
             // Log
-            $dblog .= ' STATUS Existing companies . ' . "\n";
+            $infolog = new stdClass();
+            $infolog->action 		= 'START synchronization_status_existing_companies';
+            $infolog->description 	= 'START synchronization_status_existing_companies';
+            // Add log
+            self::$log[] = $infolog;
 
             // Get total
             $total = STATUS::get_total_status_existing_companies();
+
+            // Log
+            $infolog = new stdClass();
+            $infolog->action 		= 'synchronization_status_existing_companies';
+            $infolog->description 	= 'Total: ' . $total;
+            // Add log
+            self::$log[] = $infolog;
+
             if ($total) {
                 for ($i=0;$i<=$total;$i=$i+$limit) {
                     // Get companies to delete
@@ -1316,6 +1808,13 @@ class STATUS_CRON {
 
                     // Call webs service
                     if ($toSynchronize) {
+                        // Log
+                        $infolog = new stdClass();
+                        $infolog->action 		= 'synchronization_status_existing_companies';
+                        $infolog->description 	= 'To synchronize: ' . $toSynchronize;
+                        // Add log
+                        self::$log[] = $infolog;
+
                         $params     = array('companiesFS' => $toSynchronize);
                         $response   = self::process_service($plugin,KS_SYNC_FS_COMPANY,$params);
 
@@ -1323,18 +1822,31 @@ class STATUS_CRON {
                             if ($response['error'] == '200') {
                                 FSKS_COMPANY::synchronize_companies_ksfs($rdocompanies,$response['companies']);
                             }else {
-                                /* Log  */
-                                $dblog  .= "ERROR WS: " . $response['message'] . "\n\n";
+                                // Log
+                                $infolog = new stdClass();
+                                $infolog->action 		= 'synchronization_status_existing_companies';
+                                $infolog->description 	= 'ERROR WS: ' . $response['message'];
+                                // Add log
+                                self::$log[] = $infolog;
                             }//if_no_error
                         }else {
-                            $dblog .= "RESPONSE NOT VALID" . "\n";
+                            // Log
+                            $infolog = new stdClass();
+                            $infolog->action 		= 'synchronization_status_existing_companies';
+                            $infolog->description 	= 'RESPONSE NOT VALID';
+                            // Add log
+                            self::$log[] = $infolog;
                         }//if_response
                     }//if_toSynchronize
                 }//for
             }//if_total
 
             // Log
-            $dblog .= ' FINISH STATUS Existing companies . ' . "\n";
+            $infolog = new stdClass();
+            $infolog->action 		= 'FINISH synchronization_status_existing_companies';
+            $infolog->description 	= 'FINISH synchronization_status_existing_companies';
+            // Add log
+            self::$log[] = $infolog;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -1345,21 +1857,25 @@ class STATUS_CRON {
      * Synchronize status jobroles
      *
      * @param           Object  $plugin
-     * @param           String  $dblog
      * 
      * @throws                  Exception
      * 
      * @creationDate    06/03/2017
      * @author          eFaktor     (fbv)
      */
-    private static function sync_status_fs_jobroles($plugin,&$dblog) {
+    private static function sync_status_fs_jobroles($plugin) {
         /* Variables */
-        $tomail         = null;
-        $notifyto       = null;
-        
+        $tomail     = null;
+        $notifyto   = null;
+        $infolog    = null;
+
         try {
             // Log
-            $dblog .=  ' START Sync Jobroles (STATUS) . ' . "\n";
+            $infolog = new stdClass();
+            $infolog->action 		= 'START sync_status_fs_jobroles';
+            $infolog->description 	= 'START sync_status_fs_jobroles';
+            // Add log
+            self::$log[] = $infolog;
 
             // Notifications
             if ($plugin->mail_notification) {
@@ -1372,14 +1888,32 @@ class STATUS_CRON {
                 $toMail = FSKS_JOBROLES::jobroles_fs_tosynchronize_mailing();
                 if ($toMail) {
                     STATUS::send_notification(SYNC_JR,$tomail,$notifyto);
+
+                    // Log
+                    $infolog = new stdClass();
+                    $infolog->action 		= 'sync_status_fs_jobroles';
+                    $infolog->description 	= 'Send notificaations';
+                    // Add log
+                    self::$log[] = $infolog;
                 }//If_toMail
                 
                 // Mark as imported the existing ones
                 STATUS::sync_status_existing_jobroles();
+
+                // Log
+                $infolog = new stdClass();
+                $infolog->action 		= 'sync_status_fs_jobroles';
+                $infolog->description 	= 'Mark as imported';
+                // Add log
+                self::$log[] = $infolog;
             }//if_notigyTo
-            
+
             // Log
-            $dblog .= ' FINISH Sync Jobroles (STATUS) . ' . "\n";
+            $infolog = new stdClass();
+            $infolog->action 		= 'FINISH sync_status_fs_jobroles';
+            $infolog->description 	= 'FINISH sync_status_fs_jobroles';
+            // Add log
+            self::$log[] = $infolog;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch

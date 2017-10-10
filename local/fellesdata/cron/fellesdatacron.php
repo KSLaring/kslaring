@@ -50,7 +50,6 @@ define('TEST_FS_UNMAP_ORGANIZATION',16);
 
 class FELLESDATA_CRON {
     protected static $log           = null;
-    protected static $time          = null;
 
     /**********/
     /* PUBLIC */
@@ -60,18 +59,20 @@ class FELLESDATA_CRON {
         /* Variables    */
         global $SESSION;
         global $CFG;
-        $dblog              = null;
-        $time               = null;
         $suspicious_path    = null;
 
         try {
             unset($SESSION->manual);
 
-            // Local time
-            $time = time();
+            // Start log
+            self::$log    =    array();
 
-            // Start Log
-            $dblog = $time . ' (' . userdate(time(),'%d.%m.%Y %H:%M', 99, false) . ') - START FELLESDATA CRON' . "\n";
+            // Log
+            $infolog = new stdClass();
+            $infolog->action      = 'Cron ' . userdate(time(),'%d.%m.%Y %H:%M', 99, false);
+            $infolog->description = 'START Fellesdata Cron';
+            // Add log
+            self::$log[] = $infolog;
 
             // Suspicious data
             $suspicious_path = $CFG->dataroot . '/' . $plugin->suspicious_path;
@@ -83,45 +84,56 @@ class FELLESDATA_CRON {
 
             // Unmap process
             if (!$fstExecution) {
-                self::unmap_organizations($plugin,KS_UNMAP_COMPANY,$dblog);
+                self::unmap_organizations($plugin,KS_UNMAP_COMPANY);
             }//fstExecution_tounmap
 
             // Import KS
-            self::import_ks($plugin,$dblog);
+            self::import_ks($plugin);
 
             // Import fellesdata
-            self::import_fellesdata($plugin,$dblog);
+            self::import_fellesdata($plugin);
 
             // Users accounts synchornization
-            self::users_fs_synchronization($plugin,$dblog);
+            self::users_fs_synchronization($plugin);
 
             // Companies synchornization
-            self::companies_fs_synchronization($plugin,$fstExecution,$dblog);
+            self::companies_fs_synchronization($plugin,$fstExecution);
 
             // Synchronize companies moved
-            self::companies_moved_fs_synchronization($plugin,$fstExecution,$dblog);
+            self::companies_moved_fs_synchronization($plugin,$fstExecution);
 
             // Job roles to map
-            self::jobroles_fs_to_map($plugin,$dblog);
+            self::jobroles_fs_to_map($plugin);
 
             // Competence synchronization
             if (!$fstExecution) {
-                self::competence_synchronization($plugin,$dblog);
+                self::competence_synchronization($plugin);
             }//if_fstExecution_competence
 
             // Log
-            $dblog .= $time . ' (' . userdate(time(),'%d.%m.%Y %H:%M', 99, false) . ') - FINISH FELLESDATA CRON' . "\n\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+            $infolog = new stdClass();
+            $infolog->action      = 'Cron ' . userdate(time(),'%d.%m.%Y %H:%M', 99, false);
+            $infolog->description = 'FINSIH Fellesdata Cron';
+            // Add log
+            self::$log[] = $infolog;
+
+            // Write log
+            FS_CRON::write_fellesdata_log(self::$log);
         }catch (Exception $ex) {
             // Send error notification
             FS_CRON::send_notification_error_process($plugin,'TARDIS');
             FS_CRON::deactivate_cron('fellesdata');
 
-            // Finish log - error
-            $dblog .= "ERROR: " . "\n";
-            $dblog .= $ex->getTraceAsString() . "\n" ."\n";
-            $dblog .= $time . ' (' . userdate(time(),'%d.%m.%Y %H:%M', 99, false) . ') - ERROR FINISH FELLESDATA CRON' . "\n\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+            // Log
+            $infolog = new stdClass();
+            $infolog->action      = 'ERROR Cron ' . userdate(time(),'%d.%m.%Y %H:%M', 99, false);
+            $infolog->description = 'FINISH ERROR: ';
+            $infolog->description .= $ex->getTraceAsString();
+            // Add log
+            self::$log[] = $infolog;
+
+            // Write log
+            FS_CRON::write_fellesdata_log(self::$log);
 
             throw $ex;
         }//try_catch
@@ -135,8 +147,6 @@ class FELLESDATA_CRON {
         $infolog        = null;
 
         try {
-            // Local time
-            self::$time = time();
             // Start log
             self::$log    =    array();
 
@@ -259,7 +269,6 @@ class FELLESDATA_CRON {
             $infolog->description   = 'FINISH Fellesdata Manual';
             // Add log
             self::$log[] = $infolog;
-            asort(self::$log);
 
             foreach (self::$log as $info) {
                 echo $info->description . "</br>";
@@ -277,6 +286,10 @@ class FELLESDATA_CRON {
             self::$log[] = $infolog;
 
             echo " ERROR: " . $ex->getTraceAsString() . "</br>";
+
+            // Write log
+            FS_CRON::write_fellesdata_log(self::$log);
+
             throw $ex;
         }//try_catch
     }//cron_manual
@@ -290,31 +303,24 @@ class FELLESDATA_CRON {
      * Competence synchronization
      *
      * @param       object  $plugin
-     * @param       String  $dblog
      *
      * @throws              Exception
      *
      * @creationDate        20/02/2017
      * @author              eFaktor     (fbv)
      */
-    private static function competence_synchronization($plugin,&$dblog) {
+    private static function competence_synchronization($plugin) {
         /* Variables */
 
         try {
-            // Log
-            $dblog .= 'START Competence Synchronization ' . "\n";
-
             // Synchronization Managers && Reporters
-            self::manager_reporter_synchronization($plugin,KS_MANAGER_REPORTER,$dblog);
+            self::manager_reporter_synchronization($plugin,KS_MANAGER_REPORTER);
 
             // Synchronization User Competence JobRole  -- Add/Update
-            self::user_competence_synchronization($plugin,KS_USER_COMPETENCE,$dblog);
+            self::user_competence_synchronization($plugin,KS_USER_COMPETENCE);
 
             // Synchronization User Competence JobRole  -- Delete
-            self::user_competence_synchronization($plugin,KS_USER_COMPETENCE,$dblog,true);
-
-            // Log
-            $dblog .= 'FINISH Competence Synchronization ' . "\n";
+            self::user_competence_synchronization($plugin,KS_USER_COMPETENCE,true);
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -325,28 +331,21 @@ class FELLESDATA_CRON {
      * Import data from KS site
      *
      * @param           Object $pluginInfo
-     * @param           String $dblog
      *
      * @throws          Exception
      *
      * @creationDate    02/02/0216
      * @author          eFaktor     (fbv)
      */
-    private static function import_ks($pluginInfo,&$dblog) {
+    private static function import_ks($pluginInfo) {
         /* Variables    */
 
         try {
-            // Log
-            $dblog .= " START Import KS Organization/Job roles " . "\n";
-
             // Import organization structure
-            self::organization_structure($pluginInfo,$dblog);
+            self::organization_structure($pluginInfo);
 
             // Import jobroles
-            self::import_ks_jobroles($pluginInfo,$dblog);
-
-            // Log
-            $dblog .= " FINISH Import KS Organization/Job roles " . "\n";
+            self::import_ks_jobroles($pluginInfo);
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -536,8 +535,16 @@ class FELLESDATA_CRON {
         $domain         = null;
         $token          = null;
         $server         = null;
+        $infolog        = null;
 
         try {
+            // Log
+            $infolog = new stdClass();
+            $infolog->action 		= 'START process_ks_service';
+            $infolog->description 	= 'START process_ks_service: ' . $service;
+            // Add log
+            self::$log[] = $infolog;
+
             // Data to call Service
             $domain     = $pluginInfo->ks_point;
             $token      = $pluginInfo->kss_token;
@@ -562,6 +569,13 @@ class FELLESDATA_CRON {
 
             if( $response === false ) {
                 $error = curl_error( $ch );
+
+                // Log
+                $infolog = new stdClass();
+                $infolog->action 		= 'process_ks_service - Service: ' . $service;
+                $infolog->description 	= 'ERROR: ' . $error;
+                // Add log
+                self::$log[] = $infolog;
             }
 
             curl_close( $ch );
@@ -570,8 +584,22 @@ class FELLESDATA_CRON {
 
             // Conver to array
             if (!is_array($result)) {
+                // Log
+                $infolog = new stdClass();
+                $infolog->action 		= 'process_ks_service - Service: ' . $service;
+                $infolog->description 	= 'RESULT: ' . $result;
+                // Add log
+                self::$log[] = $infolog;
+
                 $result = (Array)$result;
             }
+
+            // Log
+            $infolog = new stdClass();
+            $infolog->action 		= 'FINISH process_ks_service';
+            $infolog->description 	= 'FINSIH process_ks_service: ' . $service;
+            // Add log
+            self::$log[] = $infolog;
 
             return $result;
         }catch (Exception $ex) {
@@ -623,48 +651,39 @@ class FELLESDATA_CRON {
      * Import data from fellesdata
      *
      * @param           Object $pluginInfo
-     * @param           String $dblog
      *
      * @throws          Exception
      *
      * @creationDate    02/02/2016
      * @author          eFaktor     (fbv)
      */
-    private static function import_fellesdata($pluginInfo,&$dblog) {
+    private static function import_fellesdata($pluginInfo) {
         /* Variables    */
 
         try {
-            // Log
-            $dblog .= 'START Import Fellesdata Data ' . "\n";
-
             // Import FS Users
-            self::import_fs_users($pluginInfo,$dblog);
+            self::import_fs_users($pluginInfo);
 
             // Import FS Companies
-            self::import_fs_orgstructure($pluginInfo,$dblog);
+            self::import_fs_orgstructure($pluginInfo);
 
             // Import FS Job roles
-            self::import_fs_jobroles($pluginInfo,$dblog);
+            self::import_fs_jobroles($pluginInfo);
 
             // Import FS User Competence
-            self::import_fs_managers_reporters($pluginInfo,$dblog);
+            self::import_fs_managers_reporters($pluginInfo);
 
             // Import FS User Competence JR
-            self::import_fs_user_competence_jr($pluginInfo,$dblog);
+            self::import_fs_user_competence_jr($pluginInfo);
 
             // Send suspicious notifications
             if ($pluginInfo->suspicious_path) {
                 // Send Notifications
                 suspicious::send_suspicious_notifications($pluginInfo);
-                $dblog .= 'SEND SUSPICIOUS NOTIFICATIONS ' . "\n";
 
                 // Send Reminder
                 suspicious::send_suspicious_notifications($pluginInfo,true);
-                $dblog .= 'SEND SUSPICIOUS REMAINDER NOTIFICATIONS ' . "\n";
             }//suspicious_path
-
-            // Log
-            $dblog .= 'FINISH Import Fellesdata Data ' . "\n";
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -699,7 +718,7 @@ class FELLESDATA_CRON {
             self::$log[] = $infolog;
 
             // Call web service
-            $fsResponse = self::process_tradis_service($plugin,TRADIS_FS_USERS,$dblog);
+            $fsResponse = self::process_tradis_service($plugin,TRADIS_FS_USERS);
 
             // Import data into temporary tables
             if ($fsResponse) {
@@ -819,7 +838,7 @@ class FELLESDATA_CRON {
             self::$log[] = $infolog;
 
             // Call web service
-            $fsResponse = self::process_tradis_service($plugin,TRADIS_FS_COMPANIES,$dblog);
+            $fsResponse = self::process_tradis_service($plugin,TRADIS_FS_COMPANIES);
 
             // Import data into temporary tables
             if ($fsResponse) {
@@ -932,7 +951,7 @@ class FELLESDATA_CRON {
             self::$log[] = $infolog;
 
             // Call web service
-            $fsResponse = self::process_tradis_service($plugin,TRADIS_FS_JOBROLES,$dblog);
+            $fsResponse = self::process_tradis_service($plugin,TRADIS_FS_JOBROLES);
 
             // Import data into temporary tables
             if ($fsResponse) {
@@ -1050,7 +1069,7 @@ class FELLESDATA_CRON {
             self::$log[] = $infolog;
 
             // Call web service
-            $fsManagersReporters = self::process_tradis_service($plugin,TRADIS_FS_MANAGERS_REPORTERS,$dblog);
+            $fsManagersReporters = self::process_tradis_service($plugin,TRADIS_FS_MANAGERS_REPORTERS);
 
             // Import data into temporary tables
             if ($fsManagersReporters) {
@@ -1170,7 +1189,7 @@ class FELLESDATA_CRON {
             self::$log[] = $infolog;
             
             // Call web service
-            $usersCompetenceJR = self::process_tradis_service($plugin,TRADIS_FS_USERS_JOBROLES,$dblog);
+            $usersCompetenceJR = self::process_tradis_service($plugin,TRADIS_FS_USERS_JOBROLES);
 
             // Import data into temporary tables
             if ($usersCompetenceJR) {
@@ -1267,8 +1286,6 @@ class FELLESDATA_CRON {
      *
      * @param           $pluginInfo
      * @param           $service
-     * @param           $dblog
-     * @param           $last
      *
      * @return          mixed|null
      * @throws          Exception
@@ -1276,7 +1293,7 @@ class FELLESDATA_CRON {
      * @creationDate    02/02/2016
      * @author          eFaktor     (fbv)
      */
-    private static function process_tradis_service($pluginInfo,$service,&$dblog,$last = false) {
+    private static function process_tradis_service($pluginInfo,$service) {
         /* Variables    */
         global $CFG;
         $dir            = null;
@@ -1290,24 +1307,24 @@ class FELLESDATA_CRON {
         $date           = null;
         $admin          = null;
         $time           = null;
+        $infolog        = null;
         
         try {
             // Local time
             $time = time();
+
+            // Log
+            $infolog = new stdClass();
+            $infolog->action 		= 'START process_tradis_service';
+            $infolog->description 	= 'START process_tradis_service Service : ' . $service;
+            // Add log
+            self::$log[] = $infolog;
 
             // Check if exists temporary directory
             $dir = $CFG->dataroot . '/fellesdata';
             if (!file_exists($dir)) {
                 mkdir($dir);
             }//if_dir
-
-            /**
-            // Backup
-            $backup = $CFG->dataroot . '/fellesdata/backup';
-            if (!file_exists($backup)) {
-                mkdir($backup);
-            }//if_backup
-            **/
 
             // Original files
             $original = $CFG->dataroot . '/fellesdata/original';
@@ -1316,19 +1333,14 @@ class FELLESDATA_CRON {
             }//if_backup
 
             // Get parameters service
+            // To
             $toDate     = mktime(1, 60, 0, date("m"), date("d"), date("Y"));
             $toDate     = gmdate('Y-m-d\TH:i:s\Z',$toDate);
-
-            if ($last) {
-                $fromDate = gmdate('Y-m-d\TH:i:s\Z',0);
-            }else {
-                // No last status
-                $admin      = get_admin();
-                $date       = usergetdate($pluginInfo->lastexecution, $admin->timezone);
-                $fromDate   = mktime(0, 0, 0, $date['mon'], $date['mday']- $pluginInfo->fs_days, $date['year']);
-                $fromDate   = gmdate('Y-m-d\TH:i:s\Z',$fromDate);
-            }//if_last
-
+            // From
+            $admin      = get_admin();
+            $date       = usergetdate($pluginInfo->lastexecution, $admin->timezone);
+            $fromDate   = mktime(0, 0, 0, $date['mon'], $date['mday']- $pluginInfo->fs_days, $date['year']);
+            $fromDate   = gmdate('Y-m-d\TH:i:s\Z',$fromDate);
 
             // Build url end point
             $urlTradis = $pluginInfo->fs_point . '/' . $service . '?fromDate=' . $fromDate . '&toDate=' . $toDate;
@@ -1360,28 +1372,42 @@ class FELLESDATA_CRON {
             fwrite($responseFile,$response);
             fclose($responseFile);
 
-            // Format data
-            if ($response === false) {
+            if( $response === false ) {
+                $error = curl_error( $ch );
+
                 // Send notification
                 FS_CRON::send_notifications_service($pluginInfo,'FS',$service);
 
                 // Log
-                $dblog .=  ' ERROR RESPONSE TARDIS - NULL OBJECT . ' . "\n";
-                return null;
-            }else if ($response == null){
+                $infolog = new stdClass();
+                $infolog->action 		= 'process_tradis_service - Service: ' . $service;
+                $infolog->description 	= 'ERROR: ' . $error;
+                // Add log
+                self::$log[] = $infolog;
+
+                return false;
+            }else if ($response == null) {
                 // Log
-                $dblog .=  ' ERROR RESPONSE TARDIS - NULL OBJECT . ' . "\n";
-                return null;
+                $infolog = new stdClass();
+                $infolog->action 		= 'process_tradis_service - Service: ' . $service;
+                $infolog->description 	= 'ERROR RESPONSE TARDIS - NULL OBJECT  ';
+                // Add log
+                self::$log[] = $infolog;
+
+                return false;
             }else if (isset($response->status) && $response->status != "200") {
                 // Send notification
                 FS_CRON::send_notifications_service($pluginInfo,'FS',$service);
 
                 // Log
-                $dblog .=  ' ERROR RESPONSE TARDIS . ' . "\n";
-                $dblog .= $response->message . "\n\n";
-                $dblog .= "\n" . $response . "\n";
+                $infolog = new stdClass();
+                $infolog->action 		= 'process_tradis_service - Service: ' . $service;
+                $infolog->description 	= 'ERROR RESPONSE TARDIS : ' . $response->message;
+                $infolog->description  .= $response;
+                // Add log
+                self::$log[] = $infolog;
 
-                return null;
+                return false;
             }else {
                 // Check the file content
                 $index = strpos($response, 'html');
@@ -1390,25 +1416,29 @@ class FELLESDATA_CRON {
                     FS_CRON::send_notifications_service($pluginInfo,'FS',$service);
 
                     // Log
-                    $dblog .=  ' ERROR RESPONSE TARDIS . ' . "\n";
-                    $dblog .= "\n" . $response . "\n";
+                    $infolog = new stdClass();
+                    $infolog->action 		= 'process_tradis_service - Service: ' . $service;
+                    $infolog->description 	= 'ERROR RESPONSE TARDIS : ';
+                    $infolog->description  .= $response;
+                    // Add log
+                    self::$log[] = $infolog;
 
-                    return null;
+                    return false;
                 } else {
                     $index = strpos($response,'changeType');
                     if (!$index) {
                         // Log
-                        $dblog .=  ' ERROR RESPONSE TARDIS - EMPTY FILE . ' . "\n";
-                        return null;
+                        $infolog = new stdClass();
+                        $infolog->action 		= 'process_tradis_service - Service: ' . $service;
+                        $infolog->description 	= 'ERROR RESPONSE TARDIS - EMPTY FILE';
+                        $infolog->description  .= $response;
+                        // Add log
+                        self::$log[] = $infolog;
+
+                        return false;
                     }else {
                         // Clean all response
                         $pathFile = $dir . '/' . $service . '.txt';
-                        if (file_exists($pathFile)) {
-                            // Move the file to the new directory
-                            copy($pathFile,$backup . '/' . $service . '_' . $time . '.txt');
-
-                            unlink($pathFile);
-                        }
 
                         // Remove bad characters
                         $content = str_replace('\"','"',$response);
@@ -1424,7 +1454,7 @@ class FELLESDATA_CRON {
 
                         return true;
                     }
-                }//if_else
+                }//if_else_index
             }//if_response
         }catch (Exception $ex) {
             // Send notification
