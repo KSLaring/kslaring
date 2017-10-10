@@ -118,6 +118,8 @@ class Fellesdata_Install {
             self::ImpUsers_FSTable($dbMan);
             self::fs_imp_users_log($dbMan);
             self::fs_users_sync_log($dbMan);
+
+            self::fellesdata_log_table($dbMan);
         }catch (Exception $ex) {
             /* Delete Tables    */
             self::DeleteFellesdata_Tables($dbMan);
@@ -444,7 +446,7 @@ class Fellesdata_Install {
             // action
             $tbl->add_field('action',XMLDB_TYPE_CHAR,'25',null, XMLDB_NOTNULL, null,null);
             // time sent
-            $tbl->add_field('timesent',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
+            $tbl->add_field('timereceived',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
 
             // Keys
             $tbl->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
@@ -452,7 +454,7 @@ class Fellesdata_Install {
             $tbl->add_index('org_enhet_id',XMLDB_INDEX_NOTUNIQUE,array('org_enhet_id'));
             $tbl->add_index('org_nivaa',XMLDB_INDEX_NOTUNIQUE,array('org_nivaa'));
             $tbl->add_index('org_enhet_over',XMLDB_INDEX_NOTUNIQUE,array('org_enhet_over'));
-            $tbl->add_index('timesent',XMLDB_INDEX_NOTUNIQUE,array('timesent'));
+            $tbl->add_index('timereceived',XMLDB_INDEX_NOTUNIQUE,array('timereceived'));
 
             if (!$dbman->table_exists('fs_imp_company_log')) {
                 $dbman->create_table($tbl);
@@ -544,13 +546,13 @@ class Fellesdata_Install {
                 // action           --> Action to apply
                 $tbl->add_field('action',XMLDB_TYPE_CHAR,'25',null, XMLDB_NOTNULL, null,null);
                 // time sent
-                $tbl->add_field('timesent',XMLDB_TYPE_INTEGER,'10',null, null, null,null);
+                $tbl->add_field('timereceived',XMLDB_TYPE_INTEGER,'10',null, null, null,null);
 
                 // Keys
                 $tbl->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
                 // Index
                 $tbl->add_index('stillingskode',XMLDB_INDEX_NOTUNIQUE,array('stillingskode'));
-                $tbl->add_index('timesent',XMLDB_INDEX_NOTUNIQUE,array('timesent'));
+                $tbl->add_index('timereceived',XMLDB_INDEX_NOTUNIQUE,array('timereceived'));
 
                 // Create table
                 $dbman->create_table($tbl);
@@ -717,7 +719,7 @@ class Fellesdata_Install {
                 // action
                 $tbl->add_field('action',XMLDB_TYPE_CHAR,'25',null, XMLDB_NOTNULL, null,null);
                 // time sent
-                $tbl->add_field('timesent',XMLDB_TYPE_INTEGER,'10',null, null, null,null);
+                $tbl->add_field('timereceived',XMLDB_TYPE_INTEGER,'10',null, null, null,null);
 
                 // Keys
                 $tbl->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
@@ -725,7 +727,7 @@ class Fellesdata_Install {
                 $tbl->add_index('fodselsnr',XMLDB_INDEX_NOTUNIQUE,array('fodselsnr'));
                 $tbl->add_index('org_enhet_id',XMLDB_INDEX_NOTUNIQUE,array('org_enhet_id'));
                 $tbl->add_index('stillingskode',XMLDB_INDEX_NOTUNIQUE,array('stillingskode'));
-                $tbl->add_index('timesent',XMLDB_INDEX_NOTUNIQUE,array('timesent'));
+                $tbl->add_index('timereceived',XMLDB_INDEX_NOTUNIQUE,array('timereceived'));
 
                 // Create table
                 $dbman->create_table($tbl);
@@ -822,7 +824,7 @@ class Fellesdata_Install {
                 // action --> Action to apply
                 $tbl->add_field('action',XMLDB_TYPE_CHAR,'25',null, XMLDB_NOTNULL, null,null);
                 // time sent
-                $tbl->add_field('timesent',XMLDB_TYPE_INTEGER,'10',null, null, null,null);
+                $tbl->add_field('timereceived',XMLDB_TYPE_INTEGER,'10',null, null, null,null);
 
                 // Keys
                 $tbl->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
@@ -830,7 +832,7 @@ class Fellesdata_Install {
                 $tbl->add_index('fodselsnr',XMLDB_INDEX_NOTUNIQUE,array('fodselsnr'));
                 $tbl->add_index('org_enhet_id',XMLDB_INDEX_NOTUNIQUE,array('org_enhet_id'));
                 $tbl->add_index('org_nivaa',XMLDB_INDEX_NOTUNIQUE,array('org_nivaa'));
-                $tbl->add_index('timesent',XMLDB_INDEX_NOTUNIQUE,array('timesent'));
+                $tbl->add_index('timereceived',XMLDB_INDEX_NOTUNIQUE,array('timereceived'));
 
                 // Create table
                 $dbman->create_table($tbl);
@@ -937,13 +939,13 @@ class Fellesdata_Install {
                 // action
                 $tbl->add_field('action',XMLDB_TYPE_CHAR,'50',null, XMLDB_NOTNULL, null,null);
                 // time sent
-                $tbl->add_field('timesent',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
+                $tbl->add_field('timereceived',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
 
                 // Keys
                 $tbl->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
                 // Index
                 $tbl->add_index('fodselsnr',XMLDB_INDEX_NOTUNIQUE,array('fodselsnr'));
-                $tbl->add_index('timesent',XMLDB_INDEX_NOTUNIQUE,array('timesent'));
+                $tbl->add_index('timereceived',XMLDB_INDEX_NOTUNIQUE,array('timereceived'));
 
                 // Crete table
                 $dbman->create_table($tbl);
@@ -1008,6 +1010,48 @@ class Fellesdata_Install {
             throw $ex;
         }//try_catch
     }//fs_users_sync_log
+
+    /**
+     * Description
+     * Fellesdata generic log
+     *
+     * @param           $dbman
+     *
+     * @throws          Exception
+     *
+     * @creationDate    10/10/2017
+     * @author          eFaktor     (fbv)
+     */
+    private static function fellesdata_log_table($dbman) {
+        /* Variables */
+        $tbl = null;
+
+        try {
+            if (!$dbman->table_exists('fs_fellesdata_log')) {
+                $tbl = new xmldb_table('fs_fellesdata_log');
+
+                // Fields
+                // Id --> primary key
+                $tbl->add_field('id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
+                // action
+                $tbl->add_field('action',XMLDB_TYPE_CHAR,'250',null, null, null,null);
+                // description
+                $tbl->add_field('description',XMLDB_TYPE_TEXT,null,null, null, null,null);
+                // completion
+                $tbl->add_field('timecreated',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
+
+                // Adding keys, index, foreing keys
+                $tbl->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+                $tbl->add_key('timecreated',XMLDB_INDEX_NOTUNIQUE,array('timecreated'));
+                $tbl->add_key('action',XMLDB_INDEX_NOTUNIQUE,array('action'));
+
+                // Crete table
+                $dbman->create_table($tbl);
+            }
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//fellesdata_log_table
 
     /**
      * @param           $dbMan

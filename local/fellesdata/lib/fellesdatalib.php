@@ -74,6 +74,35 @@ define('CLEAN_COMPETENCE',1);
 class FS_CRON {
     /**
      * Description
+     * Write fellesdata log
+     *
+     * @param           $log
+     *
+     * @throws          Exception
+     *
+     * @creationDate    10/10/2017
+     * @author          eFaktor     (fbv)
+     */
+    public static function write_fellesdata_log($log) {
+        /* Variables */
+        global $DB;
+        $info   = null;
+        $time   = null;
+        try {
+            // Local time
+            $time = time();
+
+            foreach ($log as $info) {
+                $info->timecreated = $time;
+                $DB->insert_record('fs_fellesdata_log',$info);
+            }//for_log
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//write_fellesdata_log
+
+    /**
+     * Description
      * Check if the process can be executed/triggered
      *
      * @return          bool
@@ -3193,6 +3222,8 @@ class FS {
         $lineContent    = null;
         $toSave         = array();
         $time           = null;
+        $log            = null;
+        $toLog          = array();
 
         try {
             // Local time
@@ -3241,9 +3272,19 @@ class FS {
 
                     // Add Record
                     if ($newEntry) {
+                        // Lower case for the keys
+                        $aux = (Array)$newEntry;
+                        $aux = array_change_key_case($aux);
+                        // Convert to object again
+                        $newEntry = (Object)$aux;
                         $newEntry->timeimport   = $time;
                         $newEntry->timemodified = $time;
                         $toSave[$key] = $newEntry;
+
+                        // Log historical
+                        $log = (Object)$aux;
+                        $log->timereceived  = $time;
+                        $toLog[$key]        = $log;
                     }
                 }//ifLineContent
             }//for
@@ -3252,7 +3293,7 @@ class FS {
                 switch ($type) {
                     case IMP_USERS:
                         // FS Users
-                        self::import_temporary_fs_users($toSave);
+                        self::import_temporary_fs_users($toSave,$toLog);
 
                         // Fake eMails
                         self::update_fake_mails();
@@ -3262,25 +3303,25 @@ class FS {
 
                     case IMP_COMPANIES:
                         // FS Companies
-                        self::import_temporary_fs_company($toSave);
+                        self::import_temporary_fs_company($toSave,$toLog);
 
                         break;
 
                     case IMP_JOBROLES:
                         // FS JOB ROLES
-                        self::import_temporary_fs_jobroles($toSave);
+                        self::import_temporary_fs_jobroles($toSave,$toLog);
 
                         break;
 
                     case IMP_MANAGERS_REPORTERS:
                         // Managers Reporters
-                        self::import_temporary_managers_reporters($toSave);
+                        self::import_temporary_managers_reporters($toSave,$toLog);
 
                         break;
 
                     case IMP_COMPETENCE_JR:
                         // Competence Job Role
-                        self::import_temporary_competence_jobrole($toSave);
+                        self::import_temporary_competence_jobrole($toSave,$toLog);
 
                         break;
                 }//type
@@ -3303,14 +3344,11 @@ class FS {
      * @creationDate    04/05/2017
      * @author          eFaktor     (fbv)
      */
-    public static function clean_temporary_fellesdata($type,$plugin=null) {
+    public static function clean_temporary_fellesdata($type) {
         /* Variables */
         global $DB;
         $sql    = null;
         $time   = null;
-
-        // Local time
-        $time = time();
 
         // Start transaction
         $trans = $DB->start_delegated_transaction();
@@ -3324,24 +3362,8 @@ class FS {
                     break;
 
                 case IMP_COMPANIES:
-                    // FS Companies
-                    // move data to imp_company_log
-                    $fields = "id,org_enhet_id,org_nivaa,org_navn,org_enhet_over,privat,ansvar,tjeneste,adresse1,adresse2,adresse3,postnr,poststed,epost,action";
-                    $rdo = $DB->get_records('fs_imp_company',null,'id',$fields);
-                    if ($rdo) {
-                        foreach ($rdo as $instance) {
-                            $instance->timesent = $time;
-
-                            // Move log(historical) table
-                            $DB->insert_record('fs_imp_company_log',$instance);
-
-                            // Delete
-                            $DB->delete_records('fs_imp_company',array('id' =>$instance->id));
-                        }//for_Rdo
-                    }//if_rdo
-
                     // Delete
-                    //$DB->delete_records('fs_imp_company');
+                    $DB->delete_records('fs_imp_company');
 
                     break;
 
@@ -3423,13 +3445,14 @@ class FS {
      * Save FS users in temporary tables before the synchronization
      *
      * @param           $data
+     * @param           $log
      *
      * @throws          Exception
      *
      * @creationDate    02/02/2016
      * @author          eFaktor     (fbv)
      */
-    private static  function import_temporary_fs_users($data) {
+    private static  function import_temporary_fs_users($data,$log) {
         /* Variables    */
         global $DB;
         $infoUser   = null;
@@ -3443,6 +3466,8 @@ class FS {
         try {
             // Execute
             $DB->insert_records('fs_imp_users',$data);
+            // Log /historical
+            $DB->insert_records('fs_imp_users_log',$log);
 
             // Commit
             $trans->allow_commit();
@@ -3504,13 +3529,14 @@ class FS {
      * Save FS companies in temporary tables before the synchronization
      *
      * @param           $data
+     * @param           $log
      *
      * @throws          Exception
      *
      * @creationDate    02/02/2016
      * @author          eFaktor     (fbv)
      */
-    private static function import_temporary_fs_company($data) {
+    private static function import_temporary_fs_company($data,$log) {
         /* Variables    */
         global $DB;
         $infoFS     = null;
@@ -3524,6 +3550,8 @@ class FS {
         try {
             // Execute
             $DB->insert_records('fs_imp_company',$data);
+            // For log / historical
+            $DB->insert_records('fs_imp_company_log',$log);
 
             // Commit
             $trans->allow_commit();
@@ -3539,14 +3567,15 @@ class FS {
      * Description
      * Save FS Jobroles in temporary tables before the synchronization
      *
-     * @param                $data
+     * @param          $data
+     * @param          $log
      *
-     * @throws                  Exception
+     * @throws         Exception
      *
-     * @creationDate    04/02/2016
-     * @author          eFaktor     (fbv)
+     * @creationDate   04/02/2016
+     * @author         eFaktor     (fbv)
      */
-    private static function import_temporary_fs_jobroles($data) {
+    private static function import_temporary_fs_jobroles($data,$log) {
         /* Variables    */
         global $DB;
         $infoFS = null;
@@ -3560,6 +3589,8 @@ class FS {
         try {
             // Execute
             $DB->insert_records('fs_imp_jobroles',$data);
+            // Log /historical
+            $DB->insert_records('fs_imp_jobroles_log',$log);
 
             // Commit
             $trans->allow_commit();
@@ -3577,13 +3608,14 @@ class FS {
      * Import Temporary ManagersReporters
      *
      * @param           $data
+     * @param           $tolog
      *
      * @throws          Exception
      *
      * @creationDate    13/06/2016
      * @author          eFaktor     (fbv)
      */
-    private static function import_temporary_managers_reporters($data) {
+    private static function import_temporary_managers_reporters($data,$tolog) {
         /* Variables */
         global $DB;
         $info   = null;
@@ -3596,6 +3628,8 @@ class FS {
         try {
             // Execute
             $DB->insert_records('fs_imp_managers_reporters',$data);
+            // Log/historical
+            $DB->insert_records('fs_imp_mng_rpt_log',$tolog);
 
             // Commit
             $trans->allow_commit();
@@ -3612,13 +3646,14 @@ class FS {
      * Save User Job Role (FS)  in temporary tables before the synchronization
      *
      * @param           $data
+     * @param           $tolog
      *
      * @throws          Exception
      *
      * @creationDate    02/02/2016
      * @author          eFaktor     (fbv)
      */
-    private static function import_temporary_competence_jobrole($data) {
+    private static function import_temporary_competence_jobrole($data,$tolog) {
         /* Variables    */
         global $DB;
         $infoCompetenceJR       = null;
@@ -3632,6 +3667,8 @@ class FS {
         try {
             // Execute
             $DB->insert_records('fs_imp_users_jr',$data);
+            // Log/historical
+            $DB->insert_records('fs_imp_users_jr_log',$tolog);
 
             // Commit
             $trans->allow_commit();
