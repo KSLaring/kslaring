@@ -125,7 +125,7 @@ class STATUS_CRON {
             self::import_status($plugin);
 
             // Syncronization
-            self::synchronization($plugin,$industry);
+            //self::synchronization($plugin,$industry);
 
             // Log
             $infolog = new stdClass();
