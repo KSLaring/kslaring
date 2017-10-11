@@ -434,10 +434,10 @@ class Fellesdata_Install {
             // Keys
             $tbl->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
             // Index
-            $tbl->add_index('coid',XMLDB_INDEX_NOTUNIQUE,array('org_enhet_id'));
-            $tbl->add_index('nivaa',XMLDB_INDEX_NOTUNIQUE,array('org_nivaa'));
-            $tbl->add_index('parent',XMLDB_INDEX_NOTUNIQUE,array('org_enhet_over'));
-            $tbl->add_index('received',XMLDB_INDEX_NOTUNIQUE,array('timereceived'));
+            $tbl->add_index('co',XMLDB_INDEX_NOTUNIQUE,array('org_enhet_id'));
+            $tbl->add_index('ni',XMLDB_INDEX_NOTUNIQUE,array('org_nivaa'));
+            $tbl->add_index('pa',XMLDB_INDEX_NOTUNIQUE,array('org_enhet_over'));
+            $tbl->add_index('tr',XMLDB_INDEX_NOTUNIQUE,array('timereceived'));
 
             if (!$dbman->table_exists('fs_imp_company_log')) {
                 $dbman->create_table($tbl);
