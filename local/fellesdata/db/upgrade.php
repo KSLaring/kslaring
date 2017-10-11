@@ -221,14 +221,14 @@ function xmldb_local_fellesdata_upgrade($oldVersion) {
         }
 
         if ($oldVersion < 2017101012) {
-            Fellesdata_Update::fs_imp_company_log($dbMan);
-            Fellesdata_Update::fs_imp_users_log($dbMan);
-            Fellesdata_Update::fs_users_sync_log($dbMan);
-            Fellesdata_Update::fs_imp_jobroles_log($dbMan);
-            Fellesdata_Update::fs_jobroles_sync_log($dbMan);
-            Fellesdata_Update::fs_imp_users_jr_log($dbMan);
-            Fellesdata_Update::fs_imp_managers_reporters_log($dbMan);
-            Fellesdata_Update::fellesdata_log_table($dbMan);
+            //Fellesdata_Update::fs_imp_company_log($dbMan);
+            //Fellesdata_Update::fs_imp_users_log($dbMan);
+            //Fellesdata_Update::fs_users_sync_log($dbMan);
+            //Fellesdata_Update::fs_imp_jobroles_log($dbMan);
+            //Fellesdata_Update::fs_jobroles_sync_log($dbMan);
+            //Fellesdata_Update::fs_imp_users_jr_log($dbMan);
+            //Fellesdata_Update::fs_imp_managers_reporters_log($dbMan);
+            //Fellesdata_Update::fellesdata_log_table($dbMan);
         }
 
         return true;
@@ -759,10 +759,10 @@ class Fellesdata_Update {
             // Keys
             $tbl->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
             // Index
-            //$tbl->add_index('co',XMLDB_INDEX_NOTUNIQUE,array('org_enhet_id'));
-            //$tbl->add_index('nu',XMLDB_INDEX_NOTUNIQUE,array('org_nivaa'));
-            //$tbl->add_index('ov',XMLDB_INDEX_NOTUNIQUE,array('org_enhet_over'));
-            //$tbl->add_index('tr',XMLDB_INDEX_NOTUNIQUE,array('timereceived'));
+            $tbl->add_index('co',XMLDB_INDEX_NOTUNIQUE,array('org_enhet_id'));
+            $tbl->add_index('nu',XMLDB_INDEX_NOTUNIQUE,array('org_nivaa'));
+            $tbl->add_index('ov',XMLDB_INDEX_NOTUNIQUE,array('org_enhet_over'));
+            $tbl->add_index('tr',XMLDB_INDEX_NOTUNIQUE,array('timereceived'));
 
             if (!$dbman->table_exists('fs_imp_comp_log')) {
                 $dbman->create_table($tbl);
