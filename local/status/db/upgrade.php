@@ -182,8 +182,8 @@ function xmldb_local_status_upgrade($oldversion) {
 
             // Adding keys, index, foreing keys
             $tbl->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
-            $tbl->add_index('timecreated',XMLDB_INDEX_NOTUNIQUE,array('timecreated'));
-            $tbl->add_index('action',XMLDB_INDEX_NOTUNIQUE,array('action'));
+            ///$tbl->add_index('timecreated',XMLDB_INDEX_NOTUNIQUE,array('timecreated'));
+            ///$tbl->add_index('action',XMLDB_INDEX_NOTUNIQUE,array('action'));
 
             // Crete table
             $dbman->create_table($tbl);
@@ -212,9 +212,9 @@ function xmldb_local_status_upgrade($oldversion) {
                 // Keys
                 $tblcompetence->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
                 // Index
-                $tblcompetence->add_index('companyid',XMLDB_INDEX_NOTUNIQUE,array('companyid'));
-                $tblcompetence->add_index('username',XMLDB_INDEX_NOTUNIQUE,array('username'));
-                $tblcompetence->add_index('timereceived',XMLDB_INDEX_NOTUNIQUE,array('timereceived'));
+                //$tblcompetence->add_index('companyid',XMLDB_INDEX_NOTUNIQUE,array('companyid'));
+                //$tblcompetence->add_index('username',XMLDB_INDEX_NOTUNIQUE,array('username'));
+                //$tblcompetence->add_index('timereceived',XMLDB_INDEX_NOTUNIQUE,array('timereceived'));
 
                 $dbman->create_table($tblcompetence);
             }//if_table_exists_competence_data
