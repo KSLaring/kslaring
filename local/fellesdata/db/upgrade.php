@@ -775,7 +775,7 @@ class Fellesdata_Update {
                 $dbman->add_field($tbl, $tblfield);
             }//if_not_exists
             // companyid
-            $index = new xmldb_index('companyid', XMLDB_INDEX_NOTUNIQUE, array('companyid'));
+            $index = new xmldb_index('co', XMLDB_INDEX_NOTUNIQUE, array('companyid'));
             if (!$dbman->index_exists($tbl, $index)) {
                 $dbman->add_index($tbl, $index);
             }
