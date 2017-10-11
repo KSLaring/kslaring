@@ -759,9 +759,9 @@ class Fellesdata_Update {
             // Keys
             $tbl->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
             // Index
-            $tbl->add_index('enhet_id',XMLDB_INDEX_NOTUNIQUE,array('org_enhet_id'));
+            $tbl->add_index('coid',XMLDB_INDEX_NOTUNIQUE,array('org_enhet_id'));
             $tbl->add_index('nivaa',XMLDB_INDEX_NOTUNIQUE,array('org_nivaa'));
-            $tbl->add_index('enhet_over',XMLDB_INDEX_NOTUNIQUE,array('org_enhet_over'));
+            $tbl->add_index('parent',XMLDB_INDEX_NOTUNIQUE,array('org_enhet_over'));
             $tbl->add_index('received',XMLDB_INDEX_NOTUNIQUE,array('timereceived'));
 
             if (!$dbman->table_exists('fs_imp_company_log')) {
