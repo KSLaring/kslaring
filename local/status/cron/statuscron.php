@@ -164,6 +164,10 @@ class STATUS_CRON {
             // Add log
             self::$log[] = $infolog;
 
+            foreach (self::$log as $info) {
+                echo $info->description . "</br>";
+            }
+            
             // Write log
             STATUS::write_status_log(self::$log);
         }catch (Exception $ex) {
