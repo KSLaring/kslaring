@@ -123,6 +123,7 @@ function xmldb_local_status_upgrade($oldversion) {
         }//if_not_exists
     }
 
+
     if ($oldversion < 2017101012) {
         // Missing indexes
         $tbl        = new xmldb_table('user_managers');
@@ -152,6 +153,7 @@ function xmldb_local_status_upgrade($oldversion) {
             $dbman->add_index($tblrepo, $index);
         }
 
+        /**
         // Missing indes
         $tbl        = new xmldb_table('user_info_competence_data');
         // companyid
@@ -284,7 +286,7 @@ function xmldb_local_status_upgrade($oldversion) {
 
                 $dbman->create_table($tblreporters);
             }//if_reporters_log
-        }
+        } **/
     }
     return true;
 }//xmldb_local_fellesdata_status_upgrade
