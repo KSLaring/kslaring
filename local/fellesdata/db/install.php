@@ -44,25 +44,6 @@ function xmldb_local_fellesdata_install() {
 
         /* Create tables for unmapping process */
         Fellesdata_Install::UnMapTables($dbMan);
-        
-        $tblTemp =  new xmldb_table('fs_ws_users_accounts');
-        $tblTemp->add_field('id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
-        /* personalnumber --> Personal number   */
-        $tblTemp->add_field('personalnumber',XMLDB_TYPE_CHAR,'50',null, null, null,null);
-        /* REsource number  */
-        $tblTemp->add_field('imported',XMLDB_TYPE_CHAR,'50',null, null, null,null);
-        /* firstname    --> First name          */
-        $tblTemp->add_field('key',XMLDB_TYPE_CHAR,'255',null, null, null,null);
-
-
-        /* Keys     */
-        $tblTemp->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
-        /* Index    */
-        $tblTemp->add_index('$tblTemp',XMLDB_INDEX_NOTUNIQUE,array('personalnumber'));
-
-        if (!$dbMan->table_exists('fs_ws_users_accounts')) {
-            $dbMan->create_table($tblTemp);
-        }//if_exists
 
         // Suspicious tables
         Fellesdata_Install::add_suspicious($dbMan);
