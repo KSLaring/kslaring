@@ -123,7 +123,48 @@ function xmldb_local_status_upgrade($oldversion) {
         }//if_not_exists
     }
 
-    if ($oldversion < 2017101006) {
+    if ($oldversion < 2017101008) {
+        // Missing indexes
+        $tbl        = new xmldb_table('user_managers');
+        $tblrepo    = new xmldb_table('user_reporters');
+        // levelone
+        $index = new xmldb_index('levelone', XMLDB_INDEX_NOTUNIQUE, array('levelone'));
+        if (!$dbman->index_exists($tbl, $index)) {
+            $dbman->add_index($tbl, $index);
+        }
+        if (!$dbman->index_exists($tblrepo, $index)) {
+            $dbman->add_index($tblrepo, $index);
+        }
+        // leveltwo
+        $index = new xmldb_index('leveltwo', XMLDB_INDEX_NOTUNIQUE, array('leveltwo'));
+        if (!$dbman->index_exists($tbl, $index)) {
+            $dbman->add_index($tbl, $index);
+        }
+        if (!$dbman->index_exists($tblrepo, $index)) {
+            $dbman->add_index($tblrepo, $index);
+        }
+        // levelthree
+        $index = new xmldb_index('levelthree', XMLDB_INDEX_NOTUNIQUE, array('levelthree'));
+        if (!$dbman->index_exists($tbl, $index)) {
+            $dbman->add_index($tbl, $index);
+        }
+        if (!$dbman->index_exists($tblrepo, $index)) {
+            $dbman->add_index($tblrepo, $index);
+        }
+
+        // Missing indes
+        $tbl        = new xmldb_table('user_info_competence_data');
+        // companyid
+        $index = new xmldb_index('companyid', XMLDB_INDEX_NOTUNIQUE, array('companyid'));
+        if (!$dbman->index_exists($tbl, $index)) {
+            $dbman->add_index($tbl, $index);
+        }
+        // username
+        $index = new xmldb_index('username', XMLDB_INDEX_NOTUNIQUE, array('username'));
+        if (!$dbman->index_exists($tbl, $index)) {
+            $dbman->add_index($tbl, $index);
+        }
+
         if (!$dbman->table_exists('fs_status_log')) {
             $tbl = new xmldb_table('fs_status_log');
 

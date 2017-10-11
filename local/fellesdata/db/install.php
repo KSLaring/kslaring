@@ -367,6 +367,8 @@ class Fellesdata_Install {
             $tblFSImpComp->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
             /* Index    */
             $tblFSImpComp->add_index('org_enhet_id',XMLDB_INDEX_NOTUNIQUE,array('org_enhet_id'));
+            $tblFSImpComp->add_index('org_nivaa',XMLDB_INDEX_NOTUNIQUE,array('org_nivaa'));
+            $tblFSImpComp->add_index('org_enhet_over',XMLDB_INDEX_NOTUNIQUE,array('org_enhet_over'));
 
             if (!$dbMan->table_exists('fs_imp_company')) {
                 $dbMan->create_table($tblFSImpComp);
@@ -645,6 +647,7 @@ class Fellesdata_Install {
             /* Index    */
             $tblImpUsersJR->add_index('fodselsnr',XMLDB_INDEX_NOTUNIQUE,array('fodselsnr'));
             $tblImpUsersJR->add_index('org_enhet_id',XMLDB_INDEX_NOTUNIQUE,array('org_enhet_id'));
+            $tblImpUsersJR->add_index('stillingskode',XMLDB_INDEX_NOTUNIQUE,array('stillingskode'));
 
             if (!$dbMan->table_exists('fs_imp_users_jr')) {
                 $dbMan->create_table($tblImpUsersJR);
@@ -762,6 +765,7 @@ class Fellesdata_Install {
             /* Index    */
             $tblImpManagersReporters->add_index('fodselsnr',XMLDB_INDEX_NOTUNIQUE,array('fodselsnr'));
             $tblImpManagersReporters->add_index('org_enhet_id',XMLDB_INDEX_NOTUNIQUE,array('org_enhet_id'));
+            $tblImpManagersReporters->add_index('org_nivaa',XMLDB_INDEX_NOTUNIQUE,array('org_nivaa'));
 
             if (!$dbMan->table_exists('fs_imp_managers_reporters')) {
                 $dbMan->create_table($tblImpManagersReporters);
@@ -871,6 +875,7 @@ class Fellesdata_Install {
             $tblImpUsers->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
             /* Index    */
             $tblImpUsers->add_index('fodselsnr',XMLDB_INDEX_NOTUNIQUE,array('fodselsnr'));
+            $tblImpUsers->add_index('brukernavn',XMLDB_INDEX_NOTUNIQUE,array('brukernavn'));
 
             if (!$dbMan->table_exists('fs_imp_users')) {
                 $dbMan->create_table($tblImpUsers);

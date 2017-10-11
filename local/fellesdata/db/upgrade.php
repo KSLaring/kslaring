@@ -220,7 +220,7 @@ function xmldb_local_fellesdata_upgrade($oldVersion) {
             }//if_not_exists
         }
 
-        if ($oldVersion < 2017101006) {
+        if ($oldVersion < 2017101008) {
             Fellesdata_Update::fs_imp_company_log($dbMan);
             Fellesdata_Update::fs_imp_users_log($dbMan);
             Fellesdata_Update::fs_users_sync_log($dbMan);
@@ -326,30 +326,46 @@ class Fellesdata_Update {
 
                 // Create table
                 $dbman->create_table($tbl);
-
-
-                // Add extra fields and index
-                $tbl = new xmldb_table('fs_users_competence');
-                $tblfield = new xmldb_field('timesync', XMLDB_TYPE_INTEGER, '2', null, XMLDB_NOTNULL, null, 0);
-                if (!$dbman->field_exists($tbl, $tblfield)) {
-                    $dbman->add_field($tbl, $tblfield);
-                }//if_not_exists
-                // Index - companyid
-                $index = new xmldb_index('companyid', XMLDB_INDEX_NOTUNIQUE, array('companyid'));
-                if (!$dbman->index_exists($tbl, $index)) {
-                    $dbman->add_index($tbl, $index);
-                }
-                // index parent
-                $index = new xmldb_index('personalnumber', XMLDB_INDEX_NOTUNIQUE, array('personalnumber'));
-                if (!$dbman->index_exists($tbl, $index)) {
-                    $dbman->add_index($tbl, $index);
-                }
-                // Index - time sync
-                $index = new xmldb_index('timesync', XMLDB_INDEX_NOTUNIQUE, array('timesync'));
-                if (!$dbman->index_exists($tbl, $index)) {
-                    $dbman->add_index($tbl, $index);
-                }
             }//if_exists
+
+            // Add extra fields and index
+            $tbl = new xmldb_table('fs_users_company');
+            $tblfield = new xmldb_field('timesync', XMLDB_TYPE_INTEGER, '2', null, XMLDB_NOTNULL, null, 0);
+            if (!$dbman->field_exists($tbl, $tblfield)) {
+                $dbman->add_field($tbl, $tblfield);
+            }//if_not_exists
+            // Index - companyid
+            $index = new xmldb_index('companyid', XMLDB_INDEX_NOTUNIQUE, array('companyid'));
+            if (!$dbman->index_exists($tbl, $index)) {
+                $dbman->add_index($tbl, $index);
+            }
+            // index parent
+            $index = new xmldb_index('personalnumber', XMLDB_INDEX_NOTUNIQUE, array('personalnumber'));
+            if (!$dbman->index_exists($tbl, $index)) {
+                $dbman->add_index($tbl, $index);
+            }
+            // Index - time sync
+            $index = new xmldb_index('timesync', XMLDB_INDEX_NOTUNIQUE, array('timesync'));
+            if (!$dbman->index_exists($tbl, $index)) {
+                $dbman->add_index($tbl, $index);
+            }
+
+            $tbl = new xmldb_table('fs_imp_managers_reporters');
+            // fodselsnr
+            $index = new xmldb_index('fodselsnr', XMLDB_INDEX_NOTUNIQUE, array('fodselsnr'));
+            if (!$dbman->index_exists($tbl, $index)) {
+                $dbman->add_index($tbl, $index);
+            }
+            // org_enhet_id
+            $index = new xmldb_index('org_enhet_id', XMLDB_INDEX_NOTUNIQUE, array('org_enhet_id'));
+            if (!$dbman->index_exists($tbl, $index)) {
+                $dbman->add_index($tbl, $index);
+            }
+            // org_nivaa
+            $index = new xmldb_index('org_nivaa', XMLDB_INDEX_NOTUNIQUE, array('org_nivaa'));
+            if (!$dbman->index_exists($tbl, $index)) {
+                $dbman->add_index($tbl, $index);
+            }
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -413,29 +429,46 @@ class Fellesdata_Update {
 
                 // Create table
                 $dbman->create_table($tbl);
-
-                // Add extra fields and index
-                $tbl = new xmldb_table('fs_users_competence');
-                $tblfield = new xmldb_field('timesync', XMLDB_TYPE_INTEGER, '2', null, XMLDB_NOTNULL, null, 0);
-                if (!$dbman->field_exists($tbl, $tblfield)) {
-                    $dbman->add_field($tbl, $tblfield);
-                }//if_not_exists
-                // Index - companyid
-                $index = new xmldb_index('companyid', XMLDB_INDEX_NOTUNIQUE, array('companyid'));
-                if (!$dbman->index_exists($tbl, $index)) {
-                    $dbman->add_index($tbl, $index);
-                }
-                // index personalnumber
-                $index = new xmldb_index('personalnumber', XMLDB_INDEX_NOTUNIQUE, array('personalnumber'));
-                if (!$dbman->index_exists($tbl, $index)) {
-                    $dbman->add_index($tbl, $index);
-                }
-                // Index - time sync
-                $index = new xmldb_index('timesync', XMLDB_INDEX_NOTUNIQUE, array('timesync'));
-                if (!$dbman->index_exists($tbl, $index)) {
-                    $dbman->add_index($tbl, $index);
-                }
             }//if_exists
+
+            // Add extra fields and index
+            $tbl = new xmldb_table('fs_users_competence');
+            $tblfield = new xmldb_field('timesync', XMLDB_TYPE_INTEGER, '2', null, XMLDB_NOTNULL, null, 0);
+            if (!$dbman->field_exists($tbl, $tblfield)) {
+                $dbman->add_field($tbl, $tblfield);
+            }//if_not_exists
+            // Index - companyid
+            $index = new xmldb_index('companyid', XMLDB_INDEX_NOTUNIQUE, array('companyid'));
+            if (!$dbman->index_exists($tbl, $index)) {
+                $dbman->add_index($tbl, $index);
+            }
+            // index personalnumber
+            $index = new xmldb_index('personalnumber', XMLDB_INDEX_NOTUNIQUE, array('personalnumber'));
+            if (!$dbman->index_exists($tbl, $index)) {
+                $dbman->add_index($tbl, $index);
+            }
+            // Index - time sync
+            $index = new xmldb_index('timesync', XMLDB_INDEX_NOTUNIQUE, array('timesync'));
+            if (!$dbman->index_exists($tbl, $index)) {
+                $dbman->add_index($tbl, $index);
+            }
+
+            $tbl = new xmldb_table('fs_imp_users_jr');
+            // fodselsnr
+            $index = new xmldb_index('fodselsnr', XMLDB_INDEX_NOTUNIQUE, array('fodselsnr'));
+            if (!$dbman->index_exists($tbl, $index)) {
+                $dbman->add_index($tbl, $index);
+            }
+            // org_enhet_id
+            $index = new xmldb_index('org_enhet_id', XMLDB_INDEX_NOTUNIQUE, array('org_enhet_id'));
+            if (!$dbman->index_exists($tbl, $index)) {
+                $dbman->add_index($tbl, $index);
+            }
+            // stillingskode
+            $index = new xmldb_index('stillingskode', XMLDB_INDEX_NOTUNIQUE, array('stillingskode'));
+            if (!$dbman->index_exists($tbl, $index)) {
+                $dbman->add_index($tbl, $index);
+            }
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -484,6 +517,13 @@ class Fellesdata_Update {
                 // Create table
                 $dbman->create_table($tbl);
             }//if_exists
+
+            // Extra - missing index
+            $tbl = new xmldb_table('fs_imp_jobroles');
+            $index = new xmldb_index('stillingskode', XMLDB_INDEX_NOTUNIQUE, array('stillingskode'));
+            if (!$dbman->index_exists($tbl, $index)) {
+                $dbman->add_index($tbl, $index);
+            }
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -721,6 +761,11 @@ class Fellesdata_Update {
             if (!$dbman->field_exists($tbl, $tblfield)) {
                 $dbman->add_field($tbl, $tblfield);
             }//if_not_exists
+            // companyid
+            $index = new xmldb_index('companyid', XMLDB_INDEX_NOTUNIQUE, array('companyid'));
+            if (!$dbman->index_exists($tbl, $index)) {
+                $dbman->add_index($tbl, $index);
+            }
             // Index - fs_parent
             $index = new xmldb_index('fs_parent', XMLDB_INDEX_NOTUNIQUE, array('fs_parent'));
             if (!$dbman->index_exists($tbl, $index)) {
@@ -733,6 +778,23 @@ class Fellesdata_Update {
             }
             // Index - time sync
             $index = new xmldb_index('timesync', XMLDB_INDEX_NOTUNIQUE, array('timesync'));
+            if (!$dbman->index_exists($tbl, $index)) {
+                $dbman->add_index($tbl, $index);
+            }
+
+            $tbl = new xmldb_table('fs_imp_company');
+            // org_enhet_id
+            $index = new xmldb_index('org_enhet_id', XMLDB_INDEX_NOTUNIQUE, array('org_enhet_id'));
+            if (!$dbman->index_exists($tbl, $index)) {
+                $dbman->add_index($tbl, $index);
+            }
+            // org_nivaa
+            $index = new xmldb_index('org_nivaa', XMLDB_INDEX_NOTUNIQUE, array('org_nivaa'));
+            if (!$dbman->index_exists($tbl, $index)) {
+                $dbman->add_index($tbl, $index);
+            }
+            // org_enhet_over
+            $index = new xmldb_index('org_enhet_over', XMLDB_INDEX_NOTUNIQUE, array('org_enhet_over'));
             if (!$dbman->index_exists($tbl, $index)) {
                 $dbman->add_index($tbl, $index);
             }
