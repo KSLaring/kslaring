@@ -123,7 +123,7 @@ function xmldb_local_status_upgrade($oldversion) {
         }//if_not_exists
     }
 
-    if ($oldversion < 2017101008) {
+    if ($oldversion < 2017101010) {
         // Missing indexes
         $tbl        = new xmldb_table('user_managers');
         $tblrepo    = new xmldb_table('user_reporters');
