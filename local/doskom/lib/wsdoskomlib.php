@@ -107,10 +107,13 @@ class wsdoskom {
                 // SQL Instruction
                 $sql = " SELECT		upk.id
                          FROM		{user_private_key} upk
+                            JOIN    {user}             u    ON  u.id = upk.userid
+                                                            AND u.username NOT IN ('admin','guest')
                          WHERE		upk.script      = :script
                             AND		upk.userid      = :user_id
                             AND		upk.value       = :ticket
-                            AND		upk.validuntil  >= :valid ";
+                            AND		upk.validuntil  >= :valid 
+                            ";
 
                 // Execute
                 $rdo = $DB->get_record_sql($sql,$params);
@@ -241,6 +244,14 @@ class wsdoskom {
                 // Add log
                 $log[] = $infolog;
 
+                // DOSKOM log
+                $infolog = new stdClass();
+                $infolog->action      = 'wsLogInUser';
+                $infolog->description = 'User created/Updated. USer --> ' . $userSSO['firstname'] . ' ' . userSSO['lastname'];
+                $infolog->timecreated = $time;
+                // Add log
+                $log[] = $infolog;
+
                 // Add gender
                 if (is_numeric($userSSO['ssn']) && ($userSSO['ssn']) == 11) {
                     Gender::Add_UserGender($userid,$userSSO['ssn']);
@@ -280,7 +291,7 @@ class wsdoskom {
                 // DOSKOM log
                 $infolog = new stdClass();
                 $infolog->action       = 'wsLogInUser';
-                $infolog->description  = 'ERROR. Company ' . $userSSO['companyId'] . 'does not exits. So, the user cannot be connected with and log in';
+                $infolog->description  = 'ERROR. Company ' . $userSSO['companyId'] . ' does not exits. So, the user cannot be connected with and log in';
                 $infolog->description .= 'User : ' . $userSSO['ssn'];
                 $infolog->timecreated  = $time;
                 // Add log
