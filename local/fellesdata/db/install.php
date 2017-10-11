@@ -366,9 +366,9 @@ class Fellesdata_Install {
             /* Keys     */
             $tblFSImpComp->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
             /* Index    */
-            $tblFSImpComp->add_index('org_enhet_id',XMLDB_INDEX_NOTUNIQUE,array('org_enhet_id'));
-            $tblFSImpComp->add_index('org_nivaa',XMLDB_INDEX_NOTUNIQUE,array('org_nivaa'));
-            $tblFSImpComp->add_index('org_enhet_over',XMLDB_INDEX_NOTUNIQUE,array('org_enhet_over'));
+            $tblFSImpComp->add_index('enhet_id',XMLDB_INDEX_NOTUNIQUE,array('enhet_id'));
+            $tblFSImpComp->add_index('nivaa',XMLDB_INDEX_NOTUNIQUE,array('nivaa'));
+            $tblFSImpComp->add_index('enhet_over',XMLDB_INDEX_NOTUNIQUE,array('enhet_over'));
 
             if (!$dbMan->table_exists('fs_imp_company')) {
                 $dbMan->create_table($tblFSImpComp);
@@ -434,10 +434,10 @@ class Fellesdata_Install {
             // Keys
             $tbl->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
             // Index
-            $tbl->add_index('org_enhet_id',XMLDB_INDEX_NOTUNIQUE,array('org_enhet_id'));
-            $tbl->add_index('org_nivaa',XMLDB_INDEX_NOTUNIQUE,array('org_nivaa'));
-            $tbl->add_index('org_enhet_over',XMLDB_INDEX_NOTUNIQUE,array('org_enhet_over'));
-            $tbl->add_index('timereceived',XMLDB_INDEX_NOTUNIQUE,array('timereceived'));
+            $tbl->add_index('enhet_id',XMLDB_INDEX_NOTUNIQUE,array('enhet_id'));
+            $tbl->add_index('nivaa',XMLDB_INDEX_NOTUNIQUE,array('nivaa'));
+            $tbl->add_index('enhet_over',XMLDB_INDEX_NOTUNIQUE,array('enhet_over'));
+            $tbl->add_index('received',XMLDB_INDEX_NOTUNIQUE,array('received'));
 
             if (!$dbman->table_exists('fs_imp_company_log')) {
                 $dbman->create_table($tbl);
@@ -487,7 +487,7 @@ class Fellesdata_Install {
             /* Keys     */
             $tblFSImpJR->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
             /* Index    */
-            $tblFSImpJR->add_index('stillingskode',XMLDB_INDEX_NOTUNIQUE,array('stillingskode'));
+            $tblFSImpJR->add_index('jrcode',XMLDB_INDEX_NOTUNIQUE,array('stillingskode'));
 
             if (!$dbMan->table_exists('fs_imp_jobroles')) {
                 $dbMan->create_table($tblFSImpJR);
@@ -534,8 +534,8 @@ class Fellesdata_Install {
                 // Keys
                 $tbl->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
                 // Index
-                $tbl->add_index('stillingskode',XMLDB_INDEX_NOTUNIQUE,array('stillingskode'));
-                $tbl->add_index('timereceived',XMLDB_INDEX_NOTUNIQUE,array('timereceived'));
+                $tbl->add_index('jrcode',XMLDB_INDEX_NOTUNIQUE,array('stillingskode'));
+                $tbl->add_index('received',XMLDB_INDEX_NOTUNIQUE,array('timereceived'));
 
                 // Create table
                 $dbman->create_table($tbl);
@@ -646,8 +646,8 @@ class Fellesdata_Install {
             $tblImpUsersJR->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
             /* Index    */
             $tblImpUsersJR->add_index('fodselsnr',XMLDB_INDEX_NOTUNIQUE,array('fodselsnr'));
-            $tblImpUsersJR->add_index('org_enhet_id',XMLDB_INDEX_NOTUNIQUE,array('org_enhet_id'));
-            $tblImpUsersJR->add_index('stillingskode',XMLDB_INDEX_NOTUNIQUE,array('stillingskode'));
+            $tblImpUsersJR->add_index('enhet_id',XMLDB_INDEX_NOTUNIQUE,array('org_enhet_id'));
+            $tblImpUsersJR->add_index('jrcode',XMLDB_INDEX_NOTUNIQUE,array('stillingskode'));
 
             if (!$dbMan->table_exists('fs_imp_users_jr')) {
                 $dbMan->create_table($tblImpUsersJR);
@@ -709,9 +709,9 @@ class Fellesdata_Install {
                 $tbl->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
                 // Index
                 $tbl->add_index('fodselsnr',XMLDB_INDEX_NOTUNIQUE,array('fodselsnr'));
-                $tbl->add_index('org_enhet_id',XMLDB_INDEX_NOTUNIQUE,array('org_enhet_id'));
-                $tbl->add_index('stillingskode',XMLDB_INDEX_NOTUNIQUE,array('stillingskode'));
-                $tbl->add_index('timereceived',XMLDB_INDEX_NOTUNIQUE,array('timereceived'));
+                $tbl->add_index('enhet_id',XMLDB_INDEX_NOTUNIQUE,array('org_enhet_id'));
+                $tbl->add_index('jrcode',XMLDB_INDEX_NOTUNIQUE,array('stillingskode'));
+                $tbl->add_index('received',XMLDB_INDEX_NOTUNIQUE,array('timereceived'));
 
                 // Create table
                 $dbman->create_table($tbl);
@@ -764,8 +764,8 @@ class Fellesdata_Install {
             $tblImpManagersReporters->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
             /* Index    */
             $tblImpManagersReporters->add_index('fodselsnr',XMLDB_INDEX_NOTUNIQUE,array('fodselsnr'));
-            $tblImpManagersReporters->add_index('org_enhet_id',XMLDB_INDEX_NOTUNIQUE,array('org_enhet_id'));
-            $tblImpManagersReporters->add_index('org_nivaa',XMLDB_INDEX_NOTUNIQUE,array('org_nivaa'));
+            $tblImpManagersReporters->add_index('enhet_id',XMLDB_INDEX_NOTUNIQUE,array('org_enhet_id'));
+            $tblImpManagersReporters->add_index('nivaa',XMLDB_INDEX_NOTUNIQUE,array('org_nivaa'));
 
             if (!$dbMan->table_exists('fs_imp_managers_reporters')) {
                 $dbMan->create_table($tblImpManagersReporters);
@@ -815,9 +815,9 @@ class Fellesdata_Install {
                 $tbl->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
                 // Index
                 $tbl->add_index('fodselsnr',XMLDB_INDEX_NOTUNIQUE,array('fodselsnr'));
-                $tbl->add_index('org_enhet_id',XMLDB_INDEX_NOTUNIQUE,array('org_enhet_id'));
-                $tbl->add_index('org_nivaa',XMLDB_INDEX_NOTUNIQUE,array('org_nivaa'));
-                $tbl->add_index('timereceived',XMLDB_INDEX_NOTUNIQUE,array('timereceived'));
+                $tbl->add_index('enhet_id',XMLDB_INDEX_NOTUNIQUE,array('org_enhet_id'));
+                $tbl->add_index('nivaa',XMLDB_INDEX_NOTUNIQUE,array('org_nivaa'));
+                $tbl->add_index('received',XMLDB_INDEX_NOTUNIQUE,array('timereceived'));
 
                 // Create table
                 $dbman->create_table($tbl);
@@ -1311,8 +1311,8 @@ class Fellesdata_Install {
             $tbl->add_key('personalnumber',XMLDB_KEY_FOREIGN,array('personalnumber'), 'user', array('username'));
             // Index
             $tbl->add_index('companyid', XMLDB_INDEX_NOTUNIQUE, array('companyid'));
-            $tbl->add_index('personalnumber', XMLDB_INDEX_NOTUNIQUE, array('personalnumber'));
-            $tbl->add_index('timesync', XMLDB_INDEX_NOTUNIQUE, array('timesync'));
+            $tbl->add_index('pnumber', XMLDB_INDEX_NOTUNIQUE, array('personalnumber'));
+            $tbl->add_index('sync', XMLDB_INDEX_NOTUNIQUE, array('timesync'));
 
             if (!$dbMan->table_exists('fs_users_company')) {
                 $dbMan->create_table($tbl);
@@ -1540,8 +1540,8 @@ class Fellesdata_Install {
             $tbl->add_key('personalnumber',XMLDB_KEY_FOREIGN,array('personalnumber'), 'user', array('username'));
             // Index
             $tbl->add_index('companyid',XMLDB_INDEX_UNIQUE,array('companyid'));
-            $tbl->add_index('personalnumber',XMLDB_INDEX_UNIQUE,array('personalnumber'));
-            $tbl->add_index('timesync',XMLDB_INDEX_UNIQUE,array('timesync'));
+            $tbl->add_index('pnumber',XMLDB_INDEX_UNIQUE,array('personalnumber'));
+            $tbl->add_index('sync',XMLDB_INDEX_UNIQUE,array('timesync'));
 
             if (!$dbMan->table_exists('fs_users_competence')) {
                 $dbMan->create_table($tbl);
