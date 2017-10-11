@@ -124,7 +124,7 @@ function xmldb_local_status_upgrade($oldversion) {
     }
 
 
-    if ($oldversion < 2017101012) {
+    if ($oldversion < 2017101014) {
         // Missing indexes
         $tbl        = new xmldb_table('user_managers');
         $tblrepo    = new xmldb_table('user_reporters');
@@ -165,7 +165,7 @@ function xmldb_local_status_upgrade($oldversion) {
         $index = new xmldb_index('username', XMLDB_INDEX_NOTUNIQUE, array('username'));
         if (!$dbman->index_exists($tbl, $index)) {
             $dbman->add_index($tbl, $index);
-        }
+        } **/
 
         if (!$dbman->table_exists('fs_status_log')) {
             $tbl = new xmldb_table('fs_status_log');
@@ -286,7 +286,7 @@ function xmldb_local_status_upgrade($oldversion) {
 
                 $dbman->create_table($tblreporters);
             }//if_reporters_log
-        } **/
+        }
     }
     return true;
 }//xmldb_local_fellesdata_status_upgrade
