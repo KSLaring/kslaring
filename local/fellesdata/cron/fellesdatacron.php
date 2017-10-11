@@ -93,14 +93,29 @@ class FELLESDATA_CRON {
             // Import fellesdata
             self::import_fellesdata($plugin);
 
+            // Write log
+            FS_CRON::write_fellesdata_log(self::$log);
+            // Start log
+            self::$log    =    array();
+
             // Users accounts synchornization
             self::users_fs_synchronization($plugin);
+
+            // Write log
+            FS_CRON::write_fellesdata_log(self::$log);
+            // Start log
+            self::$log    =    array();
 
             // Companies synchornization
             self::companies_fs_synchronization($plugin,$fstExecution);
 
             // Synchronize companies moved
             self::companies_moved_fs_synchronization($plugin,$fstExecution);
+
+            // Write log
+            FS_CRON::write_fellesdata_log(self::$log);
+            // Start log
+            self::$log    =    array();
 
             // Job roles to map
             self::jobroles_fs_to_map($plugin);
@@ -109,6 +124,11 @@ class FELLESDATA_CRON {
             if (!$fstExecution) {
                 self::competence_synchronization($plugin);
             }//if_fstExecution_competence
+
+            // Write log
+            FS_CRON::write_fellesdata_log(self::$log);
+            // Start log
+            self::$log    =    array();
 
             // Log
             $infolog = new stdClass();

@@ -93,11 +93,13 @@ class FS_CRON {
             $time = time();
 
             // Write log
-            asort($log);
-            foreach ($log as $info) {
-                $info->timecreated = $time;
-                $DB->insert_record('fs_fellesdata_log',$info);
-            }//for_log
+            if ($log) {
+                asort($log);
+                foreach ($log as $info) {
+                    $info->timecreated = $time;
+                    $DB->insert_record('fs_fellesdata_log',$info);
+                }//for_log
+            }//if_log
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch

@@ -54,14 +54,29 @@ class STATUS_CRON {
             // Get competence from KS
             self::competence_data($plugin,$industry);
 
+            // Write log
+            STATUS::write_status_log(self::$log);
+            // Start log
+            self::$log    =    array();
+
             // Get managers reporters from KS
             self::managers_reporters($plugin,$industry);
 
             // Repair connections
             self::repair_connections();
 
+            // Write log
+            STATUS::write_status_log(self::$log);
+            // Start log
+            self::$log    =    array();
+
             // Import last status from fellesdata
             self::import_status($plugin);
+
+            // Write log
+            STATUS::write_status_log(self::$log);
+            // Start log
+            self::$log    =    array();
 
             // Syncronization
             self::synchronization($plugin,$industry);
@@ -121,11 +136,26 @@ class STATUS_CRON {
             // Repair connections
             self::repair_connections();
 
+            // Write log
+            STATUS::write_status_log(self::$log);
+            // Start log
+            self::$log    =    array();
+
             // Import last status from fellesdata
             self::import_status($plugin);
 
+            // Write log
+            STATUS::write_status_log(self::$log);
+            // Start log
+            self::$log    =    array();
+
             // Syncronization
             //self::synchronization($plugin,$industry);
+
+            // Write log
+            STATUS::write_status_log(self::$log);
+            // Start log
+            self::$log    =    array();
 
             // Log
             $infolog = new stdClass();
@@ -133,11 +163,6 @@ class STATUS_CRON {
             $infolog->description 	= 'FINISH Status Cron Manual';
             // Add log
             self::$log[] = $infolog;
-            asort(self::$log);
-
-            foreach (self::$log as $info) {
-                echo $info->description . "</br>";
-            }
 
             // Write log
             STATUS::write_status_log(self::$log);
@@ -456,16 +481,16 @@ class STATUS_CRON {
             self::import_status_users($plugin);
 
             // Import FS Companies
-            self::import_status_orgstructure($plugin);
+            //self::import_status_orgstructure($plugin);
 
             // Import FS Job roles
-            self::import_status_jobroles($plugin);
+            //self::import_status_jobroles($plugin);
 
             // Import FS User Competence
-            self::import_status_managers_reporters($plugin);
+            //self::import_status_managers_reporters($plugin);
 
             // Import FS User Competence JR
-            self::import_status_user_competence($plugin);
+            //self::import_status_user_competence($plugin);
 
             return true;
         }catch (Exception $ex) {
