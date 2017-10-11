@@ -3425,7 +3425,7 @@ class FS {
             // Execute
             $DB->insert_records('fs_imp_company',$data);
             // For log / historical
-            $DB->insert_records('fs_imp_company_log',$log);
+            $DB->insert_records('fs_imp_comp_log',$log);
 
             // Commit
             $trans->allow_commit();

@@ -220,7 +220,7 @@ function xmldb_local_fellesdata_upgrade($oldVersion) {
             }//if_not_exists
         }
 
-        if ($oldVersion < 2017101010) {
+        if ($oldVersion < 2017101012) {
             Fellesdata_Update::fs_imp_company_log($dbMan);
             Fellesdata_Update::fs_imp_users_log($dbMan);
             Fellesdata_Update::fs_users_sync_log($dbMan);
@@ -720,7 +720,7 @@ class Fellesdata_Update {
 
         try {
             // Table
-            $tbl = new xmldb_table('fs_imp_company_log');
+            $tbl = new xmldb_table('fs_imp_com_log');
 
             // Fields
             // Id --> primary key
@@ -759,12 +759,12 @@ class Fellesdata_Update {
             // Keys
             $tbl->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
             // Index
-            $tbl->add_index(null,XMLDB_INDEX_NOTUNIQUE,array('org_enhet_id'));
-            $tbl->add_index(null,XMLDB_INDEX_NOTUNIQUE,array('org_nivaa'));
-            $tbl->add_index(null,XMLDB_INDEX_NOTUNIQUE,array('org_enhet_over'));
-            $tbl->add_index(null,XMLDB_INDEX_NOTUNIQUE,array('timereceived'));
+            $tbl->add_index('co',XMLDB_INDEX_NOTUNIQUE,array('org_enhet_id'));
+            $tbl->add_index('nu',XMLDB_INDEX_NOTUNIQUE,array('org_nivaa'));
+            $tbl->add_index('ov',XMLDB_INDEX_NOTUNIQUE,array('org_enhet_over'));
+            $tbl->add_index('tr',XMLDB_INDEX_NOTUNIQUE,array('timereceived'));
 
-            if (!$dbman->table_exists('fs_imp_company_log')) {
+            if (!$dbman->table_exists('fs_imp_co_log')) {
                 $dbman->create_table($tbl);
             }//if_exists
 

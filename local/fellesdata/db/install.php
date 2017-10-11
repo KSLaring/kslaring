@@ -395,7 +395,7 @@ class Fellesdata_Install {
 
         try {
             // Table
-            $tbl = new xmldb_table('fs_imp_company_log');
+            $tbl = new xmldb_table('fs_imp_comp_log');
 
             // Fields
             // Id --> primary key
@@ -434,12 +434,12 @@ class Fellesdata_Install {
             // Keys
             $tbl->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
             // Index
-            $tbl->add_index(null,XMLDB_INDEX_NOTUNIQUE,array('org_enhet_id'));
-            $tbl->add_index(null,XMLDB_INDEX_NOTUNIQUE,array('org_nivaa'));
-            $tbl->add_index(null,XMLDB_INDEX_NOTUNIQUE,array('org_enhet_over'));
-            $tbl->add_index(null,XMLDB_INDEX_NOTUNIQUE,array('timereceived'));
+            $tbl->add_index('co',XMLDB_INDEX_NOTUNIQUE,array('org_enhet_id'));
+            $tbl->add_index('ni',XMLDB_INDEX_NOTUNIQUE,array('org_nivaa'));
+            $tbl->add_index('ov',XMLDB_INDEX_NOTUNIQUE,array('org_enhet_over'));
+            $tbl->add_index('tr',XMLDB_INDEX_NOTUNIQUE,array('timereceived'));
 
-            if (!$dbman->table_exists('fs_imp_company_log')) {
+            if (!$dbman->table_exists('fs_imp_comp_log')) {
                 $dbman->create_table($tbl);
             }//if_exists
         }catch (Exception $ex) {
@@ -1092,8 +1092,8 @@ class Fellesdata_Install {
             }//if_exists
 
 
-            if ($dbMan->table_exists('fs_imp_company_log')) {
-                $tbl = new xmldb_table('fs_imp_company_log');
+            if ($dbMan->table_exists('fs_imp_comp_log')) {
+                $tbl = new xmldb_table('fs_imp_comp_log');
                 $dbMan->drop_table($tbl);
             }//if_exists
         }catch (Exception $ex) {
