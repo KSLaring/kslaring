@@ -1395,23 +1395,25 @@ class FS_MAPPING {
                     $fscompanies[$instance->id] = $instance;
                 }//for_Rdo
             }else if ($level == FS_LE_1) {
-                $sql = " SELECT   ks.id,
-                                  CONCAT(ks.companyid,'#LE1#')  as 'fscompany',
-                                  ks.hierarchylevel             as 'nivaa',
-                                  ks.name	    	            as 'name',
-                                  '' 				            as 'fs_parent',
-                                  '' 				            as privat,
-                                  '' as ansvar,
-                                  '' as tjeneste,
-                                  '' as adresse1,
-                                  '' as adresse2,
-                                  '' as adresse3,
-                                  '' as postnr,
-                                  '' as poststed,
-                                  '' as epost,
-                                  ks.parent
-                          FROM	  {ks_company} ks 
-                          WHERE ks.hierarchylevel = :level";
+                $sql = " SELECT       ks.id,
+                                      CONCAT(ks.companyid,'#LE1#')  as 'fscompany',
+                                      ks.hierarchylevel             as 'nivaa',
+                                      ks.name	    	            as 'name',
+                                      '' 				            as 'fs_parent',
+                                      '' 				            as privat,
+                                      '' as ansvar,
+                                      '' as tjeneste,
+                                      '' as adresse1,
+                                      '' as adresse2,
+                                      '' as adresse3,
+                                      '' as postnr,
+                                      '' as poststed,
+                                      '' as epost,
+                                      ks.parent
+                         FROM	      {ks_company} ks 
+                            LEFT JOIN {fs_company} fs ON fs.companyid = CONCAT(ks.companyid,'#LE1#') 
+                         WHERE        ks.hierarchylevel = :level
+                            AND       fs.id IS NULL ";
 
                 // Execute
                 $rdo = $DB->get_record_sql($sql,array('level' => $level));
