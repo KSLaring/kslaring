@@ -541,13 +541,12 @@ class FS_MAPPING {
                 $sql = " SELECT	  ks.companyid,
                                   ks.name
                          FROM	  {ks_company}	 ks
-                            JOIN  {fs_company}	 fs     ON  fs.companyid = CONCAT(ks.companyid,'#LE1#')
+                            JOIN  {fs_company}	 fs     ON  fs.companyid = CONCAT(ks.companyid,'LE1')
                                                         AND fs.level     = ks.hierarchylevel
                          WHERE	  ks.hierarchylevel = :level
                          ORDER BY ks.name";
 
                 // Execute
-                echo $sql;
                 $rdo = $DB->get_record_sql($sql,$params);
                 if ($rdo) {
                     $lstparents[$rdo->companyid] = $rdo->name;
@@ -1411,7 +1410,7 @@ class FS_MAPPING {
                 }//for_Rdo
             }else if ($level == FS_LE_1) {
                 $sql = " SELECT       ks.id,
-                                      CONCAT(ks.companyid,'#LE1#')  as 'fscompany',
+                                      CONCAT(ks.companyid,'LE1')  as 'fscompany',
                                       ks.hierarchylevel             as 'nivaa',
                                       ks.name	    	            as 'name',
                                       '' 				            as 'fs_parent',
@@ -1426,7 +1425,7 @@ class FS_MAPPING {
                                       '' as epost,
                                       ks.parent
                          FROM	      {ks_company} ks 
-                            LEFT JOIN {fs_company} fs ON fs.companyid = CONCAT(ks.companyid,'#LE1#') 
+                            LEFT JOIN {fs_company} fs ON fs.companyid = CONCAT(ks.companyid,'LE1') 
                          WHERE        ks.hierarchylevel = :level
                             AND       fs.id IS NULL ";
 
