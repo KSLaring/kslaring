@@ -636,13 +636,13 @@ class FSKS_COMPANY {
             // SQL Instruction
             $sql = " SELECT		  count(DISTINCT fs_imp.id) as 'total'
                      FROM		  {fs_imp_company}	fs_imp
-                        LEFT JOIN {fs_company}		fs		ON 	fs.companyid 	= fs_imp.ORG_ENHET_ID
+                        LEFT JOIN {fs_company}		fs		ON 	fs.companyid 	= fs_imp.org_enhet_id
                         -- Info parent
-                        JOIN 	  {ksfs_company}  	ksfs	ON 	ksfs.fscompany 	= fs_imp.ORG_ENHET_OVER
+                        JOIN 	  {ksfs_company}  	ksfs	ON 	ksfs.fscompany 	= fs_imp.org_enhet_over
                         JOIN	  {ks_company}		ks		ON	ks.companyid	= ksfs.kscompany
                      WHERE	      fs_imp.action 	!= :action
                           AND	  fs_imp.imported    = 0
-                          AND     fs_imp.ORG_NIVAA  != :level
+                          AND     fs_imp.org_nivaa  != :level
                           AND	  fs.id IS NULL ";
 
             // Execute
@@ -686,12 +686,12 @@ class FSKS_COMPANY {
             $params['level']    = $level;
 
             // SQL Instruction
-            $sql = " SELECT		  fs_imp.ORG_ENHET_ID 							as 'fsid',
+            $sql = " SELECT		  fs_imp.org_enhet_id 							as 'fsid',
                                   '0'											as 'ksid',
-                                  TRIM(fs_imp.ORG_NAVN)  	 					as 'name',
-                                  fs_imp.ORG_NIVAA								as 'level',
+                                  TRIM(fs_imp.org_navn)  	 					as 'name',
+                                  fs_imp.org_nivaa								as 'level',
                                   ks.companyid									as 'parent',
-                                  fs_imp.ORG_ENHET_OVER							as 'fs_parent',
+                                  fs_imp.org_enhet_over							as 'fs_parent',
                                   IF(fs_imp.privat,0,1)   						as 'public',
                                   TRIM(IF(fs_imp.ansvar != '',fs_imp.ansvar,0))       as 'ansvar',
                                   TRIM(IF(fs_imp.tjeneste != '',fs_imp.tjeneste,0))   as 'tjeneste',
@@ -704,13 +704,13 @@ class FSKS_COMPANY {
                                   fs_imp.action									as 'action',
                                   '0'                                         	as 'moved'
                      FROM		  {fs_imp_company}	fs_imp
-                        LEFT JOIN {fs_company}		fs		ON 	fs.companyid 	= fs_imp.ORG_ENHET_ID
+                        LEFT JOIN {fs_company}		fs		ON 	fs.companyid 	= fs_imp.org_enhet_id
                         -- Info parent
-                        JOIN 	  {ksfs_company}  	ksfs	ON 	ksfs.fscompany 	= fs_imp.ORG_ENHET_OVER
+                        JOIN 	  {ksfs_company}  	ksfs	ON 	ksfs.fscompany 	= fs_imp.org_enhet_over
                         JOIN	  {ks_company}		ks		ON	ks.companyid	= ksfs.kscompany
                      WHERE	      fs_imp.action 		!= :action
                           AND	  fs_imp.imported  	     = :imported
-                          AND     fs_imp.ORG_NIVAA      != :level
+                          AND     fs_imp.org_nivaa      != :level
                           AND	  fs.id IS NULL ";
 
             // Excute
@@ -1083,25 +1083,25 @@ class FSKS_COMPANY {
 
             // SQL Instruction
             $sql = " SELECT	  fs_imp.id             as 'fsid',
-                              fs_imp.ORG_ENHET_ID   as 'companyid',
-                              fs_imp.ORG_NAVN	    as 'name',
-                              fs_imp.ORG_NIVAA      as 'level',
-                              fs_imp.ORG_ENHET_OVER as 'fs_parent',
-                              fs_imp.PRIVAT         as 'privat',
-                              fs_imp.ANSVAR         as 'ansvar',
-                              fs_imp.TJENESTE       as 'tjeneste',
-                              fs_imp.ADRESSE1       as 'adresse1',
-                              fs_imp.ADRESSE2       as 'adresse2',
-                              fs_imp.ADRESSE3       as 'adresse3',
-                              fs_imp.POSTNR         as 'postnr',
-                              fs_imp.POSTSTED       as 'poststed', 
-                              fs_imp.EPOST          as 'epost',
+                              fs_imp.org_enhet_id   as 'companyid',
+                              fs_imp.org_navn	    as 'name',
+                              fs_imp.org_nivaa      as 'level',
+                              fs_imp.org_enhet_over as 'fs_parent',
+                              fs_imp.privat         as 'privat',
+                              fs_imp.ansvar         as 'ansvar',
+                              fs_imp.tjeneste       as 'tjeneste',
+                              fs_imp.adresse1       as 'adresse1',
+                              fs_imp.adresse2       as 'adresse2',
+                              fs_imp.adresse3       as 'adresse3',
+                              fs_imp.postnr         as 'postnr',
+                              fs_imp.poststed       as 'poststed', 
+                              fs_imp.epost          as 'epost',
                               fs.id,
                               fs.synchronized,
                               fs.timemodified
                      FROM	  {fs_imp_company}	fs_imp	
-                        JOIN  {fs_company}		fs      ON  fs.companyid  = fs_imp.ORG_ENHET_ID
-                                                        AND fs.level 	  = fs_imp.ORG_NIVAA
+                        JOIN  {fs_company}		fs      ON  fs.companyid  = fs_imp.org_enhet_id
+                                                        AND fs.level 	  = fs_imp.org_nivaa
                      WHERE	  fs_imp.imported = :imported
                         AND	  fs_imp.action   = :action ";
 
@@ -1173,27 +1173,27 @@ class FSKS_COMPANY {
 
             // SQL Instruction
             $sql = " SELECT	  fs_imp.id 			as 'fsid',
-                              fs_imp.ORG_ENHET_ID 	as 'companyid',
-                              fs_imp.ORG_NAVN		as 'name',
-                              fs_imp.ORG_NIVAA 		as 'level',
-                              fs_imp.ORG_ENHET_OVER as 'fs_parent',
+                              fs_imp.org_enhet_id 	as 'companyid',
+                              fs_imp.org_navn		as 'name',
+                              fs_imp.org_nivaa 		as 'level',
+                              fs_imp.org_enhet_over as 'fs_parent',
                               ks.companyid			as 'parent',
-                              fs_imp.PRIVAT 		as 'privat',
-                              fs_imp.ANSVAR 		as 'ansvar',
-                              fs_imp.TJENESTE 		as 'tjeneste',
-                              fs_imp.ADRESSE1 		as 'adresse1',
-                              fs_imp.ADRESSE2 		as 'adresse2',
-                              fs_imp.ADRESSE3 		as 'adresse3',
-                              fs_imp.POSTNR 		as 'postnr',
-                              fs_imp.POSTSTED 		as 'poststed', 
-                              fs_imp.EPOST 			as 'epost',
+                              fs_imp.privat 		as 'privat',
+                              fs_imp.ansvar 		as 'ansvar',
+                              fs_imp.tjeneste 		as 'tjeneste',
+                              fs_imp.adresse1 		as 'adresse1',
+                              fs_imp.adresse2 		as 'adresse2',
+                              fs_imp.adresse3 		as 'adresse3',
+                              fs_imp.postnr 		as 'postnr',
+                              fs_imp.poststed 		as 'poststed', 
+                              fs_imp.epost 			as 'epost',
                               fs.id,
                               fs.synchronized,
                               fs.timemodified
                      FROM	  {fs_imp_company}	fs_imp	
-                        JOIN  {fs_company}		fs 		ON 	fs.companyid 	= fs_imp.ORG_ENHET_ID
-                                                        AND fs.level 	   != fs_imp.ORG_NIVAA
-                        JOIN  {ksfs_company}	ksfs	ON  ksfs.fscompany 	= fs_imp.ORG_ENHET_OVER
+                        JOIN  {fs_company}		fs 		ON 	fs.companyid 	= fs_imp.org_enhet_id
+                                                        AND fs.level 	   != fs_imp.org_nivaa
+                        JOIN  {ksfs_company}	ksfs	ON  ksfs.fscompany 	= fs_imp.org_enhet_over
                         JOIN  {ks_company}		ks		ON	ks.companyid  	= ksfs.kscompany
                      WHERE	  fs_imp.action   = :action	
                         AND   fs_imp.imported = :imported ";
@@ -1365,7 +1365,7 @@ class FSKS_COMPANY {
                                   fs.companyid,
                                   fs.synchronized
                      FROM 	      {fs_imp_company}	fs_imp
-                        LEFT JOIN {fs_company}		fs		ON  fs.companyid    = fs_imp.ORG_ENHET_ID
+                        LEFT JOIN {fs_company}		fs		ON  fs.companyid    = fs_imp.org_enhet_id
                         -- Parent KS
                         LEFT JOIN {ksfs_company}	ksfs 	ON ksfs.fscompany 	= fs_imp.org_enhet_over
                         JOIN	  {ks_company} 		ks 		ON ks.companyid  	= ksfs.kscompany
@@ -1590,7 +1590,7 @@ class FSKS_COMPANY {
 
             // Synchronized
             if ($sync) {
-                $instance = $DB->get_record('fs_imp_company',array('ORG_ENHET_ID' => $impKey,'ORG_NIVAA' => $companyKSFS->level),'id,imported');
+                $instance = $DB->get_record('fs_imp_company',array('org_enhet_id' => $impKey,'org_nivaa' => $companyKSFS->level),'id,imported');
                 if ($instance) {
                     $instance->imported         = 1;
                     $instance->timemodified     = $time;
@@ -1727,7 +1727,7 @@ class FSKS_COMPANY {
 
             // Synchronized
             if ($sync) {
-                $instance = $DB->get_record('fs_imp_company',array('ORG_ENHET_ID' => $impKey,'ORG_NIVAA' => $companyKSFS->level),'id,imported');
+                $instance = $DB->get_record('fs_imp_company',array('org_enhet_id' => $impKey,'org_nivaa' => $companyKSFS->level),'id,imported');
                 if ($instance) {
                     $instance->imported         = 1;
                     $instance->timemodified     = $time;
@@ -2342,7 +2342,7 @@ class FSKS_USERS {
                         JOIN    {user}                u         ON      u.idnumber = fs.fodselsnr
                                                                 AND     u.deleted  = 0
                         -- COMPANY
-                        JOIN	{ksfs_company}		  ksfs 		ON 		ksfs.fscompany 		= fs.ORG_ENHET_ID
+                        JOIN	{ksfs_company}		  ksfs 		ON 		ksfs.fscompany 		= fs.org_enhet_id
                         JOIN	{ks_company}		  ks	    ON		ks.companyid		= ksfs.kscompany
                         -- JOB ROLE
                         JOIN	{ksfs_jobroles}		  fsk_jr 	ON 		fsk_jr.fsjobrole 	= fs.stillingskode
@@ -2819,7 +2819,7 @@ class FSKS_USERS {
                         JOIN  {user}              u       ON    u.idnumber 			= fs.fodselsnr
                                                           AND   u.deleted  			= 0
                         -- COMPANY
-                        JOIN  {ksfs_company}	  ksfs 	  ON    ksfs.fscompany 		= fs.ORG_ENHET_ID
+                        JOIN  {ksfs_company}	  ksfs 	  ON    ksfs.fscompany 		= fs.org_enhet_id
                         JOIN  {ks_company}		  ks	  ON	ks.companyid		= ksfs.kscompany
                         -- JOB ROLE
                         JOIN  {ksfs_jobroles}	  fsk_jr  ON 	fsk_jr.fsjobrole 	= fs.stillingskode
@@ -3378,10 +3378,10 @@ class FS {
             // SQL Instruction
             $sql = " SELECT DISTINCT
                             fs.id,
-                            fs.EPOST
+                            fs.epost
                      FROM	{fs_imp_users}	fs
-                     WHERE 	fs.EPOST IS NULL
-                        OR 	fs.EPOST    = '' ";
+                     WHERE 	fs.epost IS NULL
+                        OR 	fs.epost    = '' ";
 
             // Execute
             $rdo = $DB->get_records_sql($sql);
