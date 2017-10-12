@@ -1476,7 +1476,6 @@ class FS_MAPPING {
             $params = array();
             $params['imported'] = 0;
             $params['action']   = ACT_DELETE;
-            $params['parent']   = $parent;
 
             // Get level
             switch ($level) {
@@ -1501,8 +1500,15 @@ class FS_MAPPING {
                      WHERE	        fs_imp.imported  = :imported
                           AND       fs_imp.action   != :action
                           AND	    fs.id IS NULL
-                          AND	    fs_imp.org_nivaa      = :level
-                          AND       fs_imp.org_enhet_over = :parent";
+                          AND	    fs_imp.org_nivaa      = :level ";
+
+            // Parent criteria
+            if ($parent) {
+                if (!strpos($parent,'LE1')) {
+                    $params['parent']   = $parent;
+                    $sql .= " AND	  fs_imp.org_enhet_over = :parent ";
+                }
+            }
 
             // Add notIn criteria
             if ($notIn) {
