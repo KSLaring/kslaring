@@ -79,7 +79,7 @@ class STATUS_CRON {
             self::$log    =    array();
 
             // Syncronization
-            //self::synchronization($plugin,$industry);
+            self::synchronization($plugin,$industry);
 
             // Log
             $infolog = new stdClass();
@@ -137,12 +137,12 @@ class STATUS_CRON {
             //self::repair_connections();
 
             // Write log
-            STATUS::write_status_log(self::$log);
+            //STATUS::write_status_log(self::$log);
             // Start log
-            self::$log    =    array();
+            //self::$log    =    array();
 
             // Import last status from fellesdata
-            //self::import_status($plugin);
+            self::import_status($plugin);
 
             // Write log
             STATUS::write_status_log(self::$log);
@@ -150,12 +150,12 @@ class STATUS_CRON {
             self::$log    =    array();
 
             // Syncronization
-            self::synchronization($plugin,$industry);
+            //self::synchronization($plugin,$industry);
 
             // Write log
-            STATUS::write_status_log(self::$log);
+            //STATUS::write_status_log(self::$log);
             // Start log
-            self::$log    =    array();
+            //self::$log    =    array();
 
             // Log
             $infolog = new stdClass();
@@ -479,10 +479,10 @@ class STATUS_CRON {
 
         try {
             // Import FS Users
-            self::import_status_users($plugin);
+            //self::import_status_users($plugin);
 
             // Import FS Companies
-            //self::import_status_orgstructure($plugin);
+            self::import_status_orgstructure($plugin);
 
             // Import FS Job roles
             //self::import_status_jobroles($plugin);
