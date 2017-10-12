@@ -537,7 +537,7 @@ class FS_MAPPING {
                 foreach ($rdo as $instance) {
                     $lstparents[$instance->companyid] = $instance->name;
                 }
-            }else if ($level == FS_LE_1) {
+            }else if ($level == FS_LE_2) {
                 $sql = " SELECT	  ks.companyid,
                                   ks.name
                          FROM	  {ks_company}	 ks
@@ -546,7 +546,7 @@ class FS_MAPPING {
                          ORDER BY ks.name";
 
                 // Execute
-                $rdo = $DB->get_record_sql($sql,array('level' => $level));
+                $rdo = $DB->get_record_sql($sql,$params);
                 if ($rdo) {
                     $lstparents[$rdo->companyid] = $rdo->name;
                 }
