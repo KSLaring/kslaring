@@ -49,3 +49,6 @@ $string['showtags'] = 'Show course tags';
 $string['preselectcriteria'] = 'Preselect the search criteria';
 $string['typehere'] = 'Type here to filter tags';
 $string['actualCourseCount'] = 'Viewing <span id="actualCourseCount"></span> results matching';
+$string['searchtext'] = 'Search text: ';
+$string['datefrom'] = 'Date from';
+$string['dateto'] = 'Date to';

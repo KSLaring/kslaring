@@ -49,3 +49,6 @@ $string['showtags'] = 'Vise kurstagger';
 $string['preselectcriteria'] = 'Velg interesser';
 $string['typehere'] = 'Skriv her å filtrere tagger';
 $string['actualCourseCount'] = 'Søkeresultat: <span id="actualCourseCount"></span>';
+$string['searchtext'] = 'Søk tekst: ';
+$string['datefrom'] = 'Dato fra';
+$string['dateto'] = 'Dato til';

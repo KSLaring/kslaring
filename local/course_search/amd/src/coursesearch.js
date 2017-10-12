@@ -1,17 +1,26 @@
 /*global define: false, M: true, console: false */
 define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates',
         'theme_bootstrapbase/bootstrap',
+        // 'local_course_search/cookie',
+        'local_course_search/ld_loader',
+        'local_course_search/viewstate',
         'local_course_search/is_loader',
         'local_course_search/dp_loader'
     ],
-    function ($, notification, log, ajax, templates, bootstrap, InfiniteScroll) {
+    function ($, notification, log, ajax, templates, bootstrap, _, viewState, InfiniteScroll) {
         "use strict";
 
         // Add the jQuery object globaly or debugging.
-        // window.$ = $;
+        window.$ = $;
 
         log.debug('AMD module loaded.');
 
+        if ($('#header').hasClass('not-loggedin')) {
+            return;
+        }
+
+        // The var nocourses is used as a flag for development - if true no courses are loaded.
+        var nocourses = false;
         var sortbystate = 'name',
             sortascstate = true,
             showtagliststate = false,
@@ -21,6 +30,7 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
             courses = {},
             coursesSortArray = [],
             courseids = [],
+            courseIDsFiltered = [],
             cardsfirst = 12,
             cardsset = 6,
             listfirst = 30,
@@ -32,6 +42,10 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
             userid = 0,
             cardsInfScroll = null,
             listInfScroll = null,
+            $dpfrom = null,
+            $dpto = null,
+            $datefrom = null,
+            $dateto = null,
             $catalogarea = null,
             $searcharea = null,
             $coursesearchform = null,
@@ -67,6 +81,13 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                 'deadline': 'course_deadline',
                 'municipality': 'course_municipality',
                 'location': 'course_location'
+            },
+            viewstatearrayindex = {
+                'view': 0,
+                'text': 1,
+                'tags': 2,
+                'date': 3,
+                'display': 4
             };
 
         /**
@@ -89,77 +110,75 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
          * @param {Array|object} context The data for the template
          */
         var renderDisplayArea = function (context) {
-            templates
-                .render('local_course_search/course_search_result_area', {})
-                .done(function (html) {
-                    $resultarea.html(html);
-                    $cardsarea = $resultarea.find('#tabcards');
-                    $listarea = $resultarea.find('#tablist');
-
-                    renderCardsArea(context);
-                });
+            if (viewState.getView() === '0') {
+                cardsAddNextItems(cardsfirst);
+            } else {
+                listAddNextRows(listfirst);
+            }
         };
 
-        /**
+        /** -- check
          * Render the cards area with a template with the given data.
          *
          * @param {Array|object} context The data for the template
          */
         var renderCardsArea = function (context) {
-            templates
-                .render('local_course_search/course_search_course_cards', context)
-                .done(function (html) {
-                    $cardsarea.html(html);
+            cardsrendered = true;
 
-                    $coursecardsul = $resultarea.find('#course-cards');
-                    cardsrendered = true;
+            cardsAddNextItems();
 
-                    // Init infinite scroll.
-                    cardsInfScroll = new InfiniteScroll($coursecardsul.get(0), {
-                        path: 'page{{#}}', // hack
-                        loadOnScroll: false, // disable loading
-                        history: false,
-                        onInit: function () {
-                            console.log('cardsInfScroll init');
-                        }
-                    });
+            // Init infinite scroll.
+            cardsInfScroll = new InfiniteScroll($coursecardsul.get(0), {
+                path: 'page{{#}}', // hack
+                loadOnScroll: false, // disable loading
+                history: false,
+                onInit: function () {
+                    log.debug('cardsInfScroll init');
+                }
+            });
 
-                    cardsScrollEventHandlerOn(true);
+            cardsScrollEventHandlerOn(true);
 
-                    $navtabs = $('.nav-tabs').eq(0);
-                    $('a[data-toggle="tab"]').on('shown', tabChangeHandler);
-
-                    // sortedCourseDisplayUpdate();
-                });
+            // sortedCourseDisplayUpdate();
         };
 
-        /**
+        /** -- check
          * Render the list area with a template with the given data.
          *
          * @param {Array|object} context The data for the template
          */
         var renderListArea = function (context) {
+            listrendered = true;
+
+            listAddNextRows();
+
+            // Init infinite scroll.
+            listInfScroll = new InfiniteScroll($courselisttable.get(0), {
+                path: 'page{{#}}', // hack
+                loadOnScroll: false, // disable loading
+                history: false,
+                onInit: function () {
+                    log.debug('listInfScroll init');
+                }
+            });
+
+            listScrollEventHandlerOn(true);
+        };
+
+        /**
+         * Render the tag preselection area with a template with the given data.
+         *
+         * @param {Array|object} context The data for the template
+         */
+        var renderTagPreselectArea = function (context) {
             templates
-                .render('local_course_search/course_search_course_list', context)
+                .render('local_course_search/course_search_tag_preselect_area', context)
                 .done(function (html) {
-                    $listarea.html(html);
+                    $tagpreselectarea.html(html);
 
-                    $courselisttable = $resultarea.find('#course-list');
-                    listrendered = true;
+                    preselecttagsloaded = true;
 
-                    // Init infinite scroll.
-                    listInfScroll = new InfiniteScroll($courselisttable.get(0), {
-                        path: 'page{{#}}', // hack
-                        loadOnScroll: false, // disable loading
-                        history: false,
-                        onInit: function () {
-                            console.log('listInfScroll init');
-                        }
-                    });
-
-                    listScrollEventHandlerOn(true);
-
-                    // sortedCourseDisplayUpdate();
+                    setCheckboxForPreselectedTags();
                 });
         };
 
@@ -198,41 +217,15 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
         };
 
         /**
-         * Render the next set of cards.
-         *
-         * @param {Array|object} context The data for the template
-         */
-        var renderDynamicLoadedCards = function (context) {
-
-        };
-
-        /**
-         * Render the tag preselection area with a template with the given data.
-         *
-         * @param {Array|object} context The data for the template
-         */
-        var renderTagPreselectArea = function (context) {
-            templates
-                .render('local_course_search/course_search_tag_preselect_area', context)
-                .done(function (html) {
-                    $tagpreselectarea.html(html);
-
-                    preselecttagsloaded = true;
-
-                    setCheckboxForPreselectedTags();
-                });
-        };
-
-        /**
          * Handle the InfinitScroll scrollThreshold event.
          *
          * Add content if there is more.
          */
         var cardsScrollThresholdHandler = function () {
             if (cardcourseidsremaining.length) {
-                console.log('card more courses');
+                log.debug('card more courses');
             } else {
-                console.log('card all shown');
+                log.debug('card all shown');
                 cardsScrollEventHandlerOn(false);
                 return;
             }
@@ -244,6 +237,9 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
          * Add the next cards to the view if there is more.
          */
         var cardsAddNextItems = function (amount) {
+            if (nocourses) {
+                return;
+            }
             var set = amount === undefined ? cardsset : amount,
                 context = {'courses': []},
                 nextids = cardcourseidsremaining.splice(0, set);
@@ -268,9 +264,9 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
          */
         var listScrollThresholdHandler = function () {
             if (listcourseidsremaining.length) {
-                console.log('list more courses');
+                log.debug('list more courses');
             } else {
-                console.log('list all shown');
+                log.debug('list all shown');
                 listScrollEventHandlerOn(false);
                 return;
             }
@@ -282,6 +278,9 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
          * Add the next rows to the view if there is more.
          */
         var listAddNextRows = function (amount) {
+            if (nocourses) {
+                return;
+            }
             var set = amount === undefined ? listset : amount,
                 context = {'courses': []},
                 nextids = listcourseidsremaining.splice(0, set);
@@ -296,6 +295,35 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                     .done(function (html) {
                         $courselisttable.children('tbody').append(html);
                     });
+            }
+        };
+
+        /**
+         * Handle the cards/list tab change event.
+         *
+         * When the cards are shown disable the »Show course tags« checkbox.
+         *
+         * @param {object} e The event object
+         */
+        var tabChangeHandler = function (e) {
+            var target = $(e.target).attr("href");
+
+            if (target === '#tabcards') {
+                viewState.setView("0");
+
+                changeView();
+
+                if (!$coursecardsul.children('li').length) {
+                    cardsAddNextItems(cardsfirst);
+                }
+            } else if (target === '#tablist') {
+                viewState.setView("1");
+
+                changeView();
+
+                if (!$courselisttable.children('tbody').children('tr').length) {
+                    listAddNextRows(listfirst);
+                }
             }
         };
 
@@ -356,7 +384,7 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                         $(this).click();
                     });
 
-                save_search_criteria(tagarray);
+                saveInterestsAndGetCoursesSequence(tagarray);
             } else {
                 showtagliststate = !showtagliststate;
                 $switchDisplayBtn.text($switchDisplayBtn.data('changetoresults'));
@@ -385,86 +413,31 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
         };
 
         /**
-         * Handle the cards/list tab change event.
-         *
-         * When the cards are shown disable the »Show course tags« checkbox.
-         *
-         * @param {object} e The event object
-         */
-        var tabChangeHandler = function (e) {
-            var target = $(e.target).attr("href"),
-                $showtagscheckbox = $coursesearchform.find('.display').find('[data-group="tags"]'),
-                $input = $showtagscheckbox.find('input');
-
-            if (target === '#tabcards') {
-                $showtagscheckbox.addClass('hidden');
-                listScrollEventHandlerOn(false);
-                cardsScrollEventHandlerOn(true);
-
-                if (!$coursecardsul.children('li').length) {
-                    cardsAddNextItems(cardsfirst);
-                }
-            } else if (target === '#tablist') {
-                $showtagscheckbox.removeClass('hidden');
-                cardsScrollEventHandlerOn(false);
-                listScrollEventHandlerOn(true);
-
-                if (!listrendered) {
-                    var nextids = listcourseidsremaining.splice(0, listfirst);
-                    renderListArea({
-                        'courses': nextids.map(function (k) {
-                            return courses[k];
-                        })
-                    });
-                } else {
-                    if (!$courselisttable.children('tbody').children('tr').length) {
-                        listAddNextRows(listfirst);
-                    }
-                }
-            }
-        };
-
-        /**
          * Handle the date picker »changeDate« events.
          *
          * @param {object} e The jQuery event object
          */
         var dateChangeHandler = function (e) {
             var $ele = $(e.target),
-                $parent = $ele.parents('.date'),
+                // $parent = $ele.parents('.date'),
+                $parent = $ele,
+                group = $parent.data('group'),
                 dateEuro = e.format("yyyymmdd"),
-                dateUser = e.format("dd.mm.yyyy"),
-                activityContext = $.extend({}, activityContextObj, {
-                    type: $parent.data('type'),
-                    group: $parent.data('group'),
-                    name: $parent.data('name'),
-                    posttext: " " + dateUser
-                });
+                dateEuroStr = e.format("yyyy-mm-dd"),
+                dateUser = e.format("dd.mm.yyyy");
+
+            // Save the changed date.
+            viewState.setDate(dateEuroStr === "" ? '0' : dateEuroStr, group);
 
             // Set the value of the related hidden field to the euro formatted date
             // which is returned form the date picker. Internally used because the tag date property is formated this way.
             $ele.siblings('input[type="hidden"]').eq(0).val(dateEuro);
 
-            // Remove or add the related tag in the selected tag list depending on the checked status.
-            // Remove an eventually existing tag.
-            $tagarea
-                .find('button')
-                .filter('[data-name="' + $parent.data('name') + '"]')
-                .parent('li')
-                .remove();
-
-            if (dateUser === "") {
-                activityContext.remove = 1;
+            if (group.indexOf('from') !== -1) {
+                changeDateTag('from');
             } else {
-                templates
-                    .render('local_course_search/course_search_selected_tags_item', activityContext)
-                    .done(function (html) {
-                        $selectedCourseTags.append(html);
-                    });
+                changeDateTag('to');
             }
-
-            filterCourses();
-            // sortedCourseDisplayUpdate();
         };
 
         /**
@@ -484,60 +457,40 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
             var $ele = $(this),
                 $parent = $ele.parent(),
                 checked = $ele.is(":checked"),
-                $relatedTag = null,
-                activityContext = $.extend({}, activityContextObj, {
-                    id: $parent.data('id'),
-                    type: $parent.data('type'),
-                    group: $parent.data('group'),
-                    name: $parent.data('name')
-                });
+                id = $parent.data('id');
 
             // Remove or add the related tag in the selected tag list depending on the checked status.
             if (!checked) {
-                $relatedTag = $tagarea
-                    .find('button')
-                    .filter('[data-name="' + $ele.parent().data('name') + '"]')
-                    .parent('li')
-                    .remove();
-                activityContext.remove = 1;
+                // Change the related viewstate.
+                if (typeof id === "string" && id.indexOf('d') !== -1) {
+                    changeCheckbox('.display', id, 0);
+                    viewState.setDisplay('0', (id === 'd1' ? 'desc' : 'showtags'));
+                    // Change sort when descending has been clicked.
+                    if (id === 'd1') {
+                        changeColumnSort();
+                    }
+                } else {
+                    changeCheckbox('.tag-group', id, 0);
+                    viewState.setTag(id.toString(), 'remove');
+                }
             } else if ($parent.data('group') === 'sort') {
-                // If the sort changed then remove the existing sort tag and add the new.
-                $relatedTag = $tagarea
-                    .find('button')
-                    .filter('[data-group="sort"]')
-                    .parent('li')
-                    .remove();
-
-                // Prepare sort related data.
-                activityContext.sort = $parent.data('sort');
-                activityContext.name = M.str.local_course_search.sortby + " " +
-                    M.str.local_friadmin[sortstrmapping[activityContext.sort]];
-
-                templates
-                    .render('local_course_search/course_search_selected_tags_item', activityContext)
-                    .done(function (html) {
-                        $selectedCourseTags.append(html);
-                    });
+                changeCheckbox('.display', id, 1);
+                if (id === "d0") {
+                    viewState.setDisplay($parent.data('sort'), 'sort');
+                }
             } else {
-                templates
-                    .render('local_course_search/course_search_selected_tags_item', activityContext)
-                    .done(function (html) {
-                        $selectedCourseTags.append(html);
-                    });
+                if (typeof id === "string" && id.indexOf('d') !== -1) {
+                    changeCheckbox('.display', id, 1);
+                    viewState.setDisplay('1', (id === 'd1' ? 'desc' : 'showtags'));
+                    // Change sort when descending has been clicked.
+                    if (id === 'd1') {
+                        changeColumnSort();
+                    }
+                } else {
+                    changeCheckbox('.tag-group', id, 1);
+                    viewState.setTag(id.toString(), 'add');
+                }
             }
-
-            if ($parent.data('type') === 'course') {
-                filterCourses();
-            }
-
-            sortedCourseDisplayUpdate();
-        };
-
-        /**
-         * Handle the change event for the sort select popup menu to sort the course by columns.
-         */
-        var sortSelectHandler = function () {
-            sortSelect();
         };
 
         /**
@@ -546,21 +499,16 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
          * Use a hidden checkbox to trigger the sort. Change the data of the hidden checkbox to the selected option.
          * With the hidden checkbox the central checkbox event system can be used to handle the sorting.
          */
-        var sortSelect = function () {
+        var sortSelectHandler = function () {
             var $selected = $selectsort.find("option:selected").eq(0),
                 $relatedCheckboxLabel = $selectsort.siblings('.hidden').eq(0),
                 selecteditem = $selected.val().toLowerCase();
 
-            if (sortbystate === selecteditem) {
-                return;
-            } else {
-                sortbystate = selecteditem;
-            }
-
             $relatedCheckboxLabel.data('sort', selecteditem);
-            $relatedCheckboxLabel
-                .find('input')
-                .trigger('change');
+
+            viewState.setDisplay(selecteditem, 'sort');
+
+            changeColumnSort();
         };
 
         /**
@@ -576,19 +524,20 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                 $relatedCheckboxLabel = $selectsort.siblings('.hidden').eq(0),
                 sortwhat = $target.data('sort');
 
-            if (sortbystate === sortwhat) {
-                sortascstate = !sortascstate;
-                $searcharea.find('[data-group="sortdesc"]').find('input').click();
+            // If a user clicks on the same column change the sortorder.
+            if (viewState.getDisplaySort() === sortwhat) {
+                if (viewState.getDisplayDesc() === '0') {
+                    viewState.setDisplay('1', 'desc');
+                    changeCheckbox('.display', 'd1', 1);
+                } else {
+                    viewState.setDisplay('0', 'desc');
+                    changeCheckbox('.display', 'd1', 0);
+                }
             } else {
-                sortbystate = sortwhat;
+                viewState.setDisplay(sortwhat, 'sort');
             }
 
-            $selectsort.val(sortwhat);
-
-            $relatedCheckboxLabel.data('sort', sortwhat);
-            $relatedCheckboxLabel
-                .find('input')
-                .trigger('change');
+            changeColumnSort();
         };
 
         /**
@@ -597,24 +546,44 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
          * Remove the tag and change the state of the related element in the search tag area.
          */
         var selectedTagClickHandler = function () {
-            var $ele = $(this);
+            var $ele = $(this),
+                id = 0;
 
-            // Change the state of the related element in the serach area.
+            // Change the state of the related element in the search area.
             if ($ele.data('group') === 'searchquery') {
                 $coursesearchform.find('.search-query').val('');
+                viewState.setText('');
             } else if ($ele.data('group') === 'date-from') {
-                $("#date-from").datepicker('update', '');
+                $dpfrom.datepicker('update', '');
                 $("#date-from-eurodate").val('');
+                viewState.setDate('0', 'date-from');
             } else if ($ele.data('group') === 'date-to') {
-                $("#date-to").datepicker('update', '');
+                $dpto.datepicker('update', '');
                 $("#date-to-eurodate").val('');
+                viewState.setDate('0', 'date-to');
             } else if ($ele.data('group') === 'sort') {
                 $selectsort.val('name');
-            } else {
+                viewState.setDisplay('name', 'sort');
+                changeColumnSort();
+            } else if ($ele.data('type') === 'display') {
+                id = $ele.data('id');
                 $searcharea
                     .find('label')
-                    .filter('[data-name="' + $ele.data('name') + '"]')
+                    .filter('[data-id="' + id + '"]')
                     .find('input').prop('checked', false);
+                if (id === 'd1') {
+                    viewState.setDisplay('0', 'desc');
+                    changeColumnSort();
+                } else if (id === 'd2') {
+                    viewState.setDisplay('0', 'showtags');
+                }
+            } else {
+                id = $ele.data('id');
+                $searcharea
+                    .find('label')
+                    .filter('[data-id="' + id + '"]')
+                    .find('input').prop('checked', false);
+                viewState.setTag(id, 'remove');
             }
 
             // Remove the top right tag.
@@ -622,9 +591,9 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
 
             // Start the related action.
             if ($ele.data('group') === 'sort') {
-                sortSelectHandler();
+                // sortSelectHandler();
             } else if ($ele.data('type') === 'course') {
-                filterCourses();
+                // filterCourses();
             } else if ($ele.data('type') === 'display') {
                 // sortedCourseDisplayUpdate();
             }
@@ -708,42 +677,15 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
          */
         var textSearchHandler = function (e) {
             var $form = $(this),
-                text,
-                activityContext;
+                text;
 
             // Don't trigger form submit action for the page.
             e.preventDefault();
 
             text = $form.find('.search-query').val();
-            activityContext = $.extend({}, activityContextObj, {
-                type: 'course',
-                group: 'searchquery',
-                name: text,
-                pretext: 'Search text: '
-            });
+            viewState.setText(text);
 
-            // Remove a possibly present search text tag.
-            $tagarea.find('li').has('[data-group="searchquery"]').remove();
-
-            // Add the search string as a tag.
-            if (text !== '') {
-                templates
-                    .render('local_course_search/course_search_selected_tags_item', activityContext)
-                    .done(function (html) {
-                        $selectedCourseTags.append(html);
-                    });
-            }
-
-            filterCourses();
-        };
-
-        /**
-         * Get the selected tag search text.
-         *
-         * @returns {string} The entered text
-         */
-        var getSelectedSearchText = function () {
-            return $coursesearchfield.val().toLowerCase();
+            changeSearchtextTag();
         };
 
         /**
@@ -795,33 +737,6 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
             });
 
             return searchItems;
-        };
-
-        /**
-         * Get the date object form the date selector.
-         *
-         * @returns {Object} The selected dates
-         */
-        var getSelectedFromToDates = function () {
-            var dates = {
-                    from: null,
-                    to: null
-                },
-                date;
-
-            // Check and set the from date.
-            date = $("#date-from-eurodate").val();
-            if (date !== "") {
-                dates.from = date;
-            }
-
-            // Check and set the to date.
-            date = $("#date-to-eurodate").val();
-            if (date !== "") {
-                dates.to = date;
-            }
-
-            return dates;
         };
 
         /**
@@ -997,97 +912,130 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
          * Then walk the course nodes in the display area and set the display status.
          */
         var filterCourses = function () {
-            var selectedCourseTagsGrouped = getSelectedCourseTagsGrouped(),
-                searchText = getSelectedSearchText(),
-                fromtoDates = getSelectedFromToDates(), // array with the [from, to] dates
-                hasTextSearch = (searchText !== ''),
-                courseIDsFiltered = cloneArray(courseids),
-                filtered = [],
-                thecourse,
-                foundany = false;
-
-            // If no search criterion is set show all courses.
-            if (!Object.keys(selectedCourseTagsGrouped).length && '' === searchText &&
-                fromtoDates.from === null && fromtoDates.to === null) {
-                showFilteredCourses(courseIDsFiltered);
-                return;
-            }
-
-            // Check if the course dates match the chosen dates.
-            if (fromtoDates.from !== null || fromtoDates.to !== null) {
-                filtered = courseIDsFiltered.filter(function (id) {
-                    thecourse = courses[id];
-                    if (fromtoDates.from !== null && fromtoDates.to !== null) {
-                        if (thecourse.sortdate >= fromtoDates.from && thecourse.sortdate <= fromtoDates.to) {
-                            return true;
-                        }
-                    } else if (fromtoDates.from !== null) {
-                        if (thecourse.sortdate >= fromtoDates.from) {
-                            return true;
-                        }
-                    } else if (fromtoDates.to !== null) {
-                        if (thecourse.sortdate <= fromtoDates.to) {
-                            return true;
-                        }
-                    } else {
-                        return false;
-                    }
-                });
-
-                if (filtered.length) {
-                    foundany = true;
-                    courseIDsFiltered = cloneArray(filtered);
-                    filtered = [];
-                }
-            }
-
-            // Check if the text index contains the search string.
-            if (hasTextSearch) {
-                filtered = courseIDsFiltered.filter(function (id) {
-                    thecourse = courses[id];
-                    return (thecourse.hasOwnProperty('alltext') && thecourse.alltext &&
-                        thecourse.alltext.indexOf(searchText) !== -1);
-                });
-
-                courseIDsFiltered = cloneArray(filtered);
-                if (filtered.length) {
-                    foundany = true;
-                    filtered = [];
-                } else {
+            log.debug('enter filterCourses');
+            return new Promise(function (resolve, reject) {
+                var selectedCourseTagsGrouped = getSelectedCourseTagsGrouped(),
+                    searchText = viewState.getText(),
+                    fromDate = viewState.getFromDate(),
+                    fromDateInt = 0,
+                    toDate = viewState.getToDate(),
+                    toDateInt = 0,
+                    hasTextSearch = (viewState.getText() !== ''),
+                    filtered = [],
+                    thecourse,
+                    sortdateInt,
                     foundany = false;
-                }
-            }
 
-            // Filter the tags. Within a tag group use OR, between the tag groups AND.
-            Object.keys(selectedCourseTagsGrouped).forEach(function (key) {
-                filtered = courseIDsFiltered.filter(function (id) {
-                    // Use OR - any group tag will be positive.
-                    var found = false;
-                    selectedCourseTagsGrouped[key].forEach(function (item) {
-                        if (courses[id].tagcollection.indexOf(item) !== -1) {
-                            found = true;
+                courseIDsFiltered = courseids.slice();
+
+                // If no search criterion is set show all courses.
+                if (!Object.keys(selectedCourseTagsGrouped).length && !hasTextSearch &&
+                    fromDate === "0" && toDate === "0") {
+                    resolve(courseIDsFiltered);
+                    return;
+                }
+
+                // Check if the course dates match the chosen dates.
+                if (fromDate !== "0" || toDate !== "0") {
+                    console.log(fromDate, toDate);
+                    fromDateInt = parseInt(fromDate.replace(/-/g, ''), 10);
+                    toDateInt = parseInt(toDate.replace(/-/g, ''), 10);
+                    filtered = courseIDsFiltered.filter(function (id) {
+                        thecourse = courses[id];
+                        sortdateInt = parseInt(thecourse.sortdate, 10);
+                        if (fromDateInt && toDateInt) {
+                            if (sortdateInt >= fromDateInt && sortdateInt <= toDateInt) {
+                                return true;
+                            }
+                        } else if (fromDateInt) {
+                            if (sortdateInt >= fromDateInt) {
+                                return true;
+                            }
+                        } else if (toDateInt) {
+                            if (sortdateInt <= toDateInt) {
+                                return true;
+                            }
+                        } else {
+                            return false;
                         }
                     });
 
-                    return found;
+                    if (filtered.length) {
+                        foundany = true;
+                        courseIDsFiltered = filtered.slice();
+                        filtered = [];
+                    }
+                }
+
+                // Check if the text index contains the search string.
+                if (hasTextSearch) {
+                    filtered = courseIDsFiltered.filter(function (id) {
+                        thecourse = courses[id];
+                        return (thecourse.hasOwnProperty('alltext') && thecourse.alltext &&
+                            thecourse.alltext.indexOf(searchText) !== -1);
+                    });
+
+                    courseIDsFiltered = filtered.slice();
+                    if (filtered.length) {
+                        foundany = true;
+                        filtered = [];
+                    } else {
+                        foundany = false;
+                    }
+                }
+
+                // Filter the tags. Within a tag group use OR, between the tag groups AND.
+                Object.keys(selectedCourseTagsGrouped).forEach(function (key) {
+                    filtered = courseIDsFiltered.filter(function (id) {
+                        // Use OR - any group tag will be positive.
+                        var found = false;
+                        selectedCourseTagsGrouped[key].forEach(function (item) {
+                            if (courses[id].tagcollection.indexOf(item) !== -1) {
+                                found = true;
+                            }
+                        });
+
+                        return found;
+                    });
+
+                    // Use AND - reduce the found courses list to the found courses for the next tag group.
+                    courseIDsFiltered = filtered.slice();
+                    if (filtered.length) {
+                        foundany = true;
+                        filtered = [];
+                    } else {
+                        foundany = false;
+                    }
                 });
 
-                // Use AND - reduce the found courses list to the found courses for the next tag group.
-                courseIDsFiltered = cloneArray(filtered);
-                if (filtered.length) {
-                    foundany = true;
-                    filtered = [];
-                } else {
-                    foundany = false;
+                // If tags are selected but no courses match then set the id list to -1.
+                if (!foundany) {
+                    courseIDsFiltered = [-1];
                 }
+
+                resolve(courseIDsFiltered);
             });
+        };
 
-            // If tags are selected but no courses match then set the id list to -1.
-            if (!foundany) {
-                courseIDsFiltered = [-1];
-            }
+        /**
+         * Sort the courses to be shown.
+         */
+        var sortFilteredCourses = function (courseIDsToShow) {
+            log.debug('enter sortFilteredCourses');
+            return new Promise(function (resolve, reject) {
+                var courseIDsSorted = _
+                    .chain(_.values(courses))
+                    .filter(function (item) {
+                        return courseIDsToShow.indexOf('c' + item['id']) !== -1;
+                    })
+                    .orderBy(col2sortfieldmap[viewState.getDisplaySort()], viewState.getDisplayDesc() === '0' ? 'asc' : 'desc')
+                    .flatMap(function (item) {
+                        return 'c' + item.id;
+                    })
+                    .value();
 
-            showFilteredCourses(courseIDsFiltered);
+                resolve(courseIDsSorted);
+            });
         };
 
         /**
@@ -1096,62 +1044,69 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
          * @param {Array} courseIDsToShow The list of course ids to show
          */
         var showFilteredCourses = function (courseIDsToShow) {
-            var context,
-                nextids;
+            log.debug('enter showFilteredCourses');
+            return new Promise(function (resolve, reject) {
+                var context,
+                    nextids;
 
-            // Clear the course display.
-            $coursecardsul.html('');
-            if ($courselisttable) {
-                $courselisttable.children('tbody').html('');
-            }
+                // Clear the course display.
+                $coursecardsul.html('');
+                if ($courselisttable) {
+                    $courselisttable.children('tbody').html('');
+                }
 
-            if (!courseIDsToShow.length || courseIDsToShow[0] === -1) {
-                cardcourseidsremaining = [];
-                listcourseidsremaining = [];
-                actualCourseCount = 0;
-                $actualCourseCount.text(actualCourseCount);
-            } else {
-                cardcourseidsremaining = cloneArray(courseIDsToShow);
-                listcourseidsremaining = cloneArray(courseIDsToShow);
-                actualCourseCount = courseIDsToShow.length;
-                $actualCourseCount.text(actualCourseCount);
-                context = {'courses': []};
+                // Check if there are courses to be shown.
+                if (!courseIDsToShow.length || courseIDsToShow[0] === -1) {
+                    cardcourseidsremaining = [];
+                    listcourseidsremaining = [];
+                    actualCourseCount = 0;
+                    $actualCourseCount.text(actualCourseCount);
+                } else {
+                    cardcourseidsremaining = courseIDsToShow.slice();
+                    listcourseidsremaining = courseIDsToShow.slice();
+                    actualCourseCount = courseIDsToShow.length;
+                    $actualCourseCount.text(actualCourseCount);
+                    context = {'courses': []};
 
-                if ($cardsarea.hasClass('active')) {
-                    nextids = cardcourseidsremaining.splice(0, cardsfirst);
+                    if (viewState.getView() === '0') {
+                        nextids = cardcourseidsremaining.splice(0, cardsfirst);
 
-                    context.courses = nextids.map(function (k) {
-                        return courses[k];
-                    });
+                        context.courses = nextids.map(function (k) {
+                            return courses[k];
+                        });
 
-                    if (context.courses.length) {
-                        templates
-                            .render('local_course_search/course_search_course_card_set', context)
-                            .done(function (html) {
-                                $coursecardsul.html(html);
-                                cardsScrollEventHandlerOn(true);
-                            });
-                    }
-                } else if ($listarea.hasClass('active')) {
-                    nextids = listcourseidsremaining.splice(0, listfirst);
+                        if (context.courses.length) {
+                            templates
+                                .render('local_course_search/course_search_course_card_set', context)
+                                .done(function (html) {
+                                    $coursecardsul.html(html);
+                                    cardsScrollEventHandlerOn(true);
+                                });
+                        }
+                    } else if (viewState.getView() === '1') {
+                        nextids = listcourseidsremaining.splice(0, listfirst);
 
-                    context.courses = nextids.map(function (k) {
-                        return courses[k];
-                    });
+                        context.courses = nextids.map(function (k) {
+                            return courses[k];
+                        });
 
-                    if (context.courses.length) {
-                        templates
-                            .render('local_course_search/course_search_course_list_set', context)
-                            .done(function (html) {
-                                $courselisttable.children('tbody').html(html);
-                                listScrollEventHandlerOn(true);
-                            });
+                        if (context.courses.length) {
+                            templates
+                                .render('local_course_search/course_search_course_list_set', context)
+                                .done(function (html) {
+                                    $courselisttable.children('tbody').html(html);
+                                    listScrollEventHandlerOn(true);
+                                });
+                        }
                     }
                 }
-            }
+
+                // Return the course ids.
+                resolve(courseIDsToShow);
+            });
         };
 
-        /**
+        /** -- check
          * Set the visibility of the courses in the cards and list view.
          *
          * @param {Array} courseIDsToShow The list of course ids to show
@@ -1189,7 +1144,52 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
         /**
          * Get the course data for the user viewable courses via ajax.
          */
-        var get_coursedata = function () {
+        var getCoursedata = function () {
+            log.debug('enter getCoursedata');
+            return new Promise(function (resolve, reject) {
+                if (nocourses) {
+                    resolve(false);
+                    return;
+                }
+                $.when(
+                    ajax.call([
+                        {
+                            methodname: 'local_course_search_get_course_data',
+                            args: {
+                                userid: userid
+                            }
+                        }
+                    ])[0]
+                ).then(function (response) {
+                    var coursedata = JSON.parse(response.coursedata);
+
+                    courses = coursedata.courses;
+
+                    // Create an array with the courses from the »courses« object.
+                    // This has the courseid as keys and needs to be converted into an array of objects.
+                    courseids = Object.keys(courses);
+                    courseIDsFiltered = courseids.slice();
+                    cardcourseidsremaining = courseids.slice();
+                    listcourseidsremaining = courseids.slice();
+
+                    $resultarea.find('.alert-info').remove();
+
+                    actualCourseCount = courseids.length;
+                    $actualCourseCount.text(actualCourseCount);
+                    $actualCourseCountInfo.show();
+
+                    console.log('courses', courses);
+                    console.log('courseids', courseids.slice());
+
+                    resolve(true);
+                });
+            });
+        };
+
+        /**
+         * Get the course data for the user viewable courses via ajax.
+         */
+        var getCoursedata_o = function () {
             $.when(
                 ajax.call([
                     {
@@ -1202,6 +1202,9 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
             ).then(function (response) {
                 var coursedata = JSON.parse(response.coursedata),
                     nextids = [];
+
+                // Prefetch the list template.
+                templates.render('local_course_search/course_search_course_list', {});
 
                 courses = coursedata.courses;
 
@@ -1226,7 +1229,7 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                 });
 
                 // And now get the course tags.
-                get_all_course_tags();
+                getAllCourseTags();
             });
         };
 
@@ -1265,7 +1268,7 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                 console.log('changed courseids', courseids.slice());
 
                 // View the cards and list the first set.
-                $navtabs.find('[href="#tabcards"]').trigger('click');
+                // $navtabs.find('[href="#tabcards"]').trigger('click');
                 cardsScrollEventHandlerOn(true);
                 cardsAddNextItems(cardsfirst);
             });
@@ -1276,39 +1279,41 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
          *
          * @param {Array} tagarray The array with the selected tag ids
          */
-        var save_search_criteria = function (tagarray) {
-            var data = {
-                sesskey: M.cfg.sesskey,
-                tags: tagarray
-            };
-            $.when(
-                ajax.call([
-                    {
-                        methodname: 'local_course_search_save_search_criteria',
-                        args: {
-                            data: JSON.stringify(data)
+        var saveInterests = function (tagarray) {
+            log.debug('enter saveInterests');
+            return new Promise(function (resolve, reject) {
+                var data = {
+                    sesskey: M.cfg.sesskey,
+                    tags: tagarray
+                };
+                $.when(
+                    ajax.call([
+                        {
+                            methodname: 'local_course_search_save_search_criteria',
+                            args: {
+                                data: JSON.stringify(data)
+                            }
                         }
+                    ])[0]
+                ).then(function (response) {
+                    var result = JSON.parse(response.result);
+                    showtagliststate = !showtagliststate;
+
+                    // Clear the course display.
+                    $coursecardsul.html('');
+                    if ($courselisttable) {
+                        $courselisttable.children('tbody').html('');
                     }
-                ])[0]
-            ).then(function (response) {
-                var result = JSON.parse(response.result);
-                showtagliststate = !showtagliststate;
 
-                // Clear the course display.
-                $coursecardsul.html('');
-                if ($courselisttable) {
-                    $courselisttable.children('tbody').html('');
-                }
+                    $coursesearchform.find('.tag-group')
+                        .not(':has(label.checkbox)')
+                        .addClass('fieldset-hidden');
 
-                // Get the changed course data.
-                get_changed_coursedata();
+                    $resultarea.toggleClass('section-hidden');
+                    $tagpreselectarea.toggleClass('section-hidden');
 
-                $coursesearchform.find('.tag-group')
-                    .not(':has(label.checkbox)')
-                    .addClass('fieldset-hidden');
-
-                $resultarea.toggleClass('section-hidden');
-                $tagpreselectarea.toggleClass('section-hidden');
+                    resolve(true);
+                });
             });
         };
 
@@ -1335,7 +1340,7 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
         /**
          * Get all course tags for the preselect area via ajax.
          */
-        var get_all_course_tags = function () {
+        var getAllCourseTags = function () {
             // When the tag preselect area is rendered the first time preselecttagsloaded is set to true.
             if (preselecttagsloaded) {
                 return;
@@ -1375,79 +1380,477 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
          *
          * Load the code for the date picker and initialize the from and to date pickers.
          * Set the event handler for the »changeDate« events.
+         *
+         * @param {string} lang The Moodle lang string
          */
-        var activateDatePicker = function () {
+        var activateDatePicker = function (lang) {
             // Bootstrap 2.x datepicker https://github.com/uxsolutions/bootstrap-datepicker/tree/1.5.
-            // require(['local_course_search/Xloader'], function () {
-            $("#date-from").datepicker({
-                format: "dd.mm.yyyy",
-                calendarWeeks: true,
-                todayHighlight: true,
-                clearBtn: true,
-                autoclose: true
-            }).on("changeDate", function (e) {
-                dateChangeHandler(e);
+            require(['javascript/locales/bootstrap-datepicker.no', 'javascript/locales/bootstrap-datepicker.de'], function () {
+                $dpfrom.datepicker({
+                    language: lang,
+                    format: "dd.mm.yyyy",
+                    calendarWeeks: true,
+                    todayHighlight: true,
+                    clearBtn: true,
+                    autoclose: true
+                }).on("changeDate", function (e) {
+                    dateChangeHandler(e);
+                });
+                $dpto.datepicker({
+                    language: lang,
+                    format: "dd.mm.yyyy",
+                    calendarWeeks: true,
+                    todayHighlight: true,
+                    clearBtn: true,
+                    autoclose: true
+                }).on("changeDate", function (e) {
+                    dateChangeHandler(e);
+                });
             });
-            $("#date-to").datepicker({
-                format: "dd.mm.yyyy",
-                calendarWeeks: true,
-                todayHighlight: true,
-                clearBtn: true,
-                autoclose: true
-            }).on("changeDate", function (e) {
-                dateChangeHandler(e);
-            });
-            // });
         };
 
         /**
-         * Clone an array
-         *
-         * @param {Array} inArray
-         * @returns {Array}
+         * Activate cards or list view.
          */
-        var cloneArray = function (inArray) {
-            return inArray.slice(0);
+        var changeView = function () {
+            var $showtagscheckbox = $coursesearchform.find('.display').find('[data-group="tags"]');
+            $navtabs.find('.active').removeClass('active');
+
+            if (viewState.getView() === "0") {
+                log.debug('Show cards view');
+                $showtagscheckbox.addClass('hidden');
+                changeListViewState(0);
+                changeCardsViewState(1);
+            } else if (viewState.getView() === "1") {
+                log.debug('Show list view');
+                $showtagscheckbox.removeClass('hidden');
+                changeCardsViewState(0);
+                changeListViewState(1);
+            }
+        };
+
+        /**
+         * changeCardsViewState
+         */
+        var changeCardsViewState = function (state) {
+            if (state) {
+                $navtabs.find('a[href="#tabcards"]').parent('li').addClass('active');
+                $cardsarea.addClass('active');
+                cardsScrollEventHandlerOn(true);
+            } else {
+                $cardsarea.removeClass('active');
+                cardsScrollEventHandlerOn(false);
+            }
+        };
+
+        /**
+         * changeListViewState
+         */
+        var changeListViewState = function (state) {
+            if (state) {
+                $navtabs.find('a[href="#tablist"]').parent('li').addClass('active');
+                $listarea.addClass('active');
+                listScrollEventHandlerOn(true);
+            } else {
+                $listarea.removeClass('active');
+                listScrollEventHandlerOn(false);
+            }
+        };
+
+        /**
+         * Set or remove a tag in the tagarea.
+         * identify: '[data-group="searchquery"]'
+         *
+         * @param {string} identify The identifier for an exsiting tag
+         * @param {object} context The date for the template
+         */
+        var changeTagareaTag = function (identify, context) {
+            // Remove the tag related to the identify string.
+            if (identify !== '') {
+                $tagarea.find('li').has(identify).remove();
+            }
+            // Add a tag with the given context.
+            if (_.isObject(context)) {
+                // Add the search string as a tag.
+                templates
+                    .render('local_course_search/course_search_selected_tags_item', context)
+                    .done(function (html) {
+                        $selectedCourseTags.append(html);
+                    });
+            }
+        };
+
+        /**
+         * Set or remove the search text tag in the tagarea.
+         */
+        var changeSearchtextTag = function () {
+            var text = viewState.getText(),
+                activityContext;
+
+            if (text !== '') {
+                activityContext = $.extend({}, activityContextObj, {
+                    type: 'course',
+                    group: 'searchquery',
+                    name: text,
+                    pretext: M.str.local_course_search.searchtext
+                });
+            }
+
+            changeTagareaTag('[data-group="searchquery"]', activityContext);
+        };
+
+        /**
+         * Change a checkbox state.
+         *
+         * @param {string} groupclass the group class
+         * @param {int|string} tagid The tag id
+         * @param {int} state The tag state 0|1
+         */
+        var changeCheckbox = function (groupclass, tagid, state) {
+            var $parent = $coursesearchform
+                    .find(groupclass)
+                    .find('.checkbox[data-id="' + tagid + '"]'),
+                identify = '',
+                activityContext = null;
+
+            if (state) {
+                // Set checkbox to checked.
+                $parent
+                    .find('input')
+                    .prop('checked', true);
+
+                // Set the context for the selected tag item template
+                // and render the tag item.
+                activityContext = $.extend({}, activityContextObj, {
+                    id: $parent.data('id'),
+                    type: $parent.data('type'),
+                    group: $parent.data('group'),
+                    name: $parent.data('name')
+                });
+
+                // Prepare sort related data.
+                if ($parent.data('group') === 'sort') {
+                    activityContext.sort = $parent.data('sort');
+                    activityContext.name = M.str.local_course_search.sortby + " " +
+                        M.str.local_friadmin[sortstrmapping[activityContext.sort]];
+                    identify = '[data-group="sort"]';
+                }
+
+                changeTagareaTag(identify, activityContext);
+            } else {
+                // Set checkbox to unchecked.
+                $parent
+                    .find('input')
+                    .prop('checked', false);
+
+                changeTagareaTag('[data-id="' + $parent.data('id') + '"]', activityContext);
+            }
+        };
+
+        /**
+         * Change the columns sort.
+         */
+        var changeColumnSort = function () {
+            var activityContext;
+
+            $selectsort.val(viewState.getDisplaySort());
+            $selectsort.siblings('.hidden').eq(0).data('sort', viewState.getDisplaySort());
+
+            // Set the CSS class to show the sort arrow.
+            $resultarea.find('.course-list-col-titles').find('.sortasc').removeClass('sortasc');
+            $resultarea.find('.course-list-col-titles').find('.sortdesc').removeClass('sortdesc');
+
+            var $coltitle = $resultarea.find('.course-list-col-titles').find('[data-sort="' + viewState.getDisplaySort() + '"]');
+            if (viewState.getDisplayDesc() === "0") {
+                $coltitle.addClass('sortasc');
+            } else {
+                $coltitle.addClass('sortdesc');
+            }
+
+            // Set the context for the selected tag item template
+            // and render the tag item.
+            activityContext = $.extend({}, activityContextObj, {
+                id: 'd0',
+                type: 'display',
+                group: 'sort',
+                sort: viewState.getDisplaySort(),
+                name: M.str.local_course_search.sortby + " " + M.str.local_friadmin[sortstrmapping[viewState.getDisplaySort()]]
+            });
+
+            changeTagareaTag('[data-id="' + activityContext.id + '"]', activityContext);
+        };
+
+        /**
+         * Set or remove the date tag in the tagarea.
+         *
+         * @param {string} which ("from"|"to")
+         */
+        var changeDateTag = function (which) {
+            var date = '0',
+                text = '',
+                dateUser = '',
+                activityContext = null;
+
+            if (which === 'from') {
+                date = viewState.getFromDate();
+            } else if (which === 'to') {
+                date = viewState.getToDate();
+            }
+
+            if (date !== '0') {
+                if (which === 'from') {
+                    dateUser = $datefrom.siblings('input[type="hidden"]').eq(0).val();
+                    text = $dpfrom.data('name');
+                } else if (which === 'to') {
+                    dateUser = $dateto.siblings('input[type="hidden"]').eq(0).val();
+                    text = $dpto.data('name');
+                }
+
+                activityContext = $.extend({}, activityContextObj, {
+                    id: 'date-' + which,
+                    type: 'course',
+                    group: 'date-' + which,
+                    name: text,
+                    posttext: " " + dateUser
+                });
+
+                changeTagareaTag('[data-id="date-' + which + '"]', activityContext);
+            } else {
+                changeTagareaTag('[data-id="date-' + which + '"]', null);
+            }
+        };
+
+        var changeDisplayShowTags = function () {
+            if (viewState.getDisplayShowtags() === '1') {
+                $resultarea.find(".course-list").removeClass('tags-hidden');
+            } else {
+                $resultarea.find(".course-list").addClass('tags-hidden');
+            }
+        };
+
+        /**
+         * Sequence to work with the saved course data.
+         *
+         * filter -> sort -> show
+         */
+        var filterSortShowCoursesSequence = function () {
+            filterCourses()
+                .then(sortFilteredCourses)
+                .then(showFilteredCourses);
+        };
+
+        /**
+         * Sequence to get and display courses.
+         *
+         * get -> filter -> sort -> show
+         */
+        var getFilterSortShowCoursesSequence = function () {
+            getCoursedata()
+                .then(function (gotCourses) {
+                    if (gotCourses) {
+                        filterSortShowCoursesSequence();
+                    }
+                });
+        };
+
+        /**
+         * Sequence to get and display courses.
+         *
+         * get -> get course tags | filter -> sort -> show
+         */
+        var initialGetCoursesAndCourseTagsSequence = function () {
+            getCoursedata()
+                .then(function (gotCourses) {
+                    getAllCourseTags();
+
+                    if (gotCourses) {
+                        filterSortShowCoursesSequence();
+                    }
+                });
+        };
+
+        /**
+         * Sequence to get and display courses.
+         *
+         * get -> filter -> sort -> show
+         */
+        var saveInterestsAndGetCoursesSequence = function (tagarray) {
+            saveInterests(tagarray)
+                .then(getCoursedata)
+                .then(function (gotCourses) {
+                    if (gotCourses) {
+                        filterSortShowCoursesSequence();
+                    }
+                });
+        };
+
+        /**
+         * Set the
+         * Viewstate structure - groups separated by »|«, items separated by »,«.
+         * '0 (cards) OR 1 (list)|filtertext(search text)|1,2,3 (selected tag list)|2017-10-12(from),0(to)|name(sortbystate),0(desc),0(showtags)'.
+         * defaultviewstate = '0|||0,0|name,0,0'
+         * viewstatearray = [
+         *   "0", // cards|list
+         *   "", // filtertext
+         *   [], // tagidarray,
+         *   ["2017-10-12", "0"], // date from, to
+         *   ["name", "0", "0"] // display options: sort, desc, showtags
+         * ];
+         */
+        var setViewWithOptions = function () {
+            var activityContext;
+
+            // Activate cards or list view.
+            changeView();
+
+            // Set the filter text to the saved search text.
+            if (viewState.getText() !== "") {
+                var text = viewState.getText();
+
+                log.debug('Set search text to: ' + text);
+
+                $coursesearchfield.val(text);
+
+                changeSearchtextTag();
+            }
+
+            // Set the listed tags to checked.
+            log.debug('Check tags: ');
+            log.debug(viewState.getTags());
+            viewState.getTags().forEach(function (tagid) {
+                if (tagid !== "") {
+                    changeCheckbox('.tag-group', tagid, 1);
+                }
+            });
+
+            // Set from, to date.
+            if (viewState.getFromDate() !== "0") {
+                _.delay(function () {
+                    $dpfrom.datepicker('update', viewState.getFromDate().split('-').reverse().join('.'));
+                    changeDateTag('from');
+                }, 500);
+            }
+            if (viewState.getToDate() !== "0") {
+                _.delay(function () {
+                    $dpto.datepicker('update', viewState.getToDate().split('-').reverse().join('.'));
+                    changeDateTag('to');
+                }, 500);
+            }
+
+            // Set the column sort.
+            if (viewState.getDisplayDesc() === "1") {
+                changeCheckbox('.display', 'd1', 1);
+            }
+
+            changeColumnSort();
+
+            // Set show tags.
+            if (viewState.getDisplayShowtags() === "1") {
+                changeCheckbox('.display', 'd2', 1);
+            }
+            changeDisplayShowTags();
         };
 
         /**
          * Initialize function, called with the PHP requires->js_call_amd command.
          */
         return {
-            init: function () {
-                log.debug('AMD module init.');
+            init: function (lang) {
+                log.debug('AMD module init with lang ' + lang);
+
+                viewState.init();
 
                 // Get the relevant DOM elements.
                 $actualCourseCount = $("#actualCourseCount");
                 $actualCourseCountInfo = $("#actualCourseCountInfo");
                 $catalogarea = $('#catalog-area');
                 userid = parseInt($catalogarea.data('userid'), 10);
-                $searcharea = $('#search-area');
+
+
                 $coursesearchform = $('#course-search-form');
                 $coursesearchfield = $coursesearchform.find('#course-search');
-                $resultarea = $('#result-area');
-                $tagpreselectarea = $('#tag-preselect-area');
-                $tagarea = $('#tag-area');
-                $selectedCourseTags = $tagarea.find('.selected-tags');
+                $searcharea = $('#search-area');
                 $formsearch = $searcharea.find('.form-search');
                 $selectsort = $searcharea.find('#select-sort');
+                $datefrom = $("#date-from");
+                $dpfrom = $datefrom.parents('[data-group="date-from"]');
+                $dateto = $("#date-to");
+                $dpto = $dateto.parents('[data-group="date-to"]');
                 $switchDisplayBtn = $searcharea.find('#switch-display');
 
-                // Fetch the course data.
-                get_coursedata();
+                $resultarea = $('#result-area');
+                $navtabs = $resultarea.find('.nav-tabs').eq(0);
+                $cardsarea = $resultarea.find('#tabcards');
+                $listarea = $resultarea.find('#tablist');
+                $coursecardsul = $resultarea.find('#course-cards');
+                $courselisttable = $resultarea.find('#course-list');
+
+                $tagarea = $('#tag-area');
+                $selectedCourseTags = $tagarea.find('.selected-tags');
+
+                $tagpreselectarea = $('#tag-preselect-area');
 
                 // Set the event handlers.
+                $coursesearchform.on('submit', textSearchHandler);
                 $searcharea.on('change', '[type="checkbox"]', checkboxChangeHandler);
                 $searcharea.on('change', '#select-sort', sortSelectHandler);
+
+                $resultarea.on('shown', 'a[data-toggle="tab"]', tabChangeHandler);
                 $resultarea.on('click', 'th.coltitle', colTitleClickHandler);
+
                 $tagarea.on('click', 'button', selectedTagClickHandler);
+
                 $tagpreselectarea.on('change', '[type="checkbox"]', preselectedCheckboxChangeHandler);
                 $tagpreselectarea.on('keyup', '#tagFilter', tagFilterTextHandler);
-                $coursesearchform.on('submit', textSearchHandler);
+
                 $switchDisplayBtn.on('click', toggleTagPreselectPageHandler);
 
+                // Init infinite scroll.
+                cardsInfScroll = new InfiniteScroll($coursecardsul.get(0), {
+                    path: 'page{{#}}', // hack
+                    loadOnScroll: false, // disable loading
+                    history: false,
+                    onInit: function () {
+                        log.debug('cardsInfScroll init');
+                    }
+                });
+
+                // Init infinite scroll.
+                listInfScroll = new InfiniteScroll($courselisttable.get(0), {
+                    path: 'page{{#}}', // hack
+                    loadOnScroll: false, // disable loading
+                    history: false,
+                    onInit: function () {
+                        log.debug('listInfScroll init');
+                    }
+                });
+
+                $('body').on('viewstate:change', function (e, type) {
+                    log.debug('coursesearch:change', type);
+
+                    if (type === 'view') {
+                        // Do nothing here.
+                    } else if (type === 'showtags') {
+                        // Toggle the tag display.
+                        changeDisplayShowTags();
+                    } else if (type === 'sort' || type === 'desc') {
+                        // Change the course sort.
+                        sortFilteredCourses(courseIDsFiltered)
+                            .then(showFilteredCourses);
+                    } else {
+                        // Filter, sort and display the courses.
+                        filterSortShowCoursesSequence();
+                    }
+                });
+
                 // Inititialize the datepicker plugin.
-                activateDatePicker();
+                activateDatePicker(lang);
+
+                // Restore the view from the viewState.
+                setViewWithOptions();
+
+                // Fetch the course data and show the courses.
+                initialGetCoursesAndCourseTagsSequence();
             }
         };
     }
