@@ -498,8 +498,12 @@ class FS_MAPPING {
         $rdo        = null;
         $lstparents = null;
         $params     = null;
+        $plugin     = null;
 
         try {
+            // Plugin info
+            $plugin = get_config('local_fellesdata');
+
             // First element
             $lstparents = array();
             $lstparents[0] = get_string('sel_parent','local_fellesdata');
@@ -508,7 +512,16 @@ class FS_MAPPING {
             $params          = array();
             if ($level != FS_LE_1) {
                 $params['level'] = ($level - 1);
-                $params['nivaa'] = $level;
+                switch ($level) {
+                    case FS_LE_2:
+                        $params['nivaa'] = $plugin->map_two;
+                        break;
+                    case FS_LE_5:
+                        $params['nivaa'] = $plugin->map_three;
+                        break;
+                    default:
+                        $params['nivaa'] = 0;
+                }
             }else if ($level == FS_LE_1) {
                 $params['level'] =  0;
                 $params['nivaa'] =  0;
