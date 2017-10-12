@@ -131,7 +131,6 @@ class doskom {
      */
     public static function import_doskom($company,&$log) {
         /* Variables */
-        $log        = null;
         $noerror    = null;
         $infolog    = null;
 
