@@ -507,7 +507,7 @@ class FS_MAPPING {
             // Search criteria
             $params          = array();
             if ($level != FS_LE_1) {
-                $params['level'] =  ($level - 1);
+                $params['level'] = ($level - 1);
                 $params['nivaa'] = $level;
             }else if ($level == FS_LE_1) {
                 $params['level'] =  0;
@@ -519,7 +519,7 @@ class FS_MAPPING {
                                   ks.name
                      FROM		  {ks_company}	    ks
                         JOIN	  {ksfs_company}	ksfs 	ON  ksfs.kscompany        = ks.companyid
-                        JOIN	  {fs_company}	    fs	    ON  fs.companyid	        = ksfs.fscompany
+                        JOIN	  {fs_company}	    fs	    ON  fs.companyid	      = ksfs.fscompany
                         JOIN	  {fs_imp_company}  fs_imp  ON  fs_imp.org_enhet_over = fs.companyid
 							 							    AND fs_imp.org_nivaa      = :nivaa
                                                             AND fs_imp.imported       = 0
@@ -1394,6 +1394,33 @@ class FS_MAPPING {
                     // Add FS Company
                     $fscompanies[$instance->id] = $instance;
                 }//for_Rdo
+            }else if ($level == FS_LE_1) {
+                $sql = " SELECT   ks.id,
+                                  '0' 				as 'fscompany',
+                                  ks.hierarchylevel as 'nivaa',
+                                  ks.name	    	as 'name',
+                                  '' 				as 'fs_parent',
+                                  '' 				as privat,
+                                  '' as ansvar,
+                                  '' as tjeneste,
+                                  '' as adresse1,
+                                  '' as adresse2,
+                                  '' as adresse3,
+                                  '' as postnr,
+                                  '' as poststed,
+                                  '' as epost
+                          FROM	  {ks_company} ks 
+                          WHERE ks.hierarchylevel = :level";
+
+                // Execute
+                $rdo = $DB->get_record_sql($sql,array('level' => $level));
+                if ($rdo) {
+                    // Info company
+                    $rdo->matches       = self::get_possible_org_matches($rdo->name,$level,$parentid,$sector);
+
+                    // Add FS Company
+                    $fscompanies[$rdo->id] = $rdo;
+                }
             }//if_rdo
 
             return $fscompanies;
