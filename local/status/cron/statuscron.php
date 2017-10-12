@@ -79,7 +79,7 @@ class STATUS_CRON {
             self::$log    =    array();
 
             // Syncronization
-            self::synchronization($plugin,$industry);
+            //self::synchronization($plugin,$industry);
 
             // Log
             $infolog = new stdClass();
