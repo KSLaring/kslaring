@@ -535,11 +535,8 @@ class FS_MAPPING {
             $rdo = $DB->get_recordset_sql($sql,$params);
             $dblog = null;
             global $CFG;
-            if ($rdo) {
-                $dblog = " HOLA" . "\n";
-                $dblog .= " COUNT : " . $rdo->valid() . "\n";
+            if ($rdo->valid()) {
                 foreach ($rdo as $instance) {
-                    $dblog .= $instance->name . "\n";
                     $lstparents[$instance->companyid] = $instance->name;
                 }
             }else if ($level == FS_LE_2) {
@@ -547,8 +544,6 @@ class FS_MAPPING {
                 $sql = " SELECT	  ks.companyid,
                                   ks.name
                          FROM	  {ks_company}	 ks
-                            -- JOIN  {fs_company}	 fs     ON  fs.companyid = CONCAT(ks.companyid,'LE1')
-                             --                            AND fs.level     = ks.hierarchylevel
                          WHERE	  ks.hierarchylevel = :level
                          ORDER BY ks.name";
 
