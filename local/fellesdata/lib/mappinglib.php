@@ -533,14 +533,11 @@ class FS_MAPPING {
 
             // Execute
             $rdo = $DB->get_recordset_sql($sql,$params);
-            $dblog = null;
-            global $CFG;
             if ($rdo->valid()) {
                 foreach ($rdo as $instance) {
                     $lstparents[$instance->companyid] = $instance->name;
                 }
             }else if ($level == FS_LE_2) {
-                $dblog = " HOLA 2" . "\n";
                 $sql = " SELECT	  ks.companyid,
                                   ks.name
                          FROM	  {ks_company}	 ks
@@ -551,12 +548,8 @@ class FS_MAPPING {
                 $rdo = $DB->get_record_sql($sql,$params);
                 if ($rdo) {
                     $lstparents[$rdo->companyid] = $rdo->name;
-                    $dblog .= $rdo->name . "\n";
                 }
             }
-
-            $dblog .= 'HOLA CARACOLA' . "\n";
-            error_log($dblog, 3, $CFG->dataroot . "/paqui.log");
 
             return $lstparents;
         }catch (Exception $ex) {
@@ -593,7 +586,9 @@ class FS_MAPPING {
                                 ks.name,
                                 ksfs.fscompany
                      FROM		{ks_company}    ks
-                        JOIN	{ksfs_company}	ksfs 	ON ksfs.kscompany = ks.companyid
+                        JOIN	{ksfs_company}	ksfs 	ON (ksfs.kscompany = ks.companyid
+                                                            OR 
+                                                            CONCAT(ks.companyid,'LE1') = ks.companyid)
                         JOIN	{fs_company}	fs		ON fs.companyid	  = ksfs.fscompany
                      WHERE		ks.companyid = :companyid ";
 
