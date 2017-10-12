@@ -21,7 +21,7 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                 'date': 3,
                 'display': 4
             },
-            defaultviewstate = '1|course|1,23,31|2017-10-06,0|date,1,1';
+            defaultviewstate = '0|||0,0|name,0,0';
 
         /**
          * Save the user selections in a cookie.
