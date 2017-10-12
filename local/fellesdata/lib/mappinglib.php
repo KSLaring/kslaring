@@ -536,12 +536,14 @@ class FS_MAPPING {
             $dblog = null;
             global $CFG;
             if ($rdo) {
-                $dblog = " HOLA";
+                $dblog = " HOLA" . "\n";
+                $dblog .= " COUNT : " . $rdo->valid() . "\n";
                 foreach ($rdo as $instance) {
+                    $dblog .= $instance->name . "\n";
                     $lstparents[$instance->companyid] = $instance->name;
                 }
             }else if ($level == FS_LE_2) {
-                $dblog = " HOLA 2";
+                $dblog = " HOLA 2" . "\n";
                 $sql = " SELECT	  ks.companyid,
                                   ks.name
                          FROM	  {ks_company}	 ks
