@@ -105,6 +105,7 @@ M.core_user.init_fs_company_to_map = function (Y,selectorlevel,hidelevel,selecto
             level = this.selselector.get('value');
             this.hlevel.set('value',level);
 
+            alert('level --> ' + level);
             var iotrans = Y.io(M.cfg.wwwroot + '/local/fellesdata/mapping/fsparent.php', {
                 method: 'POST',
                 data: 'level' + '=' + level + '&sesskey=' + M.cfg.sesskey,

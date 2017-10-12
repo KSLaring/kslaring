@@ -541,8 +541,8 @@ class FS_MAPPING {
                 $sql = " SELECT	  ks.companyid,
                                   ks.name
                          FROM	  {ks_company}	 ks
-                            JOIN  {fs_company}	 fs     ON  fs.companyid = CONCAT(ks.companyid,'LE1')
-                                                        AND fs.level     = ks.hierarchylevel
+                            -- JOIN  {fs_company}	 fs     ON  fs.companyid = CONCAT(ks.companyid,'LE1')
+                             --                            AND fs.level     = ks.hierarchylevel
                          WHERE	  ks.hierarchylevel = :level
                          ORDER BY ks.name";
 
