@@ -75,6 +75,7 @@ M.core_user.init_fs_company_to_map = function (Y,selectorlevel,hidelevel,selecto
 
         set_parent : function (e) {
             var parent = this.selparent.get('value');
+            alert('parent' + parent);
             if (parent.indexOf('#') != -1) {
                 parent = parent.substr(parent.indexOf('#') +1);
             }//if_else
