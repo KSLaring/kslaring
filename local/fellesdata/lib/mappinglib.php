@@ -1396,11 +1396,11 @@ class FS_MAPPING {
                 }//for_Rdo
             }else if ($level == FS_LE_1) {
                 $sql = " SELECT   ks.id,
-                                  '0' 				as 'fscompany',
-                                  ks.hierarchylevel as 'nivaa',
-                                  ks.name	    	as 'name',
-                                  '' 				as 'fs_parent',
-                                  '' 				as privat,
+                                  CONCAT(ks.companyid,'#LE1#')  as 'fscompany',
+                                  ks.hierarchylevel             as 'nivaa',
+                                  ks.name	    	            as 'name',
+                                  '' 				            as 'fs_parent',
+                                  '' 				            as privat,
                                   '' as ansvar,
                                   '' as tjeneste,
                                   '' as adresse1,
