@@ -607,7 +607,7 @@ class FELLESDATA_CRON {
                 // Log
                 $infolog = new stdClass();
                 $infolog->action 		= 'process_ks_service - Service: ' . $service;
-                $infolog->description 	= 'RESULT: ' . $result;
+                $infolog->description 	= 'RESULT: ' . $response;
                 // Add log
                 self::$log[] = $infolog;
 
