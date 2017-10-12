@@ -192,9 +192,6 @@ class organization_map_form extends moodleform {
         $form->setType('ks',PARAM_INT);
 
         // Add action buttons
-        //$this->add_action_buttons(true,get_string('btn_match','local_fellesdata'));
-
-        // Buttons
         $strcancel = null;
         if ($toMatch) {
             $strcancel = get_string('cancel');

@@ -537,6 +537,19 @@ class FS_MAPPING {
                 foreach ($rdo as $instance) {
                     $lstparents[$instance->companyid] = $instance->name;
                 }
+            }else if ($level == FS_LE_1) {
+                $sql = " SELECT	  ks.companyid,
+                                  ks.name
+                         FROM	  {ks_company}	 ks
+                            JOIN  {fs_company}	 fs     ON  fs.companyid = CONCAT(ks.companyid,'#LE1#')
+                         WHERE	  ks.hierarchylevel = :level
+                         ORDER BY ks.name";
+
+                // Execute
+                $rdo = $DB->get_record_sql($sql,array('level' => $level));
+                if ($rdo) {
+                    $lstparents[$rdo->companyid] = $rdo->name;
+                }
             }
 
             return $lstparents;
