@@ -560,7 +560,7 @@ class FS_MAPPING {
 
             $dblog .= 'HOLA CARACOLA' . "\n";
             error_log($dblog, 3, $CFG->dataroot . "/paqui.log");
-            
+
             return $lstparents;
         }catch (Exception $ex) {
             throw $ex;
