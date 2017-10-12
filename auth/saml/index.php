@@ -205,19 +205,24 @@ define('SAML_INTERNAL', 1);
             auth_saml_error($err['login'], '?logout', $pluginconfig->samllogfile);
         }
 
-        $USER = complete_user_login($user);
+        if ($user->id <= 2) {
+            // To avoid logins from admin and guest
+            $err['login'] = get_string("auth_saml_error_complete_user_data", "auth_saml", $username);
+            auth_saml_error($err['login'], '?logout', $pluginconfig->samllogfile);
+        }
+        $user = complete_user_login($user);
 
         if (function_exists('saml_hook_post_user_created')) {
-            saml_hook_post_user_created($USER);
+            saml_hook_post_user_created($user);
         }
 
         if (isset($SESSION->wantsurl) && !empty($SESSION->wantsurl)) {
              $urltogo = $SESSION->wantsurl;
         }
 
-        $USER->loggedin = true;
-        $USER->site = $CFG->wwwroot;
-        set_moodle_cookie($USER->username);
+        $user->loggedin = true;
+        $user->site = $CFG->wwwroot;
+        set_moodle_cookie($user->username);
 
         if(isset($err) && !empty($err)) {
             auth_saml_error($err, $urltogo, $pluginconfig->samllogfile);
@@ -231,7 +236,7 @@ define('SAML_INTERNAL', 1);
          * Update the express login attempts, if it's necessary
          */
         require_once('../../local/express_login/login/loginlib.php');
-        Express_Link::Update_Attempts($USER->id);
+        Express_Link::Update_Attempts($user->id);
 
         /**
          * @updateDate  05/10/2016
@@ -240,11 +245,11 @@ define('SAML_INTERNAL', 1);
          * Description
          * Add gender
          */
-        if (is_numeric($USER->username) && (strlen($USER->username) == 11)) {
+        if (is_numeric($user->username) && (strlen($user->username) == 11)) {
             /* Library  */
             require_once('../../user/profile/field/gender/lib/genderlib.php');
 
-            Gender::Add_UserGender($USER->id,$USER->username);
+            Gender::Add_UserGender($user->id,$user->username);
         }
 
         /**
@@ -255,8 +260,8 @@ define('SAML_INTERNAL', 1);
          * Check if it is the first access. Then the user has to check and update his/her profile
          */
         require_once('../../local/first_access/locallib.php');
-        if (FirstAccess::has_to_update_profile($USER->id)) {
-            redirect(new moodle_url('/local/first_access/index.php',array('id'=>$USER->id)));
+        if (FirstAccess::has_to_update_profile($user->id)) {
+            redirect(new moodle_url('/local/first_access/index.php',array('id'=>$user->id)));
             die();
         }else {
             /**
@@ -267,17 +272,17 @@ define('SAML_INTERNAL', 1);
              * Check if the user has to update his/her profile
              */
             require_once('../../local/force_profile/forceprofilelib.php');
-            if (ForceProfile::ForceProfile_HasToUpdateProfile($USER->id)) {
+            if (ForceProfile::ForceProfile_HasToUpdateProfile($user->id)) {
                 echo $OUTPUT->header();
-                $url = new moodle_url('/local/force_profile/confirm_profile.php',array('id' => $USER->id));
+                $url = new moodle_url('/local/force_profile/confirm_profile.php',array('id' => $user->id));
                 echo $OUTPUT->notification(get_string('msg_force_update','local_force_profile'), 'notifysuccess');
                 echo $OUTPUT->continue_button($url);
                 echo $OUTPUT->footer();
                 die();
             }else {
                 require_once('../../local/wsks/fellesdata/wsfellesdatalib.php');
-                if (WS_FELLESDATA::IsFakeMail($USER->email)) {
-                    $url = new moodle_url('/local/wsks/email/email.php',array('id' => $USER->id));
+                if (WS_FELLESDATA::IsFakeMail($user->email)) {
+                    $url = new moodle_url('/local/wsks/email/email.php',array('id' => $user->id));
                     redirect($url);
                 }else {
                 // test the session actually works by redirecting to self
