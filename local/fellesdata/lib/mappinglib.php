@@ -1362,8 +1362,10 @@ class FS_MAPPING {
 
             // Parent criteria
             if ($parent) {
-                $params['parent']   = $parent->fscompany;
-                $sql .= " AND	  fs_imp.org_enhet_over = :parent ";
+                if (!strpos($parent->fscompany,'LE1')) {
+                    $params['parent']   = $parent->fscompany;
+                    $sql .= " AND	  fs_imp.org_enhet_over = :parent ";
+                }
             }
 
             // Add notIn criteria
