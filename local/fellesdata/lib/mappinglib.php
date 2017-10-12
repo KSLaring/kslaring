@@ -542,10 +542,12 @@ class FS_MAPPING {
                                   ks.name
                          FROM	  {ks_company}	 ks
                             JOIN  {fs_company}	 fs     ON  fs.companyid = CONCAT(ks.companyid,'#LE1#')
+                                                        AND fs.level     = ks.hierarchylevel
                          WHERE	  ks.hierarchylevel = :level
                          ORDER BY ks.name";
 
                 // Execute
+                echo $sql;
                 $rdo = $DB->get_record_sql($sql,$params);
                 if ($rdo) {
                     $lstparents[$rdo->companyid] = $rdo->name;
