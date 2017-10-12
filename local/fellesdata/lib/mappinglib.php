@@ -1408,7 +1408,8 @@ class FS_MAPPING {
                                   '' as adresse3,
                                   '' as postnr,
                                   '' as poststed,
-                                  '' as epost
+                                  '' as epost,
+                                  ks.parent
                           FROM	  {ks_company} ks 
                           WHERE ks.hierarchylevel = :level";
 
@@ -1416,7 +1417,7 @@ class FS_MAPPING {
                 $rdo = $DB->get_record_sql($sql,array('level' => $level));
                 if ($rdo) {
                     // Info company
-                    $rdo->matches       = self::get_possible_org_matches($rdo->name,$level,$parentid,$sector);
+                    $rdo->matches       = self::get_possible_org_matches($rdo->name,$level,$rdo->parent,$sector);
 
                     // Add FS Company
                     $fscompanies[$rdo->id] = $rdo;
