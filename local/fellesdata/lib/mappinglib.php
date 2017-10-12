@@ -556,11 +556,11 @@ class FS_MAPPING {
                     $lstparents[$rdo->companyid] = $rdo->name;
                     $dblog .= $rdo->name . "\n";
                 }
-
-                $dblog .= 'HOLA CARACOLA' . "\n";
-                error_log($dblog, 3, $CFG->dataroot . "/paqui.log");
             }
 
+            $dblog .= 'HOLA CARACOLA' . "\n";
+            error_log($dblog, 3, $CFG->dataroot . "/paqui.log");
+            
             return $lstparents;
         }catch (Exception $ex) {
             throw $ex;
