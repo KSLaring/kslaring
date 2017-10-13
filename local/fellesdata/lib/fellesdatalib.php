@@ -1293,34 +1293,73 @@ class FSKS_COMPANY {
      * Description
      * Get all companies that have to be synchronized manually.
      *
-     * @return          array
+     * @param           $tomail
+     *
      * @throws          Exception
      *
      * @creationDate    03/02/2016
      * @author          eFaktor     (fbv)
      */
-    public static function get_companiesfs_to_mail() {
+    public static function get_companiesfs_to_mail($level,&$tomail) {
         /* Variables */
         global $DB;
         $sql        = null;
         $rdo        = null;
         $params     = null;
-        $companies  = array();
+        $ini        = null;
+        $nivaa      = null;
+        $mynivaa    = null;
+        $diff       = null;
 
         try {
+            // Plugin info
+            $plugin = get_config('local_fellesdata');
+
+
+            switch ($level) {
+                case FS_LE_1:
+                    $mynivaa = 0;
+                    $ini     = 0;
+                    $nivaa   = 0;
+
+                    break;
+
+                case FS_LE_2:
+                    $ini     = $plugin->map_one;
+                    $nivaa   = $plugin->map_two;
+                    $mynivaa = $nivaa;
+                    break;
+                case FS_LE_5:
+                    $ini    = $plugin->map_two;
+                    $nivaa  = $plugin->map_three;
+                    $mynivaa = $nivaa;
+
+                    break;
+            }
+
             // Search Criteria
             $params = array();
             $params['add'] = ADD;
 
+            $diff = $nivaa - $ini;
+            if ($diff > 1) {
+                for ($i=1;$i<$diff;$i++) {
+                    $mynivaa .= ',' .($i+$ini);
+                }
+            }
+
             // SQL Instruction
             $sql = " SELECT	DISTINCT 
                                   ks.companyid,
-                                  ks.name
+                                  ks.name,
+                                  fs_imp.org_nivaa 	as 'nivaa', 
+                                  ksfs.fscompany    as 'parent'
                      FROM		  {ks_company}	    ks
                         JOIN	  {ksfs_company}	ksfs 	ON  ksfs.kscompany        = ks.companyid
-                        JOIN	  {fs_company}	    fs	    ON  fs.companyid	        = ksfs.fscompany
+                        JOIN	  {fs_company}	    fs	    ON  fs.companyid	      = ksfs.fscompany
                         JOIN	  {fs_imp_company}  fs_imp  ON  fs_imp.org_enhet_over = fs.companyid
                                                             AND fs_imp.imported       = 0
+                                                            AND fs_imp.org_nivaa      IN  (". $mynivaa .")
                         -- Already synchronized
                         LEFT JOIN {fs_company}	    syc	  	ON  syc.companyid 		= fs_imp.org_enhet_id
                                                             AND syc.level 			= fs_imp.org_nivaa
@@ -1332,15 +1371,55 @@ class FSKS_COMPANY {
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 foreach ($rdo as $instance) {
-                    $companies[$instance->companyid] = $instance->name;
-                }//for_rdo
-            }
+                    if ($instance->nivaa == $nivaa) {
+                        $tomail[$instance->companyid] = $instance->name;
+                    }else {
+                        $ini = $instance->nivaa;
+                        // Check childrens
+                        $diff = $nivaa - $instance->nivaa;
 
-            return $companies;
+                        if ($diff >= 1) {
+                            $params = array();
+                            $params['imported'] = 0;
+                            $params['sync'] = 1;
+                            $params['parent'] = $instance->parent;
+
+                            for ($i=1;$i<=$diff;$i++) {
+                                $ini = ($i+$ini);
+                                $params['nivaa'] = $ini;
+
+                                $sql = " SELECT	DISTINCT 
+                                                    fs_imp_ch.org_enhet_over as 'parent',
+                                                    fs_imp_ch.org_nivaa      as 'nivaa'
+                                             FROM		{fs_imp_company}		fs_imp
+                                                -- Daughter
+                                                JOIN	{fs_imp_company}		fs_imp_ch   ON  fs_imp_ch.org_enhet_over = fs_imp.org_enhet_id
+                                                                                            AND fs_imp_ch.org_nivaa = :nivaa
+                                                                                            AND fs_imp_ch.imported = :imported
+                                                -- Already synchronized
+                                                LEFT JOIN {fs_company}	      syc	  		ON  syc.companyid 		= fs_imp_ch.org_enhet_id
+                                                                                            AND syc.level 			= fs_imp_ch.org_nivaa
+                                                                                            AND syc.synchronized 	= :sync
+                                             WHERE	fs_imp.org_enhet_over = :parent
+                                                AND syc.id IS NULL ";
+
+                                // Execute
+                                $rdochild = $DB->get_records_sql($sql,$params);
+                                if ($rdochild) {
+                                    if ($ini == $nivaa) {
+                                        $tomail[$instance->companyid] = $instance->name;
+                                    }
+                                }//if_child
+                            }///if_levels
+                        }
+                    }//if_instance_nivaa
+                }//for_rdo
+            }//if_Rdo
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
     }//get_companiesfs_to_mail
+
 
     public static function get_companiesfs_to_mail_old($notIn = 0) {
         /* Variables    */

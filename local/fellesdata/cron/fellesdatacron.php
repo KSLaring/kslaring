@@ -166,6 +166,7 @@ class FELLESDATA_CRON {
         global $SESSION;
         $pluginInfo     = null;
         $infolog        = null;
+        $toMail         = null;
 
         try {
             // Start log
@@ -245,7 +246,9 @@ class FELLESDATA_CRON {
                         if (!$pluginInfo->automatic) {
                             if ($notifyTo) {
                                 // Get companies to send notifications
-                                $toMail = FSKS_COMPANY::get_companiesfs_to_mail();
+                                $toMail = array();
+                                FSKS_COMPANY::get_companiesfs_to_mail(2,$toMail);
+                                FSKS_COMPANY::get_companiesfs_to_mail(3,$toMail);
 
                                 if ($toMail) {
                                     self::send_notifications(SYNC_COMP,$toMail,$notifyTo,$pluginInfo->fs_source);

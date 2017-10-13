@@ -571,25 +571,24 @@ class FS_MAPPING {
             if ($rdo) {
                 $parents = array();
                 foreach ($rdo as $instance) {
-                    if ($nivaa) {
-                        if ($instance->nivaa == $nivaa) {
-                            $lstparents[$instance->companyid]   = $instance->name;
-                            $parents[$instance->companyid]      = $instance->parent;
-                        }else {
-                            $ini = $instance->nivaa;
-                            // Check childrens
-                            $diff = $nivaa - $instance->nivaa;
-                            if ($diff >= 1) {
-                                $params = array();
-                                $params['imported'] = 0;
-                                $params['sync'] = 1;
-                                $params['parent'] = $instance->parent;
+                    if ($instance->nivaa == $nivaa) {
+                        $lstparents[$instance->companyid]   = $instance->name;
+                        $parents[$instance->companyid]      = $instance->parent;
+                    }else {
+                        $ini = $instance->nivaa;
+                        // Check childrens
+                        $diff = $nivaa - $instance->nivaa;
+                        if ($diff >= 1) {
+                            $params = array();
+                            $params['imported'] = 0;
+                            $params['sync'] = 1;
+                            $params['parent'] = $instance->parent;
 
-                                for ($i=1;$i<=$diff;$i++) {
-                                    $ini = ($i+$ini);
-                                    $params['nivaa'] = $ini;
+                            for ($i=1;$i<=$diff;$i++) {
+                                $ini = ($i+$ini);
+                                $params['nivaa'] = $ini;
 
-                                    $sql = " SELECT	DISTINCT 
+                                $sql = " SELECT	DISTINCT 
                                                     fs_imp_ch.org_enhet_over as 'parent',
                                                     fs_imp_ch.org_nivaa      as 'nivaa'
                                              FROM		{fs_imp_company}		fs_imp
@@ -604,30 +603,24 @@ class FS_MAPPING {
                                              WHERE	fs_imp.org_enhet_over = :parent
                                                 AND syc.id IS NULL ";
 
-                                    // Execute
-                                    $rdochild = $DB->get_records_sql($sql,$params);
-                                    if ($rdochild) {
-                                        if ($ini == $nivaa) {
-                                            $lstparents[$instance->companyid]   = $instance->name;
-                                            $aux = array();
-                                            foreach ($rdochild as $child) {
-                                                $aux[] = $child->parent;
-                                            }
-                                            if ($aux) {
-                                                $parents[$instance->companyid] = implode(',',$aux);
-                                            }
+                                // Execute
+                                $rdochild = $DB->get_records_sql($sql,$params);
+                                if ($rdochild) {
+                                    if ($ini == $nivaa) {
+                                        $lstparents[$instance->companyid]   = $instance->name;
+                                        $aux = array();
+                                        foreach ($rdochild as $child) {
+                                            $aux[] = $child->parent;
                                         }
-                                    }//if_child
-                                }///if_levels
-                            }
+                                        if ($aux) {
+                                            $parents[$instance->companyid] = implode(',',$aux);
+                                        }
+                                    }
+                                }//if_child
+                            }///if_levels
                         }
-                    }else {
-                        $lstparents[$instance->companyid] = $instance->name;
-                        $parents[$instance->companyid]    = $instance->parent;
-                    }
-
-
-                }
+                    }//if_instance_nivaa
+                }//for_rdo
             }else if ($level == FS_LE_2) {
                 $sql = " SELECT	  DISTINCT
                                     ks.companyid,
@@ -642,7 +635,7 @@ class FS_MAPPING {
                 if ($rdo) {
                     $lstparents[$rdo->companyid]    = $rdo->name;
                 }
-            }
+            }//if_rdo
 
             $parents = json_encode($parents);
             return array($lstparents,$parents);

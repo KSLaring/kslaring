@@ -63,6 +63,17 @@ try {
 
         echo $toDate . "</br>";
 
+        $toMail = array();
+        FSKS_COMPANY::get_companiesfs_to_mail(2,$toMail);
+        FSKS_COMPANY::get_companiesfs_to_mail(3,$toMail);
+        if ($toMail) {
+            foreach ($toMail as $key => $company) {
+                echo "KEY: " . $key . " Company: " . $company . "</br>";
+            }
+            //echo "LEvel 3 to look";
+            //$toMail = FSKS_COMPANY::get_companiesfs_to_mail(3);
+        }
+
         //echo " --> " . FS_CRON::can_run();
 /**
         $notifyTo   = explode(',',$pluginInfo->mail_notification);
