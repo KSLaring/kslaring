@@ -499,6 +499,7 @@ class FS_MAPPING {
         $lstparents = null;
         $params     = null;
         $plugin     = null;
+        $parents    = null;
 
         try {
             // Plugin info
@@ -509,18 +510,36 @@ class FS_MAPPING {
             $lstparents[0] = get_string('sel_parent','local_fellesdata');
 
             // Search criteria
-            $params          = array();
+            $params = array();
+            $ini    = null;
+            $nivaa  = null;
+            $diff   = null;
             if ($level != FS_LE_1) {
                 $params['level'] = ($level - 1);
                 switch ($level) {
                     case FS_LE_2:
-                        $params['nivaa'] = $plugin->map_two;
+                        $ini    = $plugin->map_one;
+                        $nivaa  = $plugin->map_two;
+                        $params['nivaa']  = $plugin->map_two;
+                        $diff = $plugin->map_two - $plugin->map_one;
+
                         break;
                     case FS_LE_5:
+                        $ini    = $plugin->map_two;
+                        $nivaa  = $plugin->map_three;
                         $params['nivaa'] = $plugin->map_three;
+                        $diff = $plugin->map_three - $plugin->map_two;
+
                         break;
                     default:
                         $params['nivaa'] = 0;
+                        $nivaa           = 0;
+                }
+
+                if ($diff > 1) {
+                    for ($i=1;$i<$diff;$i++) {
+                        $params['nivaa'] .= ',' .($i+$ini);
+                    }
                 }
             }else if ($level == FS_LE_1) {
                 $params['level'] =  0;
@@ -528,13 +547,16 @@ class FS_MAPPING {
             }
 
             // SQL Instruction
-            $sql = " SELECT		  ks.companyid,
-                                  ks.name
+            $sql = " SELECT   DISTINCT 
+                                  ks.companyid,
+                                  ks.name,
+                                  fs_imp.org_nivaa 	as 'nivaa', 
+                                  ksfs.fscompany    as 'parent'
                      FROM		  {ks_company}	    ks
                         JOIN	  {ksfs_company}	ksfs 	ON  ksfs.kscompany        = ks.companyid
                         JOIN	  {fs_company}	    fs	    ON  fs.companyid	      = ksfs.fscompany
                         JOIN	  {fs_imp_company}  fs_imp  ON  fs_imp.org_enhet_over = fs.companyid
-							 							    AND fs_imp.org_nivaa      = :nivaa
+							 							    AND fs_imp.org_nivaa      IN  (". $params['nivaa'] .")
                                                             AND fs_imp.imported       = 0
 						-- Already synchronized
 						LEFT JOIN {fs_company}	    syc	  	ON  syc.companyid 		= fs_imp.org_enhet_id
@@ -545,26 +567,87 @@ class FS_MAPPING {
                      ORDER BY 	ks.name  ";
 
             // Execute
-            $rdo = $DB->get_recordset_sql($sql,$params);
-            if ($rdo->valid()) {
+            $rdo = $DB->get_records_sql($sql,$params);
+            if ($rdo) {
+                $parents = array();
                 foreach ($rdo as $instance) {
-                    $lstparents[$instance->companyid] = $instance->name;
+                    if ($nivaa) {
+                        if ($instance->nivaa == $nivaa) {
+                            $lstparents[$instance->companyid]   = $instance->name;
+                            $parents[$instance->companyid]      = $instance->parent;
+                        }else {
+                            $ini = $instance->nivaa;
+                            // Check childrens
+                            $diff = $nivaa - $instance->nivaa;
+                            if ($diff >= 1) {
+                                $params = array();
+                                $params['imported'] = 0;
+                                $params['sync'] = 1;
+                                $params['parent'] = $instance->parent;
+
+                                for ($i=1;$i<=$diff;$i++) {
+                                    $ini = ($i+$ini);
+                                    $params['nivaa'] = $ini;
+
+                                    $sql = " SELECT	DISTINCT 
+                                                    fs_imp_ch.org_enhet_over as 'parent',
+                                                    fs_imp_ch.org_nivaa      as 'nivaa'
+                                             FROM		{fs_imp_company}		fs_imp
+                                                -- Daughter
+                                                JOIN	{fs_imp_company}		fs_imp_ch   ON  fs_imp_ch.org_enhet_over = fs_imp.org_enhet_id
+                                                                                            AND fs_imp_ch.org_nivaa = :nivaa
+                                                                                            AND fs_imp_ch.imported = :imported
+                                                -- Already synchronized
+                                                LEFT JOIN {fs_company}	      syc	  		ON  syc.companyid 		= fs_imp_ch.org_enhet_id
+                                                                                            AND syc.level 			= fs_imp_ch.org_nivaa
+                                                                                            AND syc.synchronized 	= :sync
+                                             WHERE	fs_imp.org_enhet_over = :parent
+                                                AND syc.id IS NULL ";
+
+                                    // Execute
+                                    $rdochild = $DB->get_records_sql($sql,$params);
+                                    if ($rdochild) {
+                                        if ($ini == $nivaa) {
+                                            $lstparents[$instance->companyid]   = $instance->name;
+                                            $aux = array();
+                                            foreach ($rdochild as $child) {
+                                                $aux[] = $child->parent;
+                                            }
+                                            if ($aux) {
+                                                $parents[$instance->companyid] = implode(',',$aux);
+                                            }
+                                        }
+                                    }//if_child
+                                }///if_levels
+                            }
+                        }
+                    }else {
+                        $lstparents[$instance->companyid] = $instance->name;
+                        $parents[$instance->companyid]    = $instance->parent;
+                    }
+
+
                 }
             }else if ($level == FS_LE_2) {
-                $sql = " SELECT	  ks.companyid,
-                                  ks.name
-                         FROM	  {ks_company}	 ks
+                $sql = " SELECT	  DISTINCT
+                                    ks.companyid,
+                                    ks.name,
+                                    ksfs.fscompany as 'parent'
+                         FROM	  {ks_company}	  ks
+                            JOIN  {ksfs_company}  ksfs 	ON  ksfs.kscompany        = ks.companyid
                          WHERE	  ks.hierarchylevel = :level
-                         ORDER BY ks.name";
+                         ORDER BY ks.name ";
 
                 // Execute
                 $rdo = $DB->get_record_sql($sql,$params);
                 if ($rdo) {
-                    $lstparents[$rdo->companyid] = $rdo->name;
+                    $lstparents[$rdo->companyid]    = $rdo->name;
+                    $parents[$rdo->companyid]  = $rdo->parent;
                 }
             }
 
-            return $lstparents;
+            $parents = json_encode($parents);
+            return array($lstparents,$parents);
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -596,13 +679,8 @@ class FS_MAPPING {
 
             // SQL Instruction
             $sql = " SELECT		ks.companyid,
-                                ks.name,
-                                ksfs.fscompany
+                                ks.name
                      FROM		{ks_company}    ks
-                        JOIN	{ksfs_company}	ksfs 	ON (ksfs.kscompany = ks.companyid
-                                                            OR 
-                                                            CONCAT(ks.companyid,'LE1') = ks.companyid)
-                        JOIN	{fs_company}	fs		ON fs.companyid	  = ksfs.fscompany
                      WHERE		ks.companyid = :companyid ";
 
             // Execute
@@ -833,7 +911,7 @@ class FS_MAPPING {
         }//
     }//getLevelsMapping
 
-    public static function fs_companies_to_map($level,$parent,$sector,$notin,$start,$length) {
+    public static function fs_companies_to_map($level,$parent,$fsparents,$sector,$notin,$start,$length) {
         /* Variables */
         $fscompanies    = null;
         $total          = null;
@@ -845,14 +923,9 @@ class FS_MAPPING {
             $plugin     = get_config('local_fellesdata');
 
             // Get Companies to Map
-            $fscompanies = self::get_fscompanies_to_map($plugin,$level,$parent,$sector,$notin,$start,$length);
+            $fscompanies = self::get_fscompanies_to_map($plugin,$level,$parent,$fsparents,$sector,$notin,$start,$length);
             // Get Total
-            if ($parent) {
-                $fsparent = $parent->fscompany;
-            }else {
-                $fsparent = 0;
-            }
-            $total = self::get_total_fscompanies_to_map($plugin,$level,$fsparent,$sector,$notin);
+            $total = self::get_total_fscompanies_to_map($plugin,$level,$fsparents,$sector,$notin);
 
             return array($fscompanies,$total);
         }catch (Exception $ex) {
@@ -1300,6 +1373,7 @@ class FS_MAPPING {
      * @param           $plugin
      * @param           $level
      * @param           $parent
+     * @param           $fsparents
      * @param           $sector
      * @param           $notin
      * @param           $start
@@ -1311,7 +1385,7 @@ class FS_MAPPING {
      * @updateDate      02/10/2017
      * @author          eFaktor     (fbv)
      */
-    private static function get_fscompanies_to_map($plugin,$level,$parent,$sector,$notin,$start,$length) {
+    private static function get_fscompanies_to_map($plugin,$level,$parent,$fsparents,$sector,$notin,$start,$length) {
         /* Variables */
         global $DB;
         $rdo         = null;
@@ -1375,10 +1449,7 @@ class FS_MAPPING {
 
             // Parent criteria
             if ($parent) {
-                if (!strpos($parent->fscompany,'LE1')) {
-                    $params['parent']   = $parent->fscompany;
-                    $sql .= " AND	  fs_imp.org_enhet_over = :parent ";
-                }
+                $sql .= " AND	  fs_imp.org_enhet_over IN (" . $fsparents . ")";
             }
 
             // Add notIn criteria
@@ -1464,7 +1535,7 @@ class FS_MAPPING {
     /**
      * @param       Object  $plugin
      * @param               $level
-     * @param               $parent
+     * @param               $fsparents
      * @param               $sector
      * @param               $notIn
      *
@@ -1477,7 +1548,7 @@ class FS_MAPPING {
      * Description
      * Get total companies to map
      */
-    private static function get_total_fscompanies_to_map($plugin,$level,$parent,$sector,$notIn) {
+    private static function get_total_fscompanies_to_map($plugin,$level,$fsparents,$sector,$notIn) {
         /* Variables    */
         global $DB;
         $sql            = null;
@@ -1516,11 +1587,8 @@ class FS_MAPPING {
                           AND	    fs_imp.org_nivaa      = :level ";
 
             // Parent criteria
-            if ($parent) {
-                if (!strpos($parent,'LE1')) {
-                    $params['parent']   = $parent;
-                    $sql .= " AND	  fs_imp.org_enhet_over = :parent ";
-                }
+            if ($fsparents) {
+                $sql .= " AND	  fs_imp.org_enhet_over IN (" . $fsparents . ") ";
             }
 
             // Add notIn criteria

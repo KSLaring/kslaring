@@ -37,6 +37,7 @@ require_login();
 // Params
 $level      = required_param('le',PARAM_INT);
 $parentid   = optional_param('ks',0,PARAM_INT);
+$fsparents  = null;
 $pattern    = null;
 $url        = new moodle_url('/local/fellesdata/mapping/organization.php',array('le' => $level,'ks' => $parentid));
 $return     = new moodle_url('/local/fellesdata/mapping/mapping_org.php');
@@ -86,8 +87,14 @@ if (isset($SESSION->notIn) && count($SESSION->notIn)) {
 if (($level > 1) && (!$parentid)) {
     $out = get_string('errorpaernt','local_fellesdata',$level);
 }else {
+    if (isset($SESSION->fsparents)) {
+        $fsparents = $SESSION->fsparents[$parentid];
+    }else {
+        $fsparents = 0;
+    }
+
     $parent = FS_MAPPING::get_company_ks_info($parentid);
-    list($fstomap,$total) = FS_MAPPING::fs_companies_to_map($level,$parent,$pattern,$notin,$start,$step);
+    list($fstomap,$total) = FS_MAPPING::fs_companies_to_map($level,$parent,$fsparents,$pattern,$notin,$start,$step);
 
     $form    = new organization_map_form(null,array($level,$parent,$pattern,$fstomap,$total));
     if ($form->is_cancelled()) {

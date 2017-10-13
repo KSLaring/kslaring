@@ -78,6 +78,8 @@ if ($form->is_cancelled()) {
 
     $urlOrg->param('le',$data->hlevel);
     $urlOrg->param('ks',$data->hparent);
+
+    $SESSION->fsparents = json_decode($data->hfsparents,true);
     redirect($urlOrg);
 }//if_Else
 

@@ -31,6 +31,7 @@ require_once($CFG->libdir.'/formslib.php');
 
 class map_org_form extends moodleform {
     function definition() {
+        global $SESSION;
         /* Variables    */
         $form       = null;
         $form               = $this->_form;
@@ -46,7 +47,8 @@ class map_org_form extends moodleform {
         $form->setDefault('level',$level);
 
         /* Parents */
-        $options = FS_MAPPING::get_parents_synchronized($level);
+        list($options,$fsparents) = FS_MAPPING::get_parents_synchronized($level);
+        $SESSION->fsparents       = $fsparents;
         $form->addElement('select','ksparent',get_string('parent','local_fellesdata'),$options);
         $form->setDefault('ksparent',0);
 
@@ -67,6 +69,11 @@ class map_org_form extends moodleform {
         $form->addElement('text','hparent',null,'style=visibility:hidden;height:0px;');
         $form->setType('hparent',PARAM_INT);
         $form->setDefault('hparent',0);
+
+        // Hide fsparents
+        $form->addElement('text','hfsparents',null,'style=visibility:hidden;height:0px;');
+        $form->setType('hfsparents',PARAM_RAW);
+        $form->setDefault('hfsparents',0);
     }//definition
 }//map_org_form
 

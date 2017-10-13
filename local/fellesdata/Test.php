@@ -19,6 +19,7 @@ require( '../../config.php' );
 require_once('cron/fellesdatacron.php');
 require_once('lib/fellesdatalib.php');
 require_once('lib/suspiciouslib.php');
+require_once('lib/mappinglib.php');
 
 require_login();
 
@@ -63,7 +64,7 @@ try {
         echo $toDate . "</br>";
 
         //echo " --> " . FS_CRON::can_run();
-
+/**
         $notifyTo   = explode(',',$pluginInfo->mail_notification);
         if ($notifyTo) {
             // Get companies to send notifications
@@ -96,7 +97,9 @@ try {
             }else {
                 echo " No notifications " . "</br>";
             }//if_toMail
+
         }//if_notify
+ * */
     }
 }catch (Exception $ex) {
     throw $ex;
