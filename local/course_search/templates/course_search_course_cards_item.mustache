@@ -5,7 +5,7 @@
         <div class="course-img"{{#img}} style="background-image: url('{{{.}}}');"{{/img}}>&nbsp;</div>
         <div class="course-desc">
             <h4 class="course-title">{{{name}}}</h4>
-            <div class="course-summary">{{{summary}}}</div>
+            {{#date}}<div class="course-date">{{#str}}date, moodle{{/str}}: {{{date}}}</div>{{/date}}
         </div>
     </a>
 </li>
