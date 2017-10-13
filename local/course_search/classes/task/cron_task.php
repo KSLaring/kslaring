@@ -66,6 +66,7 @@ class cron_task extends \core\task\scheduled_task {
         	id,
         	fullname,
         	shortname,
+        	format,
         	summary,
         	startdate,
         	summaryformat
