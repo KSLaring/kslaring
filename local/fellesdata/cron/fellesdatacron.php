@@ -137,9 +137,6 @@ class FELLESDATA_CRON {
                 }//if_automatic
             }
 
-            // Synchronize companies moved
-            self::companies_moved_fs_synchronization($plugin,$fstExecution);
-
             // Write log
             FS_CRON::write_fellesdata_log(self::$log);
             // Start log
@@ -290,9 +287,6 @@ class FELLESDATA_CRON {
                             }//if_notify
                         }//if_automatic
                     }
-
-                    // Synchronize companies moved
-                    self::companies_moved_fs_synchronization($pluginInfo,false);
 
                     break;
                 case TEST_FS_SYNC_JR:
@@ -1662,6 +1656,7 @@ class FELLESDATA_CRON {
      * @param           $pluginInfo
      * @param           $fstExecution
      *
+     * @return          bool
      * @throws          Exception
      *
      * @creationDate    03/02/2016
@@ -1722,7 +1717,10 @@ class FELLESDATA_CRON {
 
                     // Companies to create automatically
                     if ($pluginInfo->automatic) {
-                        self::companies_automatically_synchronized($pluginInfo);
+                        // Level two
+                        self::companies_automatically_synchronized($pluginInfo,$pluginInfo->map_two);
+                        // Level three
+                        //self::companies_automatically_synchronized($pluginInfo,$pluginInfo->map_three);
                     }//if_automatic
 
                     // Synchronize new companies
@@ -1751,13 +1749,14 @@ class FELLESDATA_CRON {
      * Synchronization of the companies when the synchronization has to be done automatically
      *
      * @param           $plugin
+     * @param           $level
      *
      * @throws          Exception
      *
      * @creationDate    05/09/2017
      * @author          eFaktor     (fbv)
      */
-    private static function companies_automatically_synchronized($plugin) {
+    private static function companies_automatically_synchronized($plugin,$level) {
         /* Variables */
         global $SESSION;
         $response       = null;
@@ -1783,7 +1782,7 @@ class FELLESDATA_CRON {
             self::$log[] = $infolog;
 
             // Get total
-            $total = FSKS_COMPANY::get_total_companies_automatically($plugin->map_one);
+            $total = FSKS_COMPANY::get_total_companies_automatically($level);
             // Log
             $infolog = new stdClass();
             $infolog->action 		= 'companies_fs_synchronization - companies_automatically_synchronized';
@@ -1795,7 +1794,7 @@ class FELLESDATA_CRON {
             if ($total) {
                 for ($i=0;$i<=$total;$i=$i+$limit) {
                     // Get companies to synchronize
-                    list($toSynchronize,$rdocompanies) = FSKS_COMPANY::get_companies_to_synchronize_automatically($plugin->map_one,$start,$limit);
+                    list($toSynchronize,$rdocompanies) = FSKS_COMPANY::get_companies_to_synchronize_automatically($level,$start,$limit);
 
                     // Call webs service
                     if ($toSynchronize) {
@@ -1835,106 +1834,6 @@ class FELLESDATA_CRON {
             throw $ex;
         }//try_catch
     }//companies_automatically_synchronized
-
-    /**
-     * Description
-     * Synchronization of all companies that have been moved to different levels
-     *
-     * @param       $plugin
-     *
-     * @throws      Exception
-     *
-     * @creationDate    01/09/2017
-     * @author          eFaktor     (fbv)
-     */
-    private static function companies_moved_fs_synchronization($plugin,$fstExecution) {
-        /* Variables    */
-        global $SESSION;
-        $response       = null;
-        $moved          = null;
-        $rdocompanies   = null;
-        $toSynchronize  = null;
-        $infolog        = null;
-        $total          = null;
-        $start          = 0;
-        $limit          = 1000;
-
-        try {
-            // To avoid problems timeout
-            if (isset($SESSION->manual) && ($SESSION->manual)) {
-                $limit          = 150;
-            }//if_session_manul
-
-            // Log
-            $infolog = new stdClass();
-            $infolog->action 		= 'START companies_moved_fs_synchronization';
-            $infolog->description 	= 'START companies_moved_fs_synchronization';
-            // Add log
-            self::$log[] = $infolog;
-
-            // check if the synchronization can be run
-            if (suspicious::run_synchronization(IMP_SUSP_COMPANIES)) {
-                // First execution
-                if (!$fstExecution) {
-                    // Apply changes
-                    $moved = FSKS_COMPANY::update_companies_moved_other_level();
-
-                    // Synchronize companies moved
-                    if ($moved) {
-                        // Get total
-                        $total = count($moved);
-
-                        // Log
-                        $infolog = new stdClass();
-                        $infolog->action 		= 'companies_moved_fs_synchronization';
-                        $infolog->description 	= 'Total: ' . $total;
-                        // Add log
-                        self::$log[] = $infolog;
-                        for ($i=0;$i<=$total;$i=$i+$limit) {
-                            // Get companies to synchronize
-                            list($toSynchronize,$rdocompanies) = FSKS_COMPANY::get_moved_companiesfs_to_synchronize($moved,$start,$limit);
-
-                            // Call webs service
-                            if ($toSynchronize) {
-                                // Log
-                                $infolog = new stdClass();
-                                $infolog->action 		= 'companies_moved_fs_synchronization';
-                                $infolog->description 	= 'To Synchronize: ' . $toSynchronize;
-                                // Add log
-                                self::$log[] = $infolog;
-
-                                $params     = array('companiesFS' => $toSynchronize);
-                                $response   = self::process_ks_service($plugin,KS_SYNC_FS_COMPANY,$params);
-
-                                if ($response) {
-                                    if ($response['error'] == '200') {
-                                        FSKS_COMPANY::synchronize_companies_ksfs($rdocompanies,$response['companies']);
-                                    }else {
-                                        // Log
-                                        $infolog = new stdClass();
-                                        $infolog->action 		= 'companies_moved_fs_synchronization';
-                                        $infolog->description 	= 'ERROR WS:: ' . $response['message'];
-                                        // Add log
-                                        self::$log[] = $infolog;
-                                    }//if_no_error
-                                }//if_response
-                            }//if_toSynchronize
-
-                        }//for_Total
-                    }//if_moved
-                }//if_first_execution
-            }//if_suspicious
-
-            // Log
-            $infolog = new stdClass();
-            $infolog->action 		= 'FINISH companies_moved_fs_synchronization';
-            $infolog->description 	= 'FINISH companies_moved_fs_synchronization';
-            // Add log
-            self::$log[] = $infolog;
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//companies_moved_fs_synchronization
 
     /**
      * Description

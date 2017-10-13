@@ -63,6 +63,11 @@ try {
 
         echo $toDate . "</br>";
 
+        list($toSynchronize,$rdo) = FSKS_COMPANY::get_companies_to_synchronize_automatically($pluginInfo->map_two,0,500);
+
+        echo $toSynchronize;
+
+        /**
         $toMail = array();
         FSKS_COMPANY::get_companiesfs_to_mail(2,$toMail);
         FSKS_COMPANY::get_companiesfs_to_mail(3,$toMail);
@@ -72,7 +77,7 @@ try {
             }
             //echo "LEvel 3 to look";
             //$toMail = FSKS_COMPANY::get_companiesfs_to_mail(3);
-        }
+        } **/
 
         //echo " --> " . FS_CRON::can_run();
 /**
