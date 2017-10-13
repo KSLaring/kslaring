@@ -107,7 +107,34 @@ class FELLESDATA_CRON {
             self::$log    =    array();
 
             // Companies synchornization
-            self::companies_fs_synchronization($plugin,$fstExecution);
+            if (self::companies_fs_synchronization($plugin,$fstExecution)) {
+                // Notifications
+                $notifyTo = null;
+                if ($plugin->mail_notification) {
+                    $notifyTo   = explode(',',$plugin->mail_notification);
+                }//if_mail_notifications
+
+
+                // Send notifications
+                // Notification manual synchronization
+                if (!$plugin->automatic) {
+                    if ($plugin) {
+                        // Get companies to send notifications
+                        $toMail = FSKS_COMPANY::get_companiesfs_to_mail();
+
+                        if ($toMail) {
+                            self::send_notifications(SYNC_COMP,$toMail,$notifyTo,$plugin->fs_source);
+
+                            // Log
+                            $infolog = new stdClass();
+                            $infolog->action 		= 'companies_fs_synchronization';
+                            $infolog->description 	= 'Send notifications';
+                            // Add log
+                            self::$log[] = $infolog;
+                        }//if_toMail
+                    }//if_notify
+                }//if_automatic
+            }
 
             // Synchronize companies moved
             self::companies_moved_fs_synchronization($plugin,$fstExecution);
@@ -1673,25 +1700,7 @@ class FELLESDATA_CRON {
                     // Synchronize no new companies
                     self::companies_no_new_fs_synchronization($pluginInfo);
 
-                    // Send notifications
-                    // Notification manual synchronization
-                    if (!$pluginInfo->automatic) {
-                        if ($notifyTo) {
-                            // Get companies to send notifications
-                            $toMail = FSKS_COMPANY::get_companiesfs_to_mail();
-
-                            if ($toMail) {
-                                self::send_notifications(SYNC_COMP,$toMail,$notifyTo,$pluginInfo->fs_source);
-
-                                // Log
-                                $infolog = new stdClass();
-                                $infolog->action 		= 'companies_fs_synchronization';
-                                $infolog->description 	= 'Send notifications';
-                                // Add log
-                                self::$log[] = $infolog;
-                            }//if_toMail
-                        }//if_notify
-                    }//if_automatic
+                    return true;
                 }//if_else
             }//if_synchronization
 
