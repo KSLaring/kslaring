@@ -631,8 +631,7 @@ class FS_MAPPING {
             }else if ($level == FS_LE_2) {
                 $sql = " SELECT	  DISTINCT
                                     ks.companyid,
-                                    ks.name,
-                                    ksfs.fscompany as 'parent'
+                                    ks.name
                          FROM	  {ks_company}	  ks
                             JOIN  {ksfs_company}  ksfs 	ON  ksfs.kscompany        = ks.companyid
                          WHERE	  ks.hierarchylevel = :level
@@ -642,7 +641,6 @@ class FS_MAPPING {
                 $rdo = $DB->get_record_sql($sql,$params);
                 if ($rdo) {
                     $lstparents[$rdo->companyid]    = $rdo->name;
-                    $parents[$rdo->companyid]  = $rdo->parent;
                 }
             }
 
