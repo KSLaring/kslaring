@@ -1699,8 +1699,6 @@ class FELLESDATA_CRON {
 
                     // Synchronize no new companies
                     self::companies_no_new_fs_synchronization($pluginInfo);
-
-                    return true;
                 }//if_else
             }//if_synchronization
 
@@ -1710,6 +1708,8 @@ class FELLESDATA_CRON {
             $infolog->description 	= 'FINISH companies_fs_synchronization';
             // Add log
             self::$log[] = $infolog;
+
+            return true;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
