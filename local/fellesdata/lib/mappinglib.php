@@ -1446,7 +1446,7 @@ class FS_MAPPING {
                           AND	  fs_imp.org_nivaa 		= :level ";
 
             // Parent criteria
-            if ($parent) {
+            if ($fsparents) {
                 $sql .= " AND	  fs_imp.org_enhet_over IN (" . $fsparents . ")";
             }
 
