@@ -34,7 +34,11 @@
 @linkColor: @kommitBlueDark;
 @linkColorHover: darken(@linkColor, 15%);
 
+// PAGE
+// --------------------------------------------------
+@largeWidth: 980px;
 @mediumWidth: 768px;
+@narrowWidth: 640px;
 
 #page-course-search {
     #page-navbar {
@@ -301,7 +305,15 @@
             min-height: 17em;
             padding: .5em 2%;
             vertical-align: top;
-            width: 26.5%;
+            width: 43%;
+
+            @media (max-width: 499px) {
+                width: 100%;
+            }
+
+            @media (min-width: 900px) {
+                width: 26.5%;
+            }
 
             &.hide-item {
                 display: none;

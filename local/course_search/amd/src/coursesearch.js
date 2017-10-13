@@ -1722,7 +1722,7 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
             viewState.getTags().forEach(function (tagid) {
                 if (tagid !== "") {
                     // Check if the tag might have been removed.
-                    if ($coursesearchform.find('label').data('id') === tagid) {
+                    if ($coursesearchform.find('.checkbox').filter('[data-id="' + tagid + '"]').length) {
                         changeCheckbox('.tag-group', tagid, 1);
                     } else {
                         removedTags.push(tagid);

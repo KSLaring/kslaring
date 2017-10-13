@@ -195,7 +195,17 @@
   min-height: 17em;
   padding: .5em 2%;
   vertical-align: top;
-  width: 26.5%;
+  width: 43%;
+}
+@media (max-width: 499px) {
+  #page-course-search #course-cards .course-card-item {
+    width: 100%;
+  }
+}
+@media (min-width: 900px) {
+  #page-course-search #course-cards .course-card-item {
+    width: 26.5%;
+  }
 }
 #page-course-search #course-cards .course-card-item.hide-item {
   display: none;
