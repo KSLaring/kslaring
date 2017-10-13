@@ -146,6 +146,20 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
             },
 
             /**
+             * Remove tags that might have been removed form the search.
+             *
+             * Don't trigger the 'viewstate:change' event.
+             *
+             * @param {array} remove The tags to be removed
+             */
+            removeTags: function (remove) {
+                var result = [];
+                result = _.difference(viewstatearray[viewstatearrayindex.tags], remove);
+                viewstatearray[viewstatearrayindex.tags] = result;
+                writeViewStateToCookie();
+            },
+
+            /**
              * Get the search text.
              */
             getTags: function () {

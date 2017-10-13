@@ -1698,7 +1698,8 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
          * ];
          */
         var setViewWithOptions = function () {
-            var activityContext;
+            var activityContext,
+                removedTags = [];
 
             // Activate cards or list view.
             changeView();
@@ -1717,11 +1718,22 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
             // Set the listed tags to checked.
             log.debug('Check tags: ');
             log.debug(viewState.getTags());
+
             viewState.getTags().forEach(function (tagid) {
                 if (tagid !== "") {
-                    changeCheckbox('.tag-group', tagid, 1);
+                    // Check if the tag might have been removed.
+                    if ($coursesearchform.find('label').data('id') === tagid) {
+                        changeCheckbox('.tag-group', tagid, 1);
+                    } else {
+                        removedTags.push(tagid);
+                    }
                 }
             });
+
+            // If removed tags have been found then rmeove thme from the view state.
+            if (removedTags.length) {
+                viewState.removeTags(removedTags);
+            }
 
             // Set from, to date.
             if (viewState.getFromDate() !== "0") {
