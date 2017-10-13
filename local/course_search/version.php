@@ -27,7 +27,7 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-$plugin->version = 2017101302;       /* The current plugin version (Date: YYYYMMDDXX)  */
+$plugin->version = 2017101303;       /* The current plugin version (Date: YYYYMMDDXX)  */
 $plugin->requires = 2016052300;       /* Requires this Moodle version                   */
 $plugin->component = 'local_course_search'; /* Full name of the plugin (used for diagnostics) */
 
