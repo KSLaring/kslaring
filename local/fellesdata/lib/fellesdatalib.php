@@ -74,6 +74,39 @@ define('CLEAN_COMPETENCE',1);
 class FS_CRON {
     /**
      * Description
+     * Write fellesdata log
+     *
+     * @param           $log
+     *
+     * @throws          Exception
+     *
+     * @creationDate    10/10/2017
+     * @author          eFaktor     (fbv)
+     */
+    public static function write_fellesdata_log($log) {
+        /* Variables */
+        global $DB;
+        $info   = null;
+        $time   = null;
+        try {
+            // Local time
+            $time = time();
+
+            // Write log
+            if ($log) {
+                asort($log);
+                foreach ($log as $info) {
+                    $info->timecreated = $time;
+                    $DB->insert_record('fs_fellesdata_log',$info);
+                }//for_log
+            }//if_log
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//write_fellesdata_log
+
+    /**
+     * Description
      * Check if the process can be executed/triggered
      *
      * @return          bool
@@ -589,9 +622,10 @@ class FSKS_COMPANY {
     public static function get_total_companies_automatically($level) {
         /* Variables */
         global $DB;
-        $rdo    = null;
-        $sql    = null;
-        $params = null;
+        $rdo        = null;
+        $sql        = null;
+        $params     = null;
+        $sqljoin    = null;
 
         try {
             // Search criteria
@@ -600,16 +634,23 @@ class FSKS_COMPANY {
             $params['imported'] = 0;
             $params['level']    = $level;
 
+            switch ($level) {
+                case FS_LE_5:
+                    $sqljoin = " JOIN 	  {ksfs_company}  	ksfs	ON 	ksfs.fscompany 	= fs_imp.org_enhet_over
+                                 JOIN	  {ks_company}		ks		ON	ks.companyid	= ksfs.kscompany ";
+
+                    break;
+            }//siwtch_level
+
             // SQL Instruction
             $sql = " SELECT		  count(DISTINCT fs_imp.id) as 'total'
                      FROM		  {fs_imp_company}	fs_imp
-                        LEFT JOIN {fs_company}		fs		ON 	fs.companyid 	= fs_imp.ORG_ENHET_ID
+                        LEFT JOIN {fs_company}		fs		ON 	fs.companyid 	= fs_imp.org_enhet_id
                         -- Info parent
-                        JOIN 	  {ksfs_company}  	ksfs	ON 	ksfs.fscompany 	= fs_imp.ORG_ENHET_OVER
-                        JOIN	  {ks_company}		ks		ON	ks.companyid	= ksfs.kscompany
+                        $sqljoin
                      WHERE	      fs_imp.action 	!= :action
                           AND	  fs_imp.imported    = 0
-                          AND     fs_imp.ORG_NIVAA  != :level
+                          AND     fs_imp.org_nivaa   = :level
                           AND	  fs.id IS NULL ";
 
             // Execute
@@ -644,6 +685,8 @@ class FSKS_COMPANY {
         $sql            = null;
         $params         = null;
         $toSynchronize  = array();
+        $sqljoin        = null;
+        $parent         = null;
 
         try {
             // Search criteria
@@ -651,108 +694,49 @@ class FSKS_COMPANY {
             $params['action']   = DELETE;
             $params['imported'] = 0;
             $params['level']    = $level;
+            echo "LEVEL : " . $level . "</br>";
+
+            switch ($level) {
+                case FS_LE_2:
+                    $top = $DB->get_record('ks_company',array('hierarchylevel' => 1),'companyid');
+                    $parent = "'" . $top->companyid . "' as 'parent', ";
+
+                    break;
+                case FS_LE_5:
+                    $parent = " ks.companyid									      as 'parent', ";
+                    $sqljoin = " JOIN 	  {ksfs_company}  	ksfs	ON 	ksfs.fscompany 	= fs_imp.org_enhet_over
+                                 JOIN	  {ks_company}		ks		ON	ks.companyid	= ksfs.kscompany ";
+
+                    break;
+            }//siwtch_level
 
             // SQL Instruction
-            $sql = " SELECT		  fs_imp.ORG_ENHET_ID 							as 'fsid',
-                                  '0'											as 'ksid',
-                                  TRIM(fs_imp.ORG_NAVN)  	 					as 'name',
-                                  fs_imp.ORG_NIVAA								as 'level',
-                                  ks.companyid									as 'parent',
-                                  fs_imp.ORG_ENHET_OVER							as 'fs_parent',
-                                  IF(fs_imp.privat,0,1)   						as 'public',
+            $sql = " SELECT		  fs_imp.org_enhet_id 							      as 'fsid',
+                                  '0'											      as 'ksid',
+                                  TRIM(fs_imp.org_navn)  	 					      as 'name',
+                                  fs_imp.org_nivaa								      as 'level',
+                                  $parent
+                                  fs_imp.org_enhet_over							      as 'fs_parent',
+                                  IF(fs_imp.privat,0,1)   						      as 'public',
                                   TRIM(IF(fs_imp.ansvar != '',fs_imp.ansvar,0))       as 'ansvar',
                                   TRIM(IF(fs_imp.tjeneste != '',fs_imp.tjeneste,0))   as 'tjeneste',
                                   TRIM(IF(fs_imp.adresse1 != '',fs_imp.adresse1,0))   as 'adresse1',
                                   TRIM(IF(fs_imp.adresse2 != '',fs_imp.adresse2,0))   as 'adresse2',
                                   TRIM(IF(fs_imp.adresse3 != '',fs_imp.adresse3,0))   as 'adresse3',
                                   TRIM(IF(fs_imp.postnr != '',fs_imp.postnr,0))       as 'postnr',
-                                  TRIM(IF(fs_imp.poststed != '' ,fs_imp.poststed,0))   as 'poststed',
+                                  TRIM(IF(fs_imp.poststed != '' ,fs_imp.poststed,0))  as 'poststed',
                                   TRIM(IF(fs_imp.epost != '',fs_imp.epost,0))         as 'epost',
-                                  fs_imp.action									as 'action',
-                                  '0'                                         	as 'moved'
+                                  fs_imp.action									      as 'action',
+                                  '0'                                         	      as 'moved'
                      FROM		  {fs_imp_company}	fs_imp
-                        LEFT JOIN {fs_company}		fs		ON 	fs.companyid 	= fs_imp.ORG_ENHET_ID
-                        -- Info parent
-                        JOIN 	  {ksfs_company}  	ksfs	ON 	ksfs.fscompany 	= fs_imp.ORG_ENHET_OVER
-                        JOIN	  {ks_company}		ks		ON	ks.companyid	= ksfs.kscompany
+                        LEFT JOIN {fs_company}		fs		ON 	fs.companyid 	= fs_imp.org_enhet_id
+                        $sqljoin
                      WHERE	      fs_imp.action 		!= :action
                           AND	  fs_imp.imported  	     = :imported
-                          AND     fs_imp.ORG_NIVAA      != :level
+                          AND     fs_imp.org_nivaa       = :level
                           AND	  fs.id IS NULL ";
 
             // Excute
-            $DB->get_records_sql($sql,$params,$start,$end);
-            if ($rdo) {
-                $toSynchronize = json_encode($rdo);
-            }//if_rdo
-
-            return array($toSynchronize,$rdo);
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//get_companies_to_synchronize_automatically
-
-
-    /**
-     * Description
-     * Get all movements between levels that have to be synchronized
-     *
-     * @param       $moved
-     * @param       $start
-     * @param       $end
-     *
-     * @return      array
-     * @throws      Exception
-     */
-    public static function get_moved_companiesfs_to_synchronize($moved,$start,$end) {
-        /* Variables */
-        global $DB;
-        $infoCompany    = null;
-        $params         = null;
-        $sql            = null;
-        $rdo            = null;
-        $toSynchronize  = array();
-        $in             = null;
-
-        try {
-            // Get companies to move
-            $in = implode(',',$moved);
-
-            // Search Criteria
-            $params = array();
-            $params['synchronized'] = 0;
-            $params['moved']        = 1;
-
-            // SQL Instruction
-            $sql = " SELECT	  DISTINCT 
-                                  fs.companyid                                as 'fsid',
-                                  IF(ks_fs.id,ks_fs.kscompany,0)              as 'ksid',
-                                  TRIM(fs.name)                               as 'name',
-                                  fs.level,
-                                  ks.industrycode                             as 'industry',
-                                  fs.parent,
-                                  IF(fs.privat,0,1)                           as 'public',
-                                  TRIM(IF(fs.ansvar != '',fs.ansvar,0))       as 'ansvar',
-                                  TRIM(IF(fs.tjeneste != '',fs.tjeneste,0))   as 'tjeneste',
-                                  TRIM(IF(fs.adresse1 != '',fs.adresse1,0))   as 'adresse1',
-                                  TRIM(IF(fs.adresse2 != '',fs.adresse2,0))   as 'adresse2',
-                                  TRIM(IF(fs.adresse3 != '',fs.adresse3,0))   as 'adresse3',
-                                  TRIM(IF(fs.postnr != '',fs.postnr,0))       as 'postnr',
-                                  TRIM(IF(fs.poststed != '',fs.poststed,0))   as 'poststed',
-                                  TRIM(IF(fs.epost != '',fs.epost,0))         as 'epost',
-                                  '1'                                         as 'action',
-                                  '1'                                         as 'moved'
-                     FROM		  {fs_company}	  fs
-                        JOIN      {ks_company}	  ks 	ON ks.companyid     = fs.parent
-                        LEFT JOIN {ksfs_company}  ks_fs	ON ks_fs.fscompany 	= fs.companyid
-                     WHERE	      fs.synchronized = 0
-                        AND		  fs.companyid IN ($in)
-                        AND       (fs.parent IS NOT NULL 
-                                   OR 
-                                   fs.parent != 0)
-                        AND       fs.moved = :moved ";
-
-            // Execute
             $rdo = $DB->get_records_sql($sql,$params,$start,$end);
             if ($rdo) {
                 $toSynchronize = json_encode($rdo);
@@ -762,7 +746,7 @@ class FSKS_COMPANY {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//get_moved_companiesfs_to_synchronize
+    }//get_companies_to_synchronize_automatically
 
     /**
      * Description
@@ -1050,25 +1034,25 @@ class FSKS_COMPANY {
 
             // SQL Instruction
             $sql = " SELECT	  fs_imp.id             as 'fsid',
-                              fs_imp.ORG_ENHET_ID   as 'companyid',
-                              fs_imp.ORG_NAVN	    as 'name',
-                              fs_imp.ORG_NIVAA      as 'level',
-                              fs_imp.ORG_ENHET_OVER as 'fs_parent',
-                              fs_imp.PRIVAT         as 'privat',
-                              fs_imp.ANSVAR         as 'ansvar',
-                              fs_imp.TJENESTE       as 'tjeneste',
-                              fs_imp.ADRESSE1       as 'adresse1',
-                              fs_imp.ADRESSE2       as 'adresse2',
-                              fs_imp.ADRESSE3       as 'adresse3',
-                              fs_imp.POSTNR         as 'postnr',
-                              fs_imp.POSTSTED       as 'poststed', 
-                              fs_imp.EPOST          as 'epost',
+                              fs_imp.org_enhet_id   as 'companyid',
+                              fs_imp.org_navn	    as 'name',
+                              fs_imp.org_nivaa      as 'level',
+                              fs_imp.org_enhet_over as 'fs_parent',
+                              fs_imp.privat         as 'privat',
+                              fs_imp.ansvar         as 'ansvar',
+                              fs_imp.tjeneste       as 'tjeneste',
+                              fs_imp.adresse1       as 'adresse1',
+                              fs_imp.adresse2       as 'adresse2',
+                              fs_imp.adresse3       as 'adresse3',
+                              fs_imp.postnr         as 'postnr',
+                              fs_imp.poststed       as 'poststed', 
+                              fs_imp.epost          as 'epost',
                               fs.id,
                               fs.synchronized,
                               fs.timemodified
                      FROM	  {fs_imp_company}	fs_imp	
-                        JOIN  {fs_company}		fs      ON  fs.companyid  = fs_imp.ORG_ENHET_ID
-                                                        AND fs.level 	  = fs_imp.ORG_NIVAA
+                        JOIN  {fs_company}		fs      ON  fs.companyid  = fs_imp.org_enhet_id
+                                                        AND fs.level 	  = fs_imp.org_nivaa
                      WHERE	  fs_imp.imported = :imported
                         AND	  fs_imp.action   = :action ";
 
@@ -1103,103 +1087,6 @@ class FSKS_COMPANY {
             throw $ex;
         }//try_catch
     }//update_company_changes
-
-    /**
-     * Description
-     * Apply the changes for companies moved to other level
-     *
-     * @return          array
-     * @throws          Exception
-     *
-     * @creationDate    01/09/2017
-     * @author          eFaktor     (fbv)
-     */
-    public static function update_companies_moved_other_level() {
-        /* Variables */
-        global $DB;
-        $rdo        = null;
-        $sql        = null;
-        $params     = null;
-        $company    = null;
-        $fsimp      = null;
-        $time       = null;
-        $trans      = null;
-        $moved      = array();
-
-        // Begin transaction
-        $trans = $DB->start_delegated_transaction();
-
-        try {
-            // Local time
-            $time = time();
-
-            // Search criteria
-            $params = array();
-            $params['action']   = UPDATE;
-            $params['imported'] = 0;
-
-            // SQL Instruction
-            $sql = " SELECT	  fs_imp.id 			as 'fsid',
-                              fs_imp.ORG_ENHET_ID 	as 'companyid',
-                              fs_imp.ORG_NAVN		as 'name',
-                              fs_imp.ORG_NIVAA 		as 'level',
-                              fs_imp.ORG_ENHET_OVER as 'fs_parent',
-                              ks.companyid			as 'parent',
-                              fs_imp.PRIVAT 		as 'privat',
-                              fs_imp.ANSVAR 		as 'ansvar',
-                              fs_imp.TJENESTE 		as 'tjeneste',
-                              fs_imp.ADRESSE1 		as 'adresse1',
-                              fs_imp.ADRESSE2 		as 'adresse2',
-                              fs_imp.ADRESSE3 		as 'adresse3',
-                              fs_imp.POSTNR 		as 'postnr',
-                              fs_imp.POSTSTED 		as 'poststed', 
-                              fs_imp.EPOST 			as 'epost',
-                              fs.id,
-                              fs.synchronized,
-                              fs.timemodified
-                     FROM	  {fs_imp_company}	fs_imp	
-                        JOIN  {fs_company}		fs 		ON 	fs.companyid 	= fs_imp.ORG_ENHET_ID
-                                                        AND fs.level 	   != fs_imp.ORG_NIVAA
-                        JOIN  {ksfs_company}	ksfs	ON  ksfs.fscompany 	= fs_imp.ORG_ENHET_OVER
-                        JOIN  {ks_company}		ks		ON	ks.companyid  	= ksfs.kscompany
-                     WHERE	  fs_imp.action   = :action	
-                        AND   fs_imp.imported = :imported ";
-
-            // Execute
-            $rdo = $DB->get_records_sql($sql,$params);
-            if ($rdo) {
-                foreach ($rdo as $company) {
-                    // Update fs_imp
-                    $fsimp = new stdClass();
-                    $fsimp->id              = $company->fsid;
-                    $fsimp->timemodified    = $time;
-                    $fsimp->imported        = 1;
-                    // Execute
-                    $DB->update_record('fs_imp_company',$fsimp);
-
-                    // Update fs_company
-                    unset($company->fsid);
-                    $company->synchronized  = 0;
-                    $company->timemodified  = $time;
-                    $company->moved         = 1;
-                    // Execute
-                    $DB->update_record('fs_company',$company);
-
-                    $moved["'" . $company->companyid . "'"] = "'" . $company->companyid . "'";
-                }//for_rdo
-            }//if_rdo
-
-            // Commit
-            $trans->allow_commit();
-
-            return $moved;
-        }catch (Exception $ex) {
-            // Rollback
-            $trans->rollback($ex);
-
-            throw $ex;
-        }//try_catch
-    }//update_companies_moved_other_level
 
 
     /**
@@ -1260,34 +1147,73 @@ class FSKS_COMPANY {
      * Description
      * Get all companies that have to be synchronized manually.
      *
-     * @return          array
+     * @param           $tomail
+     *
      * @throws          Exception
      *
      * @creationDate    03/02/2016
      * @author          eFaktor     (fbv)
      */
-    public static function get_companiesfs_to_mail() {
+    public static function get_companiesfs_to_mail($level,&$tomail) {
         /* Variables */
         global $DB;
         $sql        = null;
         $rdo        = null;
         $params     = null;
-        $companies  = array();
+        $ini        = null;
+        $nivaa      = null;
+        $mynivaa    = null;
+        $diff       = null;
 
         try {
+            // Plugin info
+            $plugin = get_config('local_fellesdata');
+
+
+            switch ($level) {
+                case FS_LE_1:
+                    $mynivaa = 0;
+                    $ini     = 0;
+                    $nivaa   = 0;
+
+                    break;
+
+                case FS_LE_2:
+                    $ini     = $plugin->map_one;
+                    $nivaa   = $plugin->map_two;
+                    $mynivaa = $nivaa;
+                    break;
+                case FS_LE_5:
+                    $ini    = $plugin->map_two;
+                    $nivaa  = $plugin->map_three;
+                    $mynivaa = $nivaa;
+
+                    break;
+            }
+
             // Search Criteria
             $params = array();
             $params['add'] = ADD;
 
+            $diff = $nivaa - $ini;
+            if ($diff > 1) {
+                for ($i=1;$i<$diff;$i++) {
+                    $mynivaa .= ',' .($i+$ini);
+                }
+            }
+
             // SQL Instruction
             $sql = " SELECT	DISTINCT 
                                   ks.companyid,
-                                  ks.name
+                                  ks.name,
+                                  fs_imp.org_nivaa 	as 'nivaa', 
+                                  ksfs.fscompany    as 'parent'
                      FROM		  {ks_company}	    ks
                         JOIN	  {ksfs_company}	ksfs 	ON  ksfs.kscompany        = ks.companyid
-                        JOIN	  {fs_company}	    fs	    ON  fs.companyid	        = ksfs.fscompany
+                        JOIN	  {fs_company}	    fs	    ON  fs.companyid	      = ksfs.fscompany
                         JOIN	  {fs_imp_company}  fs_imp  ON  fs_imp.org_enhet_over = fs.companyid
                                                             AND fs_imp.imported       = 0
+                                                            AND fs_imp.org_nivaa      IN  (". $mynivaa .")
                         -- Already synchronized
                         LEFT JOIN {fs_company}	    syc	  	ON  syc.companyid 		= fs_imp.org_enhet_id
                                                             AND syc.level 			= fs_imp.org_nivaa
@@ -1299,15 +1225,55 @@ class FSKS_COMPANY {
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 foreach ($rdo as $instance) {
-                    $companies[$instance->companyid] = $instance->name;
-                }//for_rdo
-            }
+                    if ($instance->nivaa == $nivaa) {
+                        $tomail[$instance->companyid] = $instance->name;
+                    }else {
+                        $ini = $instance->nivaa;
+                        // Check childrens
+                        $diff = $nivaa - $instance->nivaa;
 
-            return $companies;
+                        if ($diff >= 1) {
+                            $params = array();
+                            $params['imported'] = 0;
+                            $params['sync'] = 1;
+                            $params['parent'] = $instance->parent;
+
+                            for ($i=1;$i<=$diff;$i++) {
+                                $ini = ($i+$ini);
+                                $params['nivaa'] = $ini;
+
+                                $sql = " SELECT	DISTINCT 
+                                                    fs_imp_ch.org_enhet_over as 'parent',
+                                                    fs_imp_ch.org_nivaa      as 'nivaa'
+                                             FROM		{fs_imp_company}		fs_imp
+                                                -- Daughter
+                                                JOIN	{fs_imp_company}		fs_imp_ch   ON  fs_imp_ch.org_enhet_over = fs_imp.org_enhet_id
+                                                                                            AND fs_imp_ch.org_nivaa = :nivaa
+                                                                                            AND fs_imp_ch.imported = :imported
+                                                -- Already synchronized
+                                                LEFT JOIN {fs_company}	      syc	  		ON  syc.companyid 		= fs_imp_ch.org_enhet_id
+                                                                                            AND syc.level 			= fs_imp_ch.org_nivaa
+                                                                                            AND syc.synchronized 	= :sync
+                                             WHERE	fs_imp.org_enhet_over = :parent
+                                                AND syc.id IS NULL ";
+
+                                // Execute
+                                $rdochild = $DB->get_records_sql($sql,$params);
+                                if ($rdochild) {
+                                    if ($ini == $nivaa) {
+                                        $tomail[$instance->companyid] = $instance->name;
+                                    }
+                                }//if_child
+                            }///if_levels
+                        }
+                    }//if_instance_nivaa
+                }//for_rdo
+            }//if_Rdo
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
     }//get_companiesfs_to_mail
+
 
     public static function get_companiesfs_to_mail_old($notIn = 0) {
         /* Variables    */
@@ -1332,7 +1298,7 @@ class FSKS_COMPANY {
                                   fs.companyid,
                                   fs.synchronized
                      FROM 	      {fs_imp_company}	fs_imp
-                        LEFT JOIN {fs_company}		fs		ON  fs.companyid    = fs_imp.ORG_ENHET_ID
+                        LEFT JOIN {fs_company}		fs		ON  fs.companyid    = fs_imp.org_enhet_id
                         -- Parent KS
                         LEFT JOIN {ksfs_company}	ksfs 	ON ksfs.fscompany 	= fs_imp.org_enhet_over
                         JOIN	  {ks_company} 		ks 		ON ks.companyid  	= ksfs.kscompany
@@ -1557,7 +1523,7 @@ class FSKS_COMPANY {
 
             // Synchronized
             if ($sync) {
-                $instance = $DB->get_record('fs_imp_company',array('ORG_ENHET_ID' => $impKey,'ORG_NIVAA' => $companyKSFS->level),'id,imported');
+                $instance = $DB->get_record('fs_imp_company',array('org_enhet_id' => $impKey,'org_nivaa' => $companyKSFS->level),'id,imported');
                 if ($instance) {
                     $instance->imported         = 1;
                     $instance->timemodified     = $time;
@@ -1694,7 +1660,7 @@ class FSKS_COMPANY {
 
             // Synchronized
             if ($sync) {
-                $instance = $DB->get_record('fs_imp_company',array('ORG_ENHET_ID' => $impKey,'ORG_NIVAA' => $companyKSFS->level),'id,imported');
+                $instance = $DB->get_record('fs_imp_company',array('org_enhet_id' => $impKey,'org_nivaa' => $companyKSFS->level),'id,imported');
                 if ($instance) {
                     $instance->imported         = 1;
                     $instance->timemodified     = $time;
@@ -2309,7 +2275,7 @@ class FSKS_USERS {
                         JOIN    {user}                u         ON      u.idnumber = fs.fodselsnr
                                                                 AND     u.deleted  = 0
                         -- COMPANY
-                        JOIN	{ksfs_company}		  ksfs 		ON 		ksfs.fscompany 		= fs.ORG_ENHET_ID
+                        JOIN	{ksfs_company}		  ksfs 		ON 		ksfs.fscompany 		= fs.org_enhet_id
                         JOIN	{ks_company}		  ks	    ON		ks.companyid		= ksfs.kscompany
                         -- JOB ROLE
                         JOIN	{ksfs_jobroles}		  fsk_jr 	ON 		fsk_jr.fsjobrole 	= fs.stillingskode
@@ -2786,7 +2752,7 @@ class FSKS_USERS {
                         JOIN  {user}              u       ON    u.idnumber 			= fs.fodselsnr
                                                           AND   u.deleted  			= 0
                         -- COMPANY
-                        JOIN  {ksfs_company}	  ksfs 	  ON    ksfs.fscompany 		= fs.ORG_ENHET_ID
+                        JOIN  {ksfs_company}	  ksfs 	  ON    ksfs.fscompany 		= fs.org_enhet_id
                         JOIN  {ks_company}		  ks	  ON	ks.companyid		= ksfs.kscompany
                         -- JOB ROLE
                         JOIN  {ksfs_jobroles}	  fsk_jr  ON 	fsk_jr.fsjobrole 	= fs.stillingskode
@@ -3085,94 +3051,6 @@ class FS {
     /* PUBLIC */
     /**********/
 
-    public static function backup_temporary_fellesdata($type) {
-        /* Variables */
-        global $CFG;
-        $file           = null;
-        $backupstatus   = null;
-        $content        = null;
-        $path           = null;
-        $time           = null;
-
-        try {
-            // Local time
-            $time = time();
-
-            $backupstatus = $CFG->dataroot . '/fellesdata/backup_status';
-            if (!file_exists($backupstatus)) {
-                mkdir($backupstatus);
-            }//if_backup
-
-            switch ($type) {
-                case IMP_USERS:
-                    // IMP USERS
-                    $path = $backupstatus . "/fs_imp_users_" . $time . ".txt";
-                    self::backup_imp_fs_tables($path,'fs_imp_users');
-
-                    break;
-
-                case IMP_COMPANIES:
-                    // IMP COMPANIES
-                    $path = $backupstatus . "/fs_imp_company_" . $time . ".txt";
-                    self::backup_imp_fs_tables($path,'fs_imp_company');
-
-                    break;
-
-                case IMP_JOBROLES:
-                    // IMP JOBROLES
-                    $path = $backupstatus . "/fs_imp_jobroles_" . $time . ".txt";
-                    self::backup_imp_fs_tables($path,'fs_imp_jobroles');
-
-                    break;
-
-                case IMP_MANAGERS_REPORTERS:
-                    // IMP MANAGERS_REPORTERS
-                    $path = $backupstatus . "/fs_imp_managers_reporters_" . $time . ".txt";
-                    self::backup_imp_fs_tables($path,'fs_imp_managers_reporters');
-
-                    break;
-
-                case IMP_COMPETENCE_JR:
-                    // IMP COMPETENCE JR
-                    $path = $backupstatus . "/fs_imp_users_jr_" . $time . ".txt";
-                    self::backup_imp_fs_tables($path,'fs_imp_users_jr');
-
-                    break;
-            }//type
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//backup_temporary_fellesdata
-
-    private static function backup_imp_fs_tables($path,$table) {
-        /* Variables */
-        global $DB;
-        $rdo    = null;
-        $file   = null;
-
-        try {
-            // get content table
-            $sql = " SELECT * FROM {" . $table . "} WHERE action != " . STATUS ;
-            $rdo = $DB->get_records_sql($sql);
-            if ($rdo) {
-                // content to string
-                $content = json_encode($rdo);
-
-                // Add content to the file
-                $file = fopen($path,'w');
-                fwrite($file,$content);
-                fclose($file);
-            }//if_rdo
-
-            // Delete all records
-            $DB->delete_records($table,array('action' => 0));
-            $DB->delete_records($table,array('action' => 1));
-            $DB->delete_records($table,array('action' => 2));
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//backup_imp_fs_users
-
     /**
      * @param            $data
      * @param            $type
@@ -3193,6 +3071,8 @@ class FS {
         $lineContent    = null;
         $toSave         = array();
         $time           = null;
+        $log            = null;
+        $toLog          = array();
 
         try {
             // Local time
@@ -3241,9 +3121,19 @@ class FS {
 
                     // Add Record
                     if ($newEntry) {
+                        // Lower case for the keys
+                        $aux = (Array)$newEntry;
+                        $aux = array_change_key_case($aux);
+                        // Convert to object again
+                        $newEntry = (Object)$aux;
                         $newEntry->timeimport   = $time;
                         $newEntry->timemodified = $time;
                         $toSave[$key] = $newEntry;
+
+                        // Log historical
+                        $log = (Object)$aux;
+                        $log->timereceived  = $time;
+                        $toLog[$key]        = $log;
                     }
                 }//ifLineContent
             }//for
@@ -3252,7 +3142,7 @@ class FS {
                 switch ($type) {
                     case IMP_USERS:
                         // FS Users
-                        self::import_temporary_fs_users($toSave);
+                        self::import_temporary_fs_users($toSave,$toLog);
 
                         // Fake eMails
                         self::update_fake_mails();
@@ -3262,25 +3152,25 @@ class FS {
 
                     case IMP_COMPANIES:
                         // FS Companies
-                        self::import_temporary_fs_company($toSave);
+                        self::import_temporary_fs_company($toSave,$toLog);
 
                         break;
 
                     case IMP_JOBROLES:
                         // FS JOB ROLES
-                        self::import_temporary_fs_jobroles($toSave);
+                        self::import_temporary_fs_jobroles($toSave,$toLog);
 
                         break;
 
                     case IMP_MANAGERS_REPORTERS:
                         // Managers Reporters
-                        self::import_temporary_managers_reporters($toSave);
+                        self::import_temporary_managers_reporters($toSave,$toLog);
 
                         break;
 
                     case IMP_COMPETENCE_JR:
                         // Competence Job Role
-                        self::import_temporary_competence_jobrole($toSave);
+                        self::import_temporary_competence_jobrole($toSave,$toLog);
 
                         break;
                 }//type
@@ -3298,88 +3188,62 @@ class FS {
      *
      * @param           string $type
      *
+     * @throws          Exception
+     *
      * @creationDate    04/05/2017
      * @author          eFaktor     (fbv)
      */
-    public static function clean_temporary_fellesdata($type,$plugin=null) {
+    public static function clean_temporary_fellesdata($type) {
         /* Variables */
         global $DB;
-        $sql = null;
-
-        switch ($type) {
-            case IMP_USERS:
-                // FS Users
-                $DB->delete_records('fs_imp_users');
-
-                break;
-
-            case IMP_COMPANIES:
-                // FS Companies
-                //$sql = " DELETE FROM {fs_imp_company} WHERE org_nivaa = $plugin->map_three";
-                //$DB->execute($sql);
-                $DB->delete_records('fs_imp_company');
-
-                break;
-
-            case IMP_JOBROLES:
-                // FS JOB ROLES
-                $DB->delete_records('fs_imp_jobroles');
-
-                break;
-
-            case IMP_MANAGERS_REPORTERS:
-                // Managers Reporters
-                $DB->delete_records('fs_imp_managers_reporters');
-
-                break;
-
-            case IMP_COMPETENCE_JR:
-                // Competence Job Role
-                $DB->delete_records('fs_imp_users_jr');
-
-                break;
-        }//type
-    }//clean_temporary_fellesdata
-
-    /**
-     * Description
-     * Clean repeat companies
-     *
-     * @throws Exception
-     *
-     * @creationDate    07/07/2017
-     * @author          eFaktor     (fbv)
-     */
-    public static function clean_repeat_companies() {
-        /* Variables    */
-        global  $DB;
-        $rdo    = null;
         $sql    = null;
-        $in     = null;
+        $time   = null;
+
+        // Start transaction
+        $trans = $DB->start_delegated_transaction();
 
         try {
-            // Find repeat companies and deleted
-            $sql = " SELECT	  fs.id,
-                              fs.ORG_NIVAA,
-                              fs.org_enhet_id
-                     FROM	  {fs_imp_company}	fs 
-                        -- FIND REPEAT
-                        JOIN  {fs_imp_company}	fs_rep 	ON  fs_rep.ORG_NIVAA 	= fs.ORG_NIVAA
-                                                        AND fs_rep.org_enhet_id = fs.org_enhet_id
-                                                        AND	fs_rep.imported     = 1
-                     WHERE	  fs.imported = 0
-                     ORDER BY fs.ORG_NIVAA,fs.org_enhet_id ";
-            // Execute
-            $rdo = $DB->get_records_sql($sql);
-            if ($rdo) {
-                $in = implode(',',array_keys($rdo));
-                $sql = " DELETE FROM {fs_imp_company} WHERE id IN ($in) ";
-                $DB->execute($sql);
-            }//if_rdo
+            switch ($type) {
+                case IMP_USERS:
+                    // FS Users
+                    $DB->delete_records('fs_imp_users');
+
+                    break;
+
+                case IMP_COMPANIES:
+                    // Delete
+                    $DB->delete_records('fs_imp_company');
+
+                    break;
+
+                case IMP_JOBROLES:
+                    // FS JOB ROLES
+                    $DB->delete_records('fs_imp_jobroles');
+
+                    break;
+
+                case IMP_MANAGERS_REPORTERS:
+                    // Managers Reporters
+                    $DB->delete_records('fs_imp_managers_reporters');
+
+                    break;
+
+                case IMP_COMPETENCE_JR:
+                    // Competence Job Role
+                    $DB->delete_records('fs_imp_users_jr');
+
+                    break;
+            }//type
+
+            // Commit
+            $trans->allow_commit();
         }catch (Exception $ex) {
+            // Rollback
+            $trans->rollback($ex);
+
             throw $ex;
         }//try_catch
-    }//clean_repeat_companies
+    }//clean_temporary_fellesdata
 
     /***********/
     /* PRIVATE */
@@ -3390,13 +3254,14 @@ class FS {
      * Save FS users in temporary tables before the synchronization
      *
      * @param           $data
+     * @param           $log
      *
      * @throws          Exception
      *
      * @creationDate    02/02/2016
      * @author          eFaktor     (fbv)
      */
-    private static  function import_temporary_fs_users($data) {
+    private static  function import_temporary_fs_users($data,$log) {
         /* Variables    */
         global $DB;
         $infoUser   = null;
@@ -3410,6 +3275,8 @@ class FS {
         try {
             // Execute
             $DB->insert_records('fs_imp_users',$data);
+            // Log /historical
+            $DB->insert_records('fs_imp_users_log',$log);
 
             // Commit
             $trans->allow_commit();
@@ -3444,10 +3311,10 @@ class FS {
             // SQL Instruction
             $sql = " SELECT DISTINCT
                             fs.id,
-                            fs.EPOST
+                            fs.epost
                      FROM	{fs_imp_users}	fs
-                     WHERE 	fs.EPOST IS NULL
-                        OR 	fs.EPOST    = '' ";
+                     WHERE 	fs.epost IS NULL
+                        OR 	fs.epost    = '' ";
 
             // Execute
             $rdo = $DB->get_records_sql($sql);
@@ -3471,13 +3338,14 @@ class FS {
      * Save FS companies in temporary tables before the synchronization
      *
      * @param           $data
+     * @param           $log
      *
      * @throws          Exception
      *
      * @creationDate    02/02/2016
      * @author          eFaktor     (fbv)
      */
-    private static function import_temporary_fs_company($data) {
+    private static function import_temporary_fs_company($data,$log) {
         /* Variables    */
         global $DB;
         $infoFS     = null;
@@ -3491,6 +3359,8 @@ class FS {
         try {
             // Execute
             $DB->insert_records('fs_imp_company',$data);
+            // For log / historical
+            $DB->insert_records('fs_imp_comp_log',$log);
 
             // Commit
             $trans->allow_commit();
@@ -3506,14 +3376,15 @@ class FS {
      * Description
      * Save FS Jobroles in temporary tables before the synchronization
      *
-     * @param                $data
+     * @param          $data
+     * @param          $log
      *
-     * @throws                  Exception
+     * @throws         Exception
      *
-     * @creationDate    04/02/2016
-     * @author          eFaktor     (fbv)
+     * @creationDate   04/02/2016
+     * @author         eFaktor     (fbv)
      */
-    private static function import_temporary_fs_jobroles($data) {
+    private static function import_temporary_fs_jobroles($data,$log) {
         /* Variables    */
         global $DB;
         $infoFS = null;
@@ -3527,6 +3398,8 @@ class FS {
         try {
             // Execute
             $DB->insert_records('fs_imp_jobroles',$data);
+            // Log /historical
+            $DB->insert_records('fs_imp_jobroles_log',$log);
 
             // Commit
             $trans->allow_commit();
@@ -3544,13 +3417,14 @@ class FS {
      * Import Temporary ManagersReporters
      *
      * @param           $data
+     * @param           $tolog
      *
      * @throws          Exception
      *
      * @creationDate    13/06/2016
      * @author          eFaktor     (fbv)
      */
-    private static function import_temporary_managers_reporters($data) {
+    private static function import_temporary_managers_reporters($data,$tolog) {
         /* Variables */
         global $DB;
         $info   = null;
@@ -3563,6 +3437,8 @@ class FS {
         try {
             // Execute
             $DB->insert_records('fs_imp_managers_reporters',$data);
+            // Log/historical
+            $DB->insert_records('fs_imp_mng_rpt_log',$tolog);
 
             // Commit
             $trans->allow_commit();
@@ -3579,13 +3455,14 @@ class FS {
      * Save User Job Role (FS)  in temporary tables before the synchronization
      *
      * @param           $data
+     * @param           $tolog
      *
      * @throws          Exception
      *
      * @creationDate    02/02/2016
      * @author          eFaktor     (fbv)
      */
-    private static function import_temporary_competence_jobrole($data) {
+    private static function import_temporary_competence_jobrole($data,$tolog) {
         /* Variables    */
         global $DB;
         $infoCompetenceJR       = null;
@@ -3599,6 +3476,8 @@ class FS {
         try {
             // Execute
             $DB->insert_records('fs_imp_users_jr',$data);
+            // Log/historical
+            $DB->insert_records('fs_imp_users_jr_log',$tolog);
 
             // Commit
             $trans->allow_commit();

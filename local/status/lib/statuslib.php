@@ -38,6 +38,39 @@ define('SYNC_STATUS_COMP','companies');
 define('SYNC_STATUS_JR','jobroles');
 
 class STATUS {
+    /**
+     * Description
+     * Write fellesdata log
+     *
+     * @param           $log
+     *
+     * @throws          Exception
+     *
+     * @creationDate    10/10/2017
+     * @author          eFaktor     (fbv)
+     */
+    public static function write_status_log($log) {
+        /* Variables */
+        global $DB;
+        $info   = null;
+        $time   = null;
+        try {
+            // Local time
+            $time = time();
+
+            // Write log
+            if ($log) {
+                asort($log);
+                foreach ($log as $info) {
+                    $info->timecreated = $time;
+                    $DB->insert_record('fs_status_log',$info);
+                }//for_log
+            }//if_log
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//write_fellesdata_log
+
     /**********/
     /* PUBLIC */
     /**********/
@@ -214,7 +247,7 @@ class STATUS {
                         JOIN    {user}              		u       ON  u.idnumber 			= fs.fodselsnr
                                                                     AND u.deleted  			= 0
                         -- COMPANY
-                        JOIN	{ksfs_company}				ksfs 	ON 	ksfs.fscompany 		= fs.ORG_ENHET_ID
+                        JOIN	{ksfs_company}				ksfs 	ON 	ksfs.fscompany 		= fs.org_enhet_id
                         JOIN	{ks_company}		  		ks	    ON	ks.companyid		= ksfs.kscompany
 
                         JOIN	(
@@ -275,7 +308,7 @@ class STATUS {
                         JOIN    {user}              		u       ON  u.idnumber 			= fs.fodselsnr
                                                                     AND u.deleted  			= 0
                         -- COMPANY
-                        JOIN	{ksfs_company}				ksfs 	ON 	ksfs.fscompany 		= fs.ORG_ENHET_ID
+                        JOIN	{ksfs_company}				ksfs 	ON 	ksfs.fscompany 		= fs.org_enhet_id
                         JOIN	{ks_company}		  		ks	    ON	ks.companyid		= ksfs.kscompany
                         -- COMPETENCE
                         JOIN	(
@@ -1349,9 +1382,9 @@ class STATUS {
 
             // SQL Instruction
             $sql = " SELECT			fs_imp.id,
-                                    fs_imp.ORG_NAVN
+                                    fs_imp.org_navn
                      FROM			{fs_imp_company}	fs_imp
-                        LEFT JOIN	{fs_company}		fs		ON fs.companyid = fs_imp.ORG_ENHET_ID
+                        LEFT JOIN	{fs_company}		fs		ON fs.companyid = fs_imp.org_enhet_id
                      WHERE 	        fs.id IS NULL
                         AND         fs_imp.org_nivaa IN ($levels) 
                         AND         fs_imp.action != :del

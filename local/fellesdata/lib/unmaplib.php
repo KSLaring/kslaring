@@ -139,7 +139,7 @@ class FS_UnMap {
             $DB->delete_records('fs_company',$params);
 
             // Update fs_imp_company as imported = 0
-            $rdo = $DB->get_record('fs_imp_company',array('ORG_ENHET_ID' => $infoOrg->fscompany),'id,imported');
+            $rdo = $DB->get_record('fs_imp_company',array('org_enhet_id' => $infoOrg->fscompany),'id,imported');
             if ($rdo) {
                 $rdo->imported      = 0;
                 $rdo->timemodified  = $time;

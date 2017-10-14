@@ -52,6 +52,8 @@ M.core_user.init_fs_company_to_map = function (Y,selectorlevel,hidelevel,selecto
 
         hparent: Y.one('#id_' + hideparent),
 
+        hfsparent : Y.one('#id_hfsparents'),
+
         /** Whether any options where selected last time we checked. Used by
          *  handle_selection_change to track when this status changes. */
         selectionempty : true,
@@ -159,6 +161,9 @@ M.core_user.init_fs_company_to_map = function (Y,selectorlevel,hidelevel,selecto
             for (index in data.results) {
                 var result = data.results[index];
                 lstparents = result.parents;
+                var fsparents = result.fsparents;
+
+                this.hfsparent.set('value',fsparents);
 
                 for (indexparent in lstparents) {
                     var option = Y.Node.create('<option value="' + indexparent + '">' + lstparents[indexparent] + '</option>');

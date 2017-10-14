@@ -207,3 +207,5 @@ $string['map_automatically_desc']   = 'Map automatically will not applied for th
 $string['parentlevel']  = 'Parent ';
 $string['leveltomap']   = 'Level to map: {$a}';
 $string['errorpaernt']  = 'Please, you must select a parent to map level {$a}';
+
+$string['strback'] = 'Back';

@@ -30,7 +30,7 @@
  */
 define('AJAX_SCRIPT', true);
 
-global $CFG, $SITE,$PAGE,$OUTPUT;
+global $CFG, $SITE,$PAGE,$OUTPUT,$SESSION;
 
 require_once('../../../config.php');
 require_once('../lib/mappinglib.php');
@@ -55,9 +55,8 @@ require_sesskey();
 echo $OUTPUT->header();
 
 // Data
-$data   = array('parents' => array());
-$parents = FS_MAPPING::get_parents_synchronized($level);
-
+$data   = array('parents' => array(),'fsparents');
+list($parents,$fsparents) = FS_MAPPING::get_parents_synchronized($level);
 // set data to send javascript
 if ($parents) {
     foreach ($parents as $id => $parent) {
@@ -68,6 +67,7 @@ if ($parents) {
         }
         $data['parents'][$key] = $parent;
     }
+    $data['fsparents'] = $fsparents;
 }//if_lstcategories
 
 // Encode and send
