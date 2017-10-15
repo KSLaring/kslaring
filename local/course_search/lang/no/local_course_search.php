@@ -42,7 +42,7 @@ $string['nocoursesshowninfo'] = 'Hvis du ikke ser noen kurs på denne siden må 
 interessert å søke i. Vennligst foreta et utvalg og lagre dette for å få opp relevante treff innen ditt interesseområde.';
 $string['cards'] = 'Bildevisning';
 $string['list'] = 'Listevisning';
-$string['sortby'] = 'Sortert på ';
+$string['sortby'] = 'Sortér på ';
 $string['displayoptions'] = 'Sortér etter';
 $string['sortdesc'] = 'Sortér synkende';
 $string['showtags'] = 'Vise kurstagger';
