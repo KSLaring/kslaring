@@ -68,6 +68,10 @@ define('MAX_IMP_FS',5000);
 define('CLEAN_MANAGERS_REPORTERS',0);
 define('CLEAN_COMPETENCE',1);
 
+define('FS_NIVA_2',2);
+define('FS_NIVA_5',3);
+define('FS_NIVA_1',1);
+
 /***********************/
 /* CLASS FSKS_JOBROLES */
 /***********************/
@@ -1171,19 +1175,19 @@ class FSKS_COMPANY {
 
 
             switch ($level) {
-                case FS_LE_1:
+                case FS_NIVA_1:
                     $mynivaa = 0;
                     $ini     = 0;
                     $nivaa   = 0;
 
                     break;
 
-                case FS_LE_2:
+                case FS_NIVA_2:
                     $ini     = $plugin->map_one;
                     $nivaa   = $plugin->map_two;
                     $mynivaa = $nivaa;
                     break;
-                case FS_LE_5:
+                case FS_NIVA_5:
                     $ini    = $plugin->map_two;
                     $nivaa  = $plugin->map_three;
                     $mynivaa = $nivaa;
