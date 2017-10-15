@@ -633,7 +633,8 @@ class FS_MAPPING {
                 // Execute
                 $rdo = $DB->get_record_sql($sql,$params);
                 if ($rdo) {
-                    $lstparents[$rdo->companyid]    = $rdo->name;
+                    $key = "'" . $rdo->companyid . "'";
+                    $lstparents[$key]    = $rdo->name;
                 }
             }//if_rdo
 
