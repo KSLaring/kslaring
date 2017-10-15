@@ -610,7 +610,7 @@ class FS_MAPPING {
                                         $lstparents[$instance->companyid]   = $instance->name;
                                         $aux = array();
                                         foreach ($rdochild as $child) {
-                                            $aux[] = $child->parent;
+                                            $aux[] = "'" . $child->parent . "'";
                                         }
                                         if ($aux) {
                                             $parents[$instance->companyid] = implode(',',$aux);
