@@ -31,7 +31,7 @@ $string['pagetitle'] = 'Kurssøk';
 $string['searchtitle'] = 'Fritekstsøk';
 $string['freetextplaceholder'] = 'Søk i filtrert resultat';
 $string['searchbtntext'] = 'Søk';
-$string['toggleselection'] = 'Veksle velg merkelapper';
+$string['toggleselection'] = 'Veksle velg tagger';
 $string['changetoselection'] = 'Velg interesser';
 $string['changetoresults'] = 'Vis resultat';
 $string['preselectprovider'] = 'Forvalg av tilbydere';
@@ -42,7 +42,7 @@ $string['nocoursesshowninfo'] = 'Hvis du ikke ser noen kurs på denne siden må 
 interessert å søke i. Vennligst foreta et utvalg og lagre dette for å få opp relevante treff innen ditt interesseområde.';
 $string['cards'] = 'Bildevisning';
 $string['list'] = 'Listevisning';
-$string['sortby'] = '';
+$string['sortby'] = 'Sortert på ';
 $string['displayoptions'] = 'Sortér etter';
 $string['sortdesc'] = 'Sortér synkende';
 $string['showtags'] = 'Vise kurstagger';
