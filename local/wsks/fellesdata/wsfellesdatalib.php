@@ -2414,6 +2414,23 @@ class WS_FELLESDATA {
                 case UPDATE_ACTION:
                 case STATUS_ACTION:
                     if (!$rdo) {
+                        $dblog =  "Name : " . $instanceCompany->name . "\n";
+                        $dblog .= "industrycode: " . $instanceCompany->industrycode . "\n";
+                        $dblog .= "hierarchylevel: " . $instanceCompany->hierarchylevel . "\n";
+                        $dblog .= "public: " . $instanceCompany->public . "\n";
+                        $dblog .= "ansvar: " . $instanceCompany->ansvar . "\n";
+                        $dblog .= "tjeneste: " . $instanceCompany->tjeneste . "\n";
+                        $dblog .= "adresse1: " . $instanceCompany->adresse1 . "\n";
+                        $dblog .= "adresse2: " . $instanceCompany->adresse2 . "\n";
+                        $dblog .= "adresse3: " . $instanceCompany->adresse3 . "\n";
+                        $dblog .= "postnr: " . $instanceCompany->postnr . "\n";
+                        $dblog .= "poststed: " . $instanceCompany->poststed . "\n";
+                        $dblog .= "mapped: " . $instanceCompany->mapped . "\n";
+                        $dblog .= "modified: " . $instanceCompany->modified . "\n";
+
+                        global $CFG;
+                        error_log($dblog, 3, $CFG->dataroot . "/Paqui.log");
+
                         // Execute
                         $companyId = $DB->insert_record('report_gen_companydata',$instanceCompany);
                     }else {
@@ -2500,6 +2517,9 @@ class WS_FELLESDATA {
             
             return $companyId;
         }catch (Exception $ex) {
+            global $CFG;
+            error_log($ex->getMessage(), 3, $CFG->dataroot . "/Paqui.log");
+
             // Rollback
             $trans->rollback($ex);
 
