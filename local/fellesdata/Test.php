@@ -62,6 +62,18 @@ try {
 
         echo $toDate . "</br>";
         //echo " --> " . FS_CRON::can_run();
+
+
+        $toMail = array();
+        FSKS_COMPANY::get_companiesfs_to_mail(2,$toMail);
+        FSKS_COMPANY::get_companiesfs_to_mail(3,$toMail);
+        if ($toMail) {
+        foreach ($toMail as $key => $company) {
+        echo "KEY: " . $key . " Company: " . $company . "</br>";
+        }
+        //echo "LEvel 3 to look";
+        //$toMail = FSKS_COMPANY::get_companiesfs_to_mail(3);
+        }
     }
 }catch (Exception $ex) {
     throw $ex;
