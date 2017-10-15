@@ -702,12 +702,14 @@ class FSKS_COMPANY {
 
             switch ($level) {
                 case FS_LE_2:
-                    $top = $DB->get_record('ks_company',array('hierarchylevel' => 1),'companyid');
-                    $parent = "'" . $top->companyid . "' as 'parent', ";
+                    $top = $DB->get_record('ks_company',array('hierarchylevel' => 1),'companyid,industrycode');
+                    $parent = "'" . $top->companyid     . "' as 'parent', 
+                               '" . $top->industrycode  . "' as 'industry', ";
 
                     break;
                 case FS_LE_5:
-                    $parent = " ks.companyid									      as 'parent', ";
+                    $parent = " ks.companyid							as 'parent', 
+                                ks.industrycode                         as 'industry', ";
                     $sqljoin = " JOIN 	  {ksfs_company}  	ksfs	ON 	ksfs.fscompany 	= fs_imp.org_enhet_over
                                  JOIN	  {ks_company}		ks		ON	ks.companyid	= ksfs.kscompany ";
 
@@ -744,6 +746,7 @@ class FSKS_COMPANY {
             $rdo = $DB->get_records_sql($sql,$params,$start,$end);
             if ($rdo) {
                 $toSynchronize = json_encode($rdo);
+                echo $toSynchronize . "</br>";
             }//if_rdo
 
             return array($toSynchronize,$rdo);
