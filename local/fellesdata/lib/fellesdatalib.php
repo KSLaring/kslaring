@@ -1455,7 +1455,7 @@ class FSKS_COMPANY {
             $rdoCompany->fs_parent     = $companyKSFS->fs_parent;
             $rdoCompany->parent        = $companyKSFS->parent;
             $rdoCompany->level         = $companyKSFS->level;
-            $rdoCompany->privat        = ($companyKSFS->privat ? 0 : 1);
+            $rdoCompany->privat        = ($companyKSFS->public ? 0 : 1);
             $rdoCompany->ansvar        = $companyKSFS->ansvar;
             $rdoCompany->tjeneste      = $companyKSFS->tjeneste;
             $rdoCompany->adresse1      = $companyKSFS->adresse1;
@@ -1684,103 +1684,6 @@ class FSKS_COMPANY {
             throw $ex;
         }//try_catch
     }//synchronize_company_ksfs
-
-    /**
-     * Description
-     * Synchronize company only in FS site.
-     *
-     * @param           $companyFS
-     *
-     * @throws          Exception
-     *
-     * @creationDate    10/02/2016
-     * @author          eFaktor     (fbv)
-     */
-    private static function synchronize_company_fs($companyFS) {
-        /* Variables    */
-        global $DB;
-        $infoCompany    = null;
-        $rdoCompany     = null;
-        $params         = null;
-        $sync           = null;
-        $time           = null;
-        $trans          = null;
-
-        // Start Transaction
-        $trans = $DB->start_delegated_transaction();
-
-        try {
-            // Local Time
-            $time = time();
-
-            // Get Info Company
-            $params = array();
-            $params['companyid'] = $companyFS->fscompany;
-            $rdoCompany          = $DB->get_record('fs_company',$params);
-
-            // Apply Action
-            switch ($companyFS->action) {
-                case UPDATE:
-                    if ($rdoCompany) {
-                        $rdoCompany->name           = $companyFS->name;
-                        $rdoCompany->fs_parent      = $companyFS->fs_parent;
-                        $rdoCompany->privat         = $companyFS->privat;
-                        $rdoCompany->ansvar         = $companyFS->ansvar;
-                        $rdoCompany->tjeneste       = $companyFS->tjeneste;
-                        $rdoCompany->adresse1       = $companyFS->adresseOne;
-                        $rdoCompany->adresse2       = $companyFS->adresseTwo;
-                        $rdoCompany->adresse3       = $companyFS->adresseThree;
-                        $rdoCompany->postnr         = $companyFS->postnr;
-                        $rdoCompany->poststed       = $companyFS->poststed;
-                        $rdoCompany->epost          = $companyFS->epost;
-                        $rdoCompany->synchronized   = 0;
-                        $rdoCompany->timemodified   = $time;
-                        // Execute
-                        $DB->update_record('fs_company',$rdoCompany);
-
-                        // Synchronized
-                        $sync = true;
-                    }//if_exists
-
-                    break;
-                case DELETE:
-                    // Delete if exists
-                    if ($rdoCompany) {
-                        // Delete FS Company
-                        $DB->delete_records('fs_company',array('id' => $rdoCompany->id));
-
-                        // Delete FS KS Relation
-                        $params = array();
-                        $params['fscompany'] = $companyFS->fscompany;
-                        // Execute
-                        $DB->delete_records('ksfs_company',$params);
-
-                        // Synchronized
-                        $sync = true;
-                    }//if_exists
-
-                    break;
-            }//action
-
-            // Synchronized
-            if ($sync) {
-                $instance = new stdClass();
-                $instance->id           = $companyFS->id;
-                $instance->imported     = 1;
-                $instance->timemodified = $time;
-
-                $DB->update_record('fs_imp_company',$instance);
-            }//if_sync
-
-            /* Commit */
-            $trans->allow_commit();
-        }catch (Exception $ex) {
-            /* Rollback */
-            $trans->rollback($ex);
-
-            throw $ex;
-        }//try_catch
-    }//synchronize_company_fs
 }//FSKS_COMPANY
 
 /********************/
