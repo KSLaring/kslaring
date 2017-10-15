@@ -610,7 +610,7 @@ class FS_MAPPING {
                                         $lstparents[$instance->companyid]   = $instance->name;
                                         $aux = array();
                                         foreach ($rdochild as $child) {
-                                            $aux[] = $child->parent;
+                                            $aux[] = "'" . $child->parent . "'";
                                         }
                                         if ($aux) {
                                             $parents[$instance->companyid] = implode(',',$aux);
@@ -633,8 +633,7 @@ class FS_MAPPING {
                 // Execute
                 $rdo = $DB->get_record_sql($sql,$params);
                 if ($rdo) {
-                    $key = "'" . $rdo->companyid . "'";
-                    $lstparents[$key]    = $rdo->name;
+                    $lstparents[$rdo->companyid]    = $rdo->name;
                 }
             }//if_rdo
 
