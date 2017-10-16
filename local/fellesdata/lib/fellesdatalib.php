@@ -3251,6 +3251,7 @@ class FS {
             $sql = " SELECT * FROM {fs_imp_company} WHERE org_nivaa NOT IN ('" . $nivaa . "')";
 
             //Execute
+            echo $sql . "</br>";
             echo $nivaa . "</br>";
             $rdo = $DB->get_records_sql($sql);
             if ($rdo) {
