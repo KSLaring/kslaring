@@ -1790,6 +1790,7 @@ class FELLESDATA_CRON {
             // Add log
             self::$log[] = $infolog;
 
+            echo "TOTAL AUTO : " . $total . " LEVEL --> " . $level . "</br>";
             // Synchronize
             if ($total) {
                 for ($i=0;$i<=$total;$i=$i+$limit) {
