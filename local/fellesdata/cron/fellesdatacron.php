@@ -267,7 +267,7 @@ class FELLESDATA_CRON {
                         }//if_mail_notifications
 
                         // Notification manual synchronization
-                        if (!$pluginInfo->automatic) {
+                        //if (!$pluginInfo->automatic) {
                             if ($notifyTo) {
                                 // Get companies to send notifications
                                 $toMail = array();
@@ -285,7 +285,7 @@ class FELLESDATA_CRON {
                                     self::$log[] = $infolog;
                                 }//if_toMail
                             }//if_notify
-                        }//if_automatic
+                        //}//if_automatic
                     }
 
                     break;

@@ -89,7 +89,6 @@ if (($level > 1) && (!$parentid)) {
 }else {
     if (isset($SESSION->fsparents)) {
         $fsparents = $SESSION->fsparents[$parentid];
-        $fsparents = "'" . str_replace(",","','",$fsparents) . "'";
     }else {
         $fsparents = 0;
     }
