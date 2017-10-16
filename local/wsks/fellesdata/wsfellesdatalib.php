@@ -88,6 +88,7 @@ class WS_FELLESDATA {
     /**
      * @param           $hierarchy
      * @param           $result
+     * @param           $log
      *
      * @throws          Exception
      *
@@ -97,12 +98,12 @@ class WS_FELLESDATA {
      * Description
      * Get job roles by level
      */
-    public static function jobroles_by_level($hierarchy,&$result) {
+    public static function jobroles_by_level($hierarchy,&$result,&$log) {
         /* Variables */
 
         try {
-            /* Job Roles by Level */
-            $result['jobroles'] = self::get_jobroles_by_level($hierarchy['top'],$hierarchy['notIn']);
+            // Job roles by level
+            $result['jobroles'] = self::get_jobroles_by_level($hierarchy['top'],$hierarchy['notIn'],$log);
         }catch (Exception $ex) {
             $result['error']    = 409;
             $result['message']  = $ex->getMessage();
@@ -124,16 +125,16 @@ class WS_FELLESDATA {
      * Get organization structure for a specific level
      * In this case, top level is company.
      */
-    public static function organization_structure_by_top($top,&$result) {
+    public static function organization_structure_by_top($top,&$result,&$log) {
         /* Variables */
         $infoTop = null;
 
         try {
-            /* Convert to object    */
+            // Convert to object
             $infoTop = (Object)$top;
 
-            /* Get Organization Structure*/
-            $result['structure'] = self::get_organization_structure_by_top($infoTop);
+            // Get orgnaziation structure
+            $result['structure'] = self::get_organization_structure_by_top($infoTop,$log);
         }catch (Exception $ex) {
             $result['error']    = 409;
             $result['message']  = $ex->getMessage();
@@ -145,8 +146,9 @@ class WS_FELLESDATA {
 
     /**
      * @param           $companiesFS
-     *
      * @param           $result
+     * @param           $log
+     *
      * @throws          Exception
      *
      * @creationDate    28/01/2016
@@ -191,7 +193,7 @@ class WS_FELLESDATA {
             // Process Content
             if (file_exists($path)) {
                 // Get content
-                $data = file_get_contents($path);
+                $data    = file_get_contents($path);
                 $content = json_decode($data);
 
                 // Log
@@ -262,27 +264,22 @@ class WS_FELLESDATA {
      */
     public static function synchronize_fsks_jobroles($jobRolesFS,&$result) {
         /* Variables */
-        global $CFG;
         $objJobRole     = null;
         $jobRoleId      = null;
         $imported       = array();
         $infoImported   = null;
-        $dbLog = null;
-
-        /* Log  */
-        $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START Synchronize FSKS JobRoles . ' . "\n";
-        error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+        $infolog        = null;
 
         try {
-            /* Synchronization between FS and KS companies */
+            // Synchronization between FS and KS companies
             foreach ($jobRolesFS as $key => $jobRole) {
-                /* Convert to obejct    */
+                // Convert to object
                 $objJobRole = (Object)$jobRole;
 
-                /* Process job role */
+                // Process jobrole
                 $jobRoleId = self::process_fs_jobroles($objJobRole);
 
-                /* Marked as Imported   */
+                // Jobrole marked as imported
                 if ($jobRoleId) {
                     $infoImported = new stdClass();
                     $infoImported->fsId     = $objJobRole->fsId;
@@ -295,16 +292,7 @@ class WS_FELLESDATA {
             }//for_jobRoles
 
             $result['jobRoles'] = $imported;
-
-            /* Log  */
-            $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Synchronize FSKS JobRoles . ' . "\n";
-            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
         }catch (Exception $ex) {
-            /* Log  */
-            $dbLog  = $ex->getMessage() . "\n\n";
-            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINSIH ERROR Synchronize FSKS JobRoles . ' . "\n";
-            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
-
             $result['error']    = 409;
             $result['message']  = $ex->getMessage();
             $result['jobRoles'] = $imported;
@@ -2551,6 +2539,7 @@ class WS_FELLESDATA {
 
     /**
      * @param           $topCompany
+     * @param           $log
      *
      * @return          array
      * @throws          Exception
@@ -2563,9 +2552,9 @@ class WS_FELLESDATA {
      * In this case, top level is company.
      * Compatible with Lx version of Report manager
      */
-    private static function get_organization_structure_by_top($topCompany) {
+    private static function get_organization_structure_by_top($topCompany,&$log) {
         /* Variables */
-        global $DB, $CFG;
+        global $DB;
         $sql                = null;
         $rdo                = null;
         $params             = null;
@@ -2574,21 +2563,17 @@ class WS_FELLESDATA {
         $maxLevel           = null;
         $i                  = null;
         $notIn              = null;
-        $dbLog              = null;
-
-        /* Log  */
-        $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START GET KS Organization Structure. ' . "\n";
-        error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+        $infolog            = null;
 
         try {
-            /* Get the highest level of the hierarchy   */
+            // Get highest level of the hierarchy
             $maxLevel = self::get_max_level_organization();
 
-            /* Search Criteria  */
+            // Search criteria
             $params = array();
             $params['level']    = $topCompany->level;
 
-            /* Not In Companies */
+            // Not in companies
             $notIn = $topCompany->notIn;
 
             /* SQL Instruction */
@@ -2604,7 +2589,7 @@ class WS_FELLESDATA {
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 foreach ($rdo as $instance) {
-                    /* Top Company */
+                    // Top company
                     $infoOrganization = new stdClass();
                     $infoOrganization->id           = $instance->id;
                     $infoOrganization->name         = $instance->name;
@@ -2612,30 +2597,38 @@ class WS_FELLESDATA {
                     $infoOrganization->level        = $instance->hierarchylevel;
                     $infoOrganization->parent       = 0;
 
-                    /* Add Company */
+                    // Add company
                     $orgStructure[$instance->id] = $infoOrganization;
                 }//for_Rdo
 
-                /* Get the hierarchy */
+                // Get hierarchy
                 if ($maxLevel) {
                     $parents = implode(',',array_keys($orgStructure));
+
+                    // Log
+                    $infolog = new stdClass();
+                    $infolog->action      = 'Service wsKSOrganizationStructure  ';
+                    $infolog->description = 'get_organization_structure_by_top --> Organizations : ' . $parents ;
+                    // Add log
+                    $log[] = $infolog;
+
                     for($i=2;$i<=$maxLevel;$i++) {
-                        /* Get Information About the rest hierarchy */
+                        // Information about the rest hierarchy
                         $parents = self::get_my_levels($parents,$i,$orgStructure,$notIn);
+
+                        // Log
+                        $infolog = new stdClass();
+                        $infolog->action      = 'Service wsKSOrganizationStructure  ';
+                        $infolog->description = 'get_organization_structure_by_top --> Organizations : ' . $parents ;
+                        // Add log
+                        $log[] = $infolog;
                     }
                 }//if_MaxLevel
-            }//if_Rdo
 
-            /* Log  */
-            $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' FINISH GET KS Organization Structure. ' . "\n";
-            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+            }//if_Rdo
 
             return $orgStructure;
         }catch (Exception $ex) {
-            $dbLog = "ERROR: " . $ex->getMessage() . "\n" . "\n";
-            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH GET KS Organization Structure. ' . "\n";
-            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
-
             throw $ex;
         }//try_catch
     }//get_organization_structure_by_top
@@ -2781,6 +2774,7 @@ class WS_FELLESDATA {
     /**
      * @param           $top
      * @param           $notIn
+     * @param           $log
      *
      * @return          array
      * @throws          Exception
@@ -2791,23 +2785,18 @@ class WS_FELLESDATA {
      * Description
      * Get all job roles connected with a specific level zero
      */
-    private static function get_jobroles_by_level($top,$notIn) {
+    private static function get_jobroles_by_level($top,$notIn,&$log) {
         /* Variables */
-        global $DB,$CFG;
+        global $DB;
         $rdo            = null;
         $sql            = null;
         $params         = null;
         $infoJobRole    = null;
         $jobRoles       = array();
-        $dbLog          = null;
-
-        /* Log  */
-        $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' START KS Job Roles No Generics . ' . "\n";
-        error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+        $infolog        = null;
 
         try {
-
-            /* SQL Instruction */
+            // SQL Instruction
             $sql = " SELECT	jr.id,
                             jr.name,
                             jr.industrycode,
@@ -2819,31 +2808,38 @@ class WS_FELLESDATA {
                      WHERE  jr.id NOT IN ($notIn)
                      GROUP BY jr.id ";
 
-            /* Execute */
+            // Execute
             $rdo = $DB->get_records_sql($sql,$params);
-            foreach ($rdo as $instance) {
-                /* JR Info */
-                $infoJobRole = new stdClass();
-                $infoJobRole->id            = $instance->id;
-                $infoJobRole->name          = $instance->name;
-                $infoJobRole->industryCode  = $instance->industrycode;
-                $infoJobRole->relation      = self::get_jobrole_relation($instance->myrelations);
+            if ($rdo) {
+                foreach ($rdo as $instance) {
+                    // Job role info
+                    $infoJobRole = new stdClass();
+                    $infoJobRole->id            = $instance->id;
+                    $infoJobRole->name          = $instance->name;
+                    $infoJobRole->industryCode  = $instance->industrycode;
+                    $infoJobRole->relation      = self::get_jobrole_relation($instance->myrelations);
 
-                /* Add job role */
-                $jobRoles[$instance->id] = $infoJobRole;
-            }//for_rdo
+                    // Add job role
+                    $jobRoles[$instance->id] = $infoJobRole;
+                }//for_rdo
 
-            /* Log  */
-            $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' FINISH KS Job Roles No Generics . ' . "\n";
-            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
+                // Log
+                $infolog = new stdClass();
+                $infolog->action      = 'Service wsKSJobRoles  ';
+                $infolog->description = 'get_jobroles_by_level -> ' . implode(',',array_keys(',',$jobRoles));
+                // Add log
+                $log[] = $infolog;
+            }else {
+                // Log
+                $infolog = new stdClass();
+                $infolog->action      = 'Service wsKSJobRoles  ';
+                $infolog->description = 'get_jobroles_by_level - No job roles';
+                // Add log
+                $log[] = $infolog;
+            }//if_rdo
 
             return $jobRoles;
         }catch (Exception $ex) {
-            /* Log  */
-            $dbLog  = "ERROR: " . $ex->getMessage() . "\n" . "\n";
-            $dbLog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH KS Job Roles No Generics . ' . "\n";
-            error_log($dbLog, 3, $CFG->dataroot . "/Fellesdata.log");
-
             throw $ex;
         }//try_catch
     }//get_jobroles_by_level
