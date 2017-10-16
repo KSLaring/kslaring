@@ -623,7 +623,7 @@ class FSKS_COMPANY {
      * @creationDate    05/09/2017
      * @author          eFaktor     (fbv)
      */
-    public static function get_total_companies_automatically($level) {
+    public static function get_total_companies_automatically($plugin,$level) {
         /* Variables */
         global $DB;
         $rdo        = null;
@@ -636,23 +636,29 @@ class FSKS_COMPANY {
             $params = array();
             $params['action']   = DELETE;
             $params['imported'] = 0;
-            $params['level']    = $level;
 
+            switch ($level) {
+                case FS_LE_2:
+                    $params['level'] = $plugin->map_two;
+
+                    break;
+                case FS_LE_5:
+                    $params['level'] = $plugin->map_three;
+
+                    break;
+            }//siwtch_level
             // SQL Instruction
-            $sql = " SELECT		  count(DISTINCT fs_imp.id) as 'total'
+            $sql = " SELECT		  count(fs_imp.id) as 'total'
                      FROM		  {fs_imp_company}	fs_imp
                         LEFT JOIN {fs_company}		fs		ON 	fs.companyid 	= fs_imp.org_enhet_id
                      WHERE	      fs_imp.action 	!= :action
-                          AND	  fs_imp.imported    = 0
+                          AND	  fs_imp.imported    = :imported
                           AND     fs_imp.org_nivaa   = :level
                           AND	  fs.id IS NULL ";
 
-            echo $sql . "</br>";
-            echo implode(',',$params) . "</br>";
             // Execute
             $rdo = $DB->get_record_sql($sql,$params);
             if ($rdo) {
-                echo " --> " . $rdo->total . "</br>";
                 return $rdo->total;
             }else {
                 return null;
@@ -675,7 +681,7 @@ class FSKS_COMPANY {
      * @creationDate    05/09/2017
      * @author          eFaktor     (fbv)
      */
-    public static function get_companies_to_synchronize_automatically($level,$start,$end) {
+    public static function get_companies_to_synchronize_automatically($plugin,$level,$start,$end) {
         /* Variables */
         global  $DB;
         $rdo            = null;
@@ -693,10 +699,6 @@ class FSKS_COMPANY {
             $params = array();
             $params['action']   = DELETE;
             $params['imported'] = 0;
-
-
-            // Plugin info
-            $plugin = get_config('local_fellesdata');
 
             switch ($level) {
                 case FS_LE_2:

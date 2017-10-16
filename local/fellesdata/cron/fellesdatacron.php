@@ -1782,7 +1782,7 @@ class FELLESDATA_CRON {
             self::$log[] = $infolog;
 
             // Get total
-            $total = FSKS_COMPANY::get_total_companies_automatically($level);
+            $total = FSKS_COMPANY::get_total_companies_automatically($plugin,$level);
             // Log
             $infolog = new stdClass();
             $infolog->action 		= 'companies_fs_synchronization - companies_automatically_synchronized';
@@ -1795,7 +1795,7 @@ class FELLESDATA_CRON {
             if ($total) {
                 for ($i=0;$i<=$total;$i=$i+$limit) {
                     // Get companies to synchronize
-                    list($toSynchronize,$rdocompanies) = FSKS_COMPANY::get_companies_to_synchronize_automatically($level,$start,$limit);
+                    list($toSynchronize,$rdocompanies) = FSKS_COMPANY::get_companies_to_synchronize_automatically($plugin,$level,$start,$limit);
 
                     // Call webs service
                     if ($toSynchronize) {
