@@ -691,25 +691,25 @@ class FSKS_COMPANY {
         $toSynchronize  = array();
         $sqljoin        = null;
         $parent         = null;
-        $ini = null;
-        $nivaa = null;
-        $mynivaa = null;
+        $ini            = null;
+        $nivaa          = null;
+        $mynivaa        = null;
 
         try {
             // Search criteria
             $params = array();
             $params['action']   = DELETE;
             $params['imported'] = 0;
-            $params['level']    = $level;
+
 
             // Plugin info
             $plugin = get_config('local_fellesdata');
 
             switch ($level) {
                 case FS_LE_2:
-                    $ini     = $plugin->map_one;
-                    $nivaa   = $plugin->map_two;
-                    $mynivaa = $nivaa;
+                    $params['level'] = $plugin->map_two;
+                    $nivaa           = $plugin->map_one;
+                    $ini             = $plugin->map_two;
 
                     $top = $DB->get_record('ks_company',array('hierarchylevel' => 1),'companyid,industrycode');
                     $parent = "'" . $top->companyid     . "' as 'parent', 
@@ -717,77 +717,62 @@ class FSKS_COMPANY {
 
                     break;
                 case FS_LE_5:
-                    $ini     = $plugin->map_two;
-                    $nivaa   = $plugin->map_three;
-                    $mynivaa = $nivaa;
+                    $params['level'] = $plugin->map_three;
+                    $nivaa           = $plugin->map_two;
+                    $ini             = $plugin->map_three;
+
 
                     $parent = " ks.companyid							as 'parent', 
                                 ks.industrycode                         as 'industry', ";
-                    $sqljoin = " JOIN 	  {ksfs_company}  	ksfs	ON 	ksfs.fscompany 	= fs_imp.org_enhet_over
-                                 JOIN	  {ks_company}		ks		ON	ks.companyid	= ksfs.kscompany ";
+                    $sqljoin = " LEFT JOIN 	  {ksfs_company}  	ksfs	ON 	ksfs.fscompany 	= fs_imp.org_enhet_over
+                                 LEFT JOIN	  {ks_company}		ks		ON	ks.companyid	= ksfs.kscompany ";
+
 
                     break;
             }//siwtch_level
 
-            $diff = $nivaa - $ini;
-            if ($diff > 1) {
-                for ($i=1;$i<$diff;$i++) {
-                    $mynivaa .= ',' .($i+$ini);
-                }
-            }
-
             // SQL Instruction
-            $sqlnivaa = " SELECT    DISTINCT
-                                      fs_imp.org_nivaa								      as 'level',
-                                      fs_imp.org_enhet_over							      as 'fs_parent'
-                     FROM		      {fs_imp_company}	fs_imp
-                        LEFT JOIN     {fs_company}		fs		ON 	fs.companyid 	= fs_imp.org_enhet_id
-                     WHERE	      fs_imp.action 		!= :action
-                          AND	  fs_imp.imported  	     = :imported
-                          AND     fs_imp.org_nivaa       IN  (". $mynivaa .")
-                          AND	  fs.id IS NULL ";
-
-            $sql = " SELECT		  fs_imp.org_enhet_id 							      as 'fsid',
-                                  '0'											      as 'ksid',
-                                  TRIM(fs_imp.org_navn)  	 					      as 'name',
-                                  fs_imp.org_nivaa								      as 'level',
-                                  $parent
-                                  fs_imp.org_enhet_over							      as 'fs_parent',
-                                  IF(fs_imp.privat,0,1)   						      as 'public',
-                                  TRIM(IF(fs_imp.ansvar != '',fs_imp.ansvar,0))       as 'ansvar',
-                                  TRIM(IF(fs_imp.tjeneste != '',fs_imp.tjeneste,0))   as 'tjeneste',
-                                  TRIM(IF(fs_imp.adresse1 != '',fs_imp.adresse1,0))   as 'adresse1',
-                                  TRIM(IF(fs_imp.adresse2 != '',fs_imp.adresse2,0))   as 'adresse2',
-                                  TRIM(IF(fs_imp.adresse3 != '',fs_imp.adresse3,0))   as 'adresse3',
-                                  TRIM(IF(fs_imp.postnr != '',fs_imp.postnr,0))       as 'postnr',
-                                  TRIM(IF(fs_imp.poststed != '' ,fs_imp.poststed,0))  as 'poststed',
-                                  TRIM(IF(fs_imp.epost != '',fs_imp.epost,0))         as 'epost',
-                                  fs_imp.action									      as 'action',
-                                  '0'                                         	      as 'moved'
+            $sql = " SELECT	  DISTINCT
+                                fs_imp.org_enhet_id 							  	as 'fsid',
+                                '0'											      	as 'ksid',
+                                TRIM(fs_imp.org_navn)  	 					      	as 'name',
+                                fs_imp.org_nivaa								  	as 'level',
+                                $parent
+                                fs_imp.org_enhet_over							  	as 'fs_parent',
+                                IF(fs_imp.privat,0,1)   						  	as 'public',
+                                TRIM(IF(fs_imp.ansvar != '',fs_imp.ansvar,0))     	as 'ansvar',
+                                TRIM(IF(fs_imp.tjeneste != '',fs_imp.tjeneste,0)) 	as 'tjeneste',
+                                TRIM(IF(fs_imp.adresse1 != '',fs_imp.adresse1,0)) 	as 'adresse1',
+                                TRIM(IF(fs_imp.adresse2 != '',fs_imp.adresse2,0)) 	as 'adresse2',
+                                TRIM(IF(fs_imp.adresse3 != '',fs_imp.adresse3,0)) 	as 'adresse3',
+                                TRIM(IF(fs_imp.postnr != '',fs_imp.postnr,0))     	as 'postnr',
+                                TRIM(IF(fs_imp.poststed != '' ,fs_imp.poststed,0))	as 'poststed',
+                                TRIM(IF(fs_imp.epost != '',fs_imp.epost,0))         as 'epost',
+                                fs_imp.action									    as 'action',
+                                '0'                                         	    as 'moved'
                      FROM		  {fs_imp_company}	fs_imp
                         LEFT JOIN {fs_company}		fs		ON 	fs.companyid 	= fs_imp.org_enhet_id
                         $sqljoin
-                     WHERE	      fs_imp.action 		!= :action
-                          AND	  fs_imp.imported  	     = :imported
-                          AND     fs_imp.org_nivaa       = :level
-                          AND	  fs.id IS NULL ";
+                     WHERE	  fs_imp.action 		!= :action
+                        AND	  fs_imp.imported  	     = :imported
+                        AND   fs_imp.org_nivaa       = :level
+                        AND	  fs.id IS NULL ";
 
-            // Excute
+            // Execute
             $rdo = $DB->get_records_sql($sql,$params,$start,$end);
             if ($rdo) {
-                //$toSynchronize = json_encode($rdo);
+                $diff = $ini-$nivaa;
+                echo "DIFF : " . $diff . "</br>";
                 foreach ($rdo as $instance) {
-                    if ($instance->level == $nivaa) {
-                        $params['level'] = $instance->level;
-                        $params['parent'] = $instance->fs_parent;
-                        $rdonivaa = $DB->get_records_sql($sql,$params,$start,$end);
-                        if ($rdonivaa) {
-                            $toSynchronize = json_encode($rdo);
-                        }
+                    if (!$instance->parent) {
+                        $parent = null;
+                        echo $instance->fsid . " FS PARENT : " . $instance->fs_parent . " </br>";
+                        //do {
 
+                        //}while(!$parent || )
                     }
                 }
-            }//if_rdo
+            }//if_Rdo
 
             return array($toSynchronize,$rdo);
         }catch (Exception $ex) {
@@ -3257,6 +3242,19 @@ class FS {
             // For log / historical
             $DB->insert_records('fs_imp_comp_log',$log);
 
+            // Move middle parents
+            // Search criteria
+            $plugin = get_config('local_fellesdata');
+            $nivaa  = $plugin->map_one . "," .$plugin->map_two . "," . $plugin->map_three;
+
+            // SQl instruction
+            $sql = " SELECT * FROM {fs_imp_company} WHERE org_nivaa NOT IN ('" . $nivaa . "')";
+
+            //Execute
+            $rdo = $DB->get_records_sql($sql);
+            if ($rdo) {
+                $DB->insert_records('fs_imp_middle_parents',$rdo);
+            }
             // Commit
             $trans->allow_commit();
         }catch (Exception $ex) {

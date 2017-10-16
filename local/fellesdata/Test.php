@@ -63,10 +63,11 @@ try {
 
         echo $toDate . "</br>";
 
-        list($toSynchronize,$rdo) = FSKS_COMPANY::get_companies_to_synchronize_automatically($pluginInfo->map_two,0,500);
+        //list($toSynchronize,$rdo) = FSKS_COMPANY::get_companies_to_synchronize_automatically($pluginInfo->map_two,0,500);
 
-        echo $toSynchronize;
+        //echo $toSynchronize;
 
+        FSKS_COMPANY::get_companies_to_synchronize_automatically(3,0,100);
         /**
         $toMail = array();
         FSKS_COMPANY::get_companiesfs_to_mail(2,$toMail);
