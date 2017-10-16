@@ -216,8 +216,9 @@ class local_wsks_external extends external_api {
      */
     public static function wsFSCompany($companiesFS) {
         /* Variables    */
-        global $CFG;
         $result     = array();
+        $log        = array();
+        $infolog    = null;
 
         /* Parameter Validation */
         $params = self::validate_parameters(self::wsFSCompany_parameters(), array('companiesFS' => $companiesFS));
@@ -228,8 +229,25 @@ class local_wsks_external extends external_api {
         $result['companies']    = array();
 
         try {
+            // Log
+            $infolog = new stdClass();
+            $infolog->action      = 'Service wsFSCompany  ' . userdate(time(),'%d.%m.%Y %H:%M', 99, false);
+            $infolog->description = 'START wsFSCompany';
+            // Add log
+            $log[] = $infolog;
+
             /* Synchronize companies */
-            WS_FELLESDATA::synchronize_fsks_companies($companiesFS,$result);
+            WS_FELLESDATA::synchronize_fsks_companies($companiesFS,$result,$log);
+
+            // Log
+            $infolog = new stdClass();
+            $infolog->action      = 'FINISH Service wsFSCompany  ';
+            $infolog->description = 'FINISH wsFSCompany';
+            // Add log
+            $log[] = $infolog;
+
+            // Write log
+            WS_FELLESDATA::write_fellesdata_log($log);
 
             return $result;
         }catch (Exception $ex) {
@@ -237,6 +255,16 @@ class local_wsks_external extends external_api {
                 $result['error']    = 500;
                 $result['message']  = $ex->getMessage() . ' ' . $ex->getTraceAsString();
             }//if_error
+
+            // Log
+            $infolog = new stdClass();
+            $infolog->action      = 'ERROR Service wsFSCompany  ';
+            $infolog->description = 'FINISH wsFSCompany';
+            // Add log
+            $log[] = $infolog;
+
+            // Write log
+            WS_FELLESDATA::write_fellesdata_log($log);
 
             return $result;
         }//try_catch

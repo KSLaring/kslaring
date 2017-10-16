@@ -26,6 +26,40 @@ class WS_FELLESDATA {
     /**********/
 
     /**
+     * Description
+     * Write fellesdata log
+     *
+     * @param           $log
+     *
+     * @throws          Exception
+     *
+     * @creationDate    16/10/2017
+     * @author          eFaktor     (fbv)
+     */
+    public static function write_fellesdata_log($log) {
+        /* Variables */
+        global $DB;
+        $info   = null;
+        $time   = null;
+        try {
+            // Local time
+            $time = time();
+
+            // Write log
+            if ($log) {
+                asort($log);
+                foreach ($log as $info) {
+                    $info->timecreated = $time;
+                    $DB->insert_record('fs_fellesdata_log',$info);
+                }//for_log
+            }//if_log
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//write_fellesdata_log
+
+
+    /**
      * @param           $notIn
      * @param           $result
      *
@@ -121,7 +155,7 @@ class WS_FELLESDATA {
      * Description
      * Synchronization between FS and KS companies
      */
-    public static function synchronize_fsks_companies($companiesFS,&$result) {
+    public static function synchronize_fsks_companies($companiesFS,&$result,&$log) {
         /* Variables */
         global $CFG;
         $file           = null;
@@ -130,14 +164,11 @@ class WS_FELLESDATA {
         $company        = null;
         $companyId      = null;
         $dir            = null;
-        $dblog          = null;
         $imported       = array();
         $infoImported   = null;
+        $infolog        = null;
 
         try {
-            // Log
-            $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START Synchronize FSKS Companies . ' . "\n";
-
             // Save file
             $dir = $CFG->dataroot . '/fellesdata';
             if (!file_exists($dir)) {
@@ -163,6 +194,13 @@ class WS_FELLESDATA {
                 $data = file_get_contents($path);
                 $content = json_decode($data);
 
+                // Log
+                $infolog = new stdClass();
+                $infolog->action      = 'Service wsFSCompany  ';
+                $infolog->description = 'Data: ' . $data;
+                // Add log
+                $log[] = $infolog;
+
                 // Synchronization between FS and KS
                 if ($content) {
                     foreach ($content as $company) {
@@ -178,10 +216,22 @@ class WS_FELLESDATA {
                             $infoImported->key      = $company->fsid;
 
                             $imported["'" . $company->fsid . "'"] = $infoImported;
+
+                            // Log
+                            $infolog = new stdClass();
+                            $infolog->action      = 'Service wsFSCompany  ';
+                            $infolog->description = 'Company sync. FS: ' . $company->fsid . 'KS : ' . $companyId;
+                            // Add log
+                            $log[] = $infolog;
                         }//if_companyId
                     }//company
                 }else {
-                    $dblog .= " No Content " . "\n\n";
+                    // Log
+                    $infolog = new stdClass();
+                    $infolog->action      = 'Service wsFSCompany  ';
+                    $infolog->description = 'No data';
+                    // Add log
+                    $log[] = $infolog;
                 }
 
             }//if_path
@@ -189,16 +239,7 @@ class WS_FELLESDATA {
             // Add result
             $result['companies'] = $imported;
 
-            // Log
-            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH Synchronize FSKS Companies . ' . "\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
         }catch (Exception $ex) {
-            /* Log  */
-            $dblog  = $ex->getMessage() . "\n\n";
-            $dblog .= $ex->getTraceAsString() . "\n\n";
-            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH ERROR Synchronize FSKS Companies . ' . "\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
-
             $result['error']     = 409;
             $result['message']   = $ex->getMessage();
             $result['companies'] = $imported;

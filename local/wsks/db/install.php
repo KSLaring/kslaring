@@ -95,6 +95,28 @@ function xmldb_local_wsks_install() {
             /* Create table */
             $dbMan->create_table($tblExtSlavesLog);
         }//if_table_exits
+
+        if (!$dbMan->table_exists('fs_fellesdata_log')) {
+            $tbl = new xmldb_table('fs_fellesdata_log');
+
+            // Fields
+            // Id --> primary key
+            $tbl->add_field('id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
+            // action
+            $tbl->add_field('action',XMLDB_TYPE_CHAR,'250',null, null, null,null);
+            // description
+            $tbl->add_field('description',XMLDB_TYPE_TEXT,null,null, null, null,null);
+            // completion
+            $tbl->add_field('timecreated',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
+
+            // Adding keys, index, foreing keys
+            $tbl->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+            $tbl->add_index('timecreated',XMLDB_INDEX_NOTUNIQUE,array('timecreated'));
+            $tbl->add_index('action',XMLDB_INDEX_NOTUNIQUE,array('action'));
+
+            // Crete table
+            $dbMan->create_table($tbl);
+        }
     }catch (Exception $ex) {
         throw $ex;
     }//try_catch
