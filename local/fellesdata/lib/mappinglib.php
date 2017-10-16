@@ -1440,7 +1440,8 @@ class FS_MAPPING {
 
             // Parent criteria
             if ($fsparents) {
-                $sql .= " AND	  fs_imp.org_enhet_over IN (" . $fsparents . ")";
+                $sql .= " AND	  fs_imp.org_enhet_over IN ($fsparents)";
+                echo " AND	  fs_imp.org_enhet_over IN ($fsparents)" . "</br>";
             }
 
             // Add notIn criteria
