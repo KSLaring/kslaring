@@ -89,7 +89,6 @@ if (($level > 1) && (!$parentid)) {
 }else {
     if (isset($SESSION->fsparents)) {
         $fsparents = $SESSION->fsparents[$parentid];
-        echo " --" . $fsparents . "</br>";
     }else {
         $fsparents = 0;
     }
