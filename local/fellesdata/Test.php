@@ -65,7 +65,7 @@ try {
 
         //list($toSynchronize,$rdo) = FSKS_COMPANY::get_companies_to_synchronize_automatically($pluginInfo->map_two,0,500);
 
-        list($toSynchronize,$rdo) = FSKS_COMPANY::get_companies_to_synchronize_automatically(2,0,100);
+        list($toSynchronize,$rdo) = FSKS_COMPANY::get_companies_to_synchronize_automatically(3,0,100);
         echo $toSynchronize;
 
 /**
