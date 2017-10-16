@@ -647,9 +647,12 @@ class FSKS_COMPANY {
                           AND     fs_imp.org_nivaa   = :level
                           AND	  fs.id IS NULL ";
 
+            echo $sql . "</br>";
+            echo implode(',',$params) . "</br>";
             // Execute
             $rdo = $DB->get_record_sql($sql,$params);
             if ($rdo) {
+                echo " --> " . $rdo->total . "</br>";
                 return $rdo->total;
             }else {
                 return null;
