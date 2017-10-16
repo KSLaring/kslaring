@@ -691,6 +691,9 @@ class FSKS_COMPANY {
         $toSynchronize  = array();
         $sqljoin        = null;
         $parent         = null;
+        $ini = null;
+        $nivaa = null;
+        $mynivaa = null;
 
         try {
             // Search criteria
@@ -698,16 +701,26 @@ class FSKS_COMPANY {
             $params['action']   = DELETE;
             $params['imported'] = 0;
             $params['level']    = $level;
-            echo "LEVEL : " . $level . "</br>";
+
+            // Plugin info
+            $plugin = get_config('local_fellesdata');
 
             switch ($level) {
                 case FS_LE_2:
+                    $ini     = $plugin->map_one;
+                    $nivaa   = $plugin->map_two;
+                    $mynivaa = $nivaa;
+
                     $top = $DB->get_record('ks_company',array('hierarchylevel' => 1),'companyid,industrycode');
                     $parent = "'" . $top->companyid     . "' as 'parent', 
                                '" . $top->industrycode  . "' as 'industry', ";
 
                     break;
                 case FS_LE_5:
+                    $ini     = $plugin->map_two;
+                    $nivaa   = $plugin->map_three;
+                    $mynivaa = $nivaa;
+
                     $parent = " ks.companyid							as 'parent', 
                                 ks.industrycode                         as 'industry', ";
                     $sqljoin = " JOIN 	  {ksfs_company}  	ksfs	ON 	ksfs.fscompany 	= fs_imp.org_enhet_over
@@ -716,7 +729,24 @@ class FSKS_COMPANY {
                     break;
             }//siwtch_level
 
+            $diff = $nivaa - $ini;
+            if ($diff > 1) {
+                for ($i=1;$i<$diff;$i++) {
+                    $mynivaa .= ',' .($i+$ini);
+                }
+            }
+
             // SQL Instruction
+            $sqlnivaa = " SELECT    DISTINCT
+                                      fs_imp.org_nivaa								      as 'level',
+                                      fs_imp.org_enhet_over							      as 'fs_parent'
+                     FROM		      {fs_imp_company}	fs_imp
+                        LEFT JOIN     {fs_company}		fs		ON 	fs.companyid 	= fs_imp.org_enhet_id
+                     WHERE	      fs_imp.action 		!= :action
+                          AND	  fs_imp.imported  	     = :imported
+                          AND     fs_imp.org_nivaa       IN  (". $mynivaa .")
+                          AND	  fs.id IS NULL ";
+
             $sql = " SELECT		  fs_imp.org_enhet_id 							      as 'fsid',
                                   '0'											      as 'ksid',
                                   TRIM(fs_imp.org_navn)  	 					      as 'name',
@@ -745,8 +775,18 @@ class FSKS_COMPANY {
             // Excute
             $rdo = $DB->get_records_sql($sql,$params,$start,$end);
             if ($rdo) {
-                $toSynchronize = json_encode($rdo);
-                echo $toSynchronize . "</br>";
+                //$toSynchronize = json_encode($rdo);
+                foreach ($rdo as $instance) {
+                    if ($instance->level == $nivaa) {
+                        $params['level'] = $instance->level;
+                        $params['parent'] = $instance->fs_parent;
+                        $rdonivaa = $DB->get_records_sql($sql,$params,$start,$end);
+                        if ($rdonivaa) {
+                            $toSynchronize = json_encode($rdo);
+                        }
+
+                    }
+                }
             }//if_rdo
 
             return array($toSynchronize,$rdo);
@@ -1276,61 +1316,6 @@ class FSKS_COMPANY {
                     }//if_instance_nivaa
                 }//for_rdo
             }//if_Rdo
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//get_companiesfs_to_mail
-
-
-    public static function get_companiesfs_to_mail_old($notIn = 0) {
-        /* Variables    */
-        global $DB;
-        $sql            = null;
-        $rdo            = null;
-        $companiesFS    = array();
-        $params         = null;
-
-        try {
-            // Search Criteria
-            $params = array();
-            $params['add'] = ADD;
-
-            // SQL Instruction
-            $sql = " SELECT   DISTINCT
-                                  fs_imp.id,
-                                  fs_imp.org_navn,
-                                  fs_imp.org_enhet_over as  'fsparent',
-                                  ks.companyid 			as  'ksparent',
-                                  ks.name 				as  'ksname',
-                                  fs.companyid,
-                                  fs.synchronized
-                     FROM 	      {fs_imp_company}	fs_imp
-                        LEFT JOIN {fs_company}		fs		ON  fs.companyid    = fs_imp.org_enhet_id
-                        -- Parent KS
-                        LEFT JOIN {ksfs_company}	ksfs 	ON ksfs.fscompany 	= fs_imp.org_enhet_over
-                        JOIN	  {ks_company} 		ks 		ON ks.companyid  	= ksfs.kscompany
-                     WHERE 	      fs_imp.imported 	 = 0
-                          AND     fs_imp.org_nivaa 	!= 4
-                          AND     fs_imp.action      = :add
-                          AND     fs_imp.id NOT IN ($notIn)
-                          AND     fs_imp.id IS NULL
-                     ORDER BY   fs_imp.org_navn 
-                     LIMIT 0,5 ";
-
-            // Execute
-            $rdo = $DB->get_records_sql($sql,$params);
-            if ($rdo) {
-                foreach ($rdo as $instance) {
-                    if ($instance->ksparent) {
-                        $name = $instance->ksname . "/" . $instance->org_navn;
-                    }else {
-                        $name = $instance->org_navn;
-                    }
-                    $companiesFS[$instance->id] = $name;
-                }//for_rdo
-            }//if_rdo
-
-            return $companiesFS;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
