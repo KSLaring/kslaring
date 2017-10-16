@@ -693,6 +693,7 @@ class FSKS_COMPANY {
         $nivaa          = null;
         $parent         = null;
         $tosync         = null;
+        $hierarchy      = null;
 
         try {
             // Search criteria
@@ -702,6 +703,7 @@ class FSKS_COMPANY {
 
             switch ($level) {
                 case FS_LE_2:
+                    $hierarchy       = FS_LE_2;
                     $params['level'] = $plugin->map_two;
                     $nivaa           = $plugin->map_two;
                     $ini             = $plugin->map_one;
@@ -712,6 +714,7 @@ class FSKS_COMPANY {
 
                     break;
                 case FS_LE_5:
+                    $hierarchy       = FS_LE_5;
                     $params['level'] = $plugin->map_three;
                     $nivaa           = $plugin->map_three;
                     $ini             = $plugin->map_two;
@@ -728,23 +731,23 @@ class FSKS_COMPANY {
 
             // SQL Instruction
             $sql = " SELECT	    DISTINCT
-                                  fs_imp.org_enhet_id 							  	as 'fsid',
-                                  '0'											      	as 'ksid',
-                                  TRIM(fs_imp.org_navn)  	 					      	as 'name',
-                                  fs_imp.org_nivaa								  	as 'level',
+                                  fs_imp.org_enhet_id 							  	  as 'fsid',
+                                  '0'											      as 'ksid',
+                                  TRIM(fs_imp.org_navn)  	 					      as 'name',
+                                  fs_imp.org_nivaa								  	  as 'level',
                                   $parent
-                                  fs_imp.org_enhet_over							  	as 'fs_parent',
-                                  IF(fs_imp.privat,0,1)   						  	as 'public',
-                                  TRIM(IF(fs_imp.ansvar != '',fs_imp.ansvar,0))     	as 'ansvar',
-                                  TRIM(IF(fs_imp.tjeneste != '',fs_imp.tjeneste,0)) 	as 'tjeneste',
-                                  TRIM(IF(fs_imp.adresse1 != '',fs_imp.adresse1,0)) 	as 'adresse1',
-                                  TRIM(IF(fs_imp.adresse2 != '',fs_imp.adresse2,0)) 	as 'adresse2',
-                                  TRIM(IF(fs_imp.adresse3 != '',fs_imp.adresse3,0)) 	as 'adresse3',
-                                  TRIM(IF(fs_imp.postnr != '',fs_imp.postnr,0))     	as 'postnr',
-                                  TRIM(IF(fs_imp.poststed != '' ,fs_imp.poststed,0))	as 'poststed',
+                                  fs_imp.org_enhet_over							  	  as 'fs_parent',
+                                  IF(fs_imp.privat,0,1)   						  	  as 'public',
+                                  TRIM(IF(fs_imp.ansvar != '',fs_imp.ansvar,0))       as 'ansvar',
+                                  TRIM(IF(fs_imp.tjeneste != '',fs_imp.tjeneste,0))   as 'tjeneste',
+                                  TRIM(IF(fs_imp.adresse1 != '',fs_imp.adresse1,0))   as 'adresse1',
+                                  TRIM(IF(fs_imp.adresse2 != '',fs_imp.adresse2,0))   as 'adresse2',
+                                  TRIM(IF(fs_imp.adresse3 != '',fs_imp.adresse3,0))   as 'adresse3',
+                                  TRIM(IF(fs_imp.postnr != '',fs_imp.postnr,0))       as 'postnr',
+                                  TRIM(IF(fs_imp.poststed != '' ,fs_imp.poststed,0))  as 'poststed',
                                   TRIM(IF(fs_imp.epost != '',fs_imp.epost,0))         as 'epost',
-                                  fs_imp.action									    as 'action',
-                                  '0'                                         	    as 'moved'
+                                  fs_imp.action									      as 'action',
+                                  '0'                                         	      as 'moved'
                      FROM		  {fs_imp_company}	fs_imp
                         LEFT JOIN {fs_company}		fs		ON 	fs.companyid 	= fs_imp.org_enhet_id
                         $sqljoin
@@ -768,6 +771,7 @@ class FSKS_COMPANY {
 
                             if ($middle) {
                                 // Update parent info
+                                $instance->level        = $hierarchy;
                                 $instance->parent       = $middle->parent;
                                 $instance->industry     = $middle->industry;
                                 $instance->fs_parent    = $middle->fs_parent;
