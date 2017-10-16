@@ -3245,7 +3245,7 @@ class FS {
             // Move middle parents
             // Search criteria
             $plugin = get_config('local_fellesdata');
-            $nivaa  = "'" . $plugin->map_one . "','" .$plugin->map_two . "','" . $plugin->map_three . "'";
+            $nivaa  = $plugin->map_one . "','" .$plugin->map_two . "','" . $plugin->map_three;
 
             // SQl instruction
             $sql = " SELECT * FROM {fs_imp_company} WHERE org_nivaa NOT IN ('" . $nivaa . "')";
