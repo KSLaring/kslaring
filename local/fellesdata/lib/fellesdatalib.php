@@ -3251,7 +3251,6 @@ class FS {
             $sql = " SELECT * FROM {fs_imp_company} WHERE org_nivaa NOT IN ('" . $nivaa . "')";
 
             //Execute
-            echo $sql . "</br>";
             $rdo = $DB->get_records_sql($sql);
             if ($rdo) {
                 $DB->insert_records('fs_imp_middle_parents',$rdo);

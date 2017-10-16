@@ -67,8 +67,9 @@ try {
 
         //echo $toSynchronize;
 
-        FSKS_COMPANY::get_companies_to_synchronize_automatically(3,0,100);
-        /**
+        //FSKS_COMPANY::get_companies_to_synchronize_automatically(3,0,100);
+
+
         $toMail = array();
         FSKS_COMPANY::get_companiesfs_to_mail(2,$toMail);
         FSKS_COMPANY::get_companiesfs_to_mail(3,$toMail);
@@ -78,45 +79,42 @@ try {
             }
             //echo "LEvel 3 to look";
             //$toMail = FSKS_COMPANY::get_companiesfs_to_mail(3);
-        } **/
+        }
+
+        $notifyTo   = explode(',',$pluginInfo->mail_notification);
+        $user = get_admin();
+
+        if ($toMail) {
+            echo "HOLA CARACOLA " . $pluginInfo->mail_notification . "</br>";
+            // Subject
+            $subject = (string)new lang_string('subject','local_fellesdata',$SITE->shortname,$user->lang);
+
+            // url mapping
+            $urlMapping = new moodle_url('/local/fellesdata/mapping/mapping_org.php');
+
+            $info = new stdClass();
+            if ($toMail) {
+                $info->companies = implode('<br/>',$toMail);
+            }else {
+                $info->companies = null;
+            }//if_ToMail
+
+            $urlMapping->param('m','co');
+            $info->mapping  = $urlMapping;
+
+            $body = (string)new lang_string('body_company_to_sync','local_fellesdata',$info,$user->lang);
+
+            // send
+            foreach ($notifyTo as $to) {
+                echo " --> " . $to;
+                $user->email    = $to;
+                email_to_user($user, $SITE->shortname, $subject, $body,$body);
+            }//for_Each
+        }else {
+            echo " No notifications " . "</br>";
+        }//if_toMail
 
         //echo " --> " . FS_CRON::can_run();
-/**
-        $notifyTo   = explode(',',$pluginInfo->mail_notification);
-        if ($notifyTo) {
-            // Get companies to send notifications
-            $toMail = FSKS_COMPANY::get_companiesfs_to_mail();
-
-            if ($toMail) {
-                // Subject
-                $subject = (string)new lang_string('subject','local_fellesdata',$SITE->shortname,$USER->lang);
-
-                // url mapping
-                $urlMapping = new moodle_url('/local/fellesdata/mapping/mapping_org.php');
-
-                $info = new stdClass();
-                if ($toMail) {
-                    $info->companies = implode('<br/>',$toMail);
-                }else {
-                    $info->companies = null;
-                }//if_ToMail
-
-                $urlMapping->param('m','co');
-                $info->mapping  = $urlMapping;
-
-                $body = (string)new lang_string('body_company_to_sync','local_fellesdata',$info,$USER->lang);
-
-                // send
-                foreach ($notifyTo as $to) {
-                    $USER->email    = $to;
-                    email_to_user($USER, $SITE->shortname, $subject, $body,$body);
-                }//for_Each
-            }else {
-                echo " No notifications " . "</br>";
-            }//if_toMail
-
-        }//if_notify
- * */
     }
 }catch (Exception $ex) {
     throw $ex;
