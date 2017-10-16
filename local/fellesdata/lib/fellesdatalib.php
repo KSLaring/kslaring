@@ -638,20 +638,10 @@ class FSKS_COMPANY {
             $params['imported'] = 0;
             $params['level']    = $level;
 
-            switch ($level) {
-                case FS_LE_5:
-                    $sqljoin = " JOIN 	  {ksfs_company}  	ksfs	ON 	ksfs.fscompany 	= fs_imp.org_enhet_over
-                                 JOIN	  {ks_company}		ks		ON	ks.companyid	= ksfs.kscompany ";
-
-                    break;
-            }//siwtch_level
-
             // SQL Instruction
             $sql = " SELECT		  count(DISTINCT fs_imp.id) as 'total'
                      FROM		  {fs_imp_company}	fs_imp
                         LEFT JOIN {fs_company}		fs		ON 	fs.companyid 	= fs_imp.org_enhet_id
-                        -- Info parent
-                        $sqljoin
                      WHERE	      fs_imp.action 	!= :action
                           AND	  fs_imp.imported    = 0
                           AND     fs_imp.org_nivaa   = :level
@@ -690,10 +680,10 @@ class FSKS_COMPANY {
         $params         = null;
         $toSynchronize  = array();
         $sqljoin        = null;
-        $parent         = null;
         $ini            = null;
         $nivaa          = null;
-        $mynivaa        = null;
+        $parent         = null;
+        $tosync         = null;
 
         try {
             // Search criteria
@@ -708,8 +698,8 @@ class FSKS_COMPANY {
             switch ($level) {
                 case FS_LE_2:
                     $params['level'] = $plugin->map_two;
-                    $nivaa           = $plugin->map_one;
-                    $ini             = $plugin->map_two;
+                    $nivaa           = $plugin->map_two;
+                    $ini             = $plugin->map_one;
 
                     $top = $DB->get_record('ks_company',array('hierarchylevel' => 1),'companyid,industrycode');
                     $parent = "'" . $top->companyid     . "' as 'parent', 
@@ -718,8 +708,8 @@ class FSKS_COMPANY {
                     break;
                 case FS_LE_5:
                     $params['level'] = $plugin->map_three;
-                    $nivaa           = $plugin->map_two;
-                    $ini             = $plugin->map_three;
+                    $nivaa           = $plugin->map_three;
+                    $ini             = $plugin->map_two;
 
 
                     $parent = " ks.companyid							as 'parent', 
@@ -732,53 +722,124 @@ class FSKS_COMPANY {
             }//siwtch_level
 
             // SQL Instruction
-            $sql = " SELECT	  DISTINCT
-                                fs_imp.org_enhet_id 							  	as 'fsid',
-                                '0'											      	as 'ksid',
-                                TRIM(fs_imp.org_navn)  	 					      	as 'name',
-                                fs_imp.org_nivaa								  	as 'level',
-                                $parent
-                                fs_imp.org_enhet_over							  	as 'fs_parent',
-                                IF(fs_imp.privat,0,1)   						  	as 'public',
-                                TRIM(IF(fs_imp.ansvar != '',fs_imp.ansvar,0))     	as 'ansvar',
-                                TRIM(IF(fs_imp.tjeneste != '',fs_imp.tjeneste,0)) 	as 'tjeneste',
-                                TRIM(IF(fs_imp.adresse1 != '',fs_imp.adresse1,0)) 	as 'adresse1',
-                                TRIM(IF(fs_imp.adresse2 != '',fs_imp.adresse2,0)) 	as 'adresse2',
-                                TRIM(IF(fs_imp.adresse3 != '',fs_imp.adresse3,0)) 	as 'adresse3',
-                                TRIM(IF(fs_imp.postnr != '',fs_imp.postnr,0))     	as 'postnr',
-                                TRIM(IF(fs_imp.poststed != '' ,fs_imp.poststed,0))	as 'poststed',
-                                TRIM(IF(fs_imp.epost != '',fs_imp.epost,0))         as 'epost',
-                                fs_imp.action									    as 'action',
-                                '0'                                         	    as 'moved'
+            $sql = " SELECT	    DISTINCT
+                                  fs_imp.org_enhet_id 							  	as 'fsid',
+                                  '0'											      	as 'ksid',
+                                  TRIM(fs_imp.org_navn)  	 					      	as 'name',
+                                  fs_imp.org_nivaa								  	as 'level',
+                                  $parent
+                                  fs_imp.org_enhet_over							  	as 'fs_parent',
+                                  IF(fs_imp.privat,0,1)   						  	as 'public',
+                                  TRIM(IF(fs_imp.ansvar != '',fs_imp.ansvar,0))     	as 'ansvar',
+                                  TRIM(IF(fs_imp.tjeneste != '',fs_imp.tjeneste,0)) 	as 'tjeneste',
+                                  TRIM(IF(fs_imp.adresse1 != '',fs_imp.adresse1,0)) 	as 'adresse1',
+                                  TRIM(IF(fs_imp.adresse2 != '',fs_imp.adresse2,0)) 	as 'adresse2',
+                                  TRIM(IF(fs_imp.adresse3 != '',fs_imp.adresse3,0)) 	as 'adresse3',
+                                  TRIM(IF(fs_imp.postnr != '',fs_imp.postnr,0))     	as 'postnr',
+                                  TRIM(IF(fs_imp.poststed != '' ,fs_imp.poststed,0))	as 'poststed',
+                                  TRIM(IF(fs_imp.epost != '',fs_imp.epost,0))         as 'epost',
+                                  fs_imp.action									    as 'action',
+                                  '0'                                         	    as 'moved'
                      FROM		  {fs_imp_company}	fs_imp
                         LEFT JOIN {fs_company}		fs		ON 	fs.companyid 	= fs_imp.org_enhet_id
                         $sqljoin
-                     WHERE	  fs_imp.action 		!= :action
-                        AND	  fs_imp.imported  	     = :imported
-                        AND   fs_imp.org_nivaa       = :level
-                        AND	  fs.id IS NULL ";
+                     WHERE	      fs_imp.action 		!= :action
+                          AND	  fs_imp.imported  	     = :imported
+                          AND     fs_imp.org_nivaa       = :level
+                          AND	  fs.id IS NULL ";
 
             // Execute
             $rdo = $DB->get_records_sql($sql,$params,$start,$end);
+            $tosync = array();
             if ($rdo) {
-                $diff = $ini-$nivaa;
-                echo "DIFF : " . $diff . "</br>";
                 foreach ($rdo as $instance) {
+                    $aux = $nivaa;
                     if (!$instance->parent) {
-                        $parent = null;
-                        echo $instance->fsid . " FS PARENT : " . $instance->fs_parent . " </br>";
-                        //do {
+                        do {
+                            $aux --;
 
-                        //}while(!$parent || )
+                            // middle parent
+                            $middle = self::get_info_middle_parent($instance->fs_parent);
+
+                            if ($middle) {
+                                // Update parent info
+                                $instance->parent       = $middle->parent;
+                                $instance->industry     = $middle->industry;
+                                $instance->fs_parent    = $middle->fs_parent;
+
+                                // Add
+                                $tosync[$instance->fsid] = $instance;
+                            }
+                        }while(($aux>($ini+1)) && !$middle);
+                    }else {
+                        $tosync[$instance->fsid] = $instance;
                     }
                 }
             }//if_Rdo
+
+            if ($tosync) {
+                $toSynchronize = json_encode($tosync);
+            }
 
             return array($toSynchronize,$rdo);
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
     }//get_companies_to_synchronize_automatically
+
+    /**
+     * Description
+     * Get info middle parent
+     *
+     * @param           $parent
+     *
+     * @return          mixed|null
+     * @throws          Exception
+     *
+     * @creationDate    16/10/2017
+     * @author          eFaktor     (fbv)
+     */
+    private static function get_info_middle_parent($parent) {
+        /* Variables */
+        global $DB;
+        $rdo    = null;
+        $sql    = null;
+        $params = null;
+
+        try {
+            // Search criteria
+            $params = array();
+            $params['co'] = $parent;
+
+            // SQL Instruction
+            $sql = " SELECT		  fs_pa.org_enhet_id,
+                                  ks.companyid				as 'parent', 
+                                  ks.industrycode           as 'industry',
+                                  fs_pa.org_enhet_over		as 'fs_parent'
+                     FROM		  {fs_imp_middle_parents}	fs_pa
+                        LEFT JOIN {ksfs_company}  			ksfs	ON 	ksfs.fscompany 	= fs_pa.org_enhet_over
+                        LEFT JOIN {ks_company}				ks		ON	ks.companyid	= ksfs.kscompany
+                     WHERE	      fs_pa.org_enhet_id = :co ";
+
+            // Execute
+            $rdo = $DB->get_record_sql($sql,$params);
+            if ($rdo) {
+                if ($rdo->parent) {
+                    return $rdo;
+                }else {
+                    if ($rdo->fs_parent) {
+                        return self::get_info_middle_parent($rdo->fs_parent);
+                    }else {
+                        return null;
+                    }//if_Rdo_fs_parent
+                }//if_rdo_parent
+            }else {
+                return null;
+            }//if_rdo
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//get_info_middle_parent
 
     /**
      * Description

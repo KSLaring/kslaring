@@ -65,11 +65,10 @@ try {
 
         //list($toSynchronize,$rdo) = FSKS_COMPANY::get_companies_to_synchronize_automatically($pluginInfo->map_two,0,500);
 
-        //echo $toSynchronize;
+        list($toSynchronize,$rdo) = FSKS_COMPANY::get_companies_to_synchronize_automatically(2,0,100);
+        echo $toSynchronize;
 
-        //FSKS_COMPANY::get_companies_to_synchronize_automatically(3,0,100);
-
-
+/**
         $toMail = array();
         FSKS_COMPANY::get_companiesfs_to_mail(2,$toMail);
         FSKS_COMPANY::get_companiesfs_to_mail(3,$toMail);
@@ -113,7 +112,7 @@ try {
         }else {
             echo " No notifications " . "</br>";
         }//if_toMail
-
+**/
         //echo " --> " . FS_CRON::can_run();
     }
 }catch (Exception $ex) {
