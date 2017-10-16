@@ -752,7 +752,7 @@ class FSKS_COMPANY {
             echo $sql . " </br></br>";
             echo "KEYS : " . implode(',',array_keys($params)) . "</br>";
             echo "VALUES : " . implode(',',$params) . "</br>";
-            
+
             $rdo = $DB->get_records_sql($sql,$params,$start,$end);
             $tosync = array();
             if ($rdo) {

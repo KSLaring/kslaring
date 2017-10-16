@@ -1718,9 +1718,9 @@ class FELLESDATA_CRON {
                     // Companies to create automatically
                     if ($pluginInfo->automatic) {
                         // Level two
-                        self::companies_automatically_synchronized($pluginInfo,$pluginInfo->map_two);
+                        self::companies_automatically_synchronized($pluginInfo,FS_LE_2);
                         // Level three
-                        self::companies_automatically_synchronized($pluginInfo,$pluginInfo->map_three);
+                        self::companies_automatically_synchronized($pluginInfo,FS_LE_5);
                     }//if_automatic
 
                     // Synchronize new companies
