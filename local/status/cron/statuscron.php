@@ -128,18 +128,18 @@ class STATUS_CRON {
             $industry = STATUS::get_industry_code($plugin->ks_muni);
 
             // Get competence from KS
-            //self::competence_data($plugin,$industry);
+            self::competence_data($plugin,$industry);
 
             // Get managers reporters from KS
-            //self::managers_reporters($plugin,$industry);
+            self::managers_reporters($plugin,$industry);
 
             // Repair connections
-            //self::repair_connections();
+            self::repair_connections();
 
             // Write log
-            //STATUS::write_status_log(self::$log);
+            STATUS::write_status_log(self::$log);
             // Start log
-            //self::$log    =    array();
+            self::$log    =    array();
 
             // Import last status from fellesdata
             self::import_status($plugin);
@@ -150,12 +150,12 @@ class STATUS_CRON {
             self::$log    =    array();
 
             // Syncronization
-            //self::synchronization($plugin,$industry);
+            self::synchronization($plugin,$industry);
 
             // Write log
-            //STATUS::write_status_log(self::$log);
+            STATUS::write_status_log(self::$log);
             // Start log
-            //self::$log    =    array();
+            self::$log    =    array();
 
             // Log
             $infolog = new stdClass();
