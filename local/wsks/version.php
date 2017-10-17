@@ -11,5 +11,5 @@
  */
 
 //$plugin->version    = '2015103000';         /* The plugin current version (DATE: YYYYMMDDXX) */
-$plugin->version    =   '2017101600';
+$plugin->version    =   '2017101602';
 $plugin->component  =   'local_wsks';

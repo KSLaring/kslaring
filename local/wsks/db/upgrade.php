@@ -133,7 +133,7 @@ function xmldb_local_wsks_upgrade($oldVersion) {
             }//if_table_exits
         }//if_oldVersion
 
-        if ($oldVersion < 2017101600) {
+        if ($oldVersion < 2017101602) {
             $tbl = new xmldb_table('fs_fellesdata_log');
 
             // Fields
