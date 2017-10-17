@@ -68,9 +68,11 @@ try {
         echo "You need a option" . "</br>";
         echo " Import status users              --> 1" . "</br>";
         echo " Import status organizations      --> 2" . "</br>";
+
         echo " Import status job roles          --> 3" . "</br>";
         echo " Import status managers/reporters --> 4" . "</br>";
         echo " Import status users competence   --> 5" . "</br></br>";
+
         echo " Sync status users                --> 6" . "</br>";
         echo " Sync status organizations        --> 7" . "</br>";
         echo " Sync status job roles            --> 8" . "</br>";
