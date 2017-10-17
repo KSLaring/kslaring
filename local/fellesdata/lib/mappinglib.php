@@ -1504,8 +1504,11 @@ class FS_MAPPING {
                                       '' as poststed,
                                       '' as epost,
                                       ks.parent
-                         FROM	      {ks_company} ks 
-                            LEFT JOIN {fs_company} fs ON fs.companyid = CONCAT(ks.companyid,'LE1') 
+                         FROM	      {ks_company}    ks 
+                            JOIN	  {ksfs_company}  ksfs ON ksfs.kscompany = ks.companyid
+                            LEFT JOIN {fs_company} 	  fs   ON (fs.companyid = CONCAT(ks.companyid,'LE1')
+                                                               OR
+                                                               fs.companyid = ksfs.fscompany) 
                          WHERE        ks.hierarchylevel = :level
                             AND       fs.id IS NULL ";
 
