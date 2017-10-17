@@ -33,14 +33,51 @@ $PAGE->set_url('/local/status/Test.php');
 echo $OUTPUT->header();
 
 try {
-    echo " TESTING FELLESDATA STATUS CRON " . "</br>";
-    echo "Start ... " . "</br>";
 
     // Plugin info
     $plugin = get_config('local_fellesdata');
+/**
+    // Get parameters service
+    $to     = mktime(1, 60, 0, date("m"), date("d"), date("Y"));
+    $to     = gmdate('Y-m-d\TH:i:s\Z',$to);
+    $from   = gmdate('Y-m-d\TH:i:s\Z',0);
+
+    echo "to --> " . $to . "</br>";
+    echo "from --> " . $from . "</br>";
+
+    // Build url end point
+    $url = 'https://tjenester.bergen.kommune.no/tardis/fellesdata/v_leka_oren_tre_nivaa?fromDate=' . $from . '&toDate=' . $to;
+    $url = trim($url);
+
+    echo "END POINT --> " . $url . "</br>";
+
+    echo " TESTING FELLESDATA STATUS CRON " . "</br>";
+    echo "Start ... " . "</br>"; **/
+
 
     // Call cron
-    \STATUS_CRON::test($plugin);
+    if ($option) {
+        global $SESSION;
+
+        if (!isset($SESSION->manual)) {
+            $SESSION->manual = true;
+        }
+
+        \STATUS_CRON::test($plugin,$option);
+    }else {
+        echo "You need a option" . "</br>";
+        echo " Import status users              --> 1" . "</br>";
+        echo " Import status organizations      --> 2" . "</br>";
+        echo " Import status job roles          --> 3" . "</br>";
+        echo " Import status managers/reporters --> 4" . "</br>";
+        echo " Import status users competence   --> 5" . "</br></br>";
+        echo " Sync status users                --> 6" . "</br>";
+        echo " Sync status organizations        --> 7" . "</br>";
+        echo " Sync status job roles            --> 8" . "</br>";
+        echo " Sync status managers/reporters   --> 9" . "</br>";
+        echo " Sync status users competence     --> 10" . "</br>";
+    }
+
 }catch (Exception $ex) {
     throw $ex;
 }//try_catch

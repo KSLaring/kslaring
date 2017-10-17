@@ -589,18 +589,24 @@ class STATUS {
         $notifyTo     = null;
         
         try {
-            // Get new comapnies
-            $newcompanies = self::get_new_fs_organizations($plugin);
-            if ($newcompanies) {
-                // Notifications
-                if ($plugin->mail_notification) {
-                    $notifyTo   = explode(',',$plugin->mail_notification);
 
+            // Send notifications
+            $notifyTo = null;
+            // Notifications
+            if ($plugin->mail_notification) {
+                $notifyTo   = explode(',',$plugin->mail_notification);
+            }//if_mail_notifications
+
+            // Get companies to send notifications
+            if ($notifyTo) {
+                $toMail = array();
+                FSKS_COMPANY::get_companiesfs_to_mail(2,$toMail);
+                FSKS_COMPANY::get_companiesfs_to_mail(3,$toMail);
+                if ($toMail) {
                     // Send notifications
                     self::send_notification(SYNC_STATUS_COMP,$newcompanies,$notifyTo);
-                }//if_mail_notifications
-                
-            }//if_newcompanies
+                }//if_toMail
+            }
         }catch (Exception $ex){
             throw $ex;
         }//try_catch

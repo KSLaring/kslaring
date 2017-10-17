@@ -267,25 +267,23 @@ class FELLESDATA_CRON {
                         }//if_mail_notifications
 
                         // Notification manual synchronization
-                        //if (!$pluginInfo->automatic) {
-                            if ($notifyTo) {
-                                // Get companies to send notifications
-                                $toMail = array();
-                                FSKS_COMPANY::get_companiesfs_to_mail(2,$toMail);
-                                FSKS_COMPANY::get_companiesfs_to_mail(3,$toMail);
+                        if ($notifyTo) {
+                            // Get companies to send notifications
+                            $toMail = array();
+                            FSKS_COMPANY::get_companiesfs_to_mail(2,$toMail);
+                            FSKS_COMPANY::get_companiesfs_to_mail(3,$toMail);
 
-                                if ($toMail) {
-                                    self::send_notifications(SYNC_COMP,$toMail,$notifyTo,$pluginInfo->fs_source);
+                            if ($toMail) {
+                                self::send_notifications(SYNC_COMP,$toMail,$notifyTo,$pluginInfo->fs_source);
 
-                                    // Log
-                                    $infolog = new stdClass();
-                                    $infolog->action 		= 'companies_fs_synchronization';
-                                    $infolog->description 	= 'Send notifications';
-                                    // Add log
-                                    self::$log[] = $infolog;
-                                }//if_toMail
-                            }//if_notify
-                        //}//if_automatic
+                                // Log
+                                $infolog = new stdClass();
+                                $infolog->action 		= 'companies_fs_synchronization';
+                                $infolog->description 	= 'Send notifications';
+                                // Add log
+                                self::$log[] = $infolog;
+                            }//if_toMail
+                        }//if_notify
                     }
 
                     break;
@@ -356,8 +354,6 @@ class FELLESDATA_CRON {
             $infolog->description .= $ex->getTraceAsString();
             // Add log
             self::$log[] = $infolog;
-
-            echo " ERROR: " . $ex->getTraceAsString() . "</br>";
 
             // Write log
             FS_CRON::write_fellesdata_log(self::$log);
@@ -1717,9 +1713,9 @@ class FELLESDATA_CRON {
                     // Companies to create automatically
                     if ($pluginInfo->automatic) {
                         // Level two
-                        self::companies_automatically_synchronized($pluginInfo,FS_LE_2);
+                        //self::companies_automatically_synchronized($pluginInfo,FS_LE_2);
                         // Level three
-                        self::companies_automatically_synchronized($pluginInfo,FS_LE_5);
+                        //self::companies_automatically_synchronized($pluginInfo,FS_LE_5);
                     }//if_automatic
 
                     // Synchronize new companies
