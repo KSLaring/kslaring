@@ -479,10 +479,10 @@ class STATUS_CRON {
 
         try {
             // Import FS Users
-            //self::import_status_users($plugin);
+            self::import_status_users($plugin);
 
             // Import FS Companies
-            self::import_status_orgstructure($plugin);
+            //self::import_status_orgstructure($plugin);
 
             // Import FS Job roles
             //self::import_status_jobroles($plugin);
