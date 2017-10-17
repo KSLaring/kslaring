@@ -142,7 +142,7 @@ class STATUS_CRON {
             self::$log    =    array();
 
             // Import last status from fellesdata
-            //self::import_status($plugin);
+            self::import_status($plugin);
 
             // Write log
             STATUS::write_status_log(self::$log);
@@ -153,9 +153,9 @@ class STATUS_CRON {
             self::synchronization($plugin,$industry);
 
             // Write log
-            //STATUS::write_status_log(self::$log);
+            STATUS::write_status_log(self::$log);
             // Start log
-            //self::$log    =    array();
+            self::$log    =    array();
 
             // Log
             $infolog = new stdClass();
@@ -342,32 +342,32 @@ class STATUS_CRON {
             self::sync_status_users_accounts($plugin,$industry);
             
             // Synchronization FS Companies
-            //self::sync_status_fs_organizations($plugin);
+            self::sync_status_fs_organizations($plugin);
 
             // Synchronization FS Job roles
-            //self::sync_status_fs_jobroles($plugin);
+            self::sync_status_fs_jobroles($plugin);
             
             // Synchronization FS Managers/Reporters to delete
             // Managers
-            //self::sync_status_delete_managers_reporters($plugin,MANAGERS,1);
-            //self::sync_status_delete_managers_reporters($plugin,MANAGERS,2);
-            //self::sync_status_delete_managers_reporters($plugin,MANAGERS,3);
+            self::sync_status_delete_managers_reporters($plugin,MANAGERS,1);
+            self::sync_status_delete_managers_reporters($plugin,MANAGERS,2);
+            self::sync_status_delete_managers_reporters($plugin,MANAGERS,3);
             // Reporters
-            //self::sync_status_delete_managers_reporters($plugin,REPORTERS,1);
-            //self::sync_status_delete_managers_reporters($plugin,REPORTERS,2);
-            //self::sync_status_delete_managers_reporters($plugin,REPORTERS,3);
+            self::sync_status_delete_managers_reporters($plugin,REPORTERS,1);
+            self::sync_status_delete_managers_reporters($plugin,REPORTERS,2);
+            self::sync_status_delete_managers_reporters($plugin,REPORTERS,3);
 
             // Synchronization FS Managers/Reporters
-            //self::sync_status_managers_reporters($plugin);
+            self::sync_status_managers_reporters($plugin);
 
-            //STATUS::synchronize_managers_reporters_deleted(MANAGERS);
-            //STATUS::synchronize_managers_reporters_deleted(REPORTERS);
+            STATUS::synchronize_managers_reporters_deleted(MANAGERS);
+            STATUS::synchronize_managers_reporters_deleted(REPORTERS);
 
             // Synchronization FS User Competence to Delete
-            //self::sync_status_delete_competence($plugin);
+            self::sync_status_delete_competence($plugin);
 
             // Synchronization FS User Competence
-            //self::sync_status_competence($plugin);
+            self::sync_status_competence($plugin);
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -482,16 +482,16 @@ class STATUS_CRON {
             self::import_status_users($plugin);
 
             // Import FS Companies
-            //self::import_status_orgstructure($plugin);
+            self::import_status_orgstructure($plugin);
 
             // Import FS Job roles
-            //self::import_status_jobroles($plugin);
+            self::import_status_jobroles($plugin);
 
             // Import FS User Competence
-            //self::import_status_managers_reporters($plugin);
+            self::import_status_managers_reporters($plugin);
 
             // Import FS User Competence JR
-            //self::import_status_user_competence($plugin);
+            self::import_status_user_competence($plugin);
 
             return true;
         }catch (Exception $ex) {
