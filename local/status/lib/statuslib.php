@@ -1111,7 +1111,7 @@ class STATUS {
             // SQL Instruction
             $sql = " SELECT	fs.id,
                             trim(fs.fodselsnr) 											as 'personalnumber',
-                            IF (fs.brukernavn,fs.brukernavn,0) 							as 'adfs',
+                            IF(ISNULL(fs.brukernavn),0,fs.brukernavn)					as 'adfs',
                             IF (fs.ressursnr,fs.ressursnr,0) 							as 'ressursnr',
                             $industry													as 'industry',
                             CONCAT(fs.fornavn,' ',IF(fs.mellomnavn,fs.mellomnavn,'')) 	as 'firstname',
