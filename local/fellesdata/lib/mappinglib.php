@@ -1477,7 +1477,10 @@ class FS_MAPPING {
             // Execute
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
-                $parentid = ($parent->companyid ? $parent->companyid : 0);
+                if ($parent) {
+                    $parentid = ($parent->companyid ? $parent->companyid : 0);
+                }
+
                 foreach ($rdo as $instance) {
                     // Info company
                     $instance->matches       = self::get_possible_org_matches($instance->name,$level,$parentid,$sector);
@@ -1487,7 +1490,7 @@ class FS_MAPPING {
                 }//for_Rdo
             }else if ($level == FS_LE_1) {
                 $sql = " SELECT       ks.id,
-                                      CONCAT(ks.companyid,'LE1')  as 'fscompany',
+                                      CONCAT(ks.companyid,'LE1')    as 'fscompany',
                                       ks.hierarchylevel             as 'nivaa',
                                       ks.name	    	            as 'name',
                                       '' 				            as 'fs_parent',
