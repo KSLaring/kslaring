@@ -1111,8 +1111,8 @@ class STATUS {
             // SQL Instruction
             $sql = " SELECT	fs.id,
                             trim(fs.fodselsnr) 											as 'personalnumber',
-                            IF (fs.brukernavn,fs.brukernavn,0) 							as 'adfs',
-                            IF (fs.ressursnr,fs.ressursnr,0) 							as 'ressursnr',
+                            IF(ISNULL(fs.brukernavn),0,fs.brukernavn) 					as 'adfs',
+                            IF(ISNULL(fs.ressursnr),0,fs.ressursnr) 					as 'ressursnr',
                             $industry													as 'industry',
                             CONCAT(fs.fornavn,' ',IF(fs.mellomnavn,fs.mellomnavn,'')) 	as 'firstname',
                             trim(fs.etternavn) 											as 'lastname',
@@ -1205,8 +1205,8 @@ class STATUS {
             $sql = " SELECT	DISTINCT 
                                 fs.id,
                                 trim(fs.fodselsnr) 											as 'personalnumber',
-                                IF (fs.brukernavn,fs.brukernavn,0) 							as 'adfs',
-                                IF (fs.ressursnr,fs.ressursnr,0) 							as 'ressursnr',
+                                IF(ISNULL(fs.brukernavn),0,fs.brukernavn) 					as 'adfs',
+                                IF(ISNULL(fs.ressursnr),0,fs.ressursnr) 					as 'ressursnr',
                                 $industry 													as 'industry',
                                 CONCAT(fs.fornavn,' ',IF(fs.mellomnavn,fs.mellomnavn,'')) 	as 'firstname',
                                 trim(fs.etternavn) 											as 'lastname',

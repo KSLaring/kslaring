@@ -220,7 +220,7 @@ function xmldb_local_fellesdata_upgrade($oldVersion) {
             }//if_not_exists
         }
 
-        if ($oldVersion < 2017101016) {
+        if ($oldVersion < 2017101600) {
             Fellesdata_Update::fs_imp_company_log($dbMan);
             Fellesdata_Update::fs_imp_users_log($dbMan);
             Fellesdata_Update::fs_users_sync_log($dbMan);
@@ -229,6 +229,8 @@ function xmldb_local_fellesdata_upgrade($oldVersion) {
             Fellesdata_Update::fs_imp_users_jr_log($dbMan);
             Fellesdata_Update::fs_imp_managers_reporters_log($dbMan);
             Fellesdata_Update::fellesdata_log_table($dbMan);
+
+            Fellesdata_Update::imp_middle_parents_fstable($dbMan);
         }
 
         return true;
@@ -238,6 +240,64 @@ function xmldb_local_fellesdata_upgrade($oldVersion) {
 }//xmldb_local_fellesdata_upgrade
 
 class Fellesdata_Update {
+
+    public static function imp_middle_parents_fstable($dbMan) {
+        /* Variables */
+        $tblFSImpComp = null;
+
+        try {
+            /* mdl_fs_imp_company  */
+            $tblFSImpComp = new xmldb_table('fs_imp_middle_parents');
+
+            /* Fields   */
+            /* Id               --> Primary key.  */
+            $tblFSImpComp->add_field('id',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, XMLDB_SEQUENCE,null);
+            /* org_enhet_id     --> Company Id from fellesdata          */
+            $tblFSImpComp->add_field('org_enhet_id',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
+            /* org_nivaa        --> Hierarchy level from fellesdata     */
+            $tblFSImpComp->add_field('org_nivaa',XMLDB_TYPE_INTEGER,'2',null, XMLDB_NOTNULL, null,null);
+            /* org_navn         --> Company name                        */
+            $tblFSImpComp->add_field('org_navn',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
+            /* org_enhet_over   --> Parent company                      */
+            $tblFSImpComp->add_field('org_enhet_over',XMLDB_TYPE_CHAR,'255',null, XMLDB_NOTNULL, null,null);
+            /* privat --> public */
+            $tblFSImpComp->add_field('privat',XMLDB_TYPE_INTEGER,'1',null, null, null,null);
+            /* ansvar   */
+            $tblFSImpComp->add_field('ansvar',XMLDB_TYPE_CHAR,'50',null, null, null,null);
+            /* tjeneste */
+            $tblFSImpComp->add_field('tjeneste',XMLDB_TYPE_CHAR,'50',null, null, null,null);
+            /* adresse1 */
+            $tblFSImpComp->add_field('adresse1',XMLDB_TYPE_CHAR,'255',null, null, null,null);
+            /* adresse2 */
+            $tblFSImpComp->add_field('adresse2',XMLDB_TYPE_CHAR,'255',null, null, null,null);
+            /* adresse3 */
+            $tblFSImpComp->add_field('adresse3',XMLDB_TYPE_CHAR,'255',null, null, null,null);
+            /* postnr   */
+            $tblFSImpComp->add_field('postnr',XMLDB_TYPE_CHAR,'50',null, null, null,null);
+            /* poststed */
+            $tblFSImpComp->add_field('poststed',XMLDB_TYPE_CHAR,'50',null, null, null,null);
+            /* epost    */
+            $tblFSImpComp->add_field('epost',XMLDB_TYPE_CHAR,'255',null, null, null,null);
+            /* action           --> Action to apply                     */
+            $tblFSImpComp->add_field('action',XMLDB_TYPE_CHAR,'25',null, XMLDB_NOTNULL, null,null);
+            /* Time import  */
+            $tblFSImpComp->add_field('timeimport',XMLDB_TYPE_INTEGER,'10',null, null, null,null);
+
+            /* Keys     */
+            $tblFSImpComp->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
+            /* Index    */
+            $tblFSImpComp->add_index('enhet_id',XMLDB_INDEX_NOTUNIQUE,array('org_enhet_id'));
+            $tblFSImpComp->add_index('nivaa',XMLDB_INDEX_NOTUNIQUE,array('org_nivaa'));
+            $tblFSImpComp->add_index('enhet_over',XMLDB_INDEX_NOTUNIQUE,array('org_enhet_over'));
+
+            if (!$dbMan->table_exists('fs_imp_middle_parents')) {
+                $dbMan->create_table($tblFSImpComp);
+            }//if_exists
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//imp_middle_parents_fstable
+
     /**
      * Description
      * Fellesdata generic log

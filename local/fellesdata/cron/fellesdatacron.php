@@ -877,7 +877,6 @@ class FELLESDATA_CRON {
             // Add log
             self::$log[] = $infolog;
         }catch (Exception $ex) {
-            echo $ex->getTraceAsString() . "</br>";
             throw $ex;
         }//try_catch
     }//import_fs_users
@@ -1718,9 +1717,9 @@ class FELLESDATA_CRON {
                     // Companies to create automatically
                     if ($pluginInfo->automatic) {
                         // Level two
-                        //self::companies_automatically_synchronized($pluginInfo,$pluginInfo->map_two);
+                        self::companies_automatically_synchronized($pluginInfo,FS_LE_2);
                         // Level three
-                        //self::companies_automatically_synchronized($pluginInfo,$pluginInfo->map_three);
+                        self::companies_automatically_synchronized($pluginInfo,FS_LE_5);
                     }//if_automatic
 
                     // Synchronize new companies
@@ -1782,7 +1781,7 @@ class FELLESDATA_CRON {
             self::$log[] = $infolog;
 
             // Get total
-            $total = FSKS_COMPANY::get_total_companies_automatically($level);
+            $total = FSKS_COMPANY::get_total_companies_automatically($plugin,$level);
             // Log
             $infolog = new stdClass();
             $infolog->action 		= 'companies_fs_synchronization - companies_automatically_synchronized';
@@ -1794,7 +1793,7 @@ class FELLESDATA_CRON {
             if ($total) {
                 for ($i=0;$i<=$total;$i=$i+$limit) {
                     // Get companies to synchronize
-                    list($toSynchronize,$rdocompanies) = FSKS_COMPANY::get_companies_to_synchronize_automatically($level,$start,$limit);
+                    list($toSynchronize,$rdocompanies) = FSKS_COMPANY::get_companies_to_synchronize_automatically($plugin,$level,$start,$limit);
 
                     // Call webs service
                     if ($toSynchronize) {
