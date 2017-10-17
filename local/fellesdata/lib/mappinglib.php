@@ -1477,7 +1477,10 @@ class FS_MAPPING {
             // Execute
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
-                $parentid = ($parent->companyid ? $parent->companyid : 0);
+                if ($parent) {
+                    $parentid = ($parent->companyid ? $parent->companyid : 0);
+                }
+
                 foreach ($rdo as $instance) {
                     // Info company
                     $instance->matches       = self::get_possible_org_matches($instance->name,$level,$parentid,$sector);
@@ -1487,7 +1490,7 @@ class FS_MAPPING {
                 }//for_Rdo
             }else if ($level == FS_LE_1) {
                 $sql = " SELECT       ks.id,
-                                      CONCAT(ks.companyid,'LE1')  as 'fscompany',
+                                      CONCAT(ks.companyid,'LE1')    as 'fscompany',
                                       ks.hierarchylevel             as 'nivaa',
                                       ks.name	    	            as 'name',
                                       '' 				            as 'fs_parent',
@@ -1501,8 +1504,11 @@ class FS_MAPPING {
                                       '' as poststed,
                                       '' as epost,
                                       ks.parent
-                         FROM	      {ks_company} ks 
-                            LEFT JOIN {fs_company} fs ON fs.companyid = CONCAT(ks.companyid,'LE1') 
+                         FROM	      {ks_company}    ks 
+                            JOIN	  {ksfs_company}  ksfs ON ksfs.kscompany = ks.companyid
+                            LEFT JOIN {fs_company} 	  fs   ON (fs.companyid = CONCAT(ks.companyid,'LE1')
+                                                               OR
+                                                               fs.companyid = ksfs.fscompany) 
                          WHERE        ks.hierarchylevel = :level
                             AND       fs.id IS NULL ";
 
@@ -1665,7 +1671,11 @@ class FS_MAPPING {
                             ks.parent
                     FROM	{ks_company} ks
                     WHERE 	ks.hierarchylevel = :level 
-                      AND   ks.parent = :parent ";
+                       ";
+
+            if ($level != FS_LE_1) {
+                $sql .= ' AND   ks.parent = :parent ';
+            }//if_level_1
 
             // Pattern
             if ($sector) {
