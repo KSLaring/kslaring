@@ -216,20 +216,38 @@ class local_wsks_external extends external_api {
      */
     public static function wsFSCompany($companiesFS) {
         /* Variables    */
-        global $CFG;
         $result     = array();
+        $log        = array();
+        $infolog    = null;
 
-        /* Parameter Validation */
+        // Parameters validation
         $params = self::validate_parameters(self::wsFSCompany_parameters(), array('companiesFS' => $companiesFS));
 
-        /* Web Service Response */
+        // Web service response
         $result['error']        = '200';
         $result['message']      = '';
         $result['companies']    = array();
 
         try {
-            /* Synchronize companies */
-            WS_FELLESDATA::synchronize_fsks_companies($companiesFS,$result);
+            // Log
+            $infolog = new stdClass();
+            $infolog->action      = 'Service wsFSCompany  ' . userdate(time(),'%d.%m.%Y %H:%M', 99, false);
+            $infolog->description = 'START wsFSCompany';
+            // Add log
+            $log[] = $infolog;
+
+            // Synchronize companies
+            WS_FELLESDATA::synchronize_fsks_companies($companiesFS,$result,$log);
+
+            // Log
+            $infolog = new stdClass();
+            $infolog->action      = 'FINISH Service wsFSCompany  ';
+            $infolog->description = 'FINISH wsFSCompany';
+            // Add log
+            $log[] = $infolog;
+
+            // Write log
+            WS_FELLESDATA::write_fellesdata_log($log);
 
             return $result;
         }catch (Exception $ex) {
@@ -237,6 +255,16 @@ class local_wsks_external extends external_api {
                 $result['error']    = 500;
                 $result['message']  = $ex->getMessage() . ' ' . $ex->getTraceAsString();
             }//if_error
+
+            // Log
+            $infolog = new stdClass();
+            $infolog->action      = 'ERROR Service wsFSCompany  ';
+            $infolog->description = $ex->getTraceAsString();
+            // Add log
+            $log[] = $infolog;
+
+            // Write log
+            WS_FELLESDATA::write_fellesdata_log($log);
 
             return $result;
         }//try_catch
@@ -315,20 +343,38 @@ class local_wsks_external extends external_api {
      */
     public static function wsKSOrganizationStructure($topCompany) {
         /* Variables    */
-        global $CFG;
+        $infolog    = null;
+        $log        = array();
         $result     = array();
 
-        /* Parameter Validation */
+        // Parameters validation
         $params = self::validate_parameters(self::wsKSOrganizationStructure_parameters(), array('topCompany' => $topCompany));
 
-        /* Web Service response */
+        // Web service response
         $result['error']        = 200;
         $result['message']      = '';
         $result['structure']    = array();
 
         try {
-            /* Get Organization Structure */
-            WS_FELLESDATA::organization_structure_by_top($topCompany,$result);
+            // Log
+            $infolog = new stdClass();
+            $infolog->action      = 'Service wsKSOrganizationStructure  ' . userdate(time(),'%d.%m.%Y %H:%M', 99, false);
+            $infolog->description = 'START wsKSOrganizationStructure';
+            // Add log
+            $log[] = $infolog;
+
+            // Get organization structure
+            WS_FELLESDATA::organization_structure_by_top($topCompany,$result,$log);
+
+            // Log
+            $infolog = new stdClass();
+            $infolog->action      = 'Service wsKSOrganizationStructure  ';
+            $infolog->description = 'FINISH wsKSOrganizationStructure';
+            // Add log
+            $log[] = $infolog;
+
+            // Write log
+            WS_FELLESDATA::write_fellesdata_log($log);
 
             return $result;
         }catch (Exception $ex) {
@@ -336,6 +382,16 @@ class local_wsks_external extends external_api {
                 $result['error']    = 500;
                 $result['message']  = $ex->getMessage() . ' ' . $ex->getTraceAsString();
             }//if_error
+
+            // Log
+            $infolog = new stdClass();
+            $infolog->action      = 'ERROR Service wsKSOrganizationStructure  ';
+            $infolog->description = $ex->getTraceAsString();
+            // Add log
+            $log[] = $infolog;
+
+            // Write log
+            WS_FELLESDATA::write_fellesdata_log($log);
 
             return $result;
         }//try_catch
@@ -426,19 +482,20 @@ class local_wsks_external extends external_api {
      */
     public static function wsFSJobRoles($jobRolesFS) {
         /* Variables    */
-        global $CFG;
+        $log        = array();
+        $infolog    = null;
         $result     = array();
 
-        /* Parameter Validation */
+        // Parameters validation
         $params = self::validate_parameters(self::wsFSJobRoles_parameters(), array('jobRoles' => $jobRolesFS));
 
-        /* Web Service Response */
+        // Web service response
         $result['error']    = 200;
         $result['message']  = '';
         $result['jobRoles'] = array();
 
         try {
-            /* Synchronize Job Roles */
+            // Synchronize job roles
             WS_FELLESDATA::synchronize_fsks_jobroles($jobRolesFS,$result);
 
             return $result;
@@ -522,20 +579,38 @@ class local_wsks_external extends external_api {
      */
     public static function wsKSJobRoles($hierarchy) {
         /* Variables    */
-        global $CFG;
         $result     = array();
+        $log        = array();
+        $infolog    = null;
 
-        /* Parameter Validation */
+        // Parameters validation
         $params = self::validate_parameters(self::wsKSJobRoles_parameters(), array('hierarchy' => $hierarchy));
 
-        /* Web service response */
+        // Web service response
         $result['error']        = 200;
         $result['message']      = '';
         $result['jobroles']     = array();
 
         try {
-            /* Get Job Roles connected with a level */
-            WS_FELLESDATA::jobroles_by_level($hierarchy,$result);
+            // Log
+            $infolog = new stdClass();
+            $infolog->action      = 'Service wsKSJobRoles  ' . userdate(time(),'%d.%m.%Y %H:%M', 99, false);
+            $infolog->description = 'START wsKSJobRoles';
+            // Add log
+            $log[] = $infolog;
+
+            // Get job roles connected with a level
+            WS_FELLESDATA::jobroles_by_level($hierarchy,$result,$log);
+
+            // Log
+            $infolog = new stdClass();
+            $infolog->action      = 'Service wsKSJobRoles  ';
+            $infolog->description = 'FINISH wsKSJobRoles';
+            // Add log
+            $log[] = $infolog;
+
+            // Write log
+            WS_FELLESDATA::write_fellesdata_log($log);
 
             return $result;
         }catch (Exception $ex) {
@@ -543,6 +618,16 @@ class local_wsks_external extends external_api {
                 $result['error']    = 500;
                 $result['message']  = $ex->getMessage() . ' ' . $ex->getTraceAsString();
             }//if_error
+
+            // Log
+            $infolog = new stdClass();
+            $infolog->action      = 'ERROR Service wsKSJobRoles  ';
+            $infolog->description = $ex->getTraceAsString();
+            // Add log
+            $log[] = $infolog;
+
+            // Write log
+            WS_FELLESDATA::write_fellesdata_log($log);
 
             return $result;
         }//try_catch
@@ -609,26 +694,54 @@ class local_wsks_external extends external_api {
      */
     public static function wsKSJobRolesGenerics($notIn) {
         /* Variables    */
-        global $CFG;
         $result     = array();
+        $infolog    = null;
+        $log        = array();
 
-        /* Parameter Validation */
+        // Parameter validation
         $params = self::validate_parameters(self::wsKSJobRolesGenerics_parameters(), array('notIn' => $notIn));
 
-        /* Web Service response */
+        // Web service response
         $result['error']    = 200;
         $result['message']  = '';
         $result['jobroles'] = array();
 
         try {
-            /* Get Job Roles generics */
-            WS_FELLESDATA::generics_jobroles($notIn,$result);
+            // Log
+            $infolog = new stdClass();
+            $infolog->action      = 'Service wsKSJobRolesGenerics  ' . userdate(time(),'%d.%m.%Y %H:%M', 99, false);
+            $infolog->description = 'START wsKSJobRolesGenerics';
+            // Add log
+            $log[] = $infolog;
+
+            // Get job roles generics
+            WS_FELLESDATA::generics_jobroles($notIn,$result,$log);
+
+            // Log
+            $infolog = new stdClass();
+            $infolog->action      = 'Service wsKSJobRolesGenerics  ';
+            $infolog->description = 'FINISH wsKSJobRolesGenerics';
+            // Add log
+            $log[] = $infolog;
+
+            // Write log
+            WS_FELLESDATA::write_fellesdata_log($log);
 
             return $result;
         }catch (Exception $ex) {
             if ($result['error'] == '200') {
                 $result['error']    = 500;
                 $result['message']  = $result['message']. ' ' . $ex->getMessage() . ' ' . $ex->getTraceAsString();
+
+                // Log
+                $infolog = new stdClass();
+                $infolog->action      = 'ERROR Service wsKSJobRolesGenerics  ';
+                $infolog->description = $ex->getTraceAsString();
+                // Add log
+                $log[] = $infolog;
+
+                // Write log
+                WS_FELLESDATA::write_fellesdata_log($log);
             }//if_error
 
             return $result;
@@ -699,26 +812,54 @@ class local_wsks_external extends external_api {
      */
     public static function wsManagerReporter($userManagerReporter) {
         /* Variables    */
-        global $CFG;
+        $log        = array();
+        $infolog    = null;
         $result     = array();
 
-        /* Parameter Validation */
+        // Parameter validation
         $params = self::validate_parameters(self::wsManagerReporter_parameters(), array('managerReporter' => $userManagerReporter));
 
-        /* Web Service response */
+        // Web service response
         $result['error']            = 200;
         $result['message']          = '';
         $result['managerReporter']  = array();
 
         try {
-            /* Synchronize Managers Reporters */
-            WS_FELLESDATA::synchronize_user_manager_reporter($userManagerReporter,$result);
+            // Log
+            $infolog = new stdClass();
+            $infolog->action      = 'Service wsManagerReporter  ' . userdate(time(),'%d.%m.%Y %H:%M', 99, false);
+            $infolog->description = 'START wsKSJobRoles';
+            // Add log
+            $log[] = $infolog;
+
+            // Synchronize managers/reporters
+            WS_FELLESDATA::synchronize_user_manager_reporter($userManagerReporter,$result,$log);
+
+            // Log
+            $infolog = new stdClass();
+            $infolog->action      = 'Service wsManagerReporter  ';
+            $infolog->description = 'FINISH wsManagerReporter';
+            // Add log
+            $log[] = $infolog;
+
+            // Write log
+            WS_FELLESDATA::write_fellesdata_log($log);
 
             return $result;
         }catch (Exception $ex) {
             if ($result['error'] == '200') {
                 $result['error']    = 500;
                 $result['message']  = $ex->getMessage() . ' ' . $ex->getTraceAsString();
+
+                // Log
+                $infolog = new stdClass();
+                $infolog->action      = 'ERROR Service wsManagerReporter  ';
+                $infolog->description = $ex->getTraceAsString();
+                // Add log
+                $log[] = $infolog;
+
+                // Write log
+                WS_FELLESDATA::write_fellesdata_log($log);
             }//if_error
 
             return $result;
@@ -785,20 +926,38 @@ class local_wsks_external extends external_api {
      */
     public static function wsUserCompetence($usersCompetence) {
         /* Variables    */
+        $infolog    = null;
+        $log        = array();
         $result     = array();
 
-        /* Parameter Validation */
+        // Parameter validation
         $params = self::validate_parameters(self::wsUserCompetence_parameters(), array('usersCompetence' => $usersCompetence));
 
-        /* Web Service Response */
+        // Web service response
         $result['error']            = 200;
         $result['message']          = '';
         $result['usersCompetence']  = array();
 
         try {
+            // Log
+            $infolog = new stdClass();
+            $infolog->action      = 'Service wsUserCompetence  ' . userdate(time(),'%d.%m.%Y %H:%M', 99, false);
+            $infolog->description = 'START wsUserCompetence';
+            // Add log
+            $log[] = $infolog;
 
-            /* Synchronization */
-            WS_FELLESDATA::synchronize_user_competence($usersCompetence,$result);
+            // Synchronization
+            WS_FELLESDATA::synchronize_user_competence($usersCompetence,$result,$log);
+
+            // Log
+            $infolog = new stdClass();
+            $infolog->action      = 'Service wsUserCompetence  ';
+            $infolog->description = 'FINISH wsUserCompetence';
+            // Add log
+            $log[] = $infolog;
+
+            // Write log
+            WS_FELLESDATA::write_fellesdata_log($log);
 
             return $result;
         }catch (Exception $ex) {
@@ -806,6 +965,16 @@ class local_wsks_external extends external_api {
                 $result['error']    = 500;
                 $result['message']  = $ex->getMessage() . ' ' . $ex->getTraceAsString();
             }//if_error
+
+            // Log
+            $infolog = new stdClass();
+            $infolog->action      = 'ERROR Service wsUserCompetence  ';
+            $infolog->description = $ex->getTraceAsString();
+            // Add log
+            $log[] = $infolog;
+
+            // Write log
+            WS_FELLESDATA::write_fellesdata_log($log);
 
             return $result;
         }//try_catch
@@ -885,23 +1054,41 @@ class local_wsks_external extends external_api {
      */
     public static function wsUsersAccounts($usersAccounts) {
         /* Variables    */
-        global $CFG;
+        $log        = array();
+        $infolog    = null;
         $result     = array();
 
-        /* Parameter Validation */
+        // Parameter validation
         $params = self::validate_parameters(self::wsUsersAccounts_parameters(), array('usersAccounts' => $usersAccounts));
 
-        /* Web Service Response */
+        // Web service response
         $result['error']            = 200;
         $result['message']          = '';
         $result['usersAccounts']    = array();
 
         try {
-            /* Library  */
+            // Log
+            $infolog = new stdClass();
+            $infolog->action      = 'Service wsUsersAccounts  ' . userdate(time(),'%d.%m.%Y %H:%M', 99, false);
+            $infolog->description = 'START wsUsersAccounts';
+            // Add log
+            $log[] = $infolog;
+
+            // Library
             require_once('../../user/profile/field/gender/lib/genderlib.php');
-            
-            /* Synchronization */
-            WS_FELLESDATA::synchronize_users_accounts($usersAccounts,$result);
+
+            // Synchronization
+            WS_FELLESDATA::synchronize_users_accounts($usersAccounts,$result,$log);
+
+            // Log
+            $infolog = new stdClass();
+            $infolog->action      = 'Service wsUsersAccounts';
+            $infolog->description = 'FINISH wsUsersAccounts';
+            // Add log
+            $log[] = $infolog;
+
+            // Write log
+            WS_FELLESDATA::write_fellesdata_log($log);
 
             return $result;
         }catch (Exception $ex) {
@@ -909,6 +1096,16 @@ class local_wsks_external extends external_api {
                 $result['error']    = 500;
                 $result['message']  = $ex->getMessage() . ' ' . $ex->getTraceAsString();
             }//if_error
+
+            // Log
+            $infolog = new stdClass();
+            $infolog->action      = 'ERROR Service wsUsersAccounts  ';
+            $infolog->description = $ex->getTraceAsString();
+            // Add log
+            $log[] = $infolog;
+
+            // Write log
+            WS_FELLESDATA::write_fellesdata_log($log);
 
             return $result;
         }//try_catch
@@ -1072,27 +1269,55 @@ class local_wsks_external extends external_api {
      */
     public static function wsUnMapCompany($toUnMap) {
         /* Variables    */
-        global $CFG;
+        $log        = array();
+        $infolog    = null;
         $result     = array();
 
-        /* Parameter Validation */
+        // Parameter validation
         $params = self::validate_parameters(self::wsUnMapCompany_parameters(), array('toUnMap' => $toUnMap));
 
-        /* Web Service Response */
+        // Web service response
         $result['error']        = 200;
         $result['message']      = '';
         $result['orgUnMapped']  = array();
 
         try {
-            /* Unmap Companies */
-            WS_FELLESDATA::unmap_companies($toUnMap,$result);
-            
+            // Log
+            $infolog = new stdClass();
+            $infolog->action      = 'Service wsUnMapCompany  ' . userdate(time(),'%d.%m.%Y %H:%M', 99, false);
+            $infolog->description = 'START wsUnMapCompany';
+            // Add log
+            $log[] = $infolog;
+
+            // Unmap companies
+            WS_FELLESDATA::unmap_companies($toUnMap,$result,$log);
+
+            // Log
+            $infolog = new stdClass();
+            $infolog->action      = 'Service wsUnMapCompany  ';
+            $infolog->description = 'FINISH wsUnMapCompany';
+            // Add log
+            $log[] = $infolog;
+
+            // Write log
+            WS_FELLESDATA::write_fellesdata_log($log);
+
             return $result;
         }catch (Exception $ex) {
             if ($result['error'] == '200') {
                 $result['error']    = 500;
                 $result['message']  = $ex->getMessage() . ' ' . $ex->getTraceAsString();
             }//if_error
+
+            // Log
+            $infolog = new stdClass();
+            $infolog->action      = 'ERROR Service wsUnMapCompany  ';
+            $infolog->description = $ex->getTraceAsString();
+            // Add log
+            $log[] = $infolog;
+
+            // Write log
+            WS_FELLESDATA::write_fellesdata_log($log);
 
             return $result;
         }//try_catch
@@ -1156,19 +1381,38 @@ class local_wsks_external extends external_api {
      */
     public static function wsCompetence($competence) {
         /* Variables    */
-        global $CFG;
+        $log        = array();
+        $infolog    = null;
         $result     = array();
 
-        /* Parameter Validation */
+        // Parameter validation
         $params = self::validate_parameters(self::wsCompetence_parameters(), array('competence' => $competence));
 
-        /* Web Service response */
+        // Web service response
         $result['error']        = 200;
         $result['message']      = '';
         $result['competence']   = '';
 
         try {
-            WS_FELLESDATA::competence_data($competence,$result);
+            // Log
+            $infolog = new stdClass();
+            $infolog->action      = 'Service wsCompetence  ' . userdate(time(),'%d.%m.%Y %H:%M', 99, false);
+            $infolog->description = 'START wsCompetence';
+            // Add log
+            $log[] = $infolog;
+
+            // Get competnece data
+            WS_FELLESDATA::competence_data($competence,$result,$log);
+
+            // Log
+            $infolog = new stdClass();
+            $infolog->action      = 'Service wsCompetence  ';
+            $infolog->description = 'FINISH wsCompetence';
+            // Add log
+            $log[] = $infolog;
+
+            // Write log
+            WS_FELLESDATA::write_fellesdata_log($log);
 
             return $result;
         }catch (Exception $ex) {
@@ -1176,6 +1420,16 @@ class local_wsks_external extends external_api {
                 $result['error']    = 500;
                 $result['message']  = $result['message']. ' ' . $ex->getMessage() . ' ' . $ex->getTraceAsString();
             }//if_error
+
+            // Log
+            $infolog = new stdClass();
+            $infolog->action      = 'ERROR Service wsCompetence  ';
+            $infolog->description = $ex->getTraceAsString();
+            // Add log
+            $log[] = $infolog;
+
+            // Write log
+            WS_FELLESDATA::write_fellesdata_log($log);
 
             return $result;
         }//try_catch
@@ -1248,20 +1502,38 @@ class local_wsks_external extends external_api {
      */
     public static function ws_delete_competence($competence) {
         /* Variables    */
-        global $CFG;
+        $infolog    = null;
+        $log        = array();
         $result     = array();
 
-        /* Parameter Validation */
+        // Parameter validation
         $params = self::validate_parameters(self::ws_delete_competence_parameters(), array('competence' => $competence));
 
-        /* Web Service response */
+        // Web service response
         $result['error']     = 200;
         $result['message']   = '';
         $result['deleted']   = '';
 
         try {
-            /* Get Job Roles generics */
-            WS_FELLESDATA::delete_competence_data($competence,$result);
+            // Log
+            $infolog = new stdClass();
+            $infolog->action      = 'Service ws_delete_competence  ' . userdate(time(),'%d.%m.%Y %H:%M', 99, false);
+            $infolog->description = 'START ws_delete_competence';
+            // Add log
+            $log[] = $infolog;
+
+            // Delete competence data
+            WS_FELLESDATA::delete_competence_data($competence,$result,$log);
+
+            // Log
+            $infolog = new stdClass();
+            $infolog->action      = 'Service ws_delete_competence ';
+            $infolog->description = 'FINISH ws_delete_competence';
+            // Add log
+            $log[] = $infolog;
+
+            // Write log
+            WS_FELLESDATA::write_fellesdata_log($log);
 
             return $result;
         }catch (Exception $ex) {
@@ -1269,6 +1541,16 @@ class local_wsks_external extends external_api {
                 $result['error']    = 500;
                 $result['message']  = $result['message']. ' ' . $ex->getMessage() . ' ' . $ex->getTraceAsString();
             }//if_error
+
+            // Log
+            $infolog = new stdClass();
+            $infolog->action      = 'ERROR Service ws_delete_competence  ';
+            $infolog->description = $ex->getTraceAsString();
+            // Add log
+            $log[] = $infolog;
+
+            // Write log
+            WS_FELLESDATA::write_fellesdata_log($log);
 
             return $result;
         }//try_catch
@@ -1335,28 +1617,56 @@ class local_wsks_external extends external_api {
      */
     public static function ws_get_managers_reporters($industry) {
         /* Variables    */
-        global $CFG;
+        $log        = array();
+        $infolog    = null;
         $result     = array();
 
-        /* Parameter Validation */
+        // Parameter validation
         $params = self::validate_parameters(self::ws_get_managers_reporters_parameters(), array('industry' => $industry));
 
-        /* Web Service response */
+        // Web service response
         $result['error']        = 200;
         $result['message']      = '';
         $result['managers']     = '';
         $result['reporters']    = '';
 
         try {
+            // Log
+            $infolog = new stdClass();
+            $infolog->action      = 'Service ws_get_managers_reporters  ' . userdate(time(),'%d.%m.%Y %H:%M', 99, false);
+            $infolog->description = 'START ws_get_managers_reporters';
+            // Add log
+            $log[] = $infolog;
+
             // Get managers/reporters
-            WS_FELLESDATA::managers_reporters($industry,$result);
-            
+            WS_FELLESDATA::managers_reporters($industry,$result,$log);
+
+            // Log
+            $infolog = new stdClass();
+            $infolog->action      = 'Service ws_get_managers_reporters  ';
+            $infolog->description = 'FINISH ws_get_managers_reporters';
+            // Add log
+            $log[] = $infolog;
+
+            // Write log
+            WS_FELLESDATA::write_fellesdata_log($log);
+
             return $result;
         }catch (Exception $ex) {
             if ($result['error'] == '200') {
                 $result['error']    = 500;
                 $result['message']  = $result['message']. ' ' . $ex->getMessage() . ' ' . $ex->getTraceAsString();
             }//if_error
+
+            // Log
+            $infolog = new stdClass();
+            $infolog->action      = 'ERROR Service ws_get_managers_reporters  ';
+            $infolog->description = $ex->getTraceAsString();
+            // Add log
+            $log[] = $infolog;
+
+            // Write log
+            WS_FELLESDATA::write_fellesdata_log($log);
 
             return $result;
         }//try_catch
@@ -1423,10 +1733,9 @@ class local_wsks_external extends external_api {
      */
     public static function ws_clean_managers_reporters($managersreporters) {
         /* Variables    */
-        global $CFG;
-        $dblog = null;
-        
-        $result     = array();
+        $log     = array();
+        $infolog = null;
+        $result  = array();
 
         // Validation parameters
         $params = self::validate_parameters(self::ws_clean_managers_reporters_parameters(), array('managersreporters' =>$managersreporters));
@@ -1438,26 +1747,41 @@ class local_wsks_external extends external_api {
 
         try {
             // Log
-            $dblog = userdate(time(),'%d.%m.%Y', 99, false). ' START CLEAN MANAGERS REPORTERS . ' . "\n\n";
-            
+            $infolog = new stdClass();
+            $infolog->action      = 'Service ws_clean_managers_reporters  ' . userdate(time(),'%d.%m.%Y %H:%M', 99, false);
+            $infolog->description = 'START ws_clean_managers_reporters';
+            // Add log
+            $log[] = $infolog;
+
             // Clean managers/reporters
-            WS_FELLESDATA::clean_managers_reporters($managersreporters['data'],$managersreporters['type'],$result);
+            WS_FELLESDATA::clean_managers_reporters($managersreporters['data'],$managersreporters['type'],$result,$log);
 
             // Log
-            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' FINISH CLEAN MANAGERS REPORTERS . ' . "\n\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
+            $infolog = new stdClass();
+            $infolog->action      = 'Service ws_clean_managers_reporters  ';
+            $infolog->description = 'FINISH ws_clean_managers_reporters';
+            // Add log
+            $log[] = $infolog;
+
+            // Write log
+            WS_FELLESDATA::write_fellesdata_log($log);
 
             return $result;
         }catch (Exception $ex) {
-            // Log
-            $dblog .= userdate(time(),'%d.%m.%Y', 99, false). ' ERROR FINISH CLEAN MANAGERS REPORTERS . ' . "\n\n";
-            $dblog .= " ERROR : " . $ex->getMessage() . "\n\n";
-            error_log($dblog, 3, $CFG->dataroot . "/Fellesdata.log");
-
             if ($result['error'] == '200') {
                 $result['error']    = 500;
                 $result['message']  = $result['message']. ' ' . $ex->getMessage() . ' ' . $ex->getTraceAsString();
             }//if_error
+
+            // Log
+            $infolog = new stdClass();
+            $infolog->action      = 'ERROR Service ws_clean_managers_reporters  ';
+            $infolog->description = $ex->getTraceAsString();
+            // Add log
+            $log[] = $infolog;
+
+            // Write log
+            WS_FELLESDATA::write_fellesdata_log($log);
 
             return $result;
         }//try_catch
