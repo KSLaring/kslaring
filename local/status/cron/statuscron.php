@@ -26,6 +26,17 @@
  *
  */
 
+define('TEST_STS_USERS',1);
+define('TEST_STS_ORG',2);
+define('TEST_STS_JR',3);
+define('TEST_STS_MANAGERS',4);
+define('TEST_STS_USER_COMP',5);
+define('TEST_STS_SYNC_USERS_ACCOUNTS',6);
+define('TEST_STS_SYNC_ORG',7);
+define('TEST_STS_SYNC_JR',8);
+define('TEST_STS_SYNC_MANAGERS',9);
+define('TEST_STS_SYNC_USER_COMP',10);
+
 class STATUS_CRON {
     protected static $log           = null;
 
@@ -38,6 +49,8 @@ class STATUS_CRON {
         $infolog = null;
 
         try {
+            unset($SESSION->manual);
+
             // Start log
             self::$log    =    array();
 
@@ -110,7 +123,7 @@ class STATUS_CRON {
         }//try_catch
     }
 
-    public static function test($plugin) {
+    public static function test($plugin,$option) {
         /* Variables */
         $industry   = null;
         $time       = null;
@@ -127,35 +140,102 @@ class STATUS_CRON {
             // Get industry code
             $industry = STATUS::get_industry_code($plugin->ks_muni);
 
-            // Get competence from KS
-            self::competence_data($plugin,$industry);
+            switch ($option) {
+                case TEST_STS_USERS:
+                    echo " IMPORT STATUS USERS " . "</br>";
 
-            // Get managers reporters from KS
-            self::managers_reporters($plugin,$industry);
+                    // Import FS Users
+                    self::import_status_users($plugin);
 
-            // Repair connections
-            self::repair_connections();
+                    break;
+                case TEST_STS_ORG:
+                    echo " IMPORT STATUS ORGANIZATIONS " . "</br>";
 
-            // Write log
-            STATUS::write_status_log(self::$log);
-            // Start log
-            self::$log    =    array();
+                    // Repair connections
+                    self::repair_connections();
 
-            // Import last status from fellesdata
-            self::import_status($plugin);
+                    // Import FS Companies
+                    self::import_status_orgstructure($plugin);
 
-            // Write log
-            STATUS::write_status_log(self::$log);
-            // Start log
-            self::$log    =    array();
+                    break;
+                case TEST_STS_JR:
+                    echo " IMPORT STATUS JOB ROLES " . "</br>";
 
-            // Syncronization
-            self::synchronization($plugin,$industry);
+                    // Import FS Job roles
+                    self::import_status_jobroles($plugin);
 
-            // Write log
-            STATUS::write_status_log(self::$log);
-            // Start log
-            self::$log    =    array();
+                    break;
+                case TEST_STS_MANAGERS:
+                    echo " IMPORT STATUS MANAGERS/REPORTERS " . "</br>";
+
+                    // Get managers reporters from KS
+                    self::managers_reporters($plugin,$industry);
+
+                    // Import FS User Competence
+                    self::import_status_managers_reporters($plugin);
+
+                    break;
+                case TEST_STS_USER_COMP:
+                    echo " IMPORT STATUS USERS COMPETENCE " . "</br>";
+
+                    // Get competence from KS
+                    self::competence_data($plugin,$industry);
+
+                    // Import FS User Competence JR
+                    self::import_status_user_competence($plugin);
+
+                    break;
+                case TEST_STS_SYNC_USERS_ACCOUNTS:
+                    echo " SYNC STATUS USERS  " . "</br>";
+
+                    // Synchronization FS Users
+                    self::sync_status_users_accounts($plugin,$industry);
+
+                    break;
+                case TEST_STS_SYNC_ORG:
+                    echo " SYNC STATUS ORGANIZATIONS  " . "</br>";
+
+                    // Synchronization FS Companies
+                    self::sync_status_fs_organizations($plugin);
+
+                    break;
+                case TEST_STS_SYNC_JR:
+                    echo " SYNC STATUS JOB ROLES  " . "</br>";
+
+                    // Synchronization FS Job roles
+                    self::sync_status_fs_jobroles($plugin);
+
+                    break;
+                case TEST_STS_SYNC_MANAGERS:
+                    echo " SYNC STATUS MANAGERS/REPORTERS  " . "</br>";
+
+                    // Synchronization FS Managers/Reporters to delete
+                    // Managers
+                    self::sync_status_delete_managers_reporters($plugin,MANAGERS,1);
+                    self::sync_status_delete_managers_reporters($plugin,MANAGERS,2);
+                    self::sync_status_delete_managers_reporters($plugin,MANAGERS,3);
+                    // Reporters
+                    self::sync_status_delete_managers_reporters($plugin,REPORTERS,1);
+                    self::sync_status_delete_managers_reporters($plugin,REPORTERS,2);
+                    self::sync_status_delete_managers_reporters($plugin,REPORTERS,3);
+
+                    // Synchronization FS Managers/Reporters
+                    self::sync_status_managers_reporters($plugin);
+
+                    STATUS::synchronize_managers_reporters_deleted(MANAGERS);
+                    STATUS::synchronize_managers_reporters_deleted(REPORTERS);
+                    break;
+                case TEST_STS_SYNC_USER_COMP:
+                    echo " SYNC STATUS USER COMPETENCE  " . "</br>";
+
+                    // Synchronization FS User Competence to Delete
+                    self::sync_status_delete_competence($plugin);
+
+                    // Synchronization FS User Competence
+                    self::sync_status_competence($plugin);
+
+                    break;
+            }//switch_option
 
             // Log
             $infolog = new stdClass();
@@ -164,6 +244,9 @@ class STATUS_CRON {
             // Add log
             self::$log[] = $infolog;
 
+            foreach (self::$log as $info) {
+                echo $info->description . "</br>";
+            }
 
             // Write log
             STATUS::write_status_log(self::$log);
@@ -1024,6 +1107,7 @@ class STATUS_CRON {
      */
     private static function sync_status_competence($plugin) {
         /* Variables    */
+        global $SESSION;
         $competence     = null;
         $rdocompetence  = null;
         $response       = null;
@@ -1038,6 +1122,11 @@ class STATUS_CRON {
             $infolog->description 	= 'START sync_status_competence';
             // Add log
             self::$log[] = $infolog;
+
+            // To avoid problems timeout
+            if (isset($SESSION->manual) && ($SESSION->manual)) {
+                $limit          = 100;
+            }//if_session_manul
 
             // User competence to synchronize
             $total = FSKS_USERS::get_total_users_competence_to_synchronize(false,true);
@@ -1115,6 +1204,7 @@ class STATUS_CRON {
      */
     private static function sync_status_delete_competence($plugin) {
         /* Variables */
+        global $SESSION;
         $total      = null;
         $todelete   = null;
         $params     = null;
@@ -1130,6 +1220,11 @@ class STATUS_CRON {
             $infolog->description 	= 'START sync_status_delete_competence';
             // Add log
             self::$log[] = $infolog;
+
+            // To avoid problems timeout
+            if (isset($SESSION->manual) && ($SESSION->manual)) {
+                $limit          = 100;
+            }//if_session_manul
 
             // Get total to delete
             $total = STATUS::total_competence_to_delete_ks();
@@ -1209,6 +1304,7 @@ class STATUS_CRON {
      */
     private static function sync_status_delete_managers_reporters($plugin,$type,$level) {
         /* Variables */
+        global $SESSION;
         $total       = null;
         $todeleted   = null;
         $params      = null;
@@ -1223,6 +1319,11 @@ class STATUS_CRON {
             $infolog->description 	= 'START sync_status_delete_managers_reporters - Level ' . $level;
             // Add log
             self::$log[] = $infolog;
+
+            // To avoid problems timeout
+            if (isset($SESSION->manual) && ($SESSION->manual)) {
+                $limit          = 100;
+            }//if_session_manul
 
             // Get total to delete
             $total = STATUS::total_managers_reporters_to_delete($level,$type);
@@ -1298,6 +1399,7 @@ class STATUS_CRON {
      */
     private static function sync_status_managers_reporters($plugin) {
         /* Variables    */
+        global $SESSION;
         $toSynchronize  = null;
         $rdomanagers    = null;
         $response       = null;
@@ -1313,6 +1415,11 @@ class STATUS_CRON {
             $infolog->description 	= 'START sync_status_managers_reporters';
             // Add log
             self::$log[] = $infolog;
+
+            // To avoid problems timeout
+            if (isset($SESSION->manual) && ($SESSION->manual)) {
+                $limit          = 100;
+            }//if_session_manul
 
             // Managers and reporters to synchronize
             $total = FSKS_USERS::get_total_managers_reporters_to_synchronize();
@@ -1417,6 +1524,7 @@ class STATUS_CRON {
      */
     private static function sync_status_existing_users_accounts($plugin,$industry) {
         /* Variables */
+        global $SESSION;
         $rdousers   = null;
         $lstusers   = null;
         $response   = null;
@@ -1432,6 +1540,11 @@ class STATUS_CRON {
             $infolog->description 	= 'START sync_status_existing_users_accounts';
             // Add log
             self::$log[] = $infolog;
+
+            // To avoid problems timeout
+            if (isset($SESSION->manual) && ($SESSION->manual)) {
+                $limit          = 100;
+            }//if_session_manul
 
             // get total users accounts
             $total = STATUS::get_total_status_existing_users_accounts();
@@ -1506,6 +1619,7 @@ class STATUS_CRON {
      */
     private static function sync_status_new_users_accounts($plugin,$industry) {
         /* Variables */
+        global $SESSION;
         $rdousers   = null;
         $lstusers   = null;
         $response   = null;
@@ -1521,6 +1635,11 @@ class STATUS_CRON {
             $infolog->description 	= 'START sync_status_new_users_accounts';
             // Add log
             self::$log[] = $infolog;
+
+            // To avoid problems timeout
+            if (isset($SESSION->manual) && ($SESSION->manual)) {
+                $limit          = 100;
+            }//if_session_manul
 
             // get total users accounts
             $total = STATUS::get_total_status_new_users_accounts();
@@ -1595,6 +1714,7 @@ class STATUS_CRON {
      */
     private static function sync_status_users_accounts_deleted($plugin,$industry) {
         /* Variables */
+        global $SESSION;
         $rdousers   = null;
         $lstusers   = null;
         $response   = null;
@@ -1610,6 +1730,11 @@ class STATUS_CRON {
             $infolog->description 	= 'START sync_status_users_accounts_deleted';
             // Add log
             self::$log[] = $infolog;
+
+            // To avoid problems timeout
+            if (isset($SESSION->manual) && ($SESSION->manual)) {
+                $limit          = 100;
+            }//if_session_manul
 
             // get total users accounts
             $total = STATUS::get_status_total_users_accounts_deleted();
@@ -1712,6 +1837,7 @@ class STATUS_CRON {
      */
     private static function synchronization_status_companies_no_exist($plugin) {
         /* Variables */
+        global $SESSION;
         $rdocompanies   = null;
         $todelete       = null;
         $response       = null;
@@ -1727,6 +1853,11 @@ class STATUS_CRON {
             $infolog->description 	= 'START synchronization_status_companies_no_exist';
             // Add log
             self::$log[] = $infolog;
+
+            // To avoid problems timeout
+            if (isset($SESSION->manual) && ($SESSION->manual)) {
+                $limit          = 100;
+            }//if_session_manul
 
             // Get total
             $total = STATUS::get_status_total_companies_to_delete();
@@ -1801,6 +1932,7 @@ class STATUS_CRON {
      */
     private static function synchronization_status_existing_companies($plugin) {
         /* Variables */
+        global $SESSION;
         $rdocompanies   = null;
         $toSynchronize  = null;
         $response       = null;
@@ -1816,6 +1948,11 @@ class STATUS_CRON {
             $infolog->description 	= 'START synchronization_status_existing_companies';
             // Add log
             self::$log[] = $infolog;
+
+            // To avoid problems timeout
+            if (isset($SESSION->manual) && ($SESSION->manual)) {
+                $limit          = 100;
+            }//if_session_manul
 
             // Get total
             $total = STATUS::get_total_status_existing_companies();
