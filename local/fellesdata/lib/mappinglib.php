@@ -1668,7 +1668,11 @@ class FS_MAPPING {
                             ks.parent
                     FROM	{ks_company} ks
                     WHERE 	ks.hierarchylevel = :level 
-                      AND   ks.parent = :parent ";
+                       ";
+
+            if ($level != FS_LE_1) {
+                $sql .= ' AND   ks.parent = :parent ';
+            }//if_level_1
 
             // Pattern
             if ($sector) {
