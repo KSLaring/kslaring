@@ -96,20 +96,21 @@ if ($hassiteconfig) {
                                                   get_string('suspicious_remainder', 'local_fellesdata'),
                                                   get_string('suspicious_remainder', 'local_fellesdata'),0, $options));
     // Maximum suspicious data for users
-    $options = array('5','10','20','40','50','75','100','125','150','175','200','250','300','400','500','600','700','800','900','1000');
-    $settings->add(new admin_setting_configselect('local_fellesdata/max_users',
-                                                  get_string('max_suspicious_users', 'local_fellesdata'),
-                                                  get_string('max_suspicious_users', 'local_fellesdata'), 3,$options));
+    $settings->add(new admin_setting_configtext('local_fellesdata/max_users',
+                                                get_string('suspicious_folder', 'local_fellesdata'),
+                                               '', '',PARAM_TEXT,15));
+
 
     // Maximum suspicious data for competence user
-    $settings->add(new admin_setting_configselect('local_fellesdata/max_comp',
-                                                  get_string('max_suspicious_competence', 'local_fellesdata'),
-                                                  get_string('max_suspicious_competence', 'local_fellesdata'), 2,$options));
+    $settings->add(new admin_setting_configtext('local_fellesdata/max_comp',
+                                                get_string('suspicious_folder', 'local_fellesdata'),
+                                                '', '',PARAM_TEXT,15));
+
 
     // Maximum suspicious data for the rest
-    $settings->add(new admin_setting_configselect('local_fellesdata/max_rest',
-                                                  get_string('max_suspicious_rest', 'local_fellesdata'),
-                                                  get_string('max_suspicious_rest', 'local_fellesdata'), 0,$options));
+    $settings->add(new admin_setting_configtext('local_fellesdata/max_rest',
+                                                get_string('suspicious_folder', 'local_fellesdata'),
+                                                '', '',PARAM_TEXT,15));
 
     // Mapping levels
     $settings->add(new admin_setting_heading('local_fellesdata_MAP_settings', '', get_string('map_header', 'local_fellesdata')));
