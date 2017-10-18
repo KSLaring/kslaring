@@ -71,12 +71,12 @@ class source_form extends moodleform {
         $errors = parent::validation($data, $files);
 
         // API
-        if (actionsdk::source_exist('api',$data['api'])) {
+        if (actionsdk::source_exist($data['id'],'api',$data['api'])) {
             $errors['api'] = get_string('errexits','local_doskom');
         }
 
         // Label
-        if (actionsdk::source_exist('label',$data['label'])) {
+        if (actionsdk::source_exist($data['id'],'label',$data['label'])) {
             $errors['label'] = get_string('errexits','local_doskom');
         }
 
