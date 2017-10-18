@@ -18,6 +18,10 @@ define(['core/url'], function (url) {
             'jquery-bridget/jquery-bridget': {
                 deps: ['jquery'],
                 exports: 'jQueryBridget'
+            },
+            'underscore': {
+                path: 'javascript/lodash.min',
+                exports: '_'
             }
         }
     });

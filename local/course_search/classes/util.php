@@ -78,6 +78,7 @@ class util {
                             'shown' => array(
                                 (object)array(
                                     'type' => 'display',
+                                    'id' => 'd0',
                                     'groupid' => 0,
                                     'group' => 'sort',
                                     'name' => $strsortby,
@@ -113,6 +114,7 @@ class util {
                                 ),
                                 (object)array(
                                     'type' => 'display',
+                                    'id' => 'd1',
                                     'groupid' => 0,
                                     'group' => 'sortdesc',
                                     'name' => $strsortdesc,
@@ -121,6 +123,7 @@ class util {
                                 ),
                                 (object)array(
                                     'type' => 'display',
+                                    'id' => 'd2',
                                     'groupid' => 0,
                                     'group' => 'tags',
                                     'name' => $strshowtags,

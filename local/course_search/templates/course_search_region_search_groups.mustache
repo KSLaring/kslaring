@@ -12,16 +12,16 @@
 {{#showdate}}
     <div class="dates">
         <h4>{{{title}}}</h4>
-        <div class="input-group input-append date" data-type="course" data-group="date-from" data-name="Date from"
-             data-date="" data-date-format="dd.mm.yyyy">
+        <div class="input-group input-append date" data-type="course" data-group="date-from"
+             data-name="{{#str}}datefrom, local_course_search{{/str}}" data-date="" data-date-format="dd.mm.yyyy">
             <label for="date-from" class="lbl">{{#str}}from, moodle{{/str}}:<br>
                 <input type="hidden" id="date-from-eurodate" value=""/>
                 <input id="date-from" type="text" class="form-control">
                 <span class="add-on"><i class="icon-th"></i></span>
             </label>
         </div>
-        <div class="input-group input-append date" data-type="course" data-group="date-to" data-name="Date to"
-             data-date="" data-date-format="dd.mm.yyyy">
+        <div class="input-group input-append date" data-type="course" data-group="date-to"
+             data-name="{{#str}}dateto, local_course_search{{/str}}" data-date="" data-date-format="dd.mm.yyyy">
             <label for="date-to" class="lbl">{{#str}}to, moodle{{/str}}:<br>
                 <input type="hidden" id="date-to-eurodate" value=""/>
                 <input id="date-to" type="text" class="form-control">
