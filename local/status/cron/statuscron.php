@@ -46,6 +46,7 @@ class STATUS_CRON {
 
     public static function cron($plugin) {
         /* Varibales */
+        global $SESSION;
         $infolog = null;
 
         try {
@@ -423,13 +424,28 @@ class STATUS_CRON {
         try {
             // Synchronization FS Users
             self::sync_status_users_accounts($plugin,$industry);
-            
+
+            // Write log
+            STATUS::write_status_log(self::$log);
+            // Start log
+            self::$log    =    array();
+
             // Synchronization FS Companies
             self::sync_status_fs_organizations($plugin);
 
+            // Write log
+            STATUS::write_status_log(self::$log);
+            // Start log
+            self::$log    =    array();
+
             // Synchronization FS Job roles
             self::sync_status_fs_jobroles($plugin);
-            
+
+            // Write log
+            STATUS::write_status_log(self::$log);
+            // Start log
+            self::$log    =    array();
+
             // Synchronization FS Managers/Reporters to delete
             // Managers
             self::sync_status_delete_managers_reporters($plugin,MANAGERS,1);
@@ -439,6 +455,11 @@ class STATUS_CRON {
             self::sync_status_delete_managers_reporters($plugin,REPORTERS,1);
             self::sync_status_delete_managers_reporters($plugin,REPORTERS,2);
             self::sync_status_delete_managers_reporters($plugin,REPORTERS,3);
+
+            // Write log
+            STATUS::write_status_log(self::$log);
+            // Start log
+            self::$log    =    array();
 
             // Synchronization FS Managers/Reporters
             self::sync_status_managers_reporters($plugin);
@@ -451,6 +472,9 @@ class STATUS_CRON {
 
             // Synchronization FS User Competence
             self::sync_status_competence($plugin);
+
+            // Write log
+            STATUS::write_status_log(self::$log);
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
