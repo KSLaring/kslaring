@@ -46,6 +46,7 @@ class actionsdk {
      * Description
      * Check if there is other source with a specific value in a field
      *
+     * @param           $source
      * @param           $field
      * @param           $value
      *
@@ -55,7 +56,7 @@ class actionsdk {
      * @creationDate    08/09/2017
      * @author          eFaktor     (fbv)
      */
-    public static function source_exist($field,$value) {
+    public static function source_exist($source,$field,$value) {
         /* Variables */
         global $DB;
         $params = null;
@@ -64,10 +65,16 @@ class actionsdk {
         try {
             // Serch criteria
             $params = array();
-            $params[$field] = $value;
+            $params['source']   = $source;
 
+
+            // SQL Instruction
+            $sql = " SELECT id
+                     FROM   {doskom} 
+                     WHERE   $field = '" . $value . "' 
+                        AND  id    != :source ";
             // Execute
-            $rdo = $DB->get_record('doskom',$params,'id');
+            $rdo = $DB->get_record_sql($sql,$params);
             if ($rdo) {
                 return true;
             }else {
@@ -350,9 +357,9 @@ class actionsdk {
 
         try {
             // SQL instruction
-            $sql = " SELECT	      CONCAT(dk.id,'_',dk_co.companyid) 		as 'id',
-                                  IF(dk_co.companyid,dk_co.companyid,0) 	as 'companyid',
-                                  dk.id 									as 'dkid',
+            $sql = " SELECT	      CONCAT(dk.id,'_',IF(dk_co.companyid,dk_co.companyid,0))	as 'id',
+                                  IF(dk_co.companyid,dk_co.companyid,0) 	                as 'companyid',
+                                  dk.id 									                as 'dkid',
                                   dk.api,
                                   dk.label,
                                   cd.name,
@@ -1056,6 +1063,8 @@ class actionsdk {
             // Add content
             if ($lstsources) {
                 foreach ($lstsources as $source) {
+                    // For each one is different
+                    $urlact->remove_params('co');
                     // Set source id
                     $urlact->param('id',$source->dkid);
 
@@ -1095,7 +1104,7 @@ class actionsdk {
                                 }//if_activate
                             }else {
                                 $content .= html_writer::link($urlact, $show,array('class' => 'lnk_act lnk_disabled'));
-                            }
+                            }//if_companyid
                         $content .= html_writer::end_tag('td');
                     $content .= html_writer::end_tag('tr');
                 }//for_each_source
