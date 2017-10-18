@@ -21,6 +21,21 @@ $PAGE->set_url('/local/doskom/ToImport.php');
 echo $OUTPUT->header();
 
 try {
+    $aux = 'http://171.23.173.82/profile/api/export/';
+    $strleng = strlen($aux);
+
+    echo "AUX: " . $aux . "</br>";
+    echo "LENG : " . $strleng . "</br>";
+    echo "--> " . substr($aux,($strleng-1)) . "</br>";
+
+    if (substr($aux,($strleng-1)) == '/') {
+        $urlWs = $aux . '1' .'/personalia/no';
+    }else {
+        $urlWs = $aux . '/' . '1' .'/personalia/no';
+    }
+
+    echo "END point: " . $urlWs . "</br>";
+
     //wsdoskom_cron::cron();
     /**
     $criteria = array();

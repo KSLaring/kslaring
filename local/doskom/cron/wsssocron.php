@@ -213,7 +213,12 @@ class wsdoskom_cron {
             $log[] = $infolog;
 
             // Build url end point
-            $urlWs = $company->api . '/' . $company->id .'/personalia/no';
+            $leng = strlen($company->api);
+            if (substr($company->api,($leng-1)) == '/') {
+                $urlWs = $company->api . $company->id .'/personalia/no';
+            }else {
+                $urlWs = $company->api . '/' . $company->id .'/personalia/no';
+            }
 
             // Call Web Service
             $ch = curl_init($urlWs);
