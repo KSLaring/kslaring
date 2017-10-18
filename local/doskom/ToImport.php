@@ -21,7 +21,7 @@ $PAGE->set_url('/local/doskom/ToImport.php');
 echo $OUTPUT->header();
 
 try {
-    wsdoskom_cron::cron();
+    //wsdoskom_cron::cron();
     /**
     $criteria = array();
     $criteria['companyId']  = '4515801';
