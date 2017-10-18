@@ -119,9 +119,6 @@ class suspicious {
             // Get plugin info
             $plugin = get_config('local_fellesdata');
 
-            // Max deletec actions
-            $options = array('5','10','20','40','50','75','100','125','150','175','200','250','300','400','500','600','700','800','900','1000');
-
             // Get content
             $content = file_get_contents($file);
 
@@ -130,19 +127,19 @@ class suspicious {
             if ($delete) {
                 switch ($type) {
                     case TRADIS_FS_USERS:
-                        if ($delete >= $options[$plugin->max_users]) {
+                        if ($delete >= $plugin->max_users) {
                             $suspicious = true;
                         }//if_suspicious
 
                         break;
                     case TRADIS_FS_USERS_JOBROLES:
-                        if ($delete >= $options[$plugin->max_comp]) {
+                        if ($delete >= $plugin->max_comp) {
                             $suspicious = true;
                         }//if_suspicious
 
                         break;
                     default:
-                        if ($delete >= $options[$plugin->max_rest]) {
+                        if ($delete >= $plugin->max_rest) {
                             $suspicious = true;
                         }//if_suspicious
 

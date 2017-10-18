@@ -88,7 +88,11 @@ if (($level > 1) && (!$parentid)) {
     $out = get_string('errorpaernt','local_fellesdata',$level);
 }else {
     if (isset($SESSION->fsparents)) {
-        $fsparents = $SESSION->fsparents[$parentid];
+        if (isset($SESSION->fsparents[$parentid])) {
+            $fsparents = $SESSION->fsparents[$parentid];
+        }else {
+            $fsparent = 0;
+        }
     }else {
         $fsparents = 0;
     }
