@@ -47,6 +47,14 @@ $PAGE->set_context($user_context);
 $PAGE->set_heading($SITE->fullname);
 $PAGE->set_title($SITE->fullname);
 $PAGE->set_pagelayout('admin');
+$PAGE->requires->js(new moodle_url('/local/first_access/js/firstaccess.js'));
+
+$stringman = get_string_manager();
+$strings = $stringman->load_component_strings('local_first_access', 'en');
+$PAGE->requires->strings_for_js(array_keys($strings), 'local_first_access');
+
+$strings = $stringman->load_component_strings('local_first_access', 'no');
+$PAGE->requires->strings_for_js(array_keys($strings), 'local_first_access');
 
 // Show form
 $form = new first_access_form(null,$userId);

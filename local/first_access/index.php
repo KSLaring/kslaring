@@ -37,7 +37,7 @@ global $USER,$PAGE,$OUTPUT,$SITE;
 $userId         = required_param('id',PARAM_INT);
 $context        = context_system::instance();
 $url            = new moodle_url('/local/first_access/index.php',array('id'=>$userId));
-$urlCompetence  = new moodle_url('/user/profile/field/competence/competence.php',array('id' => $userId));
+$urlCompetence  = new moodle_url('/user/profile/field/competence/competence.php',array('id' => $userId,'f' => 1));
 $urlUserProfile = new moodle_url('/local/first_access/first_access.php',array('id' => $userId));
 $urlProfile     = $urlUserProfile;
 $user_context   = context_user::instance($userId);
@@ -48,6 +48,14 @@ $PAGE->set_context($user_context);
 $PAGE->set_heading($SITE->fullname);
 $PAGE->set_title($SITE->fullname);
 $PAGE->set_pagelayout('standard');
+$PAGE->requires->js(new moodle_url('/local/first_access/js/firstaccess.js'));
+
+$stringman = get_string_manager();
+$strings = $stringman->load_component_strings('local_first_access', 'en');
+$PAGE->requires->strings_for_js(array_keys($strings), 'local_first_access');
+
+$strings = $stringman->load_component_strings('local_first_access', 'no');
+$PAGE->requires->strings_for_js(array_keys($strings), 'local_first_access');
 
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('welcome_title','local_first_access',$SITE->shortname));
@@ -66,7 +74,7 @@ echo html_writer::start_div();
 
     echo html_writer::start_div('buttons');
         echo '<a href="' . $urlProfile . '">';
-            echo '<button>' . get_string('welcome_btn','local_first_access') . '</button>';
+            echo '<button id="complete">' . get_string('welcome_btn','local_first_access') . '</button>';
         echo '</a>';
     echo html_writer::end_div();//buttons
 echo html_writer::end_div();

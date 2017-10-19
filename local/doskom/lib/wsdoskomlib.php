@@ -247,7 +247,7 @@ class wsdoskom {
                 // DOSKOM log
                 $infolog = new stdClass();
                 $infolog->action      = 'wsLogInUser';
-                $infolog->description = 'User created/Updated. USer --> ' . $userSSO['firstname'] . ' ' . userSSO['lastname'];
+                $infolog->description = 'User created/Updated. USer --> ' . $userSSO['firstname'] . ' ' . $userSSO['lastname'];
                 $infolog->timecreated = $time;
                 // Add log
                 $log[] = $infolog;

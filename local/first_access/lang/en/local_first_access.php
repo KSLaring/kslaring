@@ -37,3 +37,5 @@ $string['welcome_btn']      = 'Complete my profile';
 $string['header_muni']      = 'Municipality';
 
 $string['btn_save']         = 'Save';
+
+$string['completeprofile']  = 'You must complete your profile before continuing';
