@@ -37,3 +37,5 @@ $string['welcome_btn']      = 'Fullfør min personlige brukerprofil';
 $string['header_muni']      = 'Kommune';
 
 $string['btn_save']         = 'Lagre';
+
+$string['completeprofile']  = 'Du må fylle inn din profil';
