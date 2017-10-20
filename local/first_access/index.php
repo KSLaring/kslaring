@@ -37,7 +37,7 @@ global $USER,$PAGE,$OUTPUT,$SITE;
 $userId         = required_param('id',PARAM_INT);
 $context        = context_system::instance();
 $url            = new moodle_url('/local/first_access/index.php',array('id'=>$userId));
-$urlCompetence  = new moodle_url('/user/profile/field/competence/competence.php',array('id' => $userId,'f' => 1));
+$urlCompetence  = new moodle_url('/user/profile/field/competence/competence.php',array('id' => $userId));
 $urlUserProfile = new moodle_url('/local/first_access/first_access.php',array('id' => $userId));
 $urlProfile     = $urlUserProfile;
 $user_context   = context_user::instance($userId);
