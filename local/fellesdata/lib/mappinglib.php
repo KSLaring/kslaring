@@ -715,7 +715,6 @@ class FS_MAPPING {
 
             // SQL Instruction
             $sql = " SELECT     DISTINCT
-                                  fs.id,
                                   fs.stillingskode,
                                   fs.stillingstekst
                      FROM		  {fs_imp_jobroles}	fs
@@ -747,7 +746,7 @@ class FS_MAPPING {
             // Execute
             $sql .= " ORDER BY   fs.stillingskode,fs.stillingstekst ";
 
-            $rdo = $DB->get_records_sql($sql,$params);
+            $rdo = $DB->get_recordset_sql($sql,$params);
             if ($rdo) {
                 foreach ($rdo as $instance) {
                     $fsJobroles[$instance->stillingskode] = $instance->stillingskode . " - " . $instance->stillingstekst;
@@ -789,7 +788,7 @@ class FS_MAPPING {
             $params['job_role'] = $ks_jobrole;
 
             // SQL Instruction
-            $sql = " SELECT   DISTINCT 
+            $sql = " SELECT   DISTINCT
                                 fs.jrcode,
                                 fs.jrname
                      FROM	    {fs_jobroles}	fs
@@ -813,7 +812,7 @@ class FS_MAPPING {
 
             // Execute
             $sql .= " ORDER BY fs.jrcode,fs.jrname ";
-            $rdo = $DB->get_records_sql($sql,$params);
+            $rdo = $DB->get_recordset_sql($sql,$params);
             if ($rdo) {
                 foreach ($rdo as $instance) {
                     $fsJobroles[$instance->jrcode] = $instance->jrcode . " - " . $instance->jrname;
