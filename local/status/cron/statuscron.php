@@ -431,7 +431,10 @@ class STATUS_CRON {
             self::$log    =    array();
 
             // Synchronization FS Companies
-            self::sync_status_fs_organizations($plugin);
+            if (self::sync_status_fs_organizations($plugin)) {
+                // First new companies
+                STATUS::synchronization_status_new_companies($plugin);
+            };
 
             // Write log
             STATUS::write_status_log(self::$log);
@@ -1826,6 +1829,8 @@ class STATUS_CRON {
      * Synchronize last status of fs companies
      *
      * @param           Object  $plugin
+     *
+     * @return                  null
      * @throws                  Exception
      *
      * @creationDate    05/03/2017
@@ -1835,14 +1840,13 @@ class STATUS_CRON {
         /* Variables */
         
         try {
-            // First new companies
-            STATUS::synchronization_status_new_companies($plugin);
-
             // Companies don't exists any more
             self::synchronization_status_companies_no_exist($plugin);
 
             // Existing companies
             self::synchronization_status_existing_companies($plugin);
+
+            return null;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
