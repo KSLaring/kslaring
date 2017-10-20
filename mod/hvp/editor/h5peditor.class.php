@@ -90,6 +90,7 @@ class H5peditor {
         $lid = $libraries[$i]->name . ' ' . $libraries[$i]->majorVersion . '.' . $libraries[$i]->minorVersion;
         if (isset($devLibs[$lid])) {
           // Replace library with devlib
+          $isOld = !empty($libraries[$i]->isOld) && $libraries[$i]->isOld === TRUE;
           $libraries[$i] = (object) array(
             'uberName' => $lid,
             'name' => $devLibs[$lid]['machineName'],
@@ -98,9 +99,11 @@ class H5peditor {
             'minorVersion' => $devLibs[$lid]['minorVersion'],
             'runnable' => $devLibs[$lid]['runnable'],
             'restricted' => $libraries[$i]->restricted,
-            'tutorialUrl' => $libraries[$i]->tutorialUrl,
-            'isOld' => $libraries[$i]->isOld
+            'tutorialUrl' => $libraries[$i]->tutorialUrl
           );
+          if ($isOld) {
+            $libraries[$i]->isOld = TRUE;
+          }
         }
       }
 
@@ -244,6 +247,11 @@ class H5peditor {
   private function processFile(&$params, &$files) {
     if (preg_match('/^https?:\/\//', $params->path)) {
       return; // Skip external files
+    }
+
+    // Remove temporary files suffix
+    if (substr($params->path, -4, 4) === '#tmp') {
+      $params->path = substr($params->path, 0, strlen($params->path) - 4);
     }
 
     // File could be copied from another content folder.
@@ -433,7 +441,9 @@ class H5peditor {
     // Check if user has access to install libraries
     $libraries = array();
     foreach ($cached_libraries as &$result) {
+      // Check if user can install content type
       $result->restricted = !$this->canInstallContentType($result);
+
       // Formats json
       $libraries[] = $this->getCachedLibsMap($result);
     }
@@ -473,6 +483,8 @@ class H5peditor {
    * library to send to the front-end
    */
   public function getCachedLibsMap($cached_library) {
+    $restricted = isset($cached_library->restricted) ? $cached_library->restricted : FALSE;
+
     // Add mandatory fields
     $lib = array(
       'id'              => intval($cached_library->id),
@@ -495,7 +507,8 @@ class H5peditor {
       'owner'           => $cached_library->owner,
       'installed'       => FALSE,
       'isUpToDate'      => FALSE,
-      'restricted'      => isset($cached_library->restricted) ? $cached_library->restricted : FALSE
+      'restricted'      => $restricted,
+      'canInstall'      => !$restricted
     );
 
     // Add optional fields

@@ -65,15 +65,12 @@ H5PEditor.language.core = {
   orderItemDown: 'Flytt element ned',
   removeItem: 'Fjern element',
   importantInstructions: 'Viktige instruksjonar',
+  showImportantInstructions: 'Vis instruksjonar',
   hideImportantInstructions: 'Skjul viktige instruksjonar',
   hide: 'Skjul',
-  example: 'Eksempel'
+  example: 'Eksempel',
   removeItem: 'Remove item',
   hubPanelLabel: 'Select content type',
-  importantInstructions: 'Important instructions',
-  hideImportantInstructions: 'Hide important instructions',
-  hide: 'Hide',
-  example: 'Example',
   createContentTabLabel: 'Create Content',
   uploadTabLabel: 'Upload',
   uploadPlaceholder: 'No file chosen',
@@ -144,5 +141,8 @@ H5PEditor.language.core = {
   nextImage: 'Next image',
   previousImage: 'Previous image',
   screenshots: 'Screenshots',
-  reloadButtonLabel: 'Reload'
+  reloadButtonLabel: 'Reload',
+  videoQuality: 'Navn på videokvalitet',
+  videoQualityDescription: 'Dette navnet hjelper brukeren med å identifisere den aktuelle videokvaliteten. F.eks. 1080p, 720p, HD or Mobile',
+  videoQualityDefaultLabel: 'Kvalitet :index'
 };

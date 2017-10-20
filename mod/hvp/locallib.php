@@ -41,6 +41,8 @@ function hvp_get_core_settings() {
     $basepath = $CFG->httpswwwroot . '/';
     $ajaxpath = "{$basepath}mod/hvp/ajax.php?contextId={$coursecontext->id}&token=";
 
+    $core = \mod_hvp\framework::instance('core');
+
     $settings = array(
         'baseUrl' => $basepath,
         'url' => "{$basepath}pluginfile.php/{$coursecontext->id}/mod_hvp",
@@ -48,41 +50,17 @@ function hvp_get_core_settings() {
         'postUserStatistics' => true,
         'ajax' => array(
             'setFinished' => $ajaxpath . \H5PCore::createToken('result') . '&action=set_finished',
-            'contentUserData' => $ajaxpath . \H5PCore::createToken('contentuserdata') . '&action=contents_user_data&content_id=:contentId&data_type=:dataType&sub_content_id=:subContentId',
+            'contentUserData' => $ajaxpath . \H5PCore::createToken('contentuserdata') .
+                                 '&action=contents_user_data&content_id=:contentId&data_type=:dataType&sub_content_id=:subContentId'
         ),
         'saveFreq' => get_config('mod_hvp', 'enable_save_content_state') ? get_config('mod_hvp', 'content_state_frequency') : false,
         'siteUrl' => $CFG->wwwroot,
-        'l10n' => array(
-            'H5P' => array(
-                'fullscreen' => get_string('fullscreen', 'hvp'),
-                'disableFullscreen' => get_string('disablefullscreen', 'hvp'),
-                'download' => get_string('download', 'hvp'),
-                'copyrights' => get_string('copyright', 'hvp'),
-                'copyrightInformation' => get_string('copyright', 'hvp'),
-                'close' => get_string('close', 'hvp'),
-                'title' => get_string('title', 'hvp'),
-                'author' => get_string('author', 'hvp'),
-                'year' => get_string('year', 'hvp'),
-                'source' => get_string('source', 'hvp'),
-                'license' => get_string('license', 'hvp'),
-                'thumbnail' => get_string('thumbnail', 'hvp'),
-                'noCopyrights' => get_string('nocopyright', 'hvp'),
-                'downloadDescription' => get_string('downloadtitle', 'hvp'),
-                'copyrightsDescription' => get_string('copyrighttitle', 'hvp'),
-                'h5pDescription' => get_string('h5ptitle', 'hvp'),
-                'contentChanged' => get_string('contentchanged', 'hvp'),
-                'startingOver' => get_string('startingover', 'hvp'),
-                'confirmDialogHeader' => get_string('confirmdialogheader', 'hvp'),
-                'confirmDialogBody' => get_string('confirmdialogbody', 'hvp'),
-                'cancelLabel' => get_string('cancellabel', 'hvp'),
-                'confirmLabel' => get_string('confirmlabel', 'hvp')
-            )
-        ),
+        'l10n' => array('H5P' => $core->getLocalization()),
         'user' => array(
             'name' => $USER->firstname . ' ' . $USER->lastname,
             'mail' => $USER->email
         ),
-        'hubIsEnabled' => get_config('mod_hvp', 'hub_is_enabled') ? TRUE : FALSE
+        'hubIsEnabled' => get_config('mod_hvp', 'hub_is_enabled') ? true : false
     );
 
     return $settings;
@@ -132,7 +110,7 @@ function hvp_get_core_assets() {
  * @param int $id Content being edited. null for creating new content
  */
 function hvp_add_editor_assets($id = null) {
-    global $PAGE, $CFG, $COURSE, $DB;
+    global $PAGE, $CFG, $COURSE;
     $settings = \hvp_get_core_assets();
 
     // Use jQuery and styles from core.
@@ -148,39 +126,39 @@ function hvp_add_editor_assets($id = null) {
     // Make sure files are reloaded for each plugin update.
     $cachebuster = \hvp_get_cache_buster();
 
-    // Add editor styles
+    // Add editor styles.
     foreach (H5peditor::$styles as $style) {
         $assets['css'][] = $url . 'editor/' . $style . $cachebuster;
     }
 
-    // Add editor JavaScript
+    // Add editor JavaScript.
     foreach (H5peditor::$scripts as $script) {
-        // We do not want the creator of the iframe inside the iframe
+        // We do not want the creator of the iframe inside the iframe.
         if ($script !== 'scripts/h5peditor-editor.js') {
             $assets['js'][] = $url . 'editor/' . $script . $cachebuster;
         }
     }
 
-    // Add JavaScript with library framework integration (editor part)
+    // Add JavaScript with library framework integration (editor part).
     $PAGE->requires->js(new moodle_url('/mod/hvp/editor/scripts/h5peditor-editor.js' . $cachebuster), true);
     $PAGE->requires->js(new moodle_url('/mod/hvp/editor/scripts/h5peditor-init.js' . $cachebuster), true);
     $PAGE->requires->js(new moodle_url('/mod/hvp/editor.js' . $cachebuster), true);
 
-    // Add translations
+    // Add translations.
     $language = \mod_hvp\framework::get_language();
     $languagescript = "editor/language/{$language}.js";
     if (!file_exists("{$CFG->dirroot}/mod/hvp/{$languagescript}")) {
-      $languagescript = 'editor/language/en.js';
+        $languagescript = 'editor/language/en.js';
     }
     $PAGE->requires->js(new moodle_url('/mod/hvp/' . $languagescript . $cachebuster), true);
 
-    // Add JavaScript settings
+    // Add JavaScript settings.
     $context = \context_course::instance($COURSE->id);
     $filespathbase = "{$CFG->httpswwwroot}/pluginfile.php/{$context->id}/mod_hvp/";
-    $contentvalidator = $core = \mod_hvp\framework::instance('contentvalidator');
+    $contentvalidator = \mod_hvp\framework::instance('contentvalidator');
     $editorajaxtoken = \H5PCore::createToken('editorajax');
     $settings['editor'] = array(
-      'filesPath' => $filespathbase . ($id ? "content/{$id}" : 'editor'),
+      'filesPath' => $filespathbase . 'editor',
       'fileIcon' => array(
         'path' => $url . 'editor/images/binary-file.png',
         'width' => 50,
@@ -190,18 +168,20 @@ function hvp_add_editor_assets($id = null) {
       'libraryUrl' => $url . 'editor/',
       'copyrightSemantics' => $contentvalidator->getCopyrightSemantics(),
       'assets' => $assets,
+      // @codingStandardsIgnoreLine
       'apiVersion' => H5PCore::$coreApi
     );
 
     if ($id !== null) {
-      $settings['editor']['nodeVersionId'] = $id;
+        $settings['editor']['nodeVersionId'] = $id;
 
-      // Find cm context
-      $cm = \get_coursemodule_from_instance('hvp', $id);
-      $context = \context_module::instance($cm->id);
+        // Find cm context.
+        $cm      = \get_coursemodule_from_instance('hvp', $id);
+        $context = \context_module::instance($cm->id);
 
-      // Override content URL
-      $settings['contents']['cid-'.$id]['contentUrl'] = "{$CFG->httpswwwroot}/pluginfile.php/{$context->id}/mod_hvp/content/{$id}";
+        // Override content URL.
+        $contenturl = "{$CFG->httpswwwroot}/pluginfile.php/{$context->id}/mod_hvp/content/{$id}";
+        $settings['contents']['cid-' . $id]['contentUrl'] = $contenturl;
     }
 
     $PAGE->requires->data_for_js('H5PIntegration', $settings, true);
@@ -216,6 +196,7 @@ function hvp_add_editor_assets($id = null) {
  * @throws \coding_exception
  */
 function hvp_admin_add_generic_css_and_js($page, $liburl, $settings = null) {
+    // @codingStandardsIgnoreLine
     foreach (\H5PCore::$adminScripts as $script) {
         $page->requires->js(new moodle_url($liburl . $script . hvp_get_cache_buster()), true);
     }
@@ -236,7 +217,7 @@ function hvp_admin_add_generic_css_and_js($page, $liburl, $settings = null) {
     $page->requires->css(new moodle_url($liburl . 'styles/h5p.css' . hvp_get_cache_buster()));
     $page->requires->css(new moodle_url($liburl . 'styles/h5p-admin.css' . hvp_get_cache_buster()));
 
-    // Add settings:
+    // Add settings.
     $page->requires->data_for_js('h5p', hvp_get_core_settings(), true);
 }
 
@@ -314,7 +295,7 @@ function hvp_content_upgrade_progress($libraryid) {
                 'filtered' => ''
             ));
 
-            // Log content upgrade successful
+            // Log content upgrade successful.
             new \mod_hvp\event(
                     'content', 'upgrade',
                     $id, $DB->get_field_sql("SELECT name FROM {hvp} WHERE id = ?", array($id)),
@@ -380,4 +361,46 @@ function hvp_get_library_upgrade_info($name, $major, $minor) {
     }
 
     return $library;
+}
+
+/**
+ * Check permissions to view given user's results
+ *
+ * @param int $userid Id of the user the results belong to
+ * @param context $context Current context, usually course context
+ *
+ * @return bool true if current user has permission to view given user results
+ */
+function hvp_has_view_results_permission($userid, $context) {
+    global $USER;
+
+    // Check if user can view all results.
+    if (has_capability('mod/hvp:viewallresults', $context)) {
+        return true;
+    }
+
+    // Check if viewing own results, and have permission for it.
+    return $userid === (int) $USER->id ? has_capability('mod/hvp:viewresults', $context) : false;
+}
+
+/**
+ * Require view results capability for this page
+ *
+ * @param int $userid User id who owns results
+ * @param context $context Current context
+ * @param int $redirectcontentid Redirect to this content id if not allowed
+ *  to view own results
+ */
+function hvp_require_view_results_permission($userid, $context, $redirectcontentid = null) {
+    global $USER;
+
+    if (!hvp_has_view_results_permission($userid, $context)) {
+        if ($userid === (int) $USER->id && isset($redirectcontentid)) {
+            // Not allowed to view own results, redirect.
+            redirect(new moodle_url('/mod/hvp/view.php', ['id' => $redirectcontentid]));
+        } else {
+            // Other user's results, require capability to view all results.
+            require_capability('mod/hvp:viewallresults', $context);
+        }
+    }
 }
