@@ -2532,15 +2532,11 @@ class WS_FELLESDATA {
                             $DB->insert_record('report_gen_company_relation',$instanceParent);
                         }else {
                             // Update to nw parent
-                            if (isset($companyInfo->moved)) {
-                                if ($companyInfo->moved) {
-                                    $rdo->parentid   = $companyInfo->parent;
-                                    $rdo->modified   = $time;
+                            $rdo->parentid   = $companyInfo->parent;
+                            $rdo->modified   = $time;
 
-                                    // Execute
-                                    $DB->update_record('report_gen_company_relation',$rdo);
-                                }//if_companyInfo
-                            }//if_moved
+                            // Execute
+                            $DB->update_record('report_gen_company_relation',$rdo);
                         }//if_!rdo
                     }//if_parent
 
