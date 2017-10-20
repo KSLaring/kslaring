@@ -1055,11 +1055,13 @@ class FS_MAPPING {
             // Map/UnMap FS Job Roles
             foreach ($toMap as $fs) {
                 // Get Info FS Job role
-                $rdo = $DB->get_record('fs_imp_jobroles',array('stillingskode' => $fs));
+                $rdo = $DB->get_records('fs_imp_jobroles',array('stillingskode' => $fs));
                 // Mapping
                 if ($rdo) {
+                    foreach ($rdo as $instance) {
+                        self::$function($instance,$ksJobRole);
+                    }
 
-                    self::$function($rdo,$ksJobRole);
                 }//if_rdo
             }//for_fs_jobrole
 
