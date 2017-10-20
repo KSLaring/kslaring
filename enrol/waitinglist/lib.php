@@ -123,6 +123,8 @@ class enrol_waitinglist_plugin extends enrol_plugin {
      */
   
     public function add_course_navigation($instancesnode, stdClass $instance) {
+        global $DB,$USER,$PAGE;
+
         if ($instance->enrol !== 'waitinglist') {
              throw new coding_exception('Invalid enrol instance type!');
         }
@@ -143,7 +145,7 @@ class enrol_waitinglist_plugin extends enrol_plugin {
              * Description
              * Add option to enrol users manually
              */
-            global $DB;
+
             $str_title      = get_string('manual_manage','enrol_waitinglist');
             $managelink = new moodle_url('/enrol/waitinglist/managemanual.php',array('id' => $instance->id,'co' => $instance->courseid));
             $manual_enrol   = navigation_node::create($str_title,
@@ -201,7 +203,6 @@ class enrol_waitinglist_plugin extends enrol_plugin {
                                                           new pix_icon('i/report', $str_title)
                                                          );
 
-            global $PAGE;
             if ($PAGE->url->compare($url, URL_MATCH_BASE)) {
                 $report_invoices->make_active();
             }
@@ -222,12 +223,50 @@ class enrol_waitinglist_plugin extends enrol_plugin {
                                                           new pix_icon('i/report', $str_title)
                                                          );
 
-            global $PAGE;
             if ($PAGE->url->compare($url, URL_MATCH_BASE)) {
                 $approvalRequests->make_active();
             }
             $parent_node->add_node($approvalRequests,'users');
         }//Approval_Requests_Link
+
+        // My bulk reservations
+        // First check if user is enrolled with unnamedbulk method
+        $params = array();
+        $params['courseid']         = $instance->courseid;
+        $params['waitinglistid']    = $instance->id;
+        $params['userid']           = $USER->id;
+
+        // SQL Instruction
+        $sql = " SELECT id
+                 FROM   {enrol_waitinglist_queue} 
+                 WHERE  courseid      = :courseid 
+                    AND waitinglistid = :waitinglistid 
+                    AND userid        = :userid 
+                    AND methodtype like 'unnamedbulk' ";
+
+        $rdo = $DB->get_record_sql($sql,$params);
+        if ($rdo) {
+            $parent_node        = $instancesnode->parent;
+            $parent_node        = $parent_node->parent;
+
+
+            $url = new moodle_url('/enrol/waitinglist/edit_enrolform.php',array('id' => $instance->courseid,'methodtype' => 'unnamedbulk'));
+            $title = get_string('myreservations','enrol_waitinglist');
+            $lnk = "<a href='" . $url . "'>" . $title . "</a>";
+
+            $reservations  = navigation_node::create($title,
+                                                    $url,
+                                                    navigation_node::TYPE_SETTING,'reservations',
+                                                    'approval_requests',
+                                                    new pix_icon('i/report', $title)
+            );
+
+            if ($PAGE->url->compare($url, URL_MATCH_BASE)) {
+                $reservations->make_active();
+            }
+            $parent_node->add_node($reservations);
+        }
+
     }//end of function
 
     public function can_delete_instance($instance) {
