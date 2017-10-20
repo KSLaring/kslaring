@@ -715,6 +715,7 @@ class FS_MAPPING {
 
             // SQL Instruction
             $sql = " SELECT     DISTINCT
+                                  fs.id,
                                   fs.stillingskode,
                                   fs.stillingstekst
                      FROM		  {fs_imp_jobroles}	fs
