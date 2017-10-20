@@ -57,7 +57,7 @@ $string['cancellabel'] = 'Avbryt';
 $string['confirmlabel'] = 'Bekreft';
 $string['noh5ps'] = 'Der finnes ikke noe interaktivt innhold for dette kurset.';
 
-// Update message email for admin
+// Update message email for admin.
 $string['messageprovider:updates'] = 'Varsel om tilgjengelige H5P-oppdateringer';
 $string['updatesavailabletitle'] = 'Nye H5P-oppdateringer er tilgjengelig';
 $string['updatesavailablemsgpt1'] = 'Der er tilgjengelige oppdateringer for H5P-innholdstypene du har i din Moodle-installasjon.';
@@ -82,6 +82,8 @@ $string['enableembed'] = 'Inkluder-knapp';
 $string['enablecopyright'] = 'Opphavsretts-knapp';
 $string['enableabout'] = 'Om H5P-knapp';
 
+$string['sendusagestatistics'] = 'Bidra med statistikk';
+$string['sendusagestatistics_help'] = 'Bruks-statistikk blir sendt til h5p.org for å bedre forstå hvordan H5P brukes og hvor det ka forbedres. Les mer om hvilke <a {$a}>data som blir samlet på h5p.org</a>.';
 $string['enablesavecontentstate'] = 'Lagre tilstanden til innholdet';
 $string['enablesavecontentstate_help'] = 'Automatisk lagring av hva brukeren har svart og hvor langt brukeren har kommet. Dette betyr brukeren kan fortsette der han avsluttet.';
 $string['contentstatefrequency'] = 'Frekvens for tilstandslagring';
@@ -105,6 +107,12 @@ $string['upload'] = 'Last opp';
 $string['installedlibraries'] = 'Installerte bibliotek';
 $string['invalidtoken'] = 'Ufyldig sikkerhetsnøkkel.';
 $string['missingparameters'] = 'Mangler parametre';
+$string['nocontenttype'] = 'Ingen bibliotek var angitt.';
+$string['invalidcontenttype'] = 'Det valgte biblioteket er ikke gyldig.';
+$string['installdenied'] = 'Du har ikke nok rettigheter til å installere biblioteket. Kontakt nettside-administrator.';
+$string['downloadfailed'] = 'Nedlastingen av det angitte biblioteket klarte ikke å fullføre.';
+$string['validationfailed'] = 'Valgt H5P er ikke gyldig.';
+$string['validatingh5pfailed'] = 'Validering av H5P pakken har feilet.';
 
 // H5P library list headers on admin page.
 $string['librarylisttitle'] = 'Tittel';
@@ -152,8 +160,16 @@ $string['nextpage'] = 'Neste side';
 $string['previouspage'] = 'Forrige side';
 $string['search'] = 'Søk';
 $string['empty'] = 'Ingen resultater tilgjengelig';
+$string['viewreportlabel'] = 'Report';
+$string['dataviewreportlabel'] = 'View Answers';
+$string['invalidxapiresult'] = 'No xAPI results were found for the given content and user id combination';
+$string['reportnotsupported'] = 'Not supported';
+$string['reportingscorelabel'] = 'Score:';
+$string['reportingscaledscorelabel'] = 'Gradebook score:';
+$string['reportingscoredelimiter'] = 'out of';
+$string['reportingscaledscoredelimiter'] = ',';
 
-// Editor
+// Editor.
 $string['javascriptloading'] = 'Venter på JavaScript...';
 $string['action'] = 'Handling';
 $string['upload'] = 'Laste opp';
@@ -169,26 +185,27 @@ $string['missingcontentuserdata'] = 'Feil: Kunne ikke finne innholdsbrukerdata';
 $string['maximumgrade'] = 'Maximum grade';
 $string['maximumgradeerror'] = 'Please enter a valid positive integer as the max points available for this activity';
 
-// Capabilities
+// Capabilities.
 $string['hvp:addinstance'] = 'Legg til en ny H5P-aktivitet';
 $string['hvp:restrictlibraries'] = 'Begrense et H5P-bibliotek';
 $string['hvp:updatelibraries'] = 'Oppdatere versjonen til et H5P-bibliotek';
 $string['hvp:userestrictedlibraries'] = 'Bruke begrenset H5P-bibliotek';
 $string['hvp:savecontentuserdata'] = 'Lagre H5P-brukerdata';
 $string['hvp:saveresults'] = 'Lagre resultater for H5P-innhold';
-$string['hvp:viewresults'] = 'Vise resultater for H5P-innhold';
+$string['hvp:viewresults'] = 'Vis resultater for eget H5P-innhold';
+$string['hvp:viewallresults'] = 'Vis resultater for alle brukeres H5P-innhold';
 $string['hvp:getcachedassets'] = 'Tilgang til bufret H5P-innholdsressurser';
 $string['hvp:getcontent'] = 'Tilgang til innholdet til H5P-fil i kurs';
 $string['hvp:getexport'] = 'Tilgang til eksportfil fra H5P i kurs';
 
-// Capabilities error messages
+// Capabilities error messages.
 $string['nopermissiontoupgrade'] = 'Du har ikke tillatelse til å oppgradere bibliotek.';
 $string['nopermissiontorestrict'] = 'Du har ikke tillatelse til å begrense tilgang til bibliotek.';
 $string['nopermissiontosavecontentuserdata'] = 'Du har ikke tillatelse til å lagre brukerdata.';
 $string['nopermissiontosaveresult'] = 'Du har ikke tillatelse til å lagre resultater for dette innholdet.';
 $string['nopermissiontoviewresult'] = 'Du har ikke tillatelse til å se resultater for dette innholdet.';
 
-// Editor translations
+// Editor translations.
 $string['noziparchive'] = 'PHP-versjonen du bruker støtter ikke ZipArchive.';
 $string['noextension'] = 'Fila du lastet opp er ikke en gyldig H5P (Den har ikke .h5p som filendelse)';
 $string['nounzip'] = 'Fila du lastet opp er ikke en gyldig H5P (Jeg klarer ikke å unzippe den)';
@@ -222,6 +239,27 @@ $string['invalidfile'] = 'Fila "{$a->%filename}" er ikke tillatt. Bare filer med
 $string['invalidmultiselectoption'] = 'Ugyldig valg gjort i flervalg.';
 $string['invalidselectoption'] = 'Ugyldig valg gjort.';
 $string['invalidsemanticstype'] = 'Intern H5P-feil: ukjent innholdstype "{$a->@type}" i semantikken. Fjerner det aktuelle innholdet!';
+$string['unabletocreatedir'] = 'Ikke istand til å opprette katalog.';
+$string['unabletogetfieldtype'] = 'Ikke istand til å hente felt-type.';
+$string['filetypenotallowed'] = 'Filtypen er ikke tillatt.';
+$string['invalidfieldtype'] = 'Ugyldig felt-type.';
+$string['invalidimageformat'] = 'Ugyldig bidlefilformat. Bruk jpg, png eller gif.';
+$string['filenotimage'] = 'Fila er ikke et bilde.';
+$string['invalidaudioformat'] = 'Ugyldig lydfilformat. Bruk mp3 eller wav.';
+$string['invalidvideoformat'] = 'Ugyldig videofilformat. Bruk mp4 eller webm.';
+$string['couldnotsave'] = 'Klarte ikke å lagre fila.';
+$string['couldnotcopy'] = 'Klarte ikke å kopiere fila.';
+
+// Welcome messages.
+$string['welcomeheader'] = 'Welcome to the world of H5P!';
+$string['welcomegettingstarted'] = 'To get started with H5P and Moodle take a look at our <a {$a->moodle_tutorial}>tutorial</a> and check out the <a {$a->example_content}>example content</a> at H5P.org for inspiration.';
+$string['welcomecommunity'] = 'We hope you will enjoy H5P and get engaged in our growing community through our <a {$a->forums}>forums</a> and chat room <a {$a->gitter}>H5P at Gitter</a>';
+$string['welcomecontactus'] = 'If you have any feedback, don\'t hesitate to <a {$a}>contact us</a>. We take feedback very seriously and are dedicated to making H5P better every day!';
+$string['missingmbstring'] = 'PHP-utvidelsen mbstring mangler. H5P trenger denne for å kunne virke';
+$string['wrongversion'] = 'En ugyldig versjon av H5P-biblioteket {$a->%machineName} er brukt i innholdet. Innholdet bruker {$a->%contentLibrary}, mens det skal bruke {$a->%semanticsLibrary}.';
+$string['invalidlibrary'] = 'H5P-biblioteket {$a->%library} brukt i innholdet er ugyldig';
+
+// Licensing.
 $string['copyrightinfo'] = 'Opphavsrettsinformasjon';
 $string['years'] = 'År';
 $string['undisclosed'] = 'Undisclosed';
@@ -236,22 +274,25 @@ $string['pd'] = 'Public Domain';
 $string['pddl'] = 'Public Domain Dedication and Licence';
 $string['pdm'] = 'Public Domain Mark';
 $string['copyrightstring'] = 'Opphavsrett';
-$string['unabletocreatedir'] = 'Ikke istand til å opprette katalog.';
-$string['unabletogetfieldtype'] = 'Ikke istand til å hente felt-type.';
-$string['filetypenotallowed'] = 'Filtypen er ikke tillatt.';
-$string['invalidfieldtype'] = 'Ugyldig felt-type.';
-$string['invalidimageformat'] = 'Ugyldig bidlefilformat. Bruk jpg, png eller gif.';
-$string['filenotimage'] = 'Fila er ikke et bilde.';
-$string['invalidaudioformat'] = 'Ugyldig lydfilformat. Bruk mp3 eller wav.';
-$string['invalidvideoformat'] = 'Ugyldig videofilformat. Bruk mp4 eller webm.';
-$string['couldnotsave'] = 'Klarte ikke å lagre fila.';
-$string['couldnotcopy'] = 'Klarte ikke å kopiere fila.';
-
-// Welcome messages
-$string['welcomeheader'] = 'Welcome to the world of H5P!';
-$string['welcomegettingstarted'] = 'To get started with H5P and Moodle take a look at our <a {$a->moodle_tutorial}>tutorial</a> and check out the <a {$a->example_content}>example content</a> at H5P.org for inspiration.';
-$string['welcomecommunity'] = 'We hope you will enjoy H5P and get engaged in our growing community through our <a {$a->forums}>forums</a> and chat room <a {$a->gitter}>H5P at Gitter</a>';
-$string['welcomecontactus'] = 'If you have any feedback, don\'t hesitate to <a {$a}>contact us</a>. We take feedback very seriously and are dedicated to making H5P better every day!';
-$string['missingmbstring'] = 'PHP-utvidelsen mbstring mangler. H5P trenger denne for å kunne virke';
-$string['wrongversion'] = 'En ugyldig versjon av H5P-biblioteket {$a->%machineName} er brukt i innholdet. Innholdet bruker {$a->%contentLibrary}, mens det skal bruke {$a->%semanticsLibrary}.';
-$string['invalidlibrary'] = 'H5P-biblioteket {$a->%library} brukt i innholdet er ugyldig';
+$string['by'] = 'by';
+$string['showmore'] = 'Show more';
+$string['showless'] = 'Show less';
+$string['sublevel'] = 'Sublevel';
+$string['noversionattribution'] = 'Attribution';
+$string['noversionattributionsa'] = 'Attribution-ShareAlike';
+$string['noversionattributionnd'] = 'Attribution-NoDerivs';
+$string['noversionattributionnc'] = 'Attribution-NonCommercial';
+$string['noversionattributionncsa'] = 'Attribution-NonCommercial-ShareAlike';
+$string['noversionattributionncnd'] = 'Attribution-NonCommercial-NoDerivs';
+$string['licenseCC40'] = '4.0 International';
+$string['licenseCC30'] = '3.0 Unported';
+$string['licenseCC25'] = '2.5 Generic';
+$string['licenseCC20'] = '2.0 Generic';
+$string['licenseCC10'] = '1.0 Generic';
+$string['licenseGPL'] = 'General Public License';
+$string['licenseV3'] = 'Version 3';
+$string['licenseV2'] = 'Version 2';
+$string['licenseV1'] = 'Version 1';
+$string['licenseCC010'] = 'CC0 1.0 Universal (CC0 1.0) Public Domain Dedication';
+$string['licenseCC010U'] = 'CC0 1.0 Universal';
+$string['licenseversion'] = 'License Version';
