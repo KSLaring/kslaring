@@ -155,8 +155,8 @@ class enrolmethodmanual extends \enrol_waitinglist\method\enrolmethodbase{
             $oldInstance = $DB->get_record_sql($sql,$params);
             if ($oldInstance) {
                 // Create a new one from the old one
-                $newInstance->status           = $oldInstance->status;
-                $newInstance->emailalert       = $oldInstance->emailalert;
+                $newInstance->status            = $oldInstance->status;
+                $newInstance->emailalert        = $oldInstance->emailalert;
                 $newInstance->maxseats          = $oldInstance->maxseats;
                 $newInstance->cost              = $oldInstance->cost;
                 $newInstance->currency          = $oldInstance->currency;
@@ -191,10 +191,84 @@ class enrolmethodmanual extends \enrol_waitinglist\method\enrolmethodbase{
                 // Execute
                 $newInstance->id = $DB->insert_record('enrol_waitinglist_method',$newInstance);
             }//if_oldInstance
+
+            // Restore queue waiting list instance
+            self::restore_waiting_queue_instance($oldWaitId,$oldCourse,$newWaitId,$courseId);
+
         }catch (\Exception $ex) {
             throw $ex;
         }//try_catch
     }//restore_instance
+
+    /**
+     * Description
+     * Restore the waiting list queue
+     *
+     * @param           $oldwid
+     * @param           $oldco
+     * @param           $newwid
+     * @param           $coid
+     *
+     * @throws          \Exception
+     *
+     * @creationDate    20/10/2017
+     * @author          eFaktor     (fbv)
+     */
+    private static function restore_waiting_queue_instance($oldwid,$oldco,$newwid,$coid) {
+        /* Variables */
+        global $DB;
+        $old    = null;
+        $params = null;
+        $time   = null;
+
+        try {
+            // Local time
+            $time = time();
+
+            // Old instance
+            $params = array();
+            $params['waitinglistid'] = $oldwid;
+            $params['courseid']      = $oldco;
+
+            // SQL Instruction
+            $sql = " SELECT	ewq.userid,
+                            ewq.companyid,
+                            ewq.queueno,
+                            ewq.methodtype,
+                            ewq.seats,
+                            ewq.allocseats,
+                            ewq.confirmedseats,
+                            ewq.enroledseats,
+                            ewq.offqueue,
+                            ewq.customint1,
+                            ewq.customint2,
+                            ewq.customint3,
+                            ewq.customtext1,
+                            ewq.customtext2,
+                            ewq.customtext3
+                     FROM	{enrol_waitinglist_queue}		ewq
+                     WHERE	ewq.methodtype  like '%manual%'
+                        AND ewq.courseid	 	= :courseid
+                        AND	ewq.waitinglistid 	= :waitinglistid 
+                        AND ewq.queueno         = '99999'";
+
+            // Execute
+            $rdo = $DB->get_records_sql($sql,$params);
+            if ($rdo) {
+                foreach ($rdo as $instance) {
+                    $instance->courseid      = $coid;
+                    $instance->waitinglistid = $newwid;
+                    $instance->timemodified  = $time;
+                    $instance->timecreated   = $time;
+
+                    // Insert
+                    $DB->insert_record('enrol_waitinglist_queue',$instance);
+                }//for_rdo
+            }//if_Rdo
+        }catch (\Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//restore_waiting_queue_instance
 
     /**
      * Description

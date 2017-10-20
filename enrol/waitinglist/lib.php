@@ -556,6 +556,7 @@ class enrol_waitinglist_plugin extends enrol_plugin {
             $userMail = get_complete_user_data('id', $userid);
             $this->email_welcome_message($instance, $userMail);
         }
+
         /**
          * @updateDate  @17/02/2016
          * @author      eFaktor     (fbv)
@@ -1780,11 +1781,7 @@ class enrol_waitinglist_plugin extends enrol_plugin {
      * @param int $userid
      */
     public function restore_user_enrolment(restore_enrolments_structure_step $step, $data, $instance, $userid, $oldinstancestatus) {
-        global $DB,$CFG;
-
-        /* Log  */
-        $dbLog = userdate(time(),'%d.%m.%Y', 99, false). ' HOLA CARACOLA  . ' . "\n";
-        error_log($dbLog, 3, $CFG->dataroot . "/restore_paqui.log");
+        global $DB;
 
         // Note: manual enrolment is a bit tricky because other types may be converted to waitinglist enrolments,
         //       and waitinglist is restricted to one enrolment per user. Waitinglist is based in manual, so 

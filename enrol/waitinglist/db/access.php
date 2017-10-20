@@ -79,12 +79,12 @@ $capabilities = array(
     ),
 
     /* Unenrol self - watch out for data loss. */
-    //'enrol/waitinglist:unenrolself' => array(
-    //    'captype' => 'write',
-    //    'contextlevel' => CONTEXT_COURSE,
-    //    'archetypes' => array(
-    //    )
-    //),
+    'enrol/waitinglist:unenrolself' => array(
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_COURSE,
+        'archetypes' => array(
+        )
+    ),
 	
 	 'enrol/waitinglist:canbulkenrol' => array(
         'riskbitmask' => RISK_SPAM,
