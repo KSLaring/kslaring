@@ -555,12 +555,13 @@ class STATUS_CRON {
             $sql = " SELECT	      fs.companyid as 'fscompany',
                                   ks.companyid as 'kscompany'
                      FROM		  {fs_company}	  fs
-                        JOIN	  {ks_company}	  ks   ON   ks.name			= fs.name
-                        LEFT JOIN {ksfs_company}  ksfs ON   ksfs.fscompany 	= fs.companyid 
-                                                       AND  ksfs.kscompany  = ks.companyid
-                     WHERE 	      ksfs.id IS NULL
-                          AND     fs.synchronized = 1
-                     ORDER BY     ks.companyid,fs.companyid ";
+                        JOIN	  {ks_company}	  ks    ON   ks.name			= fs.name
+                                                        AND  ks.hierarchylevel  = fs.level
+                        LEFT JOIN {ksfs_company}  ksfs  ON   ksfs.fscompany 	= fs.companyid 
+                                                        AND  ksfs.kscompany     = ks.companyid
+                     WHERE 		fs.synchronized = 1
+                        AND 	ksfs.id IS NULL
+                     ORDER BY   fs.companyid,ks.companyid ";
 
             // Execute
             $rdo = $DB->get_records_sql($sql);
