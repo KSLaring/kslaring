@@ -2265,9 +2265,6 @@ class STATUS_CRON {
 
             // Format data
             if ($response === false) {
-                // Send notification
-                FS_CRON::send_notifications_service($plugin,'STATUS',$service);
-
                 // Log
                 $infolog = new stdClass();
                 $infolog->action 		= 'Services: ' . $service;
@@ -2284,14 +2281,8 @@ class STATUS_CRON {
                 // Add log
                 self::$log[] = $infolog;
 
-                // Send notification
-                FS_CRON::send_notifications_service($plugin,'STATUS',$service);
-
                 throw new Exception('ERROR RESPONSE STATUS - NULL OBJECT ');
             }else if (isset($response->status) && $response->status != "200") {
-                // Send notification
-                FS_CRON::send_notifications_service($plugin,'STATUS',$service);
-
                 // Log
                 $infolog = new stdClass();
                 $infolog->action 		= 'Services: ' . $service;
@@ -2304,9 +2295,6 @@ class STATUS_CRON {
                 // Check the file content
                 $index = strpos($response,'html');
                 if ($index) {
-                    // Send notification
-                    FS_CRON::send_notifications_service($plugin,'STATUS',$service);
-
                     // Log
                     $infolog = new stdClass();
                     $infolog->action 		= 'Services: ' . $service;
@@ -2324,9 +2312,6 @@ class STATUS_CRON {
                         $infolog->description 	= 'ERROR RESPONSE STATUS - EMPTY FILE ';
                         // Add log
                         self::$log[] = $infolog;
-
-                        // Send notification
-                        FS_CRON::send_notifications_service($plugin,'STATUS',$service);
 
                         throw new Exception('ERROR RESPONSE STATUS - EMPTY FILE');
                     }else {
@@ -2356,8 +2341,10 @@ class STATUS_CRON {
                 }//if_else_index
             }//if_response
         }catch (Exception $ex) {
+            // Send notification
+            FS_CRON::send_notifications_service($plugin,'STATUS',$service);
             FS_CRON::deactivate_cron('status');
-            
+
             throw $ex;
         }//try_catch
     }//process_tradis_service
