@@ -21,7 +21,7 @@ Class Unenrol_Waiting {
      * @param           $courseId
      * @param           $waitingId
      *
-     * @return          null|stdClass
+     * @return      null|string
      * @throws          Exception
      *
      * @creationDate    02/10/2016
