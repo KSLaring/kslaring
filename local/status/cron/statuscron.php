@@ -2265,7 +2265,6 @@ class STATUS_CRON {
             if ($response === false) {
                 // Send notification
                 FS_CRON::send_notifications_service($plugin,'STATUS',$service);
-                FS_CRON::deactivate_cron('status');
 
                 // Log
                 $infolog = new stdClass();
@@ -2274,7 +2273,7 @@ class STATUS_CRON {
                 // Add log
                 self::$log[] = $infolog;
 
-                return null;
+                throw new Exception('ERROR RESPONSE STATUS - NULL OBJECT ');
             }else if ($response == null){
                 // Log
                 $infolog = new stdClass();
@@ -2285,13 +2284,11 @@ class STATUS_CRON {
 
                 // Send notification
                 FS_CRON::send_notifications_service($plugin,'STATUS',$service);
-                FS_CRON::deactivate_cron('status');
 
-                return null;
+                throw new Exception('ERROR RESPONSE STATUS - NULL OBJECT ');
             }else if (isset($response->status) && $response->status != "200") {
                 // Send notification
                 FS_CRON::send_notifications_service($plugin,'STATUS',$service);
-                FS_CRON::deactivate_cron('status');
 
                 // Log
                 $infolog = new stdClass();
@@ -2300,14 +2297,13 @@ class STATUS_CRON {
                 // Add log
                 self::$log[] = $infolog;
 
-                return null;
+                throw new Exception('ERROR RESPONSE STATUS ' . $response->message);
             }else {
                 // Check the file content
                 $index = strpos($response,'html');
                 if ($index) {
                     // Send notification
                     FS_CRON::send_notifications_service($plugin,'STATUS',$service);
-                    FS_CRON::deactivate_cron('status');
 
                     // Log
                     $infolog = new stdClass();
@@ -2316,7 +2312,7 @@ class STATUS_CRON {
                     // Add log
                     self::$log[] = $infolog;
 
-                    return null;
+                    throw new Exception('ERROR RESPONSE STATUS ' . $response);
                 }else {
                     $index = strpos($response,'changeType');
                     if (!$index) {
@@ -2329,9 +2325,8 @@ class STATUS_CRON {
 
                         // Send notification
                         FS_CRON::send_notifications_service($plugin,'STATUS',$service);
-                        FS_CRON::deactivate_cron('status');
 
-                        return null;
+                        throw new Exception('ERROR RESPONSE STATUS - EMPTY FILE');
                     }else {
                         // Clean all response
                         $path = $dir . '/' . $service . '.txt';
@@ -2359,6 +2354,7 @@ class STATUS_CRON {
                 }//if_else_index
             }//if_response
         }catch (Exception $ex) {
+
             throw $ex;
         }//try_catch
     }//process_tradis_service
