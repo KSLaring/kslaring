@@ -1156,8 +1156,7 @@ class FSKS_COMPANY {
                      FROM	  {fs_imp_company}	fs_imp	
                         JOIN  {fs_company}		fs      ON  fs.companyid  = fs_imp.org_enhet_id
                                                         AND fs.level 	  = fs_imp.org_nivaa
-                     WHERE	  fs_imp.imported = :imported
-                        AND	  fs_imp.action   = :action ";
+                     WHERE	  fs_imp.imported = :imported ";
 
             // Execute
             $rdo = $DB->get_records_sql($sql,$params);
