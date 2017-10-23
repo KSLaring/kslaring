@@ -2283,6 +2283,8 @@ class STATUS_CRON {
                 // Add log
                 self::$log[] = $infolog;
 
+                // Send notification
+                FS_CRON::send_notifications_service($plugin,'STATUS',$service);
                 FS_CRON::deactivate_cron('status');
 
                 return null;
@@ -2325,6 +2327,8 @@ class STATUS_CRON {
                         // Add log
                         self::$log[] = $infolog;
 
+                        // Send notification
+                        FS_CRON::send_notifications_service($plugin,'STATUS',$service);
                         FS_CRON::deactivate_cron('status');
 
                         return null;
