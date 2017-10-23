@@ -2264,8 +2264,6 @@ class STATUS_CRON {
             fwrite($responseFile,$response);
             fclose($responseFile);
 
-            $response = null;
-
             // Format data
             if ($response === false) {
                 // Log
