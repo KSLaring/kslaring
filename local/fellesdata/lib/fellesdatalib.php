@@ -1708,7 +1708,7 @@ class FSKS_COMPANY {
 
             // Synchronized
             if ($sync) {
-                $instance = $DB->get_record('fs_imp_company',array('org_enhet_id' => $impKey,'org_nivaa' => $companyKSFS->level),'id,imported');
+                $instance = $DB->get_record('fs_imp_company',array('org_enhet_id' => $impKey,'org_nivaa' => $companyKSFS->level,'action' => $companyKSFS->action),'id,imported');
                 if ($instance) {
                     $instance->imported         = 1;
                     $instance->timemodified     = $time;
