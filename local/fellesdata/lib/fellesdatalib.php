@@ -1046,6 +1046,74 @@ class FSKS_COMPANY {
 
     /**
      * Description
+     * Get companies to delete
+     *
+     * @param           $start
+     * @param           $end
+     *
+     * @return          array
+     * @throws          Exception
+     *
+     * @creationDate    23/10/2017
+     * @author          eFaktor     (fbv)
+     */
+    public static function get_delete_companiesfs_to_synchronize($start,$end) {
+        /* Variables    */
+        global $DB;
+        $infoCompany    = null;
+        $params         = null;
+        $sql            = null;
+        $rdo            = null;
+        $toSynchronize  = array();
+
+        try {
+            // Search Criteria
+            $params = array();
+            $params['action']       = 2;
+            $params['imported']     = 0;
+
+            // SQL Instruction
+            $sql = " SELECT DISTINCT 
+                              fs.companyid                                      as 'fsid',
+                              fk.kscompany                                      as 'ksid',
+                              IF(fs.level > 1,TRIM(fs.name), TRIM(ks_pa.name))  as 'name',
+                              fs.level,
+                              fs.parent,
+                              ks_pa.industrycode                                as 'industry',
+                              IF(fs.privat,0,1) 	                            as 'public',
+                              TRIM(IF(fs.ansvar != '',fs.ansvar,0))             as 'ansvar',
+                              TRIM(IF(fs.tjeneste != '',fs.tjeneste,0))         as 'tjeneste',
+                              TRIM(IF(fs.adresse1 != '',fs.adresse1,0))         as 'adresse1',
+                              TRIM(IF(fs.adresse2 != '',fs.adresse2,0))         as 'adresse2',
+                              TRIM(IF(fs.adresse3 != '',fs.adresse3,0))         as 'adresse3',
+                              TRIM(IF(fs.postnr  != '',fs.postnr,0))            as 'postnr',
+                              TRIM(IF(fs.poststed != '',fs.poststed,0))         as 'poststed',
+                              TRIM(IF(fs.epost != '',fs.epost,0))               as 'epost',
+                              fs_imp.action,
+                              '0'                                               as 'moved'
+                     FROM	  {fs_company}		fs
+                        JOIN  {fs_imp_company}	fs_imp 	ON 	fs_imp.org_enhet_id = fs.companyid
+                                                        AND fs_imp.imported     = :imported
+                                                        AND	fs_imp.action		= :action
+                        -- INFO KS
+                        JOIN  {ksfs_company}	fk 		ON 	fk.fscompany 	    = fs.companyid
+                        -- INFO PARENT
+                        JOIN  {ks_company}		ks_pa	ON 	ks_pa.companyid     = fk.kscompany ";
+
+            // Execute
+            $rdo = $DB->get_records_sql($sql,$params,$start,$end);
+            if ($rdo) {
+                $toSynchronize = json_encode($rdo);
+            }//if_rdo
+
+            return array($toSynchronize,$rdo);
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//get_delete_companiesfs_to_synchronize
+
+    /**
+     * Description
      * Get total of companies mapped that have to be synchronized
      *
      * @param           $status
@@ -1105,6 +1173,53 @@ class FSKS_COMPANY {
 
     /**
      * Description
+     * Get total companies that have to be deleted
+     *
+     * @return          null
+     * @throws          Exception
+     *
+     * @creationDate    23/10/2017
+     * @author          eFaktor     (fbv)
+     */
+    public static function get_total_delete_companiesfs_to_synchornize() {
+        /* Variables */
+        global $DB;
+        $rdo    = null;
+        $sql    = null;
+        $params = null;
+
+        try {
+            // Search criteria
+            $params = array();
+            $params['action']       = DELETE;
+            $params['imported']     = 0;
+
+            // SQL Instruction
+            $sql = " SELECT DISTINCT 
+                              count(DISTINCT fs.id)	as 'total'
+                     FROM	  {fs_company}		fs
+                        JOIN  {fs_imp_company}	fs_imp 	ON 	fs_imp.org_enhet_id = fs.companyid
+                                                        AND fs_imp.imported     = :imported
+                                                        AND fs_imp.action 		= :action
+                        -- INFO KS
+                        JOIN  {ksfs_company}	fk 		ON 	fk.fscompany 	    = fs.companyid
+                        -- INFO PARENT
+                        JOIN  {ks_company}		ks_pa	ON 	ks_pa.companyid     = fk.kscompany ";
+
+            // Execute
+            $rdo = $DB->get_record_sql($sql,$params);
+            if ($rdo) {
+                return $rdo->total;
+            }else {
+                return null;
+            }//if_else_rdo
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//get_total_delete_companiesfs_to_synchornize
+
+    /**
+     * Description
      * Apply the changes coming inside the same level
      *
      * @throws          Exception
@@ -1132,7 +1247,7 @@ class FSKS_COMPANY {
 
             // Search criteria
             $params = array();
-            $params['action']   = UPDATE;
+            $params['action']   = DELETE;
             $params['imported'] = 0;
 
             // SQL Instruction
@@ -1156,7 +1271,8 @@ class FSKS_COMPANY {
                      FROM	  {fs_imp_company}	fs_imp	
                         JOIN  {fs_company}		fs      ON  fs.companyid  = fs_imp.org_enhet_id
                                                         AND fs.level 	  = fs_imp.org_nivaa
-                     WHERE	  fs_imp.imported = :imported ";
+                     WHERE	  fs_imp.imported = :imported 
+                        AND   fs_imp.action != action ";
 
             // Execute
             $rdo = $DB->get_records_sql($sql,$params);
