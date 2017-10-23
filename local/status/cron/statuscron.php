@@ -39,6 +39,7 @@ define('TEST_STS_SYNC_USER_COMP',10);
 
 class STATUS_CRON {
     protected static $log           = null;
+    protected static $stopped       = null;
 
     /***********/
     /* PUBLIC  */
@@ -422,62 +423,64 @@ class STATUS_CRON {
         /* Variables */
 
         try {
-            // Synchronization FS Users
-            self::sync_status_users_accounts($plugin,$industry);
+            if (!self::$stopped) {
+                // Synchronization FS Users
+                self::sync_status_users_accounts($plugin,$industry);
 
-            // Write log
-            STATUS::write_status_log(self::$log);
-            // Start log
-            self::$log    =    array();
+                // Write log
+                STATUS::write_status_log(self::$log);
+                // Start log
+                self::$log    =    array();
 
-            // Synchronization FS Companies
-            if (self::sync_status_fs_organizations($plugin)) {
-                // First new companies
-                STATUS::synchronization_status_new_companies($plugin);
-            };
+                // Synchronization FS Companies
+                if (self::sync_status_fs_organizations($plugin)) {
+                    // First new companies
+                    STATUS::synchronization_status_new_companies($plugin);
+                };
 
-            // Write log
-            STATUS::write_status_log(self::$log);
-            // Start log
-            self::$log    =    array();
+                // Write log
+                STATUS::write_status_log(self::$log);
+                // Start log
+                self::$log    =    array();
 
-            // Synchronization FS Job roles
-            self::sync_status_fs_jobroles($plugin);
+                // Synchronization FS Job roles
+                self::sync_status_fs_jobroles($plugin);
 
-            // Write log
-            STATUS::write_status_log(self::$log);
-            // Start log
-            self::$log    =    array();
+                // Write log
+                STATUS::write_status_log(self::$log);
+                // Start log
+                self::$log    =    array();
 
-            // Synchronization FS Managers/Reporters to delete
-            // Managers
-            self::sync_status_delete_managers_reporters($plugin,MANAGERS,1);
-            self::sync_status_delete_managers_reporters($plugin,MANAGERS,2);
-            self::sync_status_delete_managers_reporters($plugin,MANAGERS,3);
-            // Reporters
-            self::sync_status_delete_managers_reporters($plugin,REPORTERS,1);
-            self::sync_status_delete_managers_reporters($plugin,REPORTERS,2);
-            self::sync_status_delete_managers_reporters($plugin,REPORTERS,3);
+                // Synchronization FS Managers/Reporters to delete
+                // Managers
+                self::sync_status_delete_managers_reporters($plugin,MANAGERS,1);
+                self::sync_status_delete_managers_reporters($plugin,MANAGERS,2);
+                self::sync_status_delete_managers_reporters($plugin,MANAGERS,3);
+                // Reporters
+                self::sync_status_delete_managers_reporters($plugin,REPORTERS,1);
+                self::sync_status_delete_managers_reporters($plugin,REPORTERS,2);
+                self::sync_status_delete_managers_reporters($plugin,REPORTERS,3);
 
-            // Write log
-            STATUS::write_status_log(self::$log);
-            // Start log
-            self::$log    =    array();
+                // Write log
+                STATUS::write_status_log(self::$log);
+                // Start log
+                self::$log    =    array();
 
-            // Synchronization FS Managers/Reporters
-            self::sync_status_managers_reporters($plugin);
+                // Synchronization FS Managers/Reporters
+                self::sync_status_managers_reporters($plugin);
 
-            STATUS::synchronize_managers_reporters_deleted(MANAGERS);
-            STATUS::synchronize_managers_reporters_deleted(REPORTERS);
+                STATUS::synchronize_managers_reporters_deleted(MANAGERS);
+                STATUS::synchronize_managers_reporters_deleted(REPORTERS);
 
-            // Synchronization FS User Competence to Delete
-            self::sync_status_delete_competence($plugin);
+                // Synchronization FS User Competence to Delete
+                self::sync_status_delete_competence($plugin);
 
-            // Synchronization FS User Competence
-            self::sync_status_competence($plugin);
+                // Synchronization FS User Competence
+                self::sync_status_competence($plugin);
 
-            // Write log
-            STATUS::write_status_log(self::$log);
+                // Write log
+                STATUS::write_status_log(self::$log);
+            }
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -2341,10 +2344,21 @@ class STATUS_CRON {
                 }//if_else_index
             }//if_response
         }catch (Exception $ex) {
+            self::$stopped = true;
+
             // Send notification
             FS_CRON::send_notifications_service($plugin,'STATUS',$service);
             FS_CRON::deactivate_cron('status');
 
+            // Log
+            $infolog = new stdClass();
+            $infolog->action 		= 'Services: ' . $service;
+            $infolog->description 	= 'ERROR STATUS SYNC STOPPED ';
+            // Add log
+            self::$log[] = $infolog;
+            // Write log
+            STATUS::write_status_log(self::$log);
+            
             throw $ex;
         }//try_catch
     }//process_tradis_service
