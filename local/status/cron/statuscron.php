@@ -2261,6 +2261,8 @@ class STATUS_CRON {
             fwrite($responseFile,$response);
             fclose($responseFile);
 
+            $response = null;
+
             // Format data
             if ($response === false) {
                 // Send notification
@@ -2325,7 +2327,7 @@ class STATUS_CRON {
 
                         // Send notification
                         FS_CRON::send_notifications_service($plugin,'STATUS',$service);
-                        
+
                         throw new Exception('ERROR RESPONSE STATUS - EMPTY FILE');
                     }else {
                         // Clean all response
