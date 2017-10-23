@@ -2356,9 +2356,7 @@ class STATUS_CRON {
             $infolog->description 	= 'ERROR STATUS SYNC STOPPED ';
             // Add log
             self::$log[] = $infolog;
-            // Write log
-            STATUS::write_status_log(self::$log);
-            
+
             throw $ex;
         }//try_catch
     }//process_tradis_service
