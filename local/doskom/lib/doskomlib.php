@@ -154,9 +154,9 @@ class doskom {
             }//if_noerror
 
             // DOSKOM Log
-            $log->action      = 'import_doskom';
-            $log->description = 'Finish importing data for company ' . $company->id .'.';
-            $log->timecreated = time();
+            $infolog->action      = 'import_doskom';
+            $infolog->description = 'Finish importing data for company ' . $company->id .'.';
+            $infolog->timecreated = time();
             // Add log
             $log[] = $infolog;
 
@@ -320,7 +320,7 @@ class doskom {
                     $newuser->source       = $label;
 
                     // Check if the user already exists
-                    $user_id = self::exists_user($newuser->secret,$newuser->username,$infouser->personssn);
+                    $user_id = self::exists_user($newuser->secret,$newuser->username,$infouser->personssn,$log);
                     if ($user_id) {
                         // Update User
                         $newuser->id = $user_id;
@@ -678,18 +678,18 @@ class doskom {
      * @creationDate    29/11/2016
      * @author          eFaktor     (fbv)
      */
-    private static function exists_user($externalId,$username,$idNumber) {
+    private static function exists_user($externalId,$username,$idNumber,&$log) {
         /* Variables */
         $userid = null;
-        $log    = null;
+        $infolog    = null;
 
         try {
             // DOSKOM Log
-            $log = new stdClass();
-            $log->action      = 'import_users';
-            $log->description = 'Checking user exist --> ' . $externalId . ", " . $username . ", " . $idNumber . '.';
-            $log->timecreated = time();
-            doskom::write_doskom_log($log);
+            $infolog = new stdClass();
+            $infolog->action      = 'import_users';
+            $infolog->description = 'Checking user exist --> ' . $externalId . ", " . $username . ", " . $idNumber . '.';
+            $infolog->timecreated = time();
+            $log[] = $infolog;
 
             /**
              * Check if user already exists.
@@ -702,10 +702,10 @@ class doskom {
             }
 
             // DOSKOM Log
-            $log->action      = 'import_users';
-            $log->description = 'Finish Checking user exist --> ' . $externalId . ", " . $username . ", " . $idNumber . '.';
-            $log->timecreated = time();
-            doskom::write_doskom_log($log);
+            $infolog->action      = 'import_users';
+            $infolog->description = 'Finish Checking user exist --> ' . $externalId . ", " . $username . ", " . $idNumber . '.';
+            $infolog->timecreated = time();
+            $log[] = $infolog;
 
             return $userid;
         }catch (Exception $ex) {
