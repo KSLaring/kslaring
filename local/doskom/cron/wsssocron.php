@@ -112,11 +112,31 @@ class wsdoskom_cron {
                 $log[] = $infolog;
             }//if_companies
 
+            // DOSKOM LOG
+            $infolog = new stdClass();
+            $infolog->action        = 'wsdoskom_cron';
+            $infolog->description   = 'FINISH cron';
+            $infolog->timecreated   = $time;
+            // Add log
+            $log[] = $infolog;
+
             // Write log
             doskom::write_doskom_log($log);
 
             return true;
         }catch (Exception $ex) {
+            // DOSKOM LOG
+            $infolog = new stdClass();
+            $infolog->action         = 'ERROR wsdoskom_cron';
+            $infolog->description    = 'ERROR FINISH cron';
+            $infolog->description   .= $ex->getTraceAsString();
+            $infolog->timecreated   = $time;
+            // Add log
+            $log[] = $infolog;
+
+            // Write log
+            doskom::write_doskom_log($log);
+
             return false;
         }//try_catch
     }//cron
