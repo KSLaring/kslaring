@@ -2356,7 +2356,8 @@ class STATUS_CRON {
                 }//if_else_index
             }//if_response
         }catch (Exception $ex) {
-
+            FS_CRON::deactivate_cron('status');
+            
             throw $ex;
         }//try_catch
     }//process_tradis_service
