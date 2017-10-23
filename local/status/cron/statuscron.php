@@ -2202,6 +2202,7 @@ class STATUS_CRON {
         $admin          = null;
         $index          = null;
         $time           = null;
+        $infolog        = null;
 
         try {
             // Local time
@@ -2264,23 +2265,38 @@ class STATUS_CRON {
             if ($response === false) {
                 // Send notification
                 FS_CRON::send_notifications_service($plugin,'STATUS',$service);
+                FS_CRON::deactivate_cron('status');
 
                 // Log
-                $dblog .=  ' ERROR RESPONSE STATUS - NULL OBJECT . ' . "\n";
+                $infolog = new stdClass();
+                $infolog->action 		= 'Services: ' . $service;
+                $infolog->description 	= 'ERROR RESPONSE STATUS - NULL OBJECT ';
+                // Add log
+                self::$log[] = $infolog;
 
                 return null;
             }else if ($response == null){
                 // Log
-                $dblog .=  ' ERROR RESPONSE TARDIS - NULL OBJECT . ' . "\n";
+                $infolog = new stdClass();
+                $infolog->action 		= 'Services: ' . $service;
+                $infolog->description 	= 'ERROR RESPONSE TARDIS - NULL OBJECT ';
+                // Add log
+                self::$log[] = $infolog;
+
+                FS_CRON::deactivate_cron('status');
+
                 return null;
             }else if (isset($response->status) && $response->status != "200") {
                 // Send notification
                 FS_CRON::send_notifications_service($plugin,'STATUS',$service);
+                FS_CRON::deactivate_cron('status');
 
                 // Log
-                $dblog .=  ' ERROR RESPONSE STATUS . ' . "\n";
-                $dblog .= $response->message . "\n\n";
-                $dblog .= "\n" . $response . "\n";
+                $infolog = new stdClass();
+                $infolog->action 		= 'Services: ' . $service;
+                $infolog->description 	= 'ERROR RESPONSE STATUS ' . $response->message;
+                // Add log
+                self::$log[] = $infolog;
 
                 return null;
             }else {
@@ -2289,17 +2305,28 @@ class STATUS_CRON {
                 if ($index) {
                     // Send notification
                     FS_CRON::send_notifications_service($plugin,'STATUS',$service);
+                    FS_CRON::deactivate_cron('status');
 
                     // Log
-                    $dblog .=  ' ERROR RESPONSE STATUS . ' . "\n";
-                    $dblog .= "\n" . $response . "\n";
+                    $infolog = new stdClass();
+                    $infolog->action 		= 'Services: ' . $service;
+                    $infolog->description 	= 'ERROR RESPONSE STATUS ' . $response;
+                    // Add log
+                    self::$log[] = $infolog;
 
                     return null;
                 }else {
                     $index = strpos($response,'changeType');
                     if (!$index) {
                         // Log
-                        $dblog .=  ' ERROR RESPONSE TARDIS - EMPTY FILE . ' . "\n";
+                        $infolog = new stdClass();
+                        $infolog->action 		= 'Services: ' . $service;
+                        $infolog->description 	= 'ERROR RESPONSE STATUS - EMPTY FILE ';
+                        // Add log
+                        self::$log[] = $infolog;
+
+                        FS_CRON::deactivate_cron('status');
+
                         return null;
                     }else {
                         // Clean all response
