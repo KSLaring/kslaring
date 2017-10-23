@@ -1723,6 +1723,9 @@ class FELLESDATA_CRON {
 
                     // Synchronize no new companies
                     self::companies_no_new_fs_synchronization($pluginInfo);
+
+                    // Synchronize companies to delete
+                    self::companies_to_delete_fs_synchronization($pluginInfo);
                 }//if_else
             }//if_synchronization
 
@@ -2006,6 +2009,95 @@ class FELLESDATA_CRON {
             throw $ex;
         }//try_catch
     }//companies_no_new_fs_synchronization
+
+    /**
+     * Description
+     * synchronize companies to delete
+     *
+     * @param           $plugin
+     *
+     * @throws          Exception
+     *
+     * @creationDate    23/10/2017
+     * @author          eFaktor     (fbv)
+     */
+    private static function companies_to_delete_fs_synchronization($plugin) {
+        /* Variables */
+        global $SESSION;
+        $rdocompanies   = null;
+        $toSynchronize  = null;
+        $response       = null;
+        $infolog        = null;
+        $total          = null;
+        $start          = 0;
+        $limit          = 1000;
+
+        try {
+            // To avoid problems timeout
+            if (isset($SESSION->manual) && ($SESSION->manual)) {
+                $limit          = 150;
+            }//if_session_manul
+
+            // Log
+            $infolog = new stdClass();
+            $infolog->action 		= 'START companies_fs_synchronization - companies_to_delete_fs_synchronization';
+            $infolog->description 	= 'START companies_fs_synchronization - companies_to_delete_fs_synchronization';
+            // Add log
+            self::$log[] = $infolog;
+
+            // Get total
+            $total = FSKS_COMPANY::get_total_delete_companiesfs_to_synchornize();
+            // Log
+            $infolog = new stdClass();
+            $infolog->action 		= 'companies_fs_synchronization - companies_to_delete_fs_synchronization';
+            $infolog->description 	= 'Total : ' . $total;
+            // Add log
+            self::$log[] = $infolog;
+
+            // Synchronize
+            if ($total) {
+                for ($i=0;$i<=$total;$i=$i+$limit) {
+                    // Get companies to synchronize
+                    list($toSynchronize,$rdocompanies) = FSKS_COMPANY::get_delete_companiesfs_to_synchronize($start,$limit);
+
+                    // Call webs service
+                    if ($toSynchronize) {
+                        // Log
+                        $infolog = new stdClass();
+                        $infolog->action 		= 'companies_fs_synchronization - companies_to_delete_fs_synchronization';
+                        $infolog->description 	= 'To Synchronize : ' . $toSynchronize;
+                        // Add log
+                        self::$log[] = $infolog;
+
+                        $params     = array('companiesFS' => $toSynchronize);
+                        $response   = self::process_ks_service($plugin,KS_SYNC_FS_COMPANY,$params);
+
+                        if ($response) {
+                            if ($response['error'] == '200') {
+                                FSKS_COMPANY::synchronize_companies_ksfs($rdocompanies,$response['companies']);
+                            }else {
+                                // Log
+                                $infolog = new stdClass();
+                                $infolog->action 		= 'companies_fs_synchronization - companies_to_delete_fs_synchronization';
+                                $infolog->description 	= 'ERROR WS: ' . $response['message'];
+                                // Add log
+                                self::$log[] = $infolog;
+                            }//if_no_error
+                        }//if_response
+                    }//if_toSynchronize
+                }//for
+            }//if_total
+
+            // Log
+            $infolog = new stdClass();
+            $infolog->action 		= 'FINISH companies_fs_synchronization - companies_to_delete_fs_synchronization';
+            $infolog->description 	= 'FINISH companies_fs_synchronization - companies_to_delete_fs_synchronization';
+            // Add log
+            self::$log[] = $infolog;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//companies_to_delete_fs_synchronization
 
     /**
      * Description
