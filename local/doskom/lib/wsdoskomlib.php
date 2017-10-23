@@ -63,12 +63,13 @@ class wsdoskom {
         $info = null;
 
         try {
+            // Write log
             if ($log) {
+                asort($log);
                 foreach ($log as $info) {
                     $DB->insert_record('doskom_log',$info);
                 }//for_log
             }//if_log
-
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch

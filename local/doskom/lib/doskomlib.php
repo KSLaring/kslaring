@@ -48,9 +48,13 @@ class doskom {
         $info = null;
 
         try {
-            foreach ($log as $info) {
-                $DB->insert_record('doskom_log',$info);
-            }//for_log
+            // Write log
+            if ($log) {
+                asort($log);
+                foreach ($log as $info) {
+                    $DB->insert_record('doskom_log',$info);
+                }//for_log
+            }//if_log
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
