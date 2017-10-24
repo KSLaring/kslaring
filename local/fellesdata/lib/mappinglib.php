@@ -578,6 +578,8 @@ class FS_MAPPING {
                         $lstparents[$instance->companyid]   = $instance->name;
                         $parents[$instance->companyid]      = $instance->parent;
                     }else {
+                        $dblog = "INI NIVA : " . $instance->nivaa . "\n";
+                        $dblog .= "PARENT : " . $instance->parent . "\n";
                         $ini = $instance->nivaa;
                         // Check childrens
                         $diff = $nivaa - $instance->nivaa;
@@ -591,20 +593,24 @@ class FS_MAPPING {
                                 $ini = ($i+$ini);
                                 $params['nivaa'] = $ini;
 
+                                $dblog .= "NIVAA SQL  : " . $instance->nivaa . "\n\n";
+
                                 $sql = " SELECT	DISTINCT 
                                                     fs_imp_ch.org_enhet_over as 'parent',
                                                     fs_imp_ch.org_nivaa      as 'nivaa'
                                              FROM		{fs_imp_company}		fs_imp
                                                 -- Daughter
                                                 JOIN	{fs_imp_company}		fs_imp_ch   ON  fs_imp_ch.org_enhet_over = fs_imp.org_enhet_id
-                                                                                            AND fs_imp_ch.org_nivaa = :nivaa
-                                                                                            AND fs_imp_ch.imported = :imported
+                                                                                            AND fs_imp_ch.org_nivaa      = :nivaa
+                                                                                            AND fs_imp_ch.imported       = :imported
                                                 -- Already synchronized
                                                 LEFT JOIN {fs_company}	      syc	  		ON  syc.companyid 		= fs_imp_ch.org_enhet_id
                                                                                             AND syc.level 			= fs_imp_ch.org_nivaa
                                                                                             AND syc.synchronized 	= :sync
                                              WHERE	fs_imp.org_enhet_over = :parent
                                                 AND syc.id IS NULL ";
+
+                                $dblog .= $sql . "\n\n";
 
                                 // Execute
                                 $rdochild = $DB->get_records_sql($sql,$params);
