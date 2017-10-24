@@ -567,8 +567,9 @@ class FS_MAPPING {
                      ORDER BY 	ks.name  ";
 
             // Execute
+            global $CFG;
             $dblog = $sql . "\n\n";
-            
+            error_log($dblog, 3, $CFG->dataroot . "/PAQUI_TEST.log");
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 $parents = array();
