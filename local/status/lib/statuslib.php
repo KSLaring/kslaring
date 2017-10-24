@@ -851,6 +851,7 @@ class STATUS {
                               fk.kscompany                                      as 'ksid',
                               IF(fs.level > 1,TRIM(fs.name), TRIM(ks_pa.name))  as 'name',
                               fs.level,
+                              fs_imp.org_nivaa,
                               fs.parent,
                               ks_pa.industrycode                    as 'industry',
                               TRIM(IF(fs.privat,0,1)) 	            as 'public',

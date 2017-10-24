@@ -567,9 +567,6 @@ class FS_MAPPING {
                      ORDER BY 	ks.name  ";
 
             // Execute
-            global $CFG;
-            $dblog = $sql . "\n\n";
-            error_log($dblog, 3, $CFG->dataroot . "/PAQUI_TEST.log");
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 $parents = array();
@@ -578,8 +575,6 @@ class FS_MAPPING {
                         $lstparents[$instance->companyid]   = $instance->name;
                         $parents[$instance->companyid]      = $instance->parent;
                     }else {
-                        $dblog = "INI NIVA : " . $instance->nivaa . "\n";
-                        $dblog .= "PARENT : " . $instance->parent . "\n";
                         $ini = $instance->nivaa;
                         // Check childrens
                         $diff = $nivaa - $instance->nivaa;
@@ -592,8 +587,6 @@ class FS_MAPPING {
                             for ($i=1;$i<=$diff;$i++) {
                                 $ini = ($i+$ini);
                                 $params['nivaa'] = $ini;
-
-                                $dblog .= "NIVAA SQL  : " . $instance->nivaa . "\n\n";
 
                                 $sql = " SELECT	DISTINCT 
                                                     fs_imp_ch.org_enhet_over as 'parent',
@@ -609,8 +602,6 @@ class FS_MAPPING {
                                                                                             AND syc.synchronized 	= :sync
                                              WHERE	fs_imp.org_enhet_over = :parent
                                                 AND syc.id IS NULL ";
-
-                                $dblog .= $sql . "\n\n";
 
                                 // Execute
                                 $rdochild = $DB->get_records_sql($sql,$params);
@@ -628,7 +619,6 @@ class FS_MAPPING {
                                 }//if_child
                             }///if_levels
                         }
-                        error_log($dblog, 3, $CFG->dataroot . "/PAQUI_TEST.log");
                     }//if_instance_nivaa
                 }//for_rdo
             }else if ($level == FS_LE_2) {
