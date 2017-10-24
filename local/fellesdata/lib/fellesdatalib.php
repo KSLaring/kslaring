@@ -1002,6 +1002,7 @@ class FSKS_COMPANY {
                               fk.kscompany                                      as 'ksid',
                               IF(fs.level > 1,TRIM(fs.name), TRIM(ks_pa.name))  as 'name',
                               fs.level,
+                              fs_imp.org_nivaa,
                               fs.parent,
                               ks_pa.industrycode                                as 'industry',
                               IF(fs.privat,0,1) 	                            as 'public',
@@ -1823,7 +1824,7 @@ class FSKS_COMPANY {
 
             // Synchronized
             if ($sync) {
-                $instance = $DB->get_record('fs_imp_company',array('org_enhet_id' => $impKey,'org_nivaa' => $companyKSFS->level,'action' => $companyKSFS->action),'id,imported');
+                $instance = $DB->get_record('fs_imp_company',array('org_enhet_id' => $impKey,'org_nivaa' => $companyKSFS->org_nivaa,'action' => $companyKSFS->action),'id,imported');
                 if ($instance) {
                     $instance->imported         = 1;
                     $instance->timemodified     = $time;
