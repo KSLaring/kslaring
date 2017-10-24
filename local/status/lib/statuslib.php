@@ -694,7 +694,8 @@ class STATUS {
             $sql = " SELECT	count(DISTINCT fs.id) as 'total'		
                      FROM	  		{fs_company}		fs
                         -- INFO KS
-                        JOIN  		{ksfs_company}	    fk 		ON 	fk.fscompany 	    = fs.companyid
+                        JOIN  		{ksfs_company}	    fk 		ON 	fk.fscompany 	           = fs.companyid
+                                                                AND locate('LE1',fk.fscompany) = 0
                         -- INFO PARENT
                         JOIN  		{ks_company}		ks_pa	ON 	ks_pa.companyid     = fk.kscompany
                         LEFT JOIN   {fs_imp_company}	fs_imp 	ON 	fs_imp.org_enhet_id = fs.companyid
@@ -753,10 +754,11 @@ class STATUS {
                                   '2' 							              as 'action'
                      FROM	  	  {fs_company}		fs
                         -- INFO KS
-                        JOIN  	  {ksfs_company}	fk 		ON 	fk.fscompany 	    = fs.companyid
+                        JOIN  	  {ksfs_company}	fk 		ON 	fk.fscompany 	           = fs.companyid
+                                                            AND locate('LE1',fk.fscompany) = 0
                         -- INFO PARENT
-                        JOIN  	  {ks_company}		ks_pa	ON 	ks_pa.companyid     = fk.kscompany
-                        LEFT JOIN {fs_imp_company}	fs_imp 	ON 	fs_imp.org_enhet_id = fs.companyid
+                        JOIN  	  {ks_company}		ks_pa	ON 	ks_pa.companyid            = fk.kscompany
+                        LEFT JOIN {fs_imp_company}	fs_imp 	ON 	fs_imp.org_enhet_id        = fs.companyid
                      WHERE 	fs_imp.id IS NULL ";
 
             // Execute
