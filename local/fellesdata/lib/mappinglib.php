@@ -628,6 +628,7 @@ class FS_MAPPING {
                                 }//if_child
                             }///if_levels
                         }
+                        error_log($dblog, 3, $CFG->dataroot . "/PAQUI_TEST.log");
                     }//if_instance_nivaa
                 }//for_rdo
             }else if ($level == FS_LE_2) {
