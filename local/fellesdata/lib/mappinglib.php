@@ -567,7 +567,8 @@ class FS_MAPPING {
                      ORDER BY 	ks.name  ";
 
             // Execute
-            echo $sql;
+            $dblog = $sql . "\n\n";
+            
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 $parents = array();
