@@ -143,16 +143,11 @@ class collection extends core_tag_collection {
             $params = array_merge($params, $inparams);
         }
 
-        $collatedanish = '';
-        if (current_language() === "no" || current_language() === "da" || current_language() === "sv") {
-            $collatedanish = 'collate utf8_danish_ci';
-        }
-
         $sql = "SELECT tg.id, tg.rawname, tg.name, tg.isstandard, tg.flag, tg.tagcollid
                         $fromclause
                         $whereclause
                         GROUP BY tg.id, tg.rawname, tg.name, tg.flag, tg.isstandard, tg.tagcollid
-                        ORDER BY tg.name $collatedanish ASC";
+                        ORDER BY tg.name ASC";
 
         $grouptags = $DB->get_records_sql($sql, $params, 0, $limit);
 
@@ -205,16 +200,11 @@ class collection extends core_tag_collection {
             $params[] = '%' . core_text::strtolower($search) . '%';
         }
 
-        $collatedanish = '';
-        if (current_language() === "no" || current_language() === "da" || current_language() === "sv") {
-            $collatedanish = 'collate utf8_danish_ci';
-        }
-
         $sql = "SELECT tg.id, tg.rawname, tg.name, tg.isstandard, tg.flag, tg.tagcollid
                         $fromclause
                         $whereclause
                         GROUP BY tg.id, tg.rawname, tg.name, tg.flag, tg.isstandard, tg.tagcollid
-                        ORDER BY tg.name $collatedanish ASC";
+                        ORDER BY tg.name ASC";
 
         $grouptags = $DB->get_records_sql($sql, $params, 0, $limit);
 
@@ -274,16 +264,11 @@ class collection extends core_tag_collection {
             $params[] = '%' . core_text::strtolower($excludename) . '%';
         }
 
-        $collatedanish = '';
-        if (current_language() === "no" || current_language() === "da" || current_language() === "sv") {
-            $collatedanish = 'collate utf8_danish_ci';
-        }
-
         $sql = "SELECT tg.id, tg.rawname, tg.name, tg.isstandard, tg.flag, tg.tagcollid
                         $fromclause
                         $whereclause
                         GROUP BY tg.id, tg.rawname, tg.name, tg.flag, tg.isstandard, tg.tagcollid
-                        ORDER BY tg.name $collatedanish ASC";
+                        ORDER BY tg.name  ASC";
 
         $grouptags = $DB->get_records_sql($sql, $params, 0, $limit);
 
@@ -304,11 +289,6 @@ class collection extends core_tag_collection {
         $tags = null;
         $metaprefix = str_replace('_', '\_', $metaprefix);
 
-        $collatedanish = '';
-        if (current_language() === "no" || current_language() === "da" || current_language() === "sv") {
-            $collatedanish = 'collate utf8_danish_ci';
-        }
-
         $sql = "
             SELECT
               tg.id,
@@ -326,7 +306,7 @@ class collection extends core_tag_collection {
               GROUP BY ti1.tagid
             )
             GROUP BY tg.id, tg.name
-            ORDER BY tg.name $collatedanish ASC;
+            ORDER BY tg.name ASC;
         ";
 
         $params = array($tagcollid, $metaprefix . '%');
