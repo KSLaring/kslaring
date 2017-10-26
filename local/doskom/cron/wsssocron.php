@@ -97,7 +97,7 @@ class wsdoskom_cron {
                             }
                         }else {
                             // Error send notification
-                            self::send_notifications(ERROR_SERVICE);
+                            self::send_notifications(ERROR_SERVICE,$company->name);
                         }
                     }//for_companies
                 }else {
@@ -159,7 +159,7 @@ class wsdoskom_cron {
      * @creationDate    15/09/2017
      * @author          eFaktor     (fbv)
      */
-    private static function send_notifications($error) {
+    private static function send_notifications($error,$company) {
         /* Variables */
         global $SITE, $USER;
         $plugin     = null;
@@ -179,20 +179,23 @@ class wsdoskom_cron {
 
                 // time local
                 $time = userdate(time(),'%d.%m.%Y', 99, false);
+                $a = new stdClass();
+                $a->time    = $time;
+                $a->company = $company;
 
                 switch ($error) {
                     case ERROR_SERVICE:
                         // Subject
                         $subject = (string)new lang_string('errorws_subject','local_doskom',$SITE->shortname,$USER->lang);
                         // Body
-                        $body = (string)new lang_string('errorws_body','local_doskom',$time,$USER->lang);
+                        $body = (string)new lang_string('errorws_body','local_doskom',$a,$USER->lang);
 
                         break;
                     case ERROR_PROCESS:
                         // Subject
                         $subject = (string)new lang_string('errorprocess_subject','local_doskom',$SITE->shortname,$USER->lang);
                         // Body
-                        $body = (string)new lang_string('errorprocess_body','local_doskom',$time,$USER->lang);
+                        $body = (string)new lang_string('errorprocess_body','local_doskom',$a,$USER->lang);
 
                         break;
                 }//switch_Error
@@ -319,7 +322,7 @@ class wsdoskom_cron {
             $log[] = $infolog;
 
             // Error send notification
-            self::send_notifications(ERROR_PROCESS);
+            self::send_notifications(ERROR_PROCESS,$company->name);
 
             throw $ex;
         }//try_catch

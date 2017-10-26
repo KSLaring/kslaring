@@ -69,8 +69,8 @@ $string['errexits'] = 'Already exists';
 $string['basic_notify'] = 'Notify by email to';
 
 $string['errorws_subject'] = ' {$a}: Integration DOSKOM  - ERROR RESPONSE';
-$string['errorws_body']    = ' <p>We would like to inform you, that there has been a problem during the connection/communication with <strong>DOSKOM</strong> services.</p> 
-                               <p>So, the process has got an invalid response at <strong>{$a}</strong>.</p> ';
+$string['errorws_body']    = ' <p>We would like to inform you, that there has been a problem during the connection/communication with <strong>DOSKOM {$a->company}</strong> services.</p> 
+                               <p>So, the process has got an invalid response at <strong>{$a->time}</strong>.</p> ';
 
 $string['errorprocess_subject'] = ' {$a}: Integration DOSKOM  - ERROR';
-$string['errorprocess_body']    = ' <p>We would like to inform you, that there has been a problem during the process so the <strong>DOSKOM</strong> could no bet carried out at <strong>{$a}</strong>.</p>';
+$string['errorprocess_body']    = ' <p>We would like to inform you, that there has been a problem during the process so the <strong>DOSKOM {$a->company}</strong> could no bet carried out at <strong>{$a->time}</strong>.</p>';

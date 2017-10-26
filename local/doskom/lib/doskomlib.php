@@ -646,6 +646,7 @@ class doskom {
 
             // SQL Instruction
             $sql = " SELECT	  cd.id,
+                              cd.name,
                               cd.user,
                               cd.token,
                               dk.api,
