@@ -152,7 +152,7 @@ class collection extends core_tag_collection {
                         $fromclause
                         $whereclause
                         GROUP BY tg.id, tg.rawname, tg.name, tg.flag, tg.isstandard, tg.tagcollid
-                        ORDER BY tg.name $collatedanish ASC";
+                        ORDER BY tg.name ASC";
 
         $grouptags = $DB->get_records_sql($sql, $params, 0, $limit);
 
@@ -214,7 +214,7 @@ class collection extends core_tag_collection {
                         $fromclause
                         $whereclause
                         GROUP BY tg.id, tg.rawname, tg.name, tg.flag, tg.isstandard, tg.tagcollid
-                        ORDER BY tg.name $collatedanish ASC";
+                        ORDER BY tg.name ASC";
 
         $grouptags = $DB->get_records_sql($sql, $params, 0, $limit);
 
@@ -283,7 +283,7 @@ class collection extends core_tag_collection {
                         $fromclause
                         $whereclause
                         GROUP BY tg.id, tg.rawname, tg.name, tg.flag, tg.isstandard, tg.tagcollid
-                        ORDER BY tg.name $collatedanish ASC";
+                        ORDER BY tg.name  ASC";
 
         $grouptags = $DB->get_records_sql($sql, $params, 0, $limit);
 
@@ -326,7 +326,7 @@ class collection extends core_tag_collection {
               GROUP BY ti1.tagid
             )
             GROUP BY tg.id, tg.name
-            ORDER BY tg.name $collatedanish ASC;
+            ORDER BY tg.name ASC;
         ";
 
         $params = array($tagcollid, $metaprefix . '%');
