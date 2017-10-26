@@ -108,6 +108,9 @@ class edit_group_tags_page extends \local_tag\output\output_base {
      * @return stdClass
      */
     public function export_for_template(renderer_base $output) {
+        // Convert the assotiated tagset array into an indexed array for mustache.
+        $this->tagsourcelist->tagset = array_values($this->tagsourcelist->tagset);
+
         return (object) array(
                 'title' => $this->title,
                 'tagsourcelist' => $this->tagsourcelist,

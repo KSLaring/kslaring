@@ -143,11 +143,6 @@ class collection extends core_tag_collection {
             $params = array_merge($params, $inparams);
         }
 
-        $collatedanish = '';
-        if (current_language() === "no" || current_language() === "da" || current_language() === "sv") {
-            $collatedanish = 'collate utf8_danish_ci';
-        }
-
         $sql = "SELECT tg.id, tg.rawname, tg.name, tg.isstandard, tg.flag, tg.tagcollid
                         $fromclause
                         $whereclause
@@ -203,11 +198,6 @@ class collection extends core_tag_collection {
         if (strval($search) !== '') {
             $whereclause .= ' AND tg.name LIKE ?';
             $params[] = '%' . core_text::strtolower($search) . '%';
-        }
-
-        $collatedanish = '';
-        if (current_language() === "no" || current_language() === "da" || current_language() === "sv") {
-            $collatedanish = 'collate utf8_danish_ci';
         }
 
         $sql = "SELECT tg.id, tg.rawname, tg.name, tg.isstandard, tg.flag, tg.tagcollid
@@ -274,16 +264,11 @@ class collection extends core_tag_collection {
             $params[] = '%' . core_text::strtolower($excludename) . '%';
         }
 
-        $collatedanish = '';
-        if (current_language() === "no" || current_language() === "da" || current_language() === "sv") {
-            $collatedanish = 'collate utf8_danish_ci';
-        }
-
         $sql = "SELECT tg.id, tg.rawname, tg.name, tg.isstandard, tg.flag, tg.tagcollid
                         $fromclause
                         $whereclause
                         GROUP BY tg.id, tg.rawname, tg.name, tg.flag, tg.isstandard, tg.tagcollid
-                        ORDER BY tg.name  ASC";
+                        ORDER BY tg.name ASC";
 
         $grouptags = $DB->get_records_sql($sql, $params, 0, $limit);
 
@@ -303,11 +288,6 @@ class collection extends core_tag_collection {
 
         $tags = null;
         $metaprefix = str_replace('_', '\_', $metaprefix);
-
-        $collatedanish = '';
-        if (current_language() === "no" || current_language() === "da" || current_language() === "sv") {
-            $collatedanish = 'collate utf8_danish_ci';
-        }
 
         $sql = "
             SELECT
