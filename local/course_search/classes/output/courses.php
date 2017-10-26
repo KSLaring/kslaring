@@ -140,18 +140,13 @@ class courses implements \renderable, \templatable {
             return $this->coursecollection;
         }
 
-        $collatedanish = '';
-        if (current_language() === "no" || current_language() === "da" || current_language() === "sv") {
-            $collatedanish = 'collate utf8_danish_ci';
-        }
-
         list($insql, $inparams) = $DB->get_in_or_equal($courseids);
         $sql = "SELECT 
                  course, json
             FROM {local_course_search}
             WHERE course $insql
               AND json IS NOT NULL
-            ORDER BY fullname $collatedanish ASC";
+            ORDER BY fullname ASC";
 
         if ($result = $DB->get_records_sql($sql, $inparams)) {
             foreach ($result as $row) {
