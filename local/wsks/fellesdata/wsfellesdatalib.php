@@ -2004,7 +2004,7 @@ class WS_FELLESDATA {
                         self::remove_connection_municipality($rdoUser->id,$userAccount->industry);
                     }else {
                         // Execute
-                        $userId             = $DB->insert_record('user',$infoUser);
+                        //$userId             = $DB->insert_record('user',$infoUser);
                     }//if_infoUsers
 
                     // Synchronized
