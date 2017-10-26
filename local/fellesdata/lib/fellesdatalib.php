@@ -1251,6 +1251,8 @@ class FSKS_COMPANY {
             $params['action']   = DELETE;
             $params['imported'] = 0;
 
+            $levels = FS_LE_2 . "," . FS_LE_5;
+
             // SQL Instruction
             $sql = " SELECT	  fs_imp.id             as 'fsid',
                               fs_imp.org_enhet_id   as 'companyid',
@@ -1271,7 +1273,7 @@ class FSKS_COMPANY {
                               fs.timemodified
                      FROM	  {fs_imp_company}	fs_imp	
                         JOIN  {fs_company}		fs      ON  fs.companyid  = fs_imp.org_enhet_id
-                                                        AND fs.level 	  = fs_imp.org_nivaa
+                                                        AND fs.level 	  IN ($levels)
                      WHERE	  fs_imp.imported = :imported 
                         AND   fs_imp.action != action ";
 
