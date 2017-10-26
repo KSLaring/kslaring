@@ -60,6 +60,14 @@ class wsdoskom_cron {
                     $active = $companies->active;
 
                     foreach ($active as $company) {
+                        // DOSKOM LOG
+                        $infolog = new stdClass();
+                        $infolog->action        = 'wsdoskom_cron';
+                        $infolog->description   = 'Start Company: ' . $company->id;
+                        $infolog->timecreated   = $time;
+                        // Add log
+                        $log[] = $infolog;
+
                         list($company->import,$error)         = self::call_ws($company,$log);
 
                         //Add company
@@ -68,7 +76,7 @@ class wsdoskom_cron {
                                 // DOSKOM LOG
                                 $infolog = new stdClass();
                                 $infolog->action        = 'wsdoskom_cron';
-                                $infolog->description   = 'Start import doskom';
+                                $infolog->description   = 'Start import doskom - Company: ' . $company->id;
                                 $infolog->timecreated   = $time;
                                 // Add log
                                 $log[] = $infolog;
@@ -79,7 +87,7 @@ class wsdoskom_cron {
                                 // DOSKOM LOG
                                 $infolog = new stdClass();
                                 $infolog->action        = 'wsdoskom_cron';
-                                $infolog->description   = 'Finish import doskom';
+                                $infolog->description   = 'Finish import doskom - Company: ' . $company->id;
                                 $infolog->timecreated   = $time;
                                 // Add log
                                 $log[] = $infolog;
@@ -89,7 +97,7 @@ class wsdoskom_cron {
                             }
                         }else {
                             // Error send notification
-                            self::send_notifications(ERROR_SERVICE);
+                            self::send_notifications(ERROR_SERVICE,$company->name);
                         }
                     }//for_companies
                 }else {
@@ -151,7 +159,7 @@ class wsdoskom_cron {
      * @creationDate    15/09/2017
      * @author          eFaktor     (fbv)
      */
-    private static function send_notifications($error) {
+    private static function send_notifications($error,$company) {
         /* Variables */
         global $SITE, $USER;
         $plugin     = null;
@@ -171,20 +179,23 @@ class wsdoskom_cron {
 
                 // time local
                 $time = userdate(time(),'%d.%m.%Y', 99, false);
+                $a = new stdClass();
+                $a->time    = $time;
+                $a->company = $company;
 
                 switch ($error) {
                     case ERROR_SERVICE:
                         // Subject
                         $subject = (string)new lang_string('errorws_subject','local_doskom',$SITE->shortname,$USER->lang);
                         // Body
-                        $body = (string)new lang_string('errorws_body','local_doskom',$time,$USER->lang);
+                        $body = (string)new lang_string('errorws_body','local_doskom',$a,$USER->lang);
 
                         break;
                     case ERROR_PROCESS:
                         // Subject
                         $subject = (string)new lang_string('errorprocess_subject','local_doskom',$SITE->shortname,$USER->lang);
                         // Body
-                        $body = (string)new lang_string('errorprocess_body','local_doskom',$time,$USER->lang);
+                        $body = (string)new lang_string('errorprocess_body','local_doskom',$a,$USER->lang);
 
                         break;
                 }//switch_Error
@@ -239,6 +250,15 @@ class wsdoskom_cron {
             }else {
                 $urlWs = $company->api . '/' . $company->id .'/personalia/no';
             }
+
+            // DOSKOM LOG
+            $infolog = new stdClass();
+            $infolog->action        = 'call_ws';
+            $infolog->description   = 'Call web service for company ' . $company->id;
+            $infolog->description  .= ' ' . $urlWs;
+            $infolog->timecreated   = $time;
+            // Add log
+            $log[] = $infolog;
 
             // Call Web Service
             $ch = curl_init($urlWs);
@@ -302,7 +322,7 @@ class wsdoskom_cron {
             $log[] = $infolog;
 
             // Error send notification
-            self::send_notifications(ERROR_PROCESS);
+            self::send_notifications(ERROR_PROCESS,$company->name);
 
             throw $ex;
         }//try_catch
