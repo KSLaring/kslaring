@@ -9,6 +9,7 @@
 require( '../../config.php' );
 require_once('cron/wsssocron.php');
 require_once('wsDOSKOMlib.php');
+require_once('lib/doskomlib.php');
 
 require_login();
 
