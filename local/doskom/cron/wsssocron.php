@@ -72,8 +72,6 @@ class wsdoskom_cron {
 
                         //Add company
                         if (!$error) {
-                            echo "Company : " . $company->id . "</br>";
-                            echo " START IMPORT " . "</br>";
                             if ($company->import) {
                                 // DOSKOM LOG
                                 $infolog = new stdClass();
