@@ -1279,6 +1279,9 @@ class FSKS_COMPANY {
 
             // Execute
             $rdo = $DB->get_records_sql($sql,$params);
+
+            echo $sql . "</br>";
+
             if ($rdo) {
                 foreach ($rdo as $company) {
                     // Update fs_imp
