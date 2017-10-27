@@ -1280,12 +1280,13 @@ class FSKS_COMPANY {
             // Execute
             $rdo = $DB->get_records_sql($sql,$params);
 
-            echo $sql . "</br>";
+            echo $sql . "</br></br>";
 
             if ($rdo) {
+                echo "HOLA " . "</br>";
                 foreach ($rdo as $company) {
                     echo " id --> " . $company->fsid . "company --> " . $company->org_enhet_id . "</br>";
-                    
+
                     // Update fs_imp
                     $fsimp = new stdClass();
                     $fsimp->id              = $company->fsid;
@@ -1302,6 +1303,8 @@ class FSKS_COMPANY {
                     // Execute
                     //$DB->update_record('fs_company',$company);
                 }//for
+            }else {
+                echo "ADEU" . "</br>";
             }//if_Rdo
 
             // Commit
