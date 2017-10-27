@@ -1275,15 +1275,11 @@ class FSKS_COMPANY {
                         JOIN  {fs_company}		fs      ON  fs.companyid  = fs_imp.org_enhet_id
                                                         AND fs.level 	  IN ($levels)
                      WHERE	  fs_imp.imported = :imported 
-                        AND   fs_imp.action != action ";
+                        AND   fs_imp.action  !=  :action ";
 
             // Execute
             $rdo = $DB->get_records_sql($sql,$params);
-
-            echo $sql . "</br></br>";
-
             if ($rdo) {
-                echo "HOLA " . "</br>";
                 foreach ($rdo as $company) {
                     echo " id --> " . $company->fsid . "company --> " . $company->org_enhet_id . "</br>";
 
@@ -1301,24 +1297,13 @@ class FSKS_COMPANY {
                     $company->timemodified = $time;
                     $company->moved        = 0;
                     // Execute
-                    //$DB->update_record('fs_company',$company);
+                    $DB->update_record('fs_company',$company);
                 }//for
-            }else {
-                echo "ADEU" . "</br>";
             }//if_Rdo
 
             // Commit
             $trans->allow_commit();
         }catch (Exception $ex) {
-            // Log
-            $infolog = new stdClass();
-            $infolog->action 		= 'ERROR FINISH PAQUI TEST';
-            $infolog->description 	= 'ERROR PAQUI TEST';
-
-
-            // Write log
-            FS_CRON::write_fellesdata_log(array('0' => $infolog));
-
             // Rollback
             $trans->rollback($ex);
 
