@@ -1284,6 +1284,8 @@ class FSKS_COMPANY {
 
             if ($rdo) {
                 foreach ($rdo as $company) {
+                    echo " id --> " . $company->fsid . "company --> " . $company->org_enhet_id . "</br>";
+                    
                     // Update fs_imp
                     $fsimp = new stdClass();
                     $fsimp->id              = $company->fsid;
