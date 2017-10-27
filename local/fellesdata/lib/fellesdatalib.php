@@ -3216,7 +3216,6 @@ class FS {
                         // Fake eMails
                         self::update_fake_mails();
 
-
                         break;
 
                     case IMP_COMPANIES:
