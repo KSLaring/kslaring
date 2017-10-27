@@ -1251,7 +1251,7 @@ class FSKS_COMPANY {
             $params['action']   = DELETE;
             $params['imported'] = 0;
 
-            $levels = FS_LE_2 . "," . FS_LE_5;
+            $levels = FS_NIVA_2 . "," . FS_NIVA_5;
 
             // SQL Instruction
             $sql = " SELECT	  fs_imp.id             as 'fsid',
@@ -3215,7 +3215,6 @@ class FS {
 
                         // Fake eMails
                         self::update_fake_mails();
-
 
                         break;
 
