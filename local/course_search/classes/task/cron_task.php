@@ -75,7 +75,7 @@ class cron_task extends \core\task\scheduled_task {
         WHERE
         	category != 0
         ORDER BY 
-            fullname collate utf8_danish_ci ASC';
+            fullname ASC';
 
         mtrace('Indexing courses ...');
 

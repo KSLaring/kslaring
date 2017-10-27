@@ -116,7 +116,7 @@ class courses implements \renderable, \templatable {
 
             $this->coursecollection = $context->courses;
         } else {
-            $courses = get_courses('all', 'c.fullname collate utf8_danish_ci ASC', 'c.id, c.visible');
+            $courses = get_courses('all', 'c.fullname ASC', 'c.id, c.visible');
             $preselectedcourseids = \local_course_search\util::get_user_tagged_courseids();
             $templateids = $this->get_template_courses_ids();
             foreach ($courses as $course) {
