@@ -1302,6 +1302,15 @@ class FSKS_COMPANY {
             // Commit
             $trans->allow_commit();
         }catch (Exception $ex) {
+            // Log
+            $infolog = new stdClass();
+            $infolog->action 		= 'ERROR FINISH PAQUI TEST';
+            $infolog->description 	= 'ERROR PAQUI TEST';
+
+
+            // Write log
+            FS_CRON::write_fellesdata_log(array('0' => $infolog));
+
             // Rollback
             $trans->rollback($ex);
 
