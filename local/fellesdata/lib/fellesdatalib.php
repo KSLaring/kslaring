@@ -1275,7 +1275,7 @@ class FSKS_COMPANY {
                         JOIN  {fs_company}		fs      ON  fs.companyid  = fs_imp.org_enhet_id
                                                         AND fs.level 	  IN ($levels)
                      WHERE	  fs_imp.imported = :imported 
-                        AND   fs_imp.action != action ";
+                        AND   fs_imp.action  !=  :action ";
 
             // Execute
             $rdo = $DB->get_records_sql($sql,$params);
