@@ -2503,10 +2503,27 @@ class FSKS_USERS {
                     $rdoFellesdata = $DB->get_record('user',array('username' => $userFS->personalnumber),'id,username');
                 }//if_rdoUser
             }else {
-                // No Connected
+                // Search criteria
                 $params = array();
-                $params['username'] = $userFS->personalnumber;
-                $rdoUser = $DB->get_record('user',$params,'id');
+                $params['personal'] = $userFS->personalnumber;
+
+                // Check if already eist account with adfs
+                $sql = " SELECT id 
+                         FROM  {user}
+                         WHERE  idnumber = :personal 
+                            AND username != idnumber ";
+
+
+                // Execute
+                $rdoUser = $DB->get_record_sql($sql,$params);
+                if (!$rdoUser) {
+                    unset($params['personal']);
+                    $params['username']         = $userFS->personalnumber;
+                    $rdoUser = $DB->get_record('user',$params,'id');
+                }else {
+                    // Fellesdata account to delete
+                    $rdoFellesdata = $DB->get_record('user',array('username' => $userFS->personalnumber),'id,username');
+                }
             }//if_adfs
 
             // Info Account
