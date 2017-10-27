@@ -1607,13 +1607,6 @@ class FELLESDATA_CRON {
                         if ($lstusers) {
                             // Log
                             $infolog = new stdClass();
-                            $infolog->action 		= 'PAQUI TEST ';
-                            $infolog->description 	= 'PAQUI TEST ' . $lstusers;
-                            // Add log
-                            self::$log[] = $infolog;
-
-                            // Log
-                            $infolog = new stdClass();
                             $infolog->action 		= 'users_fs_synchronization';
                             $infolog->description 	= 'To synchronize: ' . $lstusers;
                             // Add log
