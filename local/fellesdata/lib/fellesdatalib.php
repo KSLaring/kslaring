@@ -1281,8 +1281,6 @@ class FSKS_COMPANY {
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 foreach ($rdo as $company) {
-                    echo " id --> " . $company->fsid . "company --> " . $company->org_enhet_id . "</br>";
-
                     // Update fs_imp
                     $fsimp = new stdClass();
                     $fsimp->id              = $company->fsid;
