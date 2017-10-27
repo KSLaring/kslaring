@@ -1295,7 +1295,7 @@ class FSKS_COMPANY {
                     $company->timemodified = $time;
                     $company->moved        = 0;
                     // Execute
-                    $DB->update_record('fs_company',$company);
+                    //$DB->update_record('fs_company',$company);
                 }//for
             }//if_Rdo
 
