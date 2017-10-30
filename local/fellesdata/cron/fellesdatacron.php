@@ -1683,13 +1683,13 @@ class FELLESDATA_CRON {
             // Add log
             self::$log[] = $infolog;
 
+            // Notifications
+            if ($pluginInfo->mail_notification) {
+                $notifyTo   = explode(',',$pluginInfo->mail_notification);
+            }//if_mail_notifications
+
             // check if the synchronization can be run
             if (suspicious::run_synchronization(IMP_SUSP_COMPANIES)) {
-                // Notifications
-                if ($pluginInfo->mail_notification) {
-                    $notifyTo   = explode(',',$pluginInfo->mail_notification);
-                }//if_mail_notifications
-
                 // First execution
                 if ($fstExecution) {
                     // Log
@@ -1729,7 +1729,17 @@ class FELLESDATA_CRON {
                             // Level three
                             self::companies_automatically_synchronized($pluginInfo,FS_LE_5);
                         }else {
+                            // Mail --> automatic mapping
+                            if ($notifyTo) {
+                                self::send_notifications(SYNC_AUTO,null,$notifyTo);
 
+                                // Log
+                                $infolog = new stdClass();
+                                $infolog->action 		= 'companies_fs_synchronization';
+                                $infolog->description 	= 'Automatic map not allowed - Send notifications';
+                                // Add log
+                                self::$log[] = $infolog;
+                            }//if_notify
                         }
                     }//if_automatic
 
