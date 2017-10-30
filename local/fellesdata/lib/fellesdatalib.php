@@ -3171,7 +3171,8 @@ class FS {
                 echo $line . "</br>";
 
                 if (isset($lineContent->newRecord)) {
-                    echo "New Record : " . json_decode($lineContent->newRecord) . "</br>";
+                    $newEntry = $lineContent->newRecord;
+                    echo "New Record : " . $newEntry->ORG_ENHET_ID . "</br>";
                 }
                 // Get New Entry
                 if ($lineContent) {
