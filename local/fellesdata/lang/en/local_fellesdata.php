@@ -200,6 +200,10 @@ $string['error_response_subject']           = ' {$a}: Integration TARDIS - ERROR
 $string['error_response_status_subject']    = ' {$a}: Integration STATUS TARDIS - ERROR RESPONSE';
 $string['error_reponse_body']               = ' <p>We would like to inform you, that there has been a problem during the connection/communication with <strong>TARDIS</strong> services.</p> 
                                                 <p>So, the process <strong>{$a}</strong> has got an invalid response.</p> ';
+
+$string['error_reponse_status']             = ' <p>We would like to inform you, that the content of teh file <strong>{$a}</strong> is not allowed for STATUS sync.</p>
+                                                <p>So, <strong>STATUS </strong> cron has been de-activated meanwhile the problem is being fixed.
+                                                Please contact the Weblogin support for assistance.</p>';
 $string['error_process_subject'] = '{$a->SITE}: {$a->type} Integration - ERROR ';
 $string['error_process_body']    = '<p>We would like to inform you, that there has been a problem during the integration between {$a} and KS.</p>
                                     <p>So, the {$a} cron has been de-activated meanwhile the problem is being fixed.Please contact the Weblogin support for assistance.</p>';

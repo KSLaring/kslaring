@@ -239,13 +239,14 @@ class FS_CRON {
      * @param           $plugin
      * @param           $type
      * @param           $service
+     * @param           $extract
      *
      * @throws          Exception
      *
      * @creationDate    02/06/2017
      * @author          eFaktor     (fbv)
      */
-    public static function send_notifications_service($plugin,$type,$service) {
+    public static function send_notifications_service($plugin,$type,$service,$extract=false) {
         /* Variables */
         global $SITE;
         $infoUser           = null;
@@ -289,7 +290,11 @@ class FS_CRON {
                 }//if_type
 
                 // Body
-                $strBody = (string)new lang_string('error_reponse_body','local_fellesdata',$service,$infoUser->lang);
+                if (($type == 'STATUS') && ($extract)) {
+                    $strBody = (string)new lang_string('error_reponse_status','local_fellesdata',$service,$infoUser->lang);
+                }else {
+                    $strBody = (string)new lang_string('error_reponse_body','local_fellesdata',$service,$infoUser->lang);
+                }
 
                 // Send notification
                 email_to_user($infoUser, $SITE->shortname, $strSubject, $strBody, $strBody);
@@ -3194,8 +3199,14 @@ class FS {
         $time           = null;
         $log            = null;
         $toLog          = array();
+        $stop           = false;
+        $service        = null;
+        $plugin         = null;
 
         try {
+            // Plugin info
+            $plugin = get_config('local_fellesdata');
+
             // Local time
             $time = time();
 
@@ -3206,7 +3217,7 @@ class FS {
                 // Get New Entry
                 if ($lineContent) {
                     if ($status) {
-                        if (!isset($lineContent->oldRecord)) {
+                        if (trim($lineContent->changeType) == ADD_ACTION) {
                             $newEntry = $lineContent->newRecord;
                             $newEntry->action   = 3;
                             $newEntry->imported = 0;
@@ -3263,7 +3274,7 @@ class FS {
                 }//ifLineContent
             }//for
 
-            if ($toSave) {
+            if (($toSave) && (!$stop)) {
                 switch ($type) {
                     case IMP_USERS:
                         // FS Users
@@ -3298,6 +3309,39 @@ class FS {
 
                         break;
                 }//type
+            }else {
+                if ($stop) {
+                    switch ($type) {
+                        case IMP_USERS:
+                            $service = TRADIS_FS_USERS;
+
+                            break;
+
+                        case IMP_COMPANIES:
+                            $service = TRADIS_FS_COMPANIES;
+
+                            break;
+
+                        case IMP_JOBROLES:
+                            $service = TRADIS_FS_JOBROLES;
+
+                            break;
+
+                        case IMP_MANAGERS_REPORTERS:
+                            $service = TRADIS_FS_MANAGERS_REPORTERS;
+
+                            break;
+
+                        case IMP_COMPETENCE_JR:
+                            $service = TRADIS_FS_USERS_JOBROLES;
+
+                            break;
+                    }//type
+
+                    // Sopt process and send notification
+                    FS_CRON::deactivate_cron('status');
+                    FS_CRON::send_notifications_service($plugin,'STATUS',$service);
+                }
             }//if_toSave
 
             return true;
@@ -3478,11 +3522,12 @@ class FS {
         $params     = null;
 
         // Start transaction
-        //$trans = $DB->start_delegated_transaction();
+        $trans = $DB->start_delegated_transaction();
 
         try {
             // Execute
             $DB->insert_records('fs_imp_company',$data);
+
             // For log / historical
             $DB->insert_records('fs_imp_comp_log',$log);
 
@@ -3500,10 +3545,10 @@ class FS {
                 $DB->insert_records('fs_imp_middle_parents',$rdo);
             }
             // Commit
-            //$trans->allow_commit();
+            $trans->allow_commit();
         }catch (Exception $ex) {
             // Rollback
-            //$trans->rollback($ex);
+            $trans->rollback($ex);
 
             throw $ex;
         }//try_catch
