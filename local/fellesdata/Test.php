@@ -62,16 +62,7 @@ try {
         $toDate     = gmdate('Y-m-d\TH:i:s\Z',$toDate);
 
         echo $toDate . "</br>";
-
-        echo random_string();
-
-        echo FS_NIVA_1 . "</br>";
-        echo FS_NIVA_2 . "</br>";
-        echo FS_NIVA_5 . "</br>";
-
-        $levels = FS_NIVA_2 . "," . FS_NIVA_5;
-
-        echo "LEVELS : " . $levels . "</br>";
+        
 
 /**
         $toMail = array();
