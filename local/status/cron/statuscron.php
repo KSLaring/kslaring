@@ -848,7 +848,7 @@ class STATUS_CRON {
             self::$log[] = $infolog;
 
             // Call web service
-            $response = self::process_tardis_status($plugin,TRADIS_FS_JOBROLES,$dblog);
+            $response = self::process_tardis_status($plugin,TRADIS_FS_JOBROLES);
 
             // Import data into temporary tables
             if ($response) {
@@ -1007,7 +1007,12 @@ class STATUS_CRON {
                         self::$log[] = $infolog;
                     }//if_max_imp
                 }else {
-                    $dblog .= 'FILE DOES NOT EXIST ' . "\n";
+                    // Log
+                    $infolog = new stdClass();
+                    $infolog->action 		= 'import_status_managers_reporters';
+                    $infolog->description 	= 'FILE DOES NOT EXIST: ';
+                    // Add log
+                    self::$log[] = $infolog;
                 }//if_exists
             }//if_fsResponse
 
