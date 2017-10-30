@@ -3168,6 +3168,8 @@ class FS {
             foreach($data as $key=>$line) {
                 $lineContent    = json_decode($line);
 
+                echo $line . "</br>";
+
                 // Get New Entry
                 if ($lineContent) {
                     if ($status) {
@@ -3237,7 +3239,7 @@ class FS {
 
                     case IMP_COMPANIES:
                         // FS Companies
-                        self::import_temporary_fs_company($toSave,$toLog);
+                        //self::import_temporary_fs_company($toSave,$toLog);
 
                         break;
 

@@ -62,7 +62,7 @@ try {
         $toDate     = gmdate('Y-m-d\TH:i:s\Z',$toDate);
 
         echo $toDate . "</br>";
-        
+
 
 /**
         $toMail = array();
