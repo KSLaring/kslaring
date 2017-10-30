@@ -3210,6 +3210,34 @@ class FS {
             // Local time
             $time = time();
 
+            // Get service
+            switch ($type) {
+                case IMP_USERS:
+                    $service = TRADIS_FS_USERS;
+
+                    break;
+
+                case IMP_COMPANIES:
+                    $service = TRADIS_FS_COMPANIES;
+
+                    break;
+
+                case IMP_JOBROLES:
+                    $service = TRADIS_FS_JOBROLES;
+
+                    break;
+
+                case IMP_MANAGERS_REPORTERS:
+                    $service = TRADIS_FS_MANAGERS_REPORTERS;
+
+                    break;
+
+                case IMP_COMPETENCE_JR:
+                    $service = TRADIS_FS_USERS_JOBROLES;
+
+                    break;
+            }//type
+
             // Each line file
             foreach($data as $key=>$line) {
                 $lineContent    = json_decode($line);
@@ -3311,41 +3339,22 @@ class FS {
                 }//type
             }else {
                 if ($stop) {
-                    switch ($type) {
-                        case IMP_USERS:
-                            $service = TRADIS_FS_USERS;
-
-                            break;
-
-                        case IMP_COMPANIES:
-                            $service = TRADIS_FS_COMPANIES;
-
-                            break;
-
-                        case IMP_JOBROLES:
-                            $service = TRADIS_FS_JOBROLES;
-
-                            break;
-
-                        case IMP_MANAGERS_REPORTERS:
-                            $service = TRADIS_FS_MANAGERS_REPORTERS;
-
-                            break;
-
-                        case IMP_COMPETENCE_JR:
-                            $service = TRADIS_FS_USERS_JOBROLES;
-
-                            break;
-                    }//type
-
-                    // Sopt process and send notification
-                    FS_CRON::deactivate_cron('status');
-                    FS_CRON::send_notifications_service($plugin,'STATUS',$service,true);
+                    if ($status) {
+                        // Sopt process and send notification
+                        FS_CRON::deactivate_cron('status');
+                        FS_CRON::send_notifications_service($plugin,'STATUS',$service,true);
+                    }
                 }
             }//if_toSave
 
             return true;
         }catch (Exception $ex) {
+            if ($status) {
+                // Sopt process and send notification
+                FS_CRON::deactivate_cron('status');
+                FS_CRON::send_notifications_service($plugin,'STATUS',$service);
+            }
+
             throw $ex;
         }//try_catch
     }//save_temporary_fellesdata

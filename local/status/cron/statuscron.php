@@ -609,6 +609,8 @@ class STATUS_CRON {
 
             return true;
         }catch (Exception $ex) {
+            self::$stopped = true;
+
             throw $ex;
         }//try_catch
     }//import_fellesdata
