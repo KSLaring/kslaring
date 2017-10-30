@@ -2253,15 +2253,12 @@ class STATUS_CRON {
             $response   = curl_exec( $ch );
             curl_close( $ch );
 
-            // Save original backup
+            // Save backup previous file receive it
             $pathFile = $original . '/' . $service . '.txt';
             if (file_exists($pathFile)) {
-                // Move the file to the new directory
+                // Move the file to the backup
                 copy($pathFile,$backup . '/' . $service . '_' . $time . '.txt');
-            }
 
-            // Save original file receive it
-            if (file_exists($pathFile)) {
                 // DELETE
                 unlink($pathFile);
             }

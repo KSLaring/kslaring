@@ -1434,17 +1434,14 @@ class FELLESDATA_CRON {
             $response   = curl_exec( $ch );
             curl_close( $ch );
 
-            // Save original file receive it
+            // Save backup previous file receive it
             $pathFile = $original . '/' . $service . '.txt';
             if (file_exists($pathFile)) {
+                // Move the file to the backup
+                copy($pathFile,$backup . '/' . $service . '_' . $time . '.txt');
+
                 // DELETE
                 unlink($pathFile);
-            }
-
-            // Save original backup
-            if (file_exists($pathFile)) {
-                // Move the file to the new directory
-                copy($pathFile,$backup . '/' . $service . '_' . $time . '.txt');
             }
 
             // Overwrite
