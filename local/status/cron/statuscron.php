@@ -2253,12 +2253,16 @@ class STATUS_CRON {
             $response   = curl_exec( $ch );
             curl_close( $ch );
 
-            // Save original file receive it
+            // Save backup previous file receive it
             $pathFile = $original . '/' . $service . '.txt';
             if (file_exists($pathFile)) {
+                // Move the file to the backup
+                copy($pathFile,$backup . '/' . $service . '_' . $time . '.txt');
+
                 // DELETE
                 unlink($pathFile);
             }
+
             // Overwrite
             $responseFile = fopen($pathFile,'w');
             fwrite($responseFile,$response);
@@ -2316,14 +2320,8 @@ class STATUS_CRON {
 
                         throw new Exception('ERROR RESPONSE STATUS - EMPTY FILE');
                     }else {
-                        // Clean all response
+                        // File to work with
                         $path = $dir . '/' . $service . '.txt';
-                        if (file_exists($path)) {
-                            // Move the file to the new directory
-                            copy($path,$backup . '/' . $service . '_' . $time . '.txt');
-
-                            unlink($path);
-                        }
 
                         // Remove bad characters
                         $content = str_replace('\"','"',$response);
