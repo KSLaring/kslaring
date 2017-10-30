@@ -3478,7 +3478,7 @@ class FS {
         $params     = null;
 
         // Start transaction
-        $trans = $DB->start_delegated_transaction();
+        //$trans = $DB->start_delegated_transaction();
 
         try {
             // Execute
@@ -3500,10 +3500,10 @@ class FS {
                 $DB->insert_records('fs_imp_middle_parents',$rdo);
             }
             // Commit
-            $trans->allow_commit();
+            //$trans->allow_commit();
         }catch (Exception $ex) {
             // Rollback
-            $trans->rollback($ex);
+            //$trans->rollback($ex);
 
             throw $ex;
         }//try_catch
