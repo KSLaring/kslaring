@@ -1514,6 +1514,9 @@ class FELLESDATA_CRON {
 
                         return false;
                     }else {
+                        // File to work with
+                        $pathFile = $dir . '/' . $service . '.txt';
+
                         // Remove bad characters
                         $content = str_replace('\"','"',$response);
                         // CR - LF && EOL

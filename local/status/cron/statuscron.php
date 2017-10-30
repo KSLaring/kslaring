@@ -2320,14 +2320,8 @@ class STATUS_CRON {
 
                         throw new Exception('ERROR RESPONSE STATUS - EMPTY FILE');
                     }else {
-                        // Clean all response
+                        // File to work with
                         $path = $dir . '/' . $service . '.txt';
-                        if (file_exists($path)) {
-                            // Move the file to the new directory
-                            copy($path,$backup . '/' . $service . '_' . $time . '.txt');
-
-                            unlink($path);
-                        }
 
                         // Remove bad characters
                         $content = str_replace('\"','"',$response);
