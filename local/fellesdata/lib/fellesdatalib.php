@@ -3340,7 +3340,7 @@ class FS {
 
                     // Sopt process and send notification
                     FS_CRON::deactivate_cron('status');
-                    FS_CRON::send_notifications_service($plugin,'STATUS',$service);
+                    FS_CRON::send_notifications_service($plugin,'STATUS',$service,true);
                 }
             }//if_toSave
 
