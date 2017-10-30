@@ -1397,6 +1397,12 @@ class FELLESDATA_CRON {
             $original = $CFG->dataroot . '/fellesdata/original';
             if (!file_exists($original)) {
                 mkdir($original);
+            }//if_original
+
+            // Backup
+            $backup = $CFG->dataroot . '/fellesdata/backup';
+            if (!file_exists($backup)) {
+                mkdir($backup);
             }//if_backup
 
             // Get parameters service
@@ -1434,6 +1440,13 @@ class FELLESDATA_CRON {
                 // DELETE
                 unlink($pathFile);
             }
+
+            // Save original backup
+            if (file_exists($pathFile)) {
+                // Move the file to the new directory
+                copy($pathFile,$backup . '/' . $service . '_' . $time . '.txt');
+            }
+
             // Overwrite
             $responseFile = fopen($pathFile,'w');
             fwrite($responseFile,$response);
@@ -1504,9 +1517,6 @@ class FELLESDATA_CRON {
 
                         return false;
                     }else {
-                        // Clean all response
-                        $pathFile = $dir . '/' . $service . '.txt';
-
                         // Remove bad characters
                         $content = str_replace('\"','"',$response);
                         // CR - LF && EOL
