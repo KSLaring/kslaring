@@ -3206,7 +3206,7 @@ class FS {
                 // Get New Entry
                 if ($lineContent) {
                     if ($status) {
-                        if (isset($lineContent->newRecord)) {
+                        if (!isset($lineContent->oldRecord)) {
                             $newEntry = $lineContent->newRecord;
                             $newEntry->action   = 3;
                             $newEntry->imported = 0;
