@@ -78,6 +78,41 @@ define('FS_NIVA_1',1);
 class FS_CRON {
     /**
      * Description
+     * Check if automatic mapping can be applied
+     *
+     * @return          bool
+     * @throws          Exception
+     *
+     * @creationDate    30/10/2017
+     * @author          eFaktor     (fbv)
+     */
+    public static function check_automatically_option() {
+        /* Variables */
+        global $DB;
+        $rdo = null;
+        $sql = null;
+
+        try {
+            // SQL Instruction
+            $sql = " SELECT		ks.*
+                     FROM		{ks_company}	ks
+                        JOIN	{ksfs_company}	ksfs	ON ksfs.kscompany = ks.companyid
+                     WHERE	    ks.hierarchylevel = 1 ";
+
+            // Execute
+            $rdo = $DB->get_record_sql($sql);
+            if ($rdo) {
+                return true;
+            }else {
+                return false;
+            }//if_Rdo
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//check_automatically_option
+
+    /**
+     * Description
      * Write fellesdata log
      *
      * @param           $log
@@ -3168,18 +3203,16 @@ class FS {
             foreach($data as $key=>$line) {
                 $lineContent    = json_decode($line);
 
-                echo $line . "</br>";
-
-                if (isset($lineContent->newRecord)) {
-                    $newEntry = $lineContent->newRecord;
-                    echo "New Record : " . $newEntry->ORG_ENHET_ID . "</br>";
-                }
                 // Get New Entry
                 if ($lineContent) {
                     if ($status) {
-                        $newEntry = $lineContent->newRecord;
-                        $newEntry->action   = 3;
-                        $newEntry->imported = 0;
+                        if (isset($lineContent->newRecord)) {
+                            $newEntry = $lineContent->newRecord;
+                            $newEntry->action   = 3;
+                            $newEntry->imported = 0;
+                        }else {
+                            $stop = true;
+                        }
                     }else {
                         // Get Action
                         switch (trim($lineContent->changeType)) {
@@ -3243,7 +3276,7 @@ class FS {
 
                     case IMP_COMPANIES:
                         // FS Companies
-                        //self::import_temporary_fs_company($toSave,$toLog);
+                        self::import_temporary_fs_company($toSave,$toLog);
 
                         break;
 

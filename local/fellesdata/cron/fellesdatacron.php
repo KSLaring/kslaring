@@ -27,6 +27,7 @@
 
 define('SYNC_COMP','companies');
 define('SYNC_JR','jobroles');
+define('SYNC_AUTO','automatic');
 
 define('TEST_ORG',1);
 define('TEST_JR',2);
@@ -124,7 +125,7 @@ class FELLESDATA_CRON {
                         FSKS_COMPANY::get_companiesfs_to_mail(3,$toMail);
 
                         if ($toMail) {
-                            self::send_notifications(SYNC_COMP,$toMail,$notifyTo,$plugin->fs_source);
+                            self::send_notifications(SYNC_COMP,$toMail,$notifyTo);
 
                             // Log
                             $infolog = new stdClass();
@@ -274,7 +275,7 @@ class FELLESDATA_CRON {
                             FSKS_COMPANY::get_companiesfs_to_mail(3,$toMail);
 
                             if ($toMail) {
-                                self::send_notifications(SYNC_COMP,$toMail,$notifyTo,$pluginInfo->fs_source);
+                                self::send_notifications(SYNC_COMP,$toMail,$notifyTo);
 
                                 // Log
                                 $infolog = new stdClass();
@@ -1700,7 +1701,7 @@ class FELLESDATA_CRON {
 
                     // Mail --> manual synchronization
                     if ($notifyTo) {
-                        self::send_notifications(SYNC_COMP,null,$notifyTo,$pluginInfo->fs_source);
+                        self::send_notifications(SYNC_COMP,null,$notifyTo);
 
                         // Log
                         $infolog = new stdClass();
@@ -1722,10 +1723,14 @@ class FELLESDATA_CRON {
 
                     // Companies to create automatically
                     if ($pluginInfo->automatic) {
-                        // Level two
-                        self::companies_automatically_synchronized($pluginInfo,FS_LE_2);
-                        // Level three
-                        self::companies_automatically_synchronized($pluginInfo,FS_LE_5);
+                        if (FS_CRON::check_automatically_option()) {
+                            // Level two
+                            self::companies_automatically_synchronized($pluginInfo,FS_LE_2);
+                            // Level three
+                            self::companies_automatically_synchronized($pluginInfo,FS_LE_5);
+                        }else {
+
+                        }
                     }//if_automatic
 
                     // Synchronize new companies
@@ -2210,7 +2215,7 @@ class FELLESDATA_CRON {
                     // Jobroles to map
                     $toMail = FSKS_JOBROLES::jobroles_fs_tosynchronize_mailing();
                     if ($toMail) {
-                        self::send_notifications(SYNC_JR,$toMail,$notifyTo,$pluginInfo->fs_source);
+                        self::send_notifications(SYNC_JR,$toMail,$notifyTo);
                         // Log
                         $infolog = new stdClass();
                         $infolog->action 		= 'jobroles_fs_to_map';
@@ -2565,7 +2570,6 @@ class FELLESDATA_CRON {
      * @param           $type
      * @param           $toMail
      * @param           $notifyTo
-     * @param           $source
      *
      * @throws          Exception
      *
@@ -2575,7 +2579,7 @@ class FELLESDATA_CRON {
      * Description
      * Send notifications
      */
-    private static function send_notifications($type,$toMail,$notifyTo,$source) {
+    private static function send_notifications($type,$toMail,$notifyTo) {
         /* Variables    */
         global $USER,$SITE,$CFG;
         $urlMapping = null;
@@ -2593,7 +2597,8 @@ class FELLESDATA_CRON {
             switch ($type) {
                 case SYNC_COMP:
                     // url mapping
-                    $urlMapping = new moodle_url('/local/fellesdata/mapping/mapping_org.php');
+                    $urlMapping     = new moodle_url('/local/fellesdata/mapping/mapping_org.php',array('m' => 'co'));
+                    $info->mapping  = $urlMapping;
 
                     if ($toMail) {
                         $info->companies = implode('<br/>',$toMail);
@@ -2601,9 +2606,7 @@ class FELLESDATA_CRON {
                         $info->companies = null;
                     }//if_ToMail
 
-                    $urlMapping->param('m','co');
-                    $info->mapping  = $urlMapping;
-
+                    // Body
                     $body = (string)new lang_string('body_company_to_sync','local_fellesdata',$info,$USER->lang);
 
                     break;
@@ -2614,7 +2617,16 @@ class FELLESDATA_CRON {
                     $urlMapping = new moodle_url('/local/fellesdata/mapping/jobroles.php');
                     $info->mapping  = $urlMapping;
 
+                    // Body
                     $body = (string)new lang_string('body_jr_to_sync','local_fellesdata',$info,$USER->lang);
+
+                    break;
+                case SYNC_AUTO:
+                    // url mapping
+                    $urlMapping = new moodle_url('/local/fellesdata/mapping/mapping_org.php',array('m' => 'co'));
+
+                    // Body
+                    $body = (string)new lang_string('body_automatic','local_fellesdata',$urlMapping,$USER->lang);
 
                     break;
             }//type

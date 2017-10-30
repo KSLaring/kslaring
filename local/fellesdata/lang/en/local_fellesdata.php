@@ -59,6 +59,9 @@ $string['body_jr_to_sync']      = '<p>We would like to inform you that there are
                                    <p>Job roles such as {$a->jobroles}</p>
                                    </br>
                                    <p>Please, you should take a look on <strong>{$a->mapping}</strong></p>';
+$string['body_automatic']       = '<p>We would like to inform you that automatic mapping cannot be applied. It must to be manually mapped at least first level.</p>
+                                   </br>
+                                   <p>Please, you should take a look on <strong>{$a}</strong></p>';
 
 $string['nav_mapping']          = 'Mapping';
 $string['header_fellesdata']    = 'Fellesdata Mapping';
