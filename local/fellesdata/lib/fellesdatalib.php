@@ -3170,6 +3170,9 @@ class FS {
 
                 echo $line . "</br>";
 
+                if (isset($lineContent->newRecord)) {
+                    echo "New Record : " . $lineContent->newRecord . "</br>";
+                }
                 // Get New Entry
                 if ($lineContent) {
                     if ($status) {
