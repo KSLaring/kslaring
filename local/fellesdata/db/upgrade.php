@@ -220,7 +220,7 @@ function xmldb_local_fellesdata_upgrade($oldVersion) {
             }//if_not_exists
         }
 
-        if ($oldVersion < 2017101602) {
+        if ($oldVersion < 2017103000) {
             Fellesdata_Update::fs_imp_company_log($dbMan);
             Fellesdata_Update::fs_imp_users_log($dbMan);
             Fellesdata_Update::fs_users_sync_log($dbMan);
