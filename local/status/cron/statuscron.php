@@ -609,6 +609,8 @@ class STATUS_CRON {
 
             return true;
         }catch (Exception $ex) {
+            self::$stopped = true;
+
             throw $ex;
         }//try_catch
     }//import_fellesdata
@@ -644,7 +646,7 @@ class STATUS_CRON {
             self::$log[] = $infolog;
 
             // Call web service
-            $response = self::process_tardis_status($plugin,TRADIS_FS_USERS,$dblog);
+            $response = self::process_tardis_status($plugin,TRADIS_FS_USERS);
 
             // Import data into temporary tables
             if ($response) {
@@ -749,7 +751,7 @@ class STATUS_CRON {
             self::$log[] = $infolog;
 
             // Call web service
-            $response = self::process_tardis_status($plugin,TRADIS_FS_COMPANIES,$dblog);
+            $response = self::process_tardis_status($plugin,TRADIS_FS_COMPANIES);
 
             // Import data into temporary tables
             if ($response) {
@@ -846,7 +848,7 @@ class STATUS_CRON {
             self::$log[] = $infolog;
 
             // Call web service
-            $response = self::process_tardis_status($plugin,TRADIS_FS_JOBROLES,$dblog);
+            $response = self::process_tardis_status($plugin,TRADIS_FS_JOBROLES);
 
             // Import data into temporary tables
             if ($response) {
@@ -951,7 +953,7 @@ class STATUS_CRON {
             self::$log[] = $infolog;
 
             // Call web service
-            $response = self::process_tardis_status($plugin,TRADIS_FS_MANAGERS_REPORTERS,$dblog);
+            $response = self::process_tardis_status($plugin,TRADIS_FS_MANAGERS_REPORTERS);
 
             // Import data into temporary tables
             if ($response) {
@@ -1005,7 +1007,12 @@ class STATUS_CRON {
                         self::$log[] = $infolog;
                     }//if_max_imp
                 }else {
-                    $dblog .= 'FILE DOES NOT EXIST ' . "\n";
+                    // Log
+                    $infolog = new stdClass();
+                    $infolog->action 		= 'import_status_managers_reporters';
+                    $infolog->description 	= 'FILE DOES NOT EXIST: ';
+                    // Add log
+                    self::$log[] = $infolog;
                 }//if_exists
             }//if_fsResponse
 
@@ -1051,7 +1058,7 @@ class STATUS_CRON {
             self::$log[] = $infolog;
 
             // Call web service
-            $response = self::process_tardis_status($plugin,TRADIS_FS_USERS_JOBROLES,$dblog);
+            $response = self::process_tardis_status($plugin,TRADIS_FS_USERS_JOBROLES);
 
             // Import data into temporary tables
             if ($response) {
@@ -2182,7 +2189,6 @@ class STATUS_CRON {
      *
      * @param           $plugin
      * @param           $service
-     * @param           $dblog
      *
      * @return          mixed|null
      * @throws          Exception
@@ -2190,7 +2196,7 @@ class STATUS_CRON {
      * @creationDate    27/02/2017
      * @author          eFaktor     (fbv)
      */
-    private static function process_tardis_status($plugin,$service,&$dblog) {
+    private static function process_tardis_status($plugin,$service) {
         /* Variables    */
         global $CFG;
         $dir            = null;

@@ -78,6 +78,41 @@ define('FS_NIVA_1',1);
 class FS_CRON {
     /**
      * Description
+     * Check if automatic mapping can be applied
+     *
+     * @return          bool
+     * @throws          Exception
+     *
+     * @creationDate    30/10/2017
+     * @author          eFaktor     (fbv)
+     */
+    public static function check_automatically_option() {
+        /* Variables */
+        global $DB;
+        $rdo = null;
+        $sql = null;
+
+        try {
+            // SQL Instruction
+            $sql = " SELECT		ks.*
+                     FROM		{ks_company}	ks
+                        JOIN	{ksfs_company}	ksfs	ON ksfs.kscompany = ks.companyid
+                     WHERE	    ks.hierarchylevel = 1 ";
+
+            // Execute
+            $rdo = $DB->get_record_sql($sql);
+            if ($rdo) {
+                return true;
+            }else {
+                return false;
+            }//if_Rdo
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//check_automatically_option
+
+    /**
+     * Description
      * Write fellesdata log
      *
      * @param           $log
@@ -204,13 +239,14 @@ class FS_CRON {
      * @param           $plugin
      * @param           $type
      * @param           $service
+     * @param           $extract
      *
      * @throws          Exception
      *
      * @creationDate    02/06/2017
      * @author          eFaktor     (fbv)
      */
-    public static function send_notifications_service($plugin,$type,$service) {
+    public static function send_notifications_service($plugin,$type,$service,$extract=false) {
         /* Variables */
         global $SITE;
         $infoUser           = null;
@@ -254,7 +290,11 @@ class FS_CRON {
                 }//if_type
 
                 // Body
-                $strBody = (string)new lang_string('error_reponse_body','local_fellesdata',$service,$infoUser->lang);
+                if (($type == 'STATUS') && ($extract)) {
+                    $strBody = (string)new lang_string('error_reponse_status','local_fellesdata',$service,$infoUser->lang);
+                }else {
+                    $strBody = (string)new lang_string('error_reponse_body','local_fellesdata',$service,$infoUser->lang);
+                }
 
                 // Send notification
                 email_to_user($infoUser, $SITE->shortname, $strSubject, $strBody, $strBody);
@@ -3159,10 +3199,44 @@ class FS {
         $time           = null;
         $log            = null;
         $toLog          = array();
+        $stop           = false;
+        $service        = null;
+        $plugin         = null;
 
         try {
+            // Plugin info
+            $plugin = get_config('local_fellesdata');
+
             // Local time
             $time = time();
+
+            // Get service
+            switch ($type) {
+                case IMP_USERS:
+                    $service = TRADIS_FS_USERS;
+
+                    break;
+
+                case IMP_COMPANIES:
+                    $service = TRADIS_FS_COMPANIES;
+
+                    break;
+
+                case IMP_JOBROLES:
+                    $service = TRADIS_FS_JOBROLES;
+
+                    break;
+
+                case IMP_MANAGERS_REPORTERS:
+                    $service = TRADIS_FS_MANAGERS_REPORTERS;
+
+                    break;
+
+                case IMP_COMPETENCE_JR:
+                    $service = TRADIS_FS_USERS_JOBROLES;
+
+                    break;
+            }//type
 
             // Each line file
             foreach($data as $key=>$line) {
@@ -3171,9 +3245,13 @@ class FS {
                 // Get New Entry
                 if ($lineContent) {
                     if ($status) {
-                        $newEntry = $lineContent->newRecord;
-                        $newEntry->action   = 3;
-                        $newEntry->imported = 0;
+                        if (trim($lineContent->changeType) == ADD_ACTION) {
+                            $newEntry = $lineContent->newRecord;
+                            $newEntry->action   = 3;
+                            $newEntry->imported = 0;
+                        }else {
+                            $stop = true;
+                        }
                     }else {
                         // Get Action
                         switch (trim($lineContent->changeType)) {
@@ -3224,7 +3302,7 @@ class FS {
                 }//ifLineContent
             }//for
 
-            if ($toSave) {
+            if (($toSave) && (!$stop)) {
                 switch ($type) {
                     case IMP_USERS:
                         // FS Users
@@ -3259,10 +3337,24 @@ class FS {
 
                         break;
                 }//type
+            }else {
+                if ($stop) {
+                    if ($status) {
+                        // Sopt process and send notification
+                        FS_CRON::deactivate_cron('status');
+                        FS_CRON::send_notifications_service($plugin,'STATUS',$service,true);
+                    }
+                }
             }//if_toSave
 
             return true;
         }catch (Exception $ex) {
+            if ($status) {
+                // Sopt process and send notification
+                FS_CRON::deactivate_cron('status');
+                FS_CRON::send_notifications_service($plugin,'STATUS',$service);
+            }
+
             throw $ex;
         }//try_catch
     }//save_temporary_fellesdata
@@ -3444,6 +3536,7 @@ class FS {
         try {
             // Execute
             $DB->insert_records('fs_imp_company',$data);
+
             // For log / historical
             $DB->insert_records('fs_imp_comp_log',$log);
 
