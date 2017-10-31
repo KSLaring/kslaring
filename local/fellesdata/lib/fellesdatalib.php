@@ -3498,7 +3498,7 @@ class FS {
             if ($rdo) {
                 foreach ($rdo as $instance) {
                     // Fake eMail
-                    $instance->EPOST        = random_string() . '@byttmegut.no';
+                    $instance->epost        = random_string() . '@byttmegut.no';
                     $instance->timemodified = $time;
                     
                     // Update
