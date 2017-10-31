@@ -2631,14 +2631,14 @@ class FSKS_USERS {
                     if ($rdoUser) {
                         $rdoUser->timemodified = $time;
                         $rdoUser->deleted      = 0;
-                        $rdoUser->email        = '';
+                        $rdoUser->email        = random_string() . '@inactive.no';
 
                         /* Execute  */
                         $DB->update_record('user',$rdoUser);
                     }else {
                         /* Execute  */
                         $infoUser->deleted      = 0;
-                        $infoUser->email        = '';
+                        $infoUser->email        = random_string() . '@inactive.no';
                         $userId = $DB->insert_record('user',$infoUser);
                     }//if_exist
 
