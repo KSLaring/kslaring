@@ -310,7 +310,6 @@ class FELLESDATA_CRON {
 
                     break;
                 case TEST_FS_SYNC_FS_USERS:
-                    echo "USERS ACCOUNTS " . "</br>";
                     echo "Synchronization Users FS";
                     /* Synchronization Users Accounts   */
                     self::users_fs_synchronization($pluginInfo);
@@ -335,8 +334,6 @@ class FELLESDATA_CRON {
                     break;
             }//switch_option
 
-            echo "HI PAQUI" . "</br>";
-            /**
             // Log
             $infolog = new stdClass();
             $infolog->action        = 'FINISH Cron Manual ' . userdate(time(),'%d.%m.%Y %H:%M', 99, false);
@@ -346,12 +343,11 @@ class FELLESDATA_CRON {
 
             foreach (self::$log as $info) {
                 echo $info->description . "</br>";
-            } **/
+            }
 
             // Write log
-            //FS_CRON::write_fellesdata_log(self::$log);
+            FS_CRON::write_fellesdata_log(self::$log);
     }catch (Exception $ex) {
-            /**
             // Log
             $infolog = new stdClass();
             $infolog->action      = 'ERROR Cron Manual ' . userdate(time(),'%d.%m.%Y %H:%M', 99, false);
@@ -362,10 +358,6 @@ class FELLESDATA_CRON {
 
             // Write log
             FS_CRON::write_fellesdata_log(self::$log);
-             * **/
-
-            echo $ex->getTraceAsString() . "</br></br>";
-            echo $ex->getMessage() . "</br></br>";
 
             throw $ex;
         }//try_catch
@@ -1619,7 +1611,6 @@ class FELLESDATA_CRON {
                 self::$log[] = $infolog;
 
                 if ($total) {
-                    echo "HOLA CARACOLA" . "</br>";
                     for ($i=0;$i<=$total;$i=$i+$limit) {
                         // Get users accounts
                         list($lstusers,$rdousers) = FSKS_USERS::get_users_accounts($industry,$start,$limit);
@@ -1637,7 +1628,6 @@ class FELLESDATA_CRON {
 
                             if ($response) {
                                 if ($response['error'] == '200') {
-                                    echo "PERIOC PALOTES " . "</br>";
                                     // Synchronize users accounts FS
                                     FSKS_USERS::synchronize_users_fs($rdousers,$response['usersAccounts']);
                                 }else {
@@ -1661,14 +1651,6 @@ class FELLESDATA_CRON {
             // Add log
             self::$log[] = $infolog;
         }catch (Exception $ex) {
-
-            // Log
-            $infolog = new stdClass();
-            $infolog->action 		= 'PAQUI';
-            $infolog->description 	= $ex->getMessage();
-            // Add log
-            self::$log[] = $infolog;
-
             throw $ex;
         }//try_catch
     }//users_fs_synchronization

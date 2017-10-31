@@ -2568,7 +2568,6 @@ class FSKS_USERS {
 
             // Info Account
             if (!$rdoUser) {
-                echo "1" . "</br>";
                 // Create new Account
                 $infoUser = new stdClass();
                 if ($userFS->adfs) {
@@ -2609,10 +2608,8 @@ class FSKS_USERS {
                 case STATUS:
                     // Execute
                     if (!$rdoUser) {
-                        echo "2" . "</br>";
                         $userId = $DB->insert_record('user',$infoUser);
                     }else {
-                        echo "3" . "</br>";
                         // Update
                         $userId = $rdoUser->id;
                         $rdoUser->firstname     = $userFS->firstname;
@@ -2653,7 +2650,6 @@ class FSKS_USERS {
 
             // Synchronized
             if ($sync) {
-                echo "4" . "</br>";
                 $instance = new stdClass();
                 $instance->id           = $fsKey;
                 $instance->imported     = 1;
@@ -2667,7 +2663,6 @@ class FSKS_USERS {
             if ($userFS->ressursnr) {
                 $rdo = $DB->get_record('user_resource_number',array('userid' => $userId));
                 if ($rdo) {
-                    echo "5" . "</br>";
                     // Update
                     $rdo->ressursnr      = $userFS->ressursnr;
                     $rdo->industrycode   = $userFS->industry;
@@ -2675,7 +2670,6 @@ class FSKS_USERS {
                     // Execute
                     $DB->update_record('user_resource_number',$rdo);
                 }else {
-                    echo "6" . "</br>";
                     // Insert
                     $instance = new stdClass();
                     $instance->userid        = $userId;
@@ -2690,7 +2684,6 @@ class FSKS_USERS {
             // Fellesdata account has to be deleted
             // Only one account for user
             if ($rdoFellesdata) {
-                echo "7" . "</br>";
                 // From user
                 $DB->delete_records('user',array('id' => $rdoFellesdata->id,'username' => $rdoFellesdata->username));
 
@@ -2701,8 +2694,6 @@ class FSKS_USERS {
             // Commit
             $trans->allow_commit();
         }catch (Exception $ex) {
-            echo $ex->getTraceAsString() . "</br>" . "</br>";
-            echo $ex->getMessage() . "</br>" . "</br>";
             // Rollback
             $trans->rollback($ex);
 
