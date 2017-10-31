@@ -1637,6 +1637,7 @@ class FELLESDATA_CRON {
 
                             if ($response) {
                                 if ($response['error'] == '200') {
+                                    echo "PERIOC PALOTES " . "</br>";
                                     // Synchronize users accounts FS
                                     FSKS_USERS::synchronize_users_fs($rdousers,$response['usersAccounts']);
                                 }else {
