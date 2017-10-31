@@ -1651,6 +1651,14 @@ class FELLESDATA_CRON {
             // Add log
             self::$log[] = $infolog;
         }catch (Exception $ex) {
+
+            // Log
+            $infolog = new stdClass();
+            $infolog->action 		= 'PAQUI';
+            $infolog->description 	= $ex->getMessage();
+            // Add log
+            self::$log[] = $infolog;
+
             throw $ex;
         }//try_catch
     }//users_fs_synchronization
