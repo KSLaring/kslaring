@@ -2659,7 +2659,7 @@ class FSKS_USERS {
 
                 // Historical of user account sync
                 $instance = new stdClass();
-                $instance->username     = $userFS->adfs;
+                $instance->username     = $userFS->personalnumber;
                 $instance->idnumber     = $userFS->personalnumber;
                 $instance->adfs         = $userFS->adfs;
                 $instance->firstname    = $userFS->firstname;
