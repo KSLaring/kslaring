@@ -2656,6 +2656,18 @@ class FSKS_USERS {
                 $instance->timemodified = $time;
 
                 $DB->update_record('fs_imp_users',$instance);
+
+                // Historical of user account sync
+                $instance = new stdClass();
+                $instance->username     = $userFS->adfs;
+                $instance->idnumber     = $userFS->personalnumber;
+                $instance->adfs         = $userFS->adfs;
+                $instance->firstname    = $userFS->firstname;
+                $instance->lastname     = $userFS->lastname;
+                $instance->email        = $userFS->email;
+                $instance->action       = $userFS->action;
+                $instance->timesync     = $time;
+                $DB->insert_record('fs_users_sync_log',$instance);
             }//if_sync
 
             // Create the connection between user and his/her resource number

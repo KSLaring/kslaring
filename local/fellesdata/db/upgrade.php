@@ -390,7 +390,7 @@ class Fellesdata_Update {
 
             // Add extra fields and index
             $tbl = new xmldb_table('fs_users_company');
-            $tblfield = new xmldb_field('timesync', XMLDB_TYPE_INTEGER, '2', null, XMLDB_NOTNULL, null, 0);
+            $tblfield = new xmldb_field('timesync', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, 0);
             if (!$dbman->field_exists($tbl, $tblfield)) {
                 $dbman->add_field($tbl, $tblfield);
             }//if_not_exists
@@ -494,11 +494,11 @@ class Fellesdata_Update {
 
             // Add extra fields and index
             $tbl = new xmldb_table('fs_users_competence');
-            $tblfield = new xmldb_field('timesync', XMLDB_TYPE_INTEGER, '2', null, XMLDB_NOTNULL, null, 0);
+            $tblfield = new xmldb_field('timesync', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, 0);
             if (!$dbman->field_exists($tbl, $tblfield)) {
                 $dbman->add_field($tbl, $tblfield);
             }//if_not_exists
-            /**
+
             // Index - companyid
             $index = new xmldb_index('companyid', XMLDB_INDEX_NOTUNIQUE, array('companyid'));
             if (!$dbman->index_exists($tbl, $index)) {
@@ -530,7 +530,7 @@ class Fellesdata_Update {
             $index = new xmldb_index('jrcode', XMLDB_INDEX_NOTUNIQUE, array('stillingskode'));
             if (!$dbman->index_exists($tbl, $index)) {
                 $dbman->add_index($tbl, $index);
-            }**/
+            }
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -835,7 +835,7 @@ class Fellesdata_Update {
 
             // Add extra fields and index
             $tbl = new xmldb_table('fs_company');
-            $tblfield = new xmldb_field('timesync', XMLDB_TYPE_INTEGER, '2', null, XMLDB_NOTNULL, null, 0);
+            $tblfield = new xmldb_field('timesync', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, 0);
             if (!$dbman->field_exists($tbl, $tblfield)) {
                 $dbman->add_field($tbl, $tblfield);
             }//if_not_exists
