@@ -335,6 +335,8 @@ class FELLESDATA_CRON {
                     break;
             }//switch_option
 
+            echo "HI PAQUI" . "</br>";
+            /**
             // Log
             $infolog = new stdClass();
             $infolog->action        = 'FINISH Cron Manual ' . userdate(time(),'%d.%m.%Y %H:%M', 99, false);
@@ -344,7 +346,7 @@ class FELLESDATA_CRON {
 
             foreach (self::$log as $info) {
                 echo $info->description . "</br>";
-            }
+            } **/
 
             // Write log
             //FS_CRON::write_fellesdata_log(self::$log);
@@ -364,7 +366,7 @@ class FELLESDATA_CRON {
 
             echo $ex->getTraceAsString() . "</br></br>";
             echo $ex->getMessage() . "</br></br>";
-            
+
             throw $ex;
         }//try_catch
     }//cron_manual
