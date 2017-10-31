@@ -2636,7 +2636,8 @@ class FELLESDATA_CRON {
                     $urlMapping = new moodle_url('/local/fellesdata/mapping/mapping_org.php',array('m' => 'co'));
 
                     // Body
-                    $body = (string)new lang_string('body_automatic','local_fellesdata',$urlMapping,$USER->lang);
+                    $info->mapping  = $urlMapping;
+                    $body = (string)new lang_string('body_automatic','local_fellesdata',$info,$USER->lang);
 
                     break;
             }//type

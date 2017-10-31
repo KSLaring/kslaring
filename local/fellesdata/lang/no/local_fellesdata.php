@@ -67,7 +67,7 @@ $string['body_jr_to_sync']      = '<p>Vi vil gjerne informere deg om  at det nå
 
 $string['body_automatic']       = '<p>We would like to inform you that automatic mapping cannot be applied. It must to be manually mapped at least first level.</p>
                                    </br>
-                                   <p>Please, you should take a look on <strong>{$a}</strong></p>';
+                                   <p>Please, you should take a look at <strong>{$a->mapping}</strong></p>';
 
 $string['nav_mapping']          = 'Mapping';
 $string['header_fellesdata']    = 'TARDIS-mapping';
