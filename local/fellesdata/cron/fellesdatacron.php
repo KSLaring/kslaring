@@ -310,6 +310,7 @@ class FELLESDATA_CRON {
 
                     break;
                 case TEST_FS_SYNC_FS_USERS:
+                    echo "USERS ACCOUNTS " . "</br>";
                     echo "Synchronization Users FS";
                     /* Synchronization Users Accounts   */
                     self::users_fs_synchronization($pluginInfo);
@@ -346,8 +347,9 @@ class FELLESDATA_CRON {
             }
 
             // Write log
-            FS_CRON::write_fellesdata_log(self::$log);
+            //FS_CRON::write_fellesdata_log(self::$log);
     }catch (Exception $ex) {
+            /**
             // Log
             $infolog = new stdClass();
             $infolog->action      = 'ERROR Cron Manual ' . userdate(time(),'%d.%m.%Y %H:%M', 99, false);
@@ -358,7 +360,11 @@ class FELLESDATA_CRON {
 
             // Write log
             FS_CRON::write_fellesdata_log(self::$log);
+             * **/
 
+            echo $ex->getTraceAsString() . "</br></br>";
+            echo $ex->getMessage() . "</br></br>";
+            
             throw $ex;
         }//try_catch
     }//cron_manual
