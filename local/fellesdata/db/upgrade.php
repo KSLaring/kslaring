@@ -835,7 +835,7 @@ class Fellesdata_Update {
 
             // Add extra fields and index
             $tbl = new xmldb_table('fs_company');
-            $tblfield = new xmldb_field('timesync', XMLDB_TYPE_INTEGER, '2', null, XMLDB_NOTNULL, null, 0);
+            $tblfield = new xmldb_field('timesync', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, 0);
             if (!$dbman->field_exists($tbl, $tblfield)) {
                 $dbman->add_field($tbl, $tblfield);
             }//if_not_exists
