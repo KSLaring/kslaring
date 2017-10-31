@@ -1619,6 +1619,7 @@ class FELLESDATA_CRON {
                 self::$log[] = $infolog;
 
                 if ($total) {
+                    echo "HOLA CARACOLA" . "</br>";
                     for ($i=0;$i<=$total;$i=$i+$limit) {
                         // Get users accounts
                         list($lstusers,$rdousers) = FSKS_USERS::get_users_accounts($industry,$start,$limit);
