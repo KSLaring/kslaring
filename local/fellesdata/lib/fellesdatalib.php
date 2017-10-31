@@ -2521,7 +2521,7 @@ class FSKS_USERS {
         $userId         = null;
 
         // Start Transaction
-        $trans = $DB->start_delegated_transaction();
+        //$trans = $DB->start_delegated_transaction();
 
         try {
             // Local Time
@@ -2699,12 +2699,12 @@ class FSKS_USERS {
             }//if_fellesdata
 
             // Commit
-            $trans->allow_commit();
+            //$trans->allow_commit();
         }catch (Exception $ex) {
             echo $ex->getTraceAsString() . "</br>" . "</br>";
             echo $ex->getMessage() . "</br>" . "</br>";
             // Rollback
-            $trans->rollback($ex);
+            //$trans->rollback($ex);
 
             throw $ex;
         }//try_catch
