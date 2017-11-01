@@ -29,6 +29,8 @@ require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
 
 defined('MOODLE_INTERNAL') || die;
 
+$nocache = optional_param('nocache', 0, PARAM_BOOL);
+
 // Set up the page.
 /* @var \moodle_page $PAGE The Moodle page object */
 $PAGE->set_url('/local/course_search/search.php');
@@ -53,7 +55,7 @@ $langstrings = array(
 );
 $PAGE->requires->strings_for_js($langstringsfriadmin, 'local_friadmin');
 $PAGE->requires->strings_for_js($langstrings, 'local_course_search');
-$PAGE->requires->js_call_amd('local_course_search/coursesearch', 'init', array(current_language()));
+$PAGE->requires->js_call_amd('local_course_search/coursesearch', 'init', array(current_language(), $nocache));
 
 /* @var \local_course_search_renderer $pluginrenderer The course search plugin renderer. */
 $pluginrenderer = $PAGE->get_renderer('local_course_search');

@@ -51,13 +51,22 @@ class coursesearch extends external_api {
      *
      * @return array The course data
      */
-    public static function get_course_data($userid) {
+    public static function get_course_data($userid, $nocache) {
         global $CFG, $PAGE;
 
         $result = array();
 
-        // Switch to turn cacheing on/off.
-        if (true) {
+        // Switch to turn caching on/off.
+        if ($nocache) {
+            if (false) {
+                $coursedata = file_get_contents(__DIR__ . '/../../fixtures/courses.json');
+            } else {
+                $PAGE->set_context(\context_system::instance());
+                $courses = new \local_course_search\output\courses();
+                //$coursedata = json_encode(array('courses' => $courses->export_course_data()));
+                $coursedata = $courses->export_json_course_data();
+            }
+        } else {
             // Try to get the cached course data. If no data is cached request the database and save the data in the cache.
             $cache = \cache::make('local_course_search', 'courses');
             $coursedata = $cache->get($userid); // Get the cached data for the user.
@@ -72,15 +81,6 @@ class coursesearch extends external_api {
                     $coursedata = $courses->export_json_course_data();
                     $cache->set($userid, $coursedata); // Cache data for the user.
                 }
-            }
-        } else {
-            if (false) {
-                $coursedata = file_get_contents(__DIR__ . '/../../fixtures/courses.json');
-            } else {
-                $PAGE->set_context(\context_system::instance());
-                $courses = new \local_course_search\output\courses();
-                //$coursedata = json_encode(array('courses' => $courses->export_course_data()));
-                $coursedata = $courses->export_json_course_data();
             }
         }
 
@@ -97,6 +97,7 @@ class coursesearch extends external_api {
     public static function get_course_data_parameters() {
         return new external_function_parameters([
             'userid' => new external_value(PARAM_INT, 'User id'),
+            'nocache' => new external_value(PARAM_INT, 'Don\'t use the cachce'),
         ]);
     }
 

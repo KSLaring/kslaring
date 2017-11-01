@@ -21,7 +21,8 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
 
         // The var nocourses is used as a flag for development - if true no courses are loaded.
         var nocourses = false;
-        var sortbystate = 'name',
+        var nocache = 0,
+            sortbystate = 'name',
             sortascstate = true,
             showtagliststate = false,
             actualCourseCount = 0,
@@ -1156,7 +1157,8 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                         {
                             methodname: 'local_course_search_get_course_data',
                             args: {
-                                userid: userid
+                                userid: userid,
+                                nocache: parseInt(nocache, 10)
                             }
                         }
                     ])[0]
@@ -1767,9 +1769,10 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
          * Initialize function, called with the PHP requires->js_call_amd command.
          */
         return {
-            init: function (lang) {
+            init: function (lang, noCache) {
                 log.debug('AMD module init with lang ' + lang);
 
+                nocache = noCache;
                 viewState.init();
 
                 // Get the relevant DOM elements.
@@ -1861,8 +1864,16 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                 // Restore the view from the viewState.
                 setViewWithOptions();
 
-                // Fetch the course data and show the courses.
-                initialGetCoursesAndCourseTagsSequence();
+                if (!window.Promise) {
+                    // Load a Promise polyfill for browsers like IE11 and downward.
+                    require(['javascript/promise.min'], function () {
+                        // Fetch the course data and show the courses.
+                        initialGetCoursesAndCourseTagsSequence();
+                    });
+                } else {
+                    // Fetch the course data and show the courses.
+                    initialGetCoursesAndCourseTagsSequence();
+                }
             }
         };
     }
