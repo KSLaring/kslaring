@@ -151,6 +151,7 @@
 }
 #page-course-search #course-list .course-list-col-titles th {
   cursor: pointer;
+  text-align: left;
 }
 #page-course-search #course-list .course-list-col-titles th.sortasc {
   background: transparent url([[pix:t/down]]) 0 50% no-repeat;
