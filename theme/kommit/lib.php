@@ -43,37 +43,37 @@ defined('MOODLE_INTERNAL') || die;
 function theme_kommit_page_init(moodle_page $page) {
     global $CFG;
 
-    $jshead = <<<EOT
-    <script type='text/javascript' src="//wurfl.io/wurfl.js"></script>
-EOT;
-
-    if (!empty($CFG->additionalhtmlhead)) {
-        $CFG->additionalhtmlhead .= $jshead;
-    } else {
-        $CFG->additionalhtmlhead = $jshead;
-    }
-
-    $jsbodyopen = <<<EOT
-    <script type='text/javascript'>
-        YUI().use('node', function(Y) {
-            var bd = Y.one('body');
-            if (bd && WURFL) {
-                if (WURFL.is_mobile) {
-                    bd.addClass('is-mobile');
-                }
-                if (WURFL.form_factor === 'Desktop') {
-                    bd.addClass('is-desktop');
-                }
-            }
-        });
-    </script>
-EOT;
-
-    if (!empty($CFG->additionalhtmltopofbody)) {
-        $CFG->additionalhtmltopofbody .= $jsbodyopen;
-    } else {
-        $CFG->additionalhtmltopofbody = $jsbodyopen;
-    }
+//    $jshead = <<<EOT
+//    <script type='text/javascript' src="//wurfl.io/wurfl.js"></script>
+//EOT;
+//
+//    if (!empty($CFG->additionalhtmlhead)) {
+//        $CFG->additionalhtmlhead .= $jshead;
+//    } else {
+//        $CFG->additionalhtmlhead = $jshead;
+//    }
+//
+//    $jsbodyopen = <<<EOT
+//    <script type='text/javascript'>
+//        YUI().use('node', function(Y) {
+//            var bd = Y.one('body');
+//            if (bd && WURFL) {
+//                if (WURFL.is_mobile) {
+//                    bd.addClass('is-mobile');
+//                }
+//                if (WURFL.form_factor === 'Desktop') {
+//                    bd.addClass('is-desktop');
+//                }
+//            }
+//        });
+//    </script>
+//EOT;
+//
+//    if (!empty($CFG->additionalhtmltopofbody)) {
+//        $CFG->additionalhtmltopofbody .= $jsbodyopen;
+//    } else {
+//        $CFG->additionalhtmltopofbody = $jsbodyopen;
+//    }
 
     if (function_exists('course_get_format')) {
         $courseformat = course_get_format($page->course);
