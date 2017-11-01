@@ -1798,6 +1798,7 @@ class FSKS_COMPANY {
                         $rdoCompany->parent        = $companyKSFS->parent;
                         $rdoCompany->synchronized  = 1;
                         $rdoCompany->timemodified  = $time;
+                        $rdoCompany->timesync      = $time;
                         $rdoCompany->moved         = $companyKSFS->moved;
 
                         // Execute
@@ -2758,6 +2759,7 @@ class FSKS_USERS {
                 $infoFS->level              = $infoUserFS->level;
                 $infoFS->priority           = $infoUserFS->prioritet;
                 $infoFS->synchronized       = 1;
+                $infoFS->timesync           = $time;
             }//if_rdo
 
             // Apply action
@@ -2772,6 +2774,7 @@ class FSKS_USERS {
                         $rdo->level              = $infoUserFS->level;
                         $rdo->priority           = $infoUserFS->prioritet;
                         $rdo->synchronized       = 1;
+                        $rdo->timesync           = $time;
 
                         // Execute
                         $DB->update_record('fs_users_company',$rdo);
@@ -3090,7 +3093,8 @@ class FSKS_USERS {
                     if ($rdo) {
                         // Update
                         $rdo->synchronized = 1;
-                        $rdo->ksjrcode       = $competenceFS->jobrole;
+                        $rdo->ksjrcode     = $competenceFS->jobrole;
+                        $rdo->timesync     = $time;
                         // Execute
                         $DB->update_record('fs_users_competence',$rdo);
 
@@ -3104,6 +3108,7 @@ class FSKS_USERS {
                         $infoCompetence->jrcode         = $competenceFS->fsjobroles;
                         $infoCompetence->ksjrcode       = $competenceFS->jobrole;
                         $infoCompetence->synchronized   = 1;
+                        $infoCompetence->timesync       = $time;
 
                         // Execute
                         $DB->insert_record('fs_users_competence',$infoCompetence);
