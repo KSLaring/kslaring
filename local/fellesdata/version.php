@@ -26,5 +26,5 @@
  *
  */
 
-$plugin->version    =  '2017103000';         /* The plugin current version (DATE: YYYYMMDDXX) */
+$plugin->version    =  '2017110100';         /* The plugin current version (DATE: YYYYMMDDXX) */
 $plugin->component  =  'local_fellesdata';

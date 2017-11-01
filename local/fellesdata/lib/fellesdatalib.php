@@ -1798,6 +1798,7 @@ class FSKS_COMPANY {
                         $rdoCompany->parent        = $companyKSFS->parent;
                         $rdoCompany->synchronized  = 1;
                         $rdoCompany->timemodified  = $time;
+                        $rdoCompany->timesync      = $time;
                         $rdoCompany->moved         = $companyKSFS->moved;
 
                         // Execute
@@ -2631,14 +2632,14 @@ class FSKS_USERS {
                     if ($rdoUser) {
                         $rdoUser->timemodified = $time;
                         $rdoUser->deleted      = 0;
-                        $rdoUser->email        = '';
+                        $rdoUser->email        = random_string() . '@inactive.no';
 
                         /* Execute  */
                         $DB->update_record('user',$rdoUser);
                     }else {
                         /* Execute  */
                         $infoUser->deleted      = 0;
-                        $infoUser->email        = '';
+                        $infoUser->email        = random_string() . '@inactive.no';
                         $userId = $DB->insert_record('user',$infoUser);
                     }//if_exist
 
@@ -2656,6 +2657,18 @@ class FSKS_USERS {
                 $instance->timemodified = $time;
 
                 $DB->update_record('fs_imp_users',$instance);
+
+                // Historical of user account sync
+                $instance = new stdClass();
+                $instance->username     = $userFS->personalnumber;
+                $instance->idnumber     = $userFS->personalnumber;
+                $instance->adfs         = $userFS->adfs;
+                $instance->firstname    = $userFS->firstname;
+                $instance->lastname     = $userFS->lastname;
+                $instance->email        = $userFS->email;
+                $instance->action       = $userFS->action;
+                $instance->timesync     = $time;
+                $DB->insert_record('fs_users_sync_log',$instance);
             }//if_sync
 
             // Create the connection between user and his/her resource number
@@ -2746,6 +2759,7 @@ class FSKS_USERS {
                 $infoFS->level              = $infoUserFS->level;
                 $infoFS->priority           = $infoUserFS->prioritet;
                 $infoFS->synchronized       = 1;
+                $infoFS->timesync           = $time;
             }//if_rdo
 
             // Apply action
@@ -2760,6 +2774,7 @@ class FSKS_USERS {
                         $rdo->level              = $infoUserFS->level;
                         $rdo->priority           = $infoUserFS->prioritet;
                         $rdo->synchronized       = 1;
+                        $rdo->timesync           = $time;
 
                         // Execute
                         $DB->update_record('fs_users_company',$rdo);
@@ -3079,6 +3094,7 @@ class FSKS_USERS {
                         // Update
                         $rdo->synchronized = 1;
                         $rdo->ksjrcode       = $competenceFS->jobrole;
+                        $rdo->timesync     = $time;
                         // Execute
                         $DB->update_record('fs_users_competence',$rdo);
 
@@ -3092,6 +3108,7 @@ class FSKS_USERS {
                         $infoCompetence->jrcode         = $competenceFS->fsjobroles;
                         $infoCompetence->ksjrcode       = $competenceFS->jobrole;
                         $infoCompetence->synchronized   = 1;
+                        $infoCompetence->timesync       = $time;
 
                         // Execute
                         $DB->insert_record('fs_users_competence',$infoCompetence);
