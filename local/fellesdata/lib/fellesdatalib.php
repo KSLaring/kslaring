@@ -1297,7 +1297,6 @@ class FSKS_COMPANY {
             $sql = " SELECT	  fs_imp.id             as 'fsid',
                               fs_imp.org_enhet_id   as 'companyid',
                               fs_imp.org_navn	    as 'name',
-                              fs_imp.org_nivaa      as 'level',
                               fs_imp.org_enhet_over as 'fs_parent',
                               fs_imp.privat         as 'privat',
                               fs_imp.ansvar         as 'ansvar',
