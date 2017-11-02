@@ -61,6 +61,13 @@ class cron_task extends \core\task\scheduled_task {
      */
     protected function course_search_cron() {
         global $DB;
+
+        mtrace('Indexing courses ...');
+
+        mtrace('Purging course data cache ...');
+        $cache = \cache::make('local_course_search', 'courses');
+        $cache->purge(); // Purge the cache - delete all entries.
+
         $indexrecord = null;
         $sql = 'SELECT
         	id,
@@ -77,7 +84,7 @@ class cron_task extends \core\task\scheduled_task {
         ORDER BY 
             fullname ASC';
 
-        mtrace('Indexing courses ...');
+        mtrace('Starting to index courses ...');
 
         if (!$result = $DB->get_records_sql($sql)) {
             mtrace('No courses to index.');

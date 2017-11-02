@@ -41,6 +41,9 @@
 @narrowWidth: 640px;
 
 #page-course-search {
+    background-image: url(~"[[pix:local_course_search|pagetop]]");
+    background-repeat: no-repeat;
+
     #page-navbar {
         display: none;
     }
@@ -191,6 +194,8 @@
     }
     // Course cards.
     #tabcards {
+        //background-image: url(~"[[pix:local_course_search|tabcards]]");
+        //background-repeat: no-repeat;
         overflow: hidden;
     }
     // Course list.
@@ -234,6 +239,7 @@
         .course-list-col-titles {
             th {
                 cursor: pointer;
+                text-align: left;
 
                 &.sortasc {
                     background: transparent url(~"[[pix:t/down]]") 0 50% no-repeat;
@@ -345,7 +351,16 @@
             .course-summary {
                 height: 4em;
             }
+            &:first-of-type {
+                background-image: url(~"[[pix:local_course_search|firstcard]]");
+                background-repeat: no-repeat;
+            }
         }
+    }
+    #page-footer {
+        background-image: url(~"[[pix:local_course_search|pagefooter]]");
+        background-position: 100% 100%;
+        background-repeat: no-repeat;
     }
     // Tag preselect area
     #tag-preselect-area {

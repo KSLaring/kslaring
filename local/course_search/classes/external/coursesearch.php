@@ -51,18 +51,37 @@ class coursesearch extends external_api {
      *
      * @return array The course data
      */
-    public static function get_course_data($userid) {
+    public static function get_course_data($userid, $nocache) {
         global $CFG, $PAGE;
 
         $result = array();
-        // Load the fixture for development.
-        if (false) {
-            $coursedata = file_get_contents(__DIR__ . '/../../fixtures/courses.json');
+
+        // Switch to turn caching on/off.
+        if ($nocache) {
+            if (false) {
+                $coursedata = file_get_contents(__DIR__ . '/../../fixtures/courses.json');
+            } else {
+                $PAGE->set_context(\context_system::instance());
+                $courses = new \local_course_search\output\courses();
+                //$coursedata = json_encode(array('courses' => $courses->export_course_data()));
+                $coursedata = $courses->export_json_course_data();
+            }
         } else {
-            $PAGE->set_context(\context_system::instance());
-            $courses = new \local_course_search\output\courses();
-            //$coursedata = json_encode(array('courses' => $courses->export_course_data()));
-            $coursedata = $courses->export_json_course_data();
+            // Try to get the cached course data. If no data is cached request the database and save the data in the cache.
+            $cache = \cache::make('local_course_search', 'courses');
+            $coursedata = $cache->get($userid); // Get the cached data for the user.
+            if (!$coursedata) {
+                // Load the fixture for development.
+                if (false) {
+                    $coursedata = file_get_contents(__DIR__ . '/../../fixtures/courses.json');
+                } else {
+                    $PAGE->set_context(\context_system::instance());
+                    $courses = new \local_course_search\output\courses();
+                    //$coursedata = json_encode(array('courses' => $courses->export_course_data()));
+                    $coursedata = $courses->export_json_course_data();
+                    $cache->set($userid, $coursedata); // Cache data for the user.
+                }
+            }
         }
 
         $result['coursedata'] = $coursedata;
@@ -78,6 +97,7 @@ class coursesearch extends external_api {
     public static function get_course_data_parameters() {
         return new external_function_parameters([
             'userid' => new external_value(PARAM_INT, 'User id'),
+            'nocache' => new external_value(PARAM_INT, 'Don\'t use the cachce'),
         ]);
     }
 
@@ -106,9 +126,13 @@ class coursesearch extends external_api {
         $data = json_decode($data);
 
         if (confirm_sesskey($data->sesskey)) {
+            // Delete the cached course search data for the user.
+            $cache = \cache::make('local_course_search', 'courses');
+            $cache->delete($USER->id); // Delete the cached data for the user.
+
             $data->userid = $USER->id;
             //if (!empty($data->tags)) {
-                self::save_user_search_criteria($USER, $data->tags);
+            self::save_user_search_criteria($USER, $data->tags);
             //}
         } else {
             $data = array('success' => false);
@@ -152,7 +176,7 @@ class coursesearch extends external_api {
      * @param object $user The user object
      * @param array  $tags The selected tag ids
      */
-    protected function save_user_search_criteria($user, $tags) {
+    protected static function save_user_search_criteria($user, $tags) {
         global $DB;
 
         $DB->delete_records('local_course_search_presel', array('user' => $user->id));

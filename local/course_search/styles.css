@@ -1,3 +1,7 @@
+#page-course-search {
+  background-image: url([[pix:local_course_search|pagetop]]);
+  background-repeat: no-repeat;
+}
 #page-course-search #page-navbar {
   display: none;
 }
@@ -147,6 +151,7 @@
 }
 #page-course-search #course-list .course-list-col-titles th {
   cursor: pointer;
+  text-align: left;
 }
 #page-course-search #course-list .course-list-col-titles th.sortasc {
   background: transparent url([[pix:t/down]]) 0 50% no-repeat;
@@ -230,6 +235,15 @@
 }
 #page-course-search #course-cards .course-card-item .course-summary {
   height: 4em;
+}
+#page-course-search #course-cards .course-card-item:first-of-type {
+  background-image: url([[pix:local_course_search|firstcard]]);
+  background-repeat: no-repeat;
+}
+#page-course-search #page-footer {
+  background-image: url([[pix:local_course_search|pagefooter]]);
+  background-position: 100% 100%;
+  background-repeat: no-repeat;
 }
 #page-course-search #tag-preselect-area div.group-box .has-subcategories:first-of-type {
   display: none;

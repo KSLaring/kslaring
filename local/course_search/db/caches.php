@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -16,20 +15,20 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * The course search
+ * Course search cache definitions.
  *
- * @package         local
- * @subpackage      course_search
- * @copyright       2017 eFaktor
- * @author          Urs Hunkler {@link urs.hunkler@unodo.de}
- * @license         http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @package    lcoal_coursesearch
+ * @category   cache
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die;
-
-$plugin->version = 2017110100;       /* The current plugin version (Date: YYYYMMDDXX)  */
-$plugin->requires = 2016052300;       /* Requires this Moodle version                   */
-$plugin->component = 'local_course_search'; /* Full name of the plugin (used for diagnostics) */
-
-/* Dependencies */
-$plugin->dependencies = array();
+$definitions = array(
+    // This MUST NOT be a local cache, sorry cluster lovers.
+    'courses' => array(
+        'mode' => cache_store::MODE_APPLICATION,
+        'simplekeys' => true, // The user id or 0 for global.
+        'simpledata' => true,
+        'staticacceleration' => true,
+        'staticaccelerationsize' => 50,
+    ),
+);
