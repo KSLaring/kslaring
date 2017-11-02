@@ -260,6 +260,7 @@ class FELLESDATA_CRON {
 
                     // Synchronize Companies
                     if (self::companies_fs_synchronization($pluginInfo,false)) {
+                        /**
                         // Send notifications
                         $notifyTo = null;
                         // Notifications
@@ -284,7 +285,7 @@ class FELLESDATA_CRON {
                                 // Add log
                                 self::$log[] = $infolog;
                             }//if_toMail
-                        }//if_notify
+                        }//if_notify **/
                     }
 
                     break;
@@ -1720,7 +1721,7 @@ class FELLESDATA_CRON {
                     $infolog->description 	= 'update_company_changes_same_level ';
                     // Add log
                     self::$log[] = $infolog;
-
+/**
                     // Companies to create automatically
                     if ($pluginInfo->automatic) {
                         if (FS_CRON::check_automatically_option()) {
@@ -1750,7 +1751,7 @@ class FELLESDATA_CRON {
                     self::companies_no_new_fs_synchronization($pluginInfo);
 
                     // Synchronize companies to delete
-                    self::companies_to_delete_fs_synchronization($pluginInfo);
+                    self::companies_to_delete_fs_synchronization($pluginInfo); **/
                 }//if_else
             }//if_synchronization
 
