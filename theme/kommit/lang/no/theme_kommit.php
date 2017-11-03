@@ -99,3 +99,6 @@ $string['adminmenuentry'] = 'Bottom blocks';
 /* Capabilities */
 $string['kommit:viewhiddenblocks'] = 'View hidden blocks';
 $string['kommit:frontpageviewhiddenblocks'] = 'View hidden frontpage blocks';
+
+/* Course search */
+$string['coursesearch'] = 'Kurssøk';

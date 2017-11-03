@@ -650,26 +650,22 @@ EOT;
         global $CFG;
 
         $out = '';
-        $form = <<<T_END_HEREDOC
-        <form id="topsearch" action="{{baseurl}}/course/search.php" method="get">
-            <fieldset class="topsearchbox invisiblefieldset input-append">
-                <label for="shorttopsearchbox">{{searchlabel}}</label>
-                <input type="text" id="shorttopsearchbox" class="input-medium-" name="search"
-                    placeholder="{{placeholder}}" value="">
-                <button type="submit"><i class="icon-search icon-white"></i></button>
-            </fieldset>
-        </form>
-        <script type="text/javascript">Y.one('#shorttopsearchbox').focus();</script>
+        $html = <<<T_END_HEREDOC
+        <a id="topsearch" class="btn" title="{{title}}" data-toggle="tooltip" href="{{baseurl}}/local/course_search/search.php">
+            <i class="icon-search icon-white"></i>
+        </a>
 T_END_HEREDOC;
+
         $baseurl = $CFG->wwwroot;
-        $strsearchlabel = 'Search courses: ';
-        $strplaceholder = 'Hva leter du etter?';
+        $strtitle = get_string('coursesearch', 'theme_kommit');
 
         $out = str_replace(
-            array('{{baseurl}}', '{{searchlabel}}', '{{placeholder}}'),
-            array($baseurl, $strsearchlabel, $strplaceholder),
-            $form
+            array('{{baseurl}}', '{{title}}'),
+            array($baseurl, $strtitle),
+            $html
         );
+
+        $this->page->requires->js_call_amd('theme_kommit/tooltips', 'init');
 
         return $out;
     }

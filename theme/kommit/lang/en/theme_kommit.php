@@ -152,3 +152,6 @@ $string['editimage_alt'] = 'Edit image alt';
 
 /* Course category page */
 $string['expandall_initial'] = 'Collapse/expand all (Expand a section first)';
+
+/* Course search */
+$string['coursesearch'] = 'Kurssøk';
