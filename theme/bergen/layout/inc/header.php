@@ -45,7 +45,7 @@ if ($loggedin) {
 
 <div id="header" class="header<?php echo $loggedinclass; ?>">
     <header role="banner"
-            class="navbar navbar-fixed-top<?php echo $html->navbarclass ?> moodle-has-zindex">
+            class="navbar navbar-static-top<?php echo $html->navbarclass ?> moodle-has-zindex">
         <nav role="navigation" class="navbar-inner">
             <div class="container-fluid">
 
