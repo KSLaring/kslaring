@@ -1174,11 +1174,14 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                     cardcourseidsremaining = courseids.slice();
                     listcourseidsremaining = courseids.slice();
 
-                    $resultarea.find('.alert-info').remove();
 
                     actualCourseCount = courseids.length;
                     $actualCourseCount.text(actualCourseCount);
                     $actualCourseCountInfo.show();
+
+                    if (actualCourseCount) {
+                        $resultarea.find('.alert-info').remove();
+                    }
 
                     console.log('courses', courses);
                     console.log('courseids', courseids.slice());
