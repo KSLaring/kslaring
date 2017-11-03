@@ -2037,6 +2037,9 @@ div.editor_atto_content .kitable3.table-lines th,
 div.editor_atto_content .kitable3.table-lines td {
   border: 1px solid #b5c5da;
 }
+.tooltip {
+  font-size: 13.504px;
+}
 #kslCarousel {
   margin: 0 -120px;
   line-height: 31.5px;
