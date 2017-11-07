@@ -11,7 +11,9 @@ require_once($CFG->dirroot . '/blocks/municipality/municipalitylib.php');
 
 $loggedin = isloggedin();
 $loggedinclass = ' not-loggedin';
-
+if ($loggedin) {
+    $loggedinclass = ' loggedin';
+}
 // For the Trondheim theme always show the Trondheim logo.
 $municipality = new stdClass();
 $municipality->name = 'Tronfdheim kommune';
