@@ -2664,20 +2664,18 @@ class WS_FELLESDATA {
                         AND	co.hierarchylevel	= :level ";
 
             /* Execute  */
-            $rdo = $DB->get_records_sql($sql,$params);
+            $rdo = $DB->get_record_sql($sql,$params);
             if ($rdo) {
-                foreach ($rdo as $instance) {
-                    // Top company
-                    $infoOrganization = new stdClass();
-                    $infoOrganization->id           = $instance->id;
-                    $infoOrganization->name         = $instance->name;
-                    $infoOrganization->industrycode = $instance->industrycode;
-                    $infoOrganization->level        = $instance->hierarchylevel;
-                    $infoOrganization->parent       = 0;
+                // Top company
+                $infoOrganization = new stdClass();
+                $infoOrganization->id           = $rdo->id;
+                $infoOrganization->name         = $rdo->name;
+                $infoOrganization->industrycode = $rdo->industrycode;
+                $infoOrganization->level        = $rdo->hierarchylevel;
+                $infoOrganization->parent       = 0;
 
-                    // Add company
-                    $orgStructure[$instance->id] = $infoOrganization;
-                }//for_Rdo
+                // Add company
+                $orgStructure[$rdo->id] = $infoOrganization;
 
                 // Get hierarchy
                 if ($maxLevel) {
@@ -2692,7 +2690,7 @@ class WS_FELLESDATA {
 
                     for($i=2;$i<=$maxLevel;$i++) {
                         // Information about the rest hierarchy
-                        $parents = self::get_my_levels($parents,$i,$orgStructure,$notIn);
+                        $parents = self::get_my_levels($parents,$i,$orgStructure,$rdo->industrycode,$notIn);
 
                         // Log
                         $infolog = new stdClass();
@@ -2721,6 +2719,7 @@ class WS_FELLESDATA {
      * @param           $parents
      * @param           $level
      * @param           $orgStructure
+     * @param           $industrycode
      * @param           $notIn
      *
      * @return          int|string
@@ -2732,7 +2731,7 @@ class WS_FELLESDATA {
      * Description
      * Get info of each memeber of the hierarchy
      */
-    private static function get_my_levels($parents,$level,&$orgStructure,$notIn) {
+    private static function get_my_levels($parents,$level,&$orgStructure,$industrycode,$notIn) {
         /* Variables    */
         global $DB;
         $sql                = null;
@@ -2743,7 +2742,8 @@ class WS_FELLESDATA {
         try {
             /* Search Criteria  */
             $params = array();
-            $params['level'] = $level;
+            $params['level']    = $level;
+            $params['industry'] = $industrycode;
 
             /* SQL Instruction  */
             $sql = " SELECT	  co.id,
@@ -2755,6 +2755,7 @@ class WS_FELLESDATA {
                         JOIN  {report_gen_company_relation}		cr 	ON 	cr.companyid 	= co.id
                                                                     AND cr.parentid 	IN ($parents)
                      WHERE	co.hierarchylevel = :level
+                        AND co.industrycode   = :industry
                         AND co.id NOT IN ($notIn) ";
 
             /* Execute  */
