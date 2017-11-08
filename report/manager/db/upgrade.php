@@ -114,9 +114,20 @@ function xmldb_report_manager_upgrade($old_version) {
         }
 
         // Create views
-        if ($old_version < 2017092200) {
+        if ($old_version < 2017100100) {
             CompetenceManager_Update::view_companies_with_users();
             CompetenceManager_Update::view_course_company_user_enrol();
+        }
+
+        // Add mapped with (source) field
+        if ($old_version < 2017110800) {
+            $tblCompanyData = new xmldb_table('report_gen_companydata');
+
+            /* Mapped   */
+            $fieldMapped = new xmldb_field ('org_enhet_id',XMLDB_TYPE_CHAR,'255',null, null,null,null,'mapped');
+            if (!$db_man->field_exists($tblCompanyData, $fieldMapped)) {
+                $db_man->add_field($tblCompanyData, $fieldMapped);
+            }//if_exists
         }
 
         return true;
@@ -126,7 +137,6 @@ function xmldb_report_manager_upgrade($old_version) {
 }//xmldb_report_manager_upgrade
 
 class CompetenceManager_Update {
-
     /**
      * Description
      * Create companies_with_users view
