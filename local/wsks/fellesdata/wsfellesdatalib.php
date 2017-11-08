@@ -2476,12 +2476,29 @@ class WS_FELLESDATA {
             $time = time();
 
             // Check if already exists
-            $rdo = $DB->get_record('report_gen_companydata',array('id' => $companyInfo->ksid));
-
-            // Check if already exists with the name
+            $params = array();
+            $params['id']               = $companyInfo->ksid;
+            $params['org_enhet_id']     = $companyInfo->fsid;
+            $params['hierarchylevel']   = $companyInfo->level;
+            $rdo = $DB->get_record('report_gen_companydata',$params);
             if (!$rdo) {
-                $rdo = $DB->get_record('report_gen_companydata',array('name' => $companyInfo->name,'hierarchylevel' => $companyInfo->level));
+                unset($params['id']);
+                $params['name'] = $companyInfo->name;
+                $rdo = $DB->get_record('report_gen_companydata',$params);
+                if (!$rdo) {
+                    // Compare without org_enhet_id
+                    unset($params['org_enhet_id']);
+                    unset($params['name']);
+                    $params['id']               = $companyInfo->ksid;
+                    $rdo = $DB->get_record('report_gen_companydata',$params);
+                    if (!$rdo) {
+                        unset($params['id']);
+                        $params['name'] = $companyInfo->name;
+                        $rdo = $DB->get_record('report_gen_companydata',$params);
+                    }
+                }
             }
+
 
             // Extract info company
             $instanceCompany = new stdClass();
@@ -2499,6 +2516,7 @@ class WS_FELLESDATA {
             $instanceCompany->poststed          = ($companyInfo->poststed   ? $companyInfo->poststed    : null);
             $instanceCompany->epost             = ($companyInfo->epost      ? $companyInfo->epost       : null);
             $instanceCompany->mapped            = MAPPED_TARDIS;
+            $instanceCompany->org_enhet_id      = $companyInfo->fsid;
             $instanceCompany->modified          = $time;
 
             // Apply action
