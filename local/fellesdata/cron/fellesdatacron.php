@@ -168,6 +168,7 @@ class FELLESDATA_CRON {
         }catch (Exception $ex) {
             // Send error notification
             FS_CRON::send_notification_error_process($plugin,'TARDIS');
+            FS_CRON::deactivate_cron('fellesdata');
 
             // Log
             $infolog = new stdClass();
