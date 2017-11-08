@@ -4,7 +4,7 @@
     <a href="{{{link}}}">
         <div class="course-img"{{#img}} style="background-image: url('{{{.}}}');"{{/img}}>&nbsp;</div>
         <div class="course-desc">
-            <h4 class="course-title">{{{name}}}</h4>
+            <h4 data-toggle="tooltip" title="{{{fullname}}}" class="course-title">{{{name}}}</h4>
             {{#isclass}}<div class="course-date">{{#str}}date, moodle{{/str}}: {{{date}}}</div>{{/isclass}}
         </div>
     </a>
