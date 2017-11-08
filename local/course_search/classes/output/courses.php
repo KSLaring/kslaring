@@ -294,10 +294,13 @@ class courses implements \renderable, \templatable {
             }
         }
 
-        $coursename = format_string($course->fullname, true, array('context' => $context));
-        if (\core_text::strlen($coursename) > $namelen) {
-            $coursename = \core_text::str_max_bytes($coursename, $namelen) . ' ...';
+        $fullname = format_string($course->fullname, true, array('context' => $context));
+        if (\core_text::strlen($fullname) > $namelen) {
+            $coursename = \core_text::str_max_bytes($fullname, $namelen) . ' ...';
+        } else {
+            $coursename = $fullname;
         }
+        $fullname = str_replace('"', '&quot;', $fullname);
         $coursename = str_replace('"', '&quot;', $coursename);
 
         //$alltext = $DB->get_field('local_course_search', 'alltext', array('course' => $course->id));
@@ -305,6 +308,7 @@ class courses implements \renderable, \templatable {
         $result = (object)array(
             "id" => $course->id,
             "sortorder" => $sortcounter,
+            "fullname" => $fullname,
             "name" => $coursename,
             "img" => $img,
             "summary" => $summary,

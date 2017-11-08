@@ -53,9 +53,19 @@ $langstrings = array(
     'sortby',
     'searchtext',
 );
+
+// Check for mobile.
+$device = $PAGE->devicetypeinuse;
+if ($device === 'mobile' || $device === 'tablet') {
+    $ismobile = true;
+} else {
+    $ismobile = false;
+}
+
 $PAGE->requires->strings_for_js($langstringsfriadmin, 'local_friadmin');
 $PAGE->requires->strings_for_js($langstrings, 'local_course_search');
-$PAGE->requires->js_call_amd('local_course_search/coursesearch', 'init', array(current_language(), $nocache));
+$PAGE->requires->js_call_amd('local_course_search/coursesearch', 'init',
+    array(current_language(), $ismobile, $nocache));
 
 /* @var \local_course_search_renderer $pluginrenderer The course search plugin renderer. */
 $pluginrenderer = $PAGE->get_renderer('local_course_search');

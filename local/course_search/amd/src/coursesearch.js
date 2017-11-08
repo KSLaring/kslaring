@@ -22,6 +22,7 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
         // The var nocourses is used as a flag for development - if true no courses are loaded.
         var nocourses = false;
         var nocache = 0,
+            ismobile = true,
             sortbystate = 'name',
             sortascstate = true,
             showtagliststate = false,
@@ -226,7 +227,7 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
             if (cardcourseidsremaining.length) {
                 log.debug('card more courses');
             } else {
-                log.debug('card all shown');
+                log.debug('cards all shown');
                 cardsScrollEventHandlerOn(false);
                 return;
             }
@@ -254,6 +255,7 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                     .render('local_course_search/course_search_course_card_set', context)
                     .done(function (html) {
                         $coursecardsul.append(html);
+                        activateTooltips($coursecardsul.find('.course-title'));
                     });
             }
         };
@@ -295,6 +297,7 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                     .render('local_course_search/course_search_course_list_set', context)
                     .done(function (html) {
                         $courselisttable.children('tbody').append(html);
+                        activateTooltips($courselisttable.find('[data-toggle="tooltip"]'));
                     });
             }
         };
@@ -1081,6 +1084,7 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                                 .render('local_course_search/course_search_course_card_set', context)
                                 .done(function (html) {
                                     $coursecardsul.html(html);
+                                    activateTooltips($coursecardsul.find('.course-title'));
                                     cardsScrollEventHandlerOn(true);
                                 });
                         }
@@ -1096,6 +1100,7 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                                 .render('local_course_search/course_search_course_list_set', context)
                                 .done(function (html) {
                                     $courselisttable.children('tbody').html(html);
+                                    activateTooltips($courselisttable.find('[data-toggle="tooltip"]'));
                                     listScrollEventHandlerOn(true);
                                 });
                         }
@@ -1768,14 +1773,22 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
             changeDisplayShowTags();
         };
 
+        var activateTooltips = function (where) {
+            if (!ismobile) {
+                where.tooltip({delay: {show: 300, hide: 100}});
+            }
+        };
+
         /**
          * Initialize function, called with the PHP requires->js_call_amd command.
          */
         return {
-            init: function (lang, noCache) {
+            init: function (lang, isMobile, noCache) {
                 log.debug('AMD module init with lang ' + lang);
 
                 nocache = noCache;
+                ismobile = isMobile;
+
                 viewState.init();
 
                 // Get the relevant DOM elements.
