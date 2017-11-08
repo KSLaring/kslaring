@@ -11,7 +11,7 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
         "use strict";
 
         // Add the jQuery object globaly or debugging.
-        window.$ = $;
+        // window.$ = $;
 
         log.debug('AMD module loaded.');
 
@@ -117,54 +117,6 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
             } else {
                 listAddNextRows(listfirst);
             }
-        };
-
-        /** -- check
-         * Render the cards area with a template with the given data.
-         *
-         * @param {Array|object} context The data for the template
-         */
-        var renderCardsArea = function (context) {
-            cardsrendered = true;
-
-            cardsAddNextItems();
-
-            // Init infinite scroll.
-            cardsInfScroll = new InfiniteScroll($coursecardsul.get(0), {
-                path: 'page{{#}}', // hack
-                loadOnScroll: false, // disable loading
-                history: false,
-                onInit: function () {
-                    log.debug('cardsInfScroll init');
-                }
-            });
-
-            cardsScrollEventHandlerOn(true);
-
-            // sortedCourseDisplayUpdate();
-        };
-
-        /** -- check
-         * Render the list area with a template with the given data.
-         *
-         * @param {Array|object} context The data for the template
-         */
-        var renderListArea = function (context) {
-            listrendered = true;
-
-            listAddNextRows();
-
-            // Init infinite scroll.
-            listInfScroll = new InfiniteScroll($courselisttable.get(0), {
-                path: 'page{{#}}', // hack
-                loadOnScroll: false, // disable loading
-                history: false,
-                onInit: function () {
-                    log.debug('listInfScroll init');
-                }
-            });
-
-            listScrollEventHandlerOn(true);
         };
 
         /**
@@ -592,15 +544,6 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
 
             // Remove the top right tag.
             $ele.remove();
-
-            // Start the related action.
-            if ($ele.data('group') === 'sort') {
-                // sortSelectHandler();
-            } else if ($ele.data('type') === 'course') {
-                // filterCourses();
-            } else if ($ele.data('type') === 'display') {
-                // sortedCourseDisplayUpdate();
-            }
         };
 
         /**
@@ -768,145 +711,6 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
         };
 
         /**
-         * Sort the displayed courses.
-         *
-         * Get the active sort criteria and sort the courses.
-         */
-        var sortedCourseDisplayUpdate = function () {
-            var $list = null,
-                $sortedlist = null,
-                selectedDisplayTags = getSelectedDisplayTags(),
-                what = 'name',
-                $coltitle = null;
-
-            // Check if the coursesSortArray has been prepared.
-            if (!coursesSortArray.length) {
-                var prop;
-
-                for (prop in courses) {
-                    if (courses.hasOwnProperty(prop)) {
-                        coursesSortArray.push({
-                            'id': courses[prop].id,
-                            'sortorder': courses[prop].sortorder,
-                            'sortdate': courses[prop].sortdate,
-                            'availnumber': courses[prop].availnumber,
-                            'deadline': courses[prop].deadline,
-                            'municipality': (courses[prop].municipality) ?
-                                courses[prop].municipality.toLowerCase() : '',
-                            'location': (courses[prop].location) ?
-                                courses[prop].location.toLowerCase() : ''
-                        });
-                    }
-                }
-            }
-
-            // The sort function for the course sort, compare on the defined data attribute.
-            var sortFkt = function (a, b) {
-                if (sortascstate) {
-                    return (b[col2sortfieldmap[what]] < a[col2sortfieldmap[what]]) ? 1 : -1;
-                } else {
-                    return (b[col2sortfieldmap[what]] > a[col2sortfieldmap[what]]) ? 1 : -1;
-                }
-            };
-
-            if (selectedDisplayTags.indexOf('tags') !== -1) {
-                $resultarea.find(".course-list").removeClass('tags-hidden');
-            } else {
-                $resultarea.find(".course-list").addClass('tags-hidden');
-            }
-
-            sortascstate = selectedDisplayTags.indexOf('sortdesc') === -1;
-
-            selectedDisplayTags.forEach(function (item) {
-                if (item.indexOf('sort-') !== -1) {
-                    what = item.replace('sort-', '');
-                }
-            });
-
-            // Set the CSS class to show the sort arrow.
-            $resultarea.find('.course-list-col-titles').find('.sortasc').removeClass('sortasc');
-            $resultarea.find('.course-list-col-titles').find('.sortdesc').removeClass('sortdesc');
-
-            $coltitle = $resultarea.find('.course-list-col-titles').find('[data-sort="' + what + '"]');
-            if (sortascstate) {
-                $coltitle.addClass('sortasc');
-            } else {
-                $coltitle.addClass('sortdesc');
-            }
-
-            coursesSortArray.sort(sortFkt);
-
-            courseids = [];
-            coursesSortArray.forEach(function (item) {
-                courseids.push('c' + item.id);
-            });
-
-            filterCourses();
-        };
-
-        /**
-         * Sort the displayed courses.
-         *
-         * Get the active sort criteria and sort the courses.
-         */
-        var sortedCourseDisplayUpdate_o = function () {
-            var $list = null,
-                $sortedlist = null,
-                selectedDisplayTags = getSelectedDisplayTags(),
-                what = 'name',
-                $coltitle = null;
-
-            // The sort function for the course sort, compare on the defined data attribute.
-            var sortFkt = function (a, b) {
-                if (sortascstate) {
-                    return ($(b).data(col2sortfieldmap[what])) < ($(a).data(col2sortfieldmap[what])) ? 1 : -1;
-                } else {
-                    return ($(b).data(col2sortfieldmap[what])) > ($(a).data(col2sortfieldmap[what])) ? 1 : -1;
-                }
-            };
-
-            if (selectedDisplayTags.indexOf('tags') !== -1) {
-                $resultarea.find(".course-list").removeClass('tags-hidden');
-            } else {
-                $resultarea.find(".course-list").addClass('tags-hidden');
-            }
-
-            sortascstate = selectedDisplayTags.indexOf('sortdesc') === -1;
-
-            selectedDisplayTags.forEach(function (item) {
-                if (item.indexOf('sort-') !== -1) {
-                    what = item.replace('sort-', '');
-                }
-            });
-
-            // Set the CSS class to show the sort arrow.
-            $resultarea.find('.course-list-col-titles').find('.sortasc').removeClass('sortasc');
-            $resultarea.find('.course-list-col-titles').find('.sortdesc').removeClass('sortdesc');
-
-            $coltitle = $resultarea.find('.course-list-col-titles').find('[data-sort="' + what + '"]');
-            if (sortascstate) {
-                $coltitle.addClass('sortasc');
-            } else {
-                $coltitle.addClass('sortdesc');
-            }
-
-            $list = $resultarea.find("#tabcards").find('.course-cards').eq(0);
-            $list.html($list.children('.course-card-item').sort(sortFkt));
-            $list = $resultarea.find("#tablist").find('.course-list').find('tbody').eq(0);
-            $list.html($list.children('.course-list-item').sort(sortFkt));
-
-            // Set the »odd« class for alternating row colors only for the visible rows.
-            $sortedlist = $resultarea.find("#tablist").find('.course-list');
-            $sortedlist.find('tr:not(.hide-item)').each(function (i) {
-                if (i % 2) {
-                    $(this).removeClass('odd');
-                } else {
-                    $(this).addClass('odd');
-                }
-            });
-        };
-
-        /**
          * Walk all course items in the course data object and collect the ids of the matching courses.
          * Check if any of the selected search criteria match, if one matches add the id to the show list.
          * The rules for matches are:
@@ -920,11 +724,12 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
             return new Promise(function (resolve, reject) {
                 var selectedCourseTagsGrouped = getSelectedCourseTagsGrouped(),
                     searchText = viewState.getText(),
+                    searchWords = _.words(searchText.toLowerCase(), /[^\W]+/g), // Split the search string into single words.
                     fromDate = viewState.getFromDate(),
                     fromDateInt = 0,
                     toDate = viewState.getToDate(),
                     toDateInt = 0,
-                    hasTextSearch = (viewState.getText() !== ''),
+                    hasTextSearch = searchWords.length,
                     filtered = [],
                     thecourse,
                     sortdateInt,
@@ -971,12 +776,14 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                     }
                 }
 
-                // Check if the text index contains the search string.
+                // Check if the text index contains all of the search words in no specific order.
                 if (hasTextSearch) {
                     filtered = courseIDsFiltered.filter(function (id) {
                         thecourse = courses[id];
                         return (thecourse.hasOwnProperty('alltext') && thecourse.alltext &&
-                            thecourse.alltext.indexOf(searchText) !== -1);
+                            _.every(searchWords, function (s) {
+                                return thecourse.alltext.indexOf(s) !== -1;
+                            }));
                     });
 
                     courseIDsFiltered = filtered.slice();
@@ -1112,41 +919,6 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
             });
         };
 
-        /** -- check
-         * Set the visibility of the courses in the cards and list view.
-         *
-         * @param {Array} courseIDsToShow The list of course ids to show
-         */
-        var showHideCourses = function (courseIDsToShow) {
-            var $coursecards = $resultarea.find('.course-cards'),
-                $courselist = $resultarea.find('.course-list');
-
-            if (courseIDsToShow.length) {
-                // If first item is -1 then hide all courses.
-                if (courseIDsToShow[0] === -1) {
-                    courseids.forEach(function (item) {
-                        $coursecards.find('#coursecarditem-' + item).addClass(hideitemClass);
-                        $courselist.find('#courselistitem-' + item).addClass(hideitemClass);
-                    });
-                } else {
-                    courseids.forEach(function (item) {
-                        if (courseIDsToShow.indexOf(item) !== -1) {
-                            $coursecards.find('#coursecarditem-' + item).removeClass(hideitemClass);
-                            $courselist.find('#courselistitem-' + item).removeClass(hideitemClass);
-                        } else {
-                            $coursecards.find('#coursecarditem-' + item).addClass(hideitemClass);
-                            $courselist.find('#courselistitem-' + item).addClass(hideitemClass);
-                        }
-                    });
-                }
-            } else {
-                courseids.forEach(function (item) {
-                    $coursecards.find('#coursecarditem-' + item).removeClass(hideitemClass);
-                    $courselist.find('#courselistitem-' + item).removeClass(hideitemClass);
-                });
-            }
-        };
-
         /**
          * Get the course data for the user viewable courses via ajax.
          */
@@ -1197,94 +969,6 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
         };
 
         /**
-         * Get the course data for the user viewable courses via ajax.
-         */
-        var getCoursedata_o = function () {
-            $.when(
-                ajax.call([
-                    {
-                        methodname: 'local_course_search_get_course_data',
-                        args: {
-                            userid: userid
-                        }
-                    }
-                ])[0]
-            ).then(function (response) {
-                var coursedata = JSON.parse(response.coursedata),
-                    nextids = [];
-
-                // Prefetch the list template.
-                templates.render('local_course_search/course_search_course_list', {});
-
-                courses = coursedata.courses;
-
-                // Create an array with the courses from the »courses« object.
-                // This has the courseid as keys and needs to be converted into an array of objects.
-                courseids = Object.keys(courses);
-                cardcourseidsremaining = courseids.slice();
-                listcourseidsremaining = courseids.slice();
-
-                actualCourseCount = courseids.length;
-                $actualCourseCount.text(actualCourseCount);
-                $actualCourseCountInfo.show();
-
-                console.log('courses', courses);
-                console.log('courseids', courseids.slice());
-
-                nextids = cardcourseidsremaining.splice(0, cardsfirst);
-                renderDisplayArea({
-                    'courses': nextids.map(function (k) {
-                        return courses[k];
-                    })
-                });
-
-                // And now get the course tags.
-                getAllCourseTags();
-            });
-        };
-
-        /**
-         * Get the course data for the user viewable courses via ajax.
-         */
-        var get_changed_coursedata = function () {
-            $.when(
-                ajax.call([
-                    {
-                        methodname: 'local_course_search_get_course_data',
-                        args: {
-                            userid: userid
-                        }
-                    }
-                ])[0]
-            ).then(function (response) {
-                var coursedata = JSON.parse(response.coursedata),
-                    context = {},
-                    nextids = [];
-
-                courses = coursedata.courses;
-
-                // Create an array with the courses from the »courses« object.
-                // This has the courseid as keys and needs to be converted into an array of objects.
-                coursesSortArray = [];
-                courseids = Object.keys(courses);
-                cardcourseidsremaining = courseids.slice();
-                listcourseidsremaining = courseids.slice();
-
-                actualCourseCount = courseids.length;
-                $actualCourseCount.text(actualCourseCount);
-                $actualCourseCountInfo.show();
-
-                console.log('changed courses', courses);
-                console.log('changed courseids', courseids.slice());
-
-                // View the cards and list the first set.
-                // $navtabs.find('[href="#tabcards"]').trigger('click');
-                cardsScrollEventHandlerOn(true);
-                cardsAddNextItems(cardsfirst);
-            });
-        };
-
-        /**
          * Save the user preselected tags via ajax.
          *
          * @param {Array} tagarray The array with the selected tag ids
@@ -1324,26 +1008,6 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
 
                     resolve(true);
                 });
-            });
-        };
-
-        /**
-         * Get the user search criteria via ajax.
-         */
-        var get_user_search_criteria = function () {
-            $.when(
-                ajax.call([
-                    {
-                        methodname: 'local_course_search_get_user_search_criteria',
-                        args: {
-                            userid: userid
-                        }
-                    }
-                ])[0]
-            ).then(function (response) {
-                var data = JSON.parse(response.data);
-
-                log.debug('get_user_search_criteria');
             });
         };
 
