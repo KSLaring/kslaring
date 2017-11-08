@@ -2475,27 +2475,51 @@ class WS_FELLESDATA {
             // Local time
             $time = time();
 
+
             // Check if already exists
             $params = array();
             $params['id']               = $companyInfo->ksid;
             $params['org_enhet_id']     = $companyInfo->fsid;
             $params['hierarchylevel']   = $companyInfo->level;
-            $rdo = $DB->get_record('report_gen_companydata',$params);
+            $params['industrycode']     = $companyInfo->industry;
+
+            // SQL Instruction
+            $sql = " SELECT * 
+                     FROM   {report_gen_companydata} 
+                     WHERE  hierarchylevel  = :hierarchylevel 
+                      AND   industrycode    = :industrycode ";
+
+            // Check with org_enhet_id
+            $sqlrdo = $sql . " AND id           = :id 
+                               AND org_enhet_id = :org_enhet_id ";
+            $rdo = $DB->get_record_sql($sqlrdo,$params);
             if (!$rdo) {
                 unset($params['id']);
                 $params['name'] = $companyInfo->name;
-                $rdo = $DB->get_record('report_gen_companydata',$params);
+
+                //Check name without id
+                $sqlrdo = $sql . " AND name = :name 
+                                   AND org_enhet_id = :org_enhet_id";
+                $rdo = $DB->get_record_sql($sqlrdo,$params);
                 if (!$rdo) {
-                    // Compare without org_enhet_id
+                    // Compare without org_enhet_id && name
                     unset($params['org_enhet_id']);
                     unset($params['name']);
                     $params['id']               = $companyInfo->ksid;
-                    $rdo = $DB->get_record('report_gen_companydata',$params);
+
+                    $sqlrdo = $sql . " AND id           = :id 
+                                       AND org_enhet_id IS NULL ";
+                    $rdo = $DB->get_record_sql($sqlrdo,$params);
                     if (!$rdo) {
+                        // Compare without org_enhet_id && id. with name
                         unset($params['id']);
                         $params['name'] = $companyInfo->name;
-                        $rdo = $DB->get_record('report_gen_companydata',$params);
+
+                        $sqlrdo = $sql . " AND name = :name 
+                                           AND org_enhet_id IS NULL ";
+                        $rdo = $DB->get_record_sql($sqlrdo,$params);
                     }
+
                 }
             }
 
