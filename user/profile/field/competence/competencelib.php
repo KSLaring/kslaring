@@ -304,7 +304,7 @@ class Competence {
      * @param      null $competence_data
      * @param      null $competence
      *
-     * @return          null|stdClass
+     * @return          array
      * @throws          Exception
      *
      * @creationDate    28/01/2015
@@ -1107,7 +1107,7 @@ class Competence {
      * Description
      * Synchronize with Force Profile Plugin
      *
-     * @param           Object  $myCompetence   Competence data
+     * @param           array  $myCompetence   Competence data
      * @param           int     $userId         User id
      *
      * @return          string
@@ -1123,6 +1123,7 @@ class Competence {
 
         $return_url     = new moodle_url('/user/profile.php',array('id' =>$userId));
         $url_add        = new moodle_url('/user/profile/field/competence/actions/add_competence.php',array('id' =>$userId));
+        $urlstart       = new moodle_url('/my/index.php');
 
         try {
             // Synchronize with Force Profile Plugin
@@ -1159,6 +1160,7 @@ class Competence {
             // Add the Actions Link  - Back to profile
             $out .= html_writer::start_tag('div',array('class' => 'btn_actions'));
                 $out .= '<a href="' . $return_url . '">'  . '<h6>' . get_string('lnk_back','profilefield_competence') . '</h6>' . '</a>';
+                $out .= '<a href="' . $urlstart . '">'  . '<h6>' . get_string('lnk_startpage','profilefield_competence') . '</h6>' . '</a>';
             $out .= html_writer::end_tag('div'); //btn_actions
 
             return $out;

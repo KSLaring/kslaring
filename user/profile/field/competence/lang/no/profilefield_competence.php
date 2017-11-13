@@ -47,8 +47,9 @@ $string['my_companies'] = 'Arbeidssteder';
 $string['my_job_roles'] = 'Jobbroller';
 $string['jr_generics']  = 'Generiske jobbroller';
 
-$string['lnk_add']      = 'Opprett ny';
-$string['lnk_back']     = 'Tilbake til Min profil';
+$string['lnk_add']          = 'Opprett ny';
+$string['lnk_back']         = 'Tilbake til Min profil';
+$string['lnk_startpage']    = 'Go to my startpage';
 
 $string['delete_competence']            = 'Slett kompetanse';
 $string['delete_competence_are_sure']   = '<p> Du kommer til å slette følgende fra din profil: </p>

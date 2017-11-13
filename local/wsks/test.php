@@ -45,6 +45,7 @@ echo $OUTPUT->header();
 
 global $DB;
 
+
 $sql = "DROP VIEW `v_user_rpt`";
 $DB->execute($sql);
 
