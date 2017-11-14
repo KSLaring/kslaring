@@ -131,7 +131,7 @@ function xmldb_report_manager_upgrade($old_version) {
         }
 
         // Add mapped field for managers && reporters
-        if ($old_version < 2017111300) {
+        if ($old_version < 2017111400) {
             // field
             $fieldMapped = new xmldb_field ('mapped',XMLDB_TYPE_CHAR,'50',null, null,null,null,'hierarchylevel');
 
