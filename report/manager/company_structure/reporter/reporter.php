@@ -28,6 +28,8 @@
  *
  */
 
+global $CFG,$SESSION,$PAGE,$SITE,$USER,$OUTPUT;
+
 require_once('../../../../config.php');
 require_once( 'reporterlib.php');
 require_once( '../../managerlib.php');

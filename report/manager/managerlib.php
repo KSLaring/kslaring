@@ -433,14 +433,14 @@ class CompetenceManager {
         $delEmployees   = null;
 
         try {
-            /* Initialise variables */
+            // Initialise variables
             $name       = 'level_structure';
             $path       = '/report/manager/js/structure.js';
             $requires   = array('node', 'event-custom', 'datasource', 'json', 'moodle-core-notification');
             $grpThree   = array('none', 'moodle');
             $strings    = array($grpThree);
 
-            /* Initialise js module */
+            // Initialise js module
             $jsModule = array('name'        => $name,
                 'fullpath'    => $path,
                 'requires'    => $requires,
@@ -449,7 +449,7 @@ class CompetenceManager {
 
             $sp = ($superUser ? 1 : 0);
 
-            /* Window Confirm parameters    */
+            // Window confirm parameters
             $delEmployees = array();
             $delEmployees['title']      = get_string('del_title','report_manager');
             $delEmployees['question']   = get_string('delete_all_employees','report_manager');

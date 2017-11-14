@@ -35,6 +35,9 @@ Class Reporters {
     /**********/
 
     /**
+     * Description
+     * Initialise selectors to add and remove reporters to/from the company
+     *
      * @param           $addSearch
      * @param           $removeSearch
      * @param           $level
@@ -44,9 +47,6 @@ Class Reporters {
      *
      * @creationDate    22/12/2015
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Initialise selectors to add and remove reporters to/from the company
      */
     public static function Init_Reporters_Selectors($addSearch,$removeSearch,$level,$parents) {
         /* Variables */
@@ -62,7 +62,7 @@ Class Reporters {
         $hashRemove = null;
 
         try {
-            /* Initialise variables */
+            // Initialise variables
             $name       = 'reporter_selector';
             $path       = '/report/manager/company_structure/reporter/js/search.js';
             $requires   = array('node', 'event-custom', 'datasource', 'json', 'moodle-core-notification');
@@ -71,16 +71,16 @@ Class Reporters {
             $grpThree   = array('none', 'moodle');
             $strings    = array($grpOne,$grpTwo,$grpThree);
 
-            /* Initialise js module */
+            // Initialise js module
             $jsModule = array('name'        => $name,
                               'fullpath'    => $path,
                               'requires'    => $requires,
                               'strings'     => $strings
                              );
 
-            /* Super Users - Add Selector       */
+            // Reporters - add selector
             self::Init_Reporters_AddSelector($addSearch,$jsModule,$level,$parents);
-            /* Super Users - Remove Selector    */
+            // Repoters - remove selector
             self::Init_Reporters_RemoveSelector($removeSearch,$jsModule,$level,$parents);
         }catch (Exception $ex) {
             throw $ex;
@@ -88,6 +88,9 @@ Class Reporters {
     }//Init_Reporters_Selectors
 
     /**
+     * Description
+     * Find existing reporters connected with the company
+     *
      * @param           $search
      * @param           $parents
      * @param           $level
@@ -97,9 +100,6 @@ Class Reporters {
      *
      * @creationDate    22/12/2015
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Find existing reporters connected with the company
      */
     public static function FindReporters_Selector($search,$parents,$level) {
         /* Variables */
@@ -113,23 +113,26 @@ Class Reporters {
         $extra                  = null;
         $groupName              = null;
         $total                  = null;
+        $tardis                 = null;
 
         try {
-            /* Search Criteria  */
+            // Search criteria
             $params = array();
             $params['level']    = $level;
 
-            /* SQL Instruction */
-            $sql = " SELECT	u.id,
-                            u.firstname,
-                            u.lastname,
-                            u.email
-                     FROM 		{report_gen_company_reporter}	cr
-                        JOIN	{user}						    u	ON 	u.id 		= cr.reporterid
-                                                                    AND	u.deleted 	= 0
-                     WHERE	cr.hierarchylevel	= :level ";
+            // SQL Instruction
+            $sql = " SELECT	DISTINCT
+                              u.id,
+                              u.firstname,
+                              u.lastname,
+                              u.email,
+                              IF(cr.mapped='TARDIS',1,0) as 'tardis'
+                     FROM 	  {report_gen_company_reporter}	 cr
+                        JOIN  {user}						 u	ON 	u.id 		= cr.reporterid
+                                                                AND	u.deleted 	= 0
+                     WHERE	  cr.hierarchylevel	= :level ";
 
-            /* Get Companies Levels */
+            // Get companies levels
             switch ($level) {
                 case 0:
                     $params['levelzero'] = $parents[$level];
@@ -174,7 +177,7 @@ Class Reporters {
                     break;
             }//switch_level
 
-            /* Search Option */
+            // Search option
             if ($search) {
                 $extra = explode(' ',$search);
                 foreach ($extra as $str) {
@@ -192,10 +195,10 @@ Class Reporters {
                 $sql .= " 	AND ($locate) ";
             }//if_search
 
-            /* Order    */
+            // Order
             $sql .= " ORDER BY u.firstname, u.lastname ";
 
-            /* Execute */
+            // Execute
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 $total = count($rdo);
@@ -208,21 +211,25 @@ Class Reporters {
                         $groupName = get_string('current_users', 'report_manager');
                     }//if_serach
 
-                    /* Get Users    */
+                    // Get users
+                    $tardis = array();
                     foreach ($rdo as $instance) {
+                        if ($instance->tardis) {
+                            $tardis[$instance->id] = $instance->id;
+                        }
                         $reporters[$instance->id] = $instance->firstname . " " . $instance->lastname . "(" . $instance->email . ")";
                     }//for_Rdo
 
-                    /* Add users    */
+                    // Add users
                     $availableReporters[$groupName] = $reporters;
                 }//if_max
             }else {
-                /* Info to return */
+                // Info to return
                 $groupName = get_string('no_reporters','report_manager');
                 $availableReporters[$groupName]  = array('');
             }//if_rdo
 
-            return $availableReporters;
+            return array($availableReporters,$tardis);
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -230,6 +237,9 @@ Class Reporters {
 
 
     /**
+     * Description
+     * Find potential reporters
+     *
      * @param           $search
      * @param           $parents
      * @param           $level
@@ -239,9 +249,6 @@ Class Reporters {
      *
      * @creationDate    22/12/2015
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Find potential reporters
      */
     public static function FindPotentialReporters_Selector($search,$parents,$level) {
         /* Variables */
@@ -255,22 +262,24 @@ Class Reporters {
         $extra                  = null;
         $groupName              = null;
         $total                  = null;
+        $tardis                 = null;
 
         try {
-            /* Search Criteria  */
+            // Search criteria
             $params = array();
             $params['level']    = $level;
 
-            /* SQL Instruction */
-            $sql = " SELECT		u.id,
-                                u.firstname,
-                                u.lastname,
-                                u.email
-                     FROM			{user}						  u
-                        LEFT JOIN	{report_gen_company_reporter} cr	ON 	cr.reporterid 		= u.id
-                                                                        AND	cr.hierarchylevel 	= :level ";
+            // SQL Instruction
+            $sql = " SELECT	DISTINCT	
+                                  u.id,
+                                  u.firstname,
+                                  u.lastname,
+                                  u.email
+                     FROM		  {user}						u
+                        LEFT JOIN {report_gen_company_reporter} cr	ON 	cr.reporterid 		= u.id
+                                                                    AND	cr.hierarchylevel 	= :level ";
 
-            /* Get companies level */
+            // Get companies level
             switch ($level) {
                 case 0:
                     $params['levelzero'] = $parents[$level];
@@ -315,12 +324,12 @@ Class Reporters {
                     break;
             }//switch_level
 
-            /* Criteria  */
+            // Criteria
             $sql .= " WHERE		u.deleted   = 0
                         AND		u.username != 'guest'
                         AND		cr.id IS NULL ";
 
-            /* Search Option */
+            // Search option
             if ($search) {
                 $extra = explode(' ',$search);
                 foreach ($extra as $str) {
@@ -338,10 +347,10 @@ Class Reporters {
                 $sql .= " 	AND ($locate) ";
             }//if_search
 
-            /* Order    */
+            // Order
             $sql .= " ORDER BY u.firstname, u.lastname ";
 
-            /* Execute  */
+            // Execute
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 $total = count($rdo);
@@ -354,23 +363,26 @@ Class Reporters {
                         $groupName = get_string('pot_users', 'report_manager');
                     }//if_serach
 
-                    /* Get Users    */
+                    // Get users
                     foreach ($rdo as $instance) {
                         $reporters[$instance->id] = $instance->firstname . " " . $instance->lastname . "(" . $instance->email . ")";
                     }//for_Rdo
 
-                    /* Add Users */
+                    // Add users
                     $availableReporters[$groupName] = $reporters;
                 }//if_tooMany
             }//if_Rdo
 
-            return $availableReporters;
+            return array($availableReporters,$tardis);
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
     }//FindPotentialReporters_Selector
 
     /**
+     * Description
+     * Add reporters to the company
+     *
      * @param           $level
      * @param           $parents
      * @param           $reportersLst
@@ -379,9 +391,6 @@ Class Reporters {
      *
      * @creationDate    22/12/2015
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Add reporters to the company
      */
     public static function AddReporters($level,$parents,$reportersLst) {
         /* Variables */
@@ -394,14 +403,14 @@ Class Reporters {
         $levelTwo       = null;
         $levelThree     = null;
 
-        /* Start Transaction */
+        // Start transaction
         $trans = $DB->start_delegated_transaction();
 
         try {
-            /* Local Time */
+            // Local time
             $time = time();
 
-            /* Get Companies Level */
+            // Get companies level
             switch ($level) {
                 case 0:
                     if ($parents[$level] != 0) {
@@ -431,7 +440,7 @@ Class Reporters {
 
             foreach ($reportersLst as $reporter) {
                 if ($levelZero) {
-                    /* New Reporter */
+                    // New reporter
                     $infoReporter = new stdClass();
                     $infoReporter->reporterid        = $reporter;
                     $infoReporter->levelzero         = $levelZero;
@@ -440,16 +449,17 @@ Class Reporters {
                     $infoReporter->levelthree        = $levelThree;
                     $infoReporter->hierarchylevel    = $level;
                     $infoReporter->timecreated       = $time;
+                    $infoReporter->mapped            = 'MANUAL';
 
-                    /* Execute  */
+                    // Execute
                     $DB->insert_record('report_gen_company_reporter',$infoReporter);
                 }
             }//for_reporters
 
-            /* Commit */
+            // Commit
             $trans->allow_commit();
         }catch (Exception $ex) {
-            /* Rollback */
+            // Rollback
             $trans->rollback($ex);
 
             throw $ex;
@@ -457,6 +467,9 @@ Class Reporters {
     }//AddReporters
 
     /**
+     * Description
+     * Remove reporters from company
+     *
      * @param           $level
      * @param           $parents
      * @param           $reportersLst
@@ -465,9 +478,6 @@ Class Reporters {
      *
      * @creationDate    22/12/2015
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Remove reporters from company
      */
     public static function RemoveReporters($level,$parents,$reportersLst) {
         /* Variables */
@@ -481,15 +491,16 @@ Class Reporters {
         $levelTwo   = null;
         $levelThree = null;
 
-        /* Start Transaction */
+        // Start transaction
         $trans = $DB->start_delegated_transaction();
 
         try {
-            /* Search Criteria  */
+            // Search criteria
             $params = array();
             $params['level']    = $level;
+            $params['mapped']   = 'MANUAL';
 
-            /* Get Companies Level */
+            // Get companies level
             switch ($level) {
                 case 0:
                     $params['levelzero'] = $parents[$level];
@@ -535,18 +546,19 @@ Class Reporters {
                     break;
             }//switch
 
-            /* SQL Instruction */
+            // SQL Instruction
             $sql = " DELETE FROM {report_gen_company_reporter}
                      WHERE  hierarchylevel  = :level
+                        AND mapped          = :mapped
                         AND reporterid IN ($reportersLst) ";
 
-            /* Execute  */
+            // Execute
             $DB->execute($sql . $sqlLevels,$params);
 
-            /* Commit */
+            // Commit
             $trans->allow_commit();
         }catch (Exception $ex) {
-            /* Rollback */
+            // Rollback
             $trans->rollback($ex);
 
             throw $ex;
@@ -558,6 +570,9 @@ Class Reporters {
     /***********/
 
     /**
+     * Description
+     * Get the options to show when there are too many users
+     *
      * @param           $search
      * @param           $total
      *
@@ -566,9 +581,6 @@ Class Reporters {
      *
      * @creationDate    22/12/2015
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get the options to show when there are too many users
      */
     private static function TooMany_UsersSelector($search,$total) {
         /* Variables    */
@@ -579,22 +591,22 @@ Class Reporters {
 
         try {
             if ($search) {
-                /* Info too many    */
+                // Info too many
                 $info = new stdClass();
                 $info->count    = $total;
                 $info->search   = $search;
 
-                /* Get Info to show  */
+                // Get info to show
                 $tooMany    = get_string('toomanyusersmatchsearch', '', $info);
                 $searchMore = get_string('pleasesearchmore');
 
             }else {
-                /* Get Info to show */
+                // Get info to show
                 $tooMany    = get_string('toomanyuserstoshow', '', $total);
                 $searchMore = get_string('pleaseusesearch');
             }//if_search
 
-            /* Info to return   */
+            // Info to return
             $availableUsers[$tooMany]       = array('');
             $availableUsers[$searchMore]    = array('');
 

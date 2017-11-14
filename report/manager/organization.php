@@ -193,9 +193,6 @@ foreach ($options as $companyId => $company) {
     $data['items'][$info->name] = $info;
 }
 
-$extra = CompetenceManager::get_extra_info_company($parent);
-$data['extra'] = $extra;
-
 /* Encode and Send */
 $json[] = $data;
 echo json_encode(array('results' => $json));

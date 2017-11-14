@@ -716,6 +716,8 @@ class CompetenceManager_Install {
             $tblManagerTable->add_field('levelthree',XMLDB_TYPE_INTEGER,'10',null, null, null,null);
             /* hierarchylevel   */
             $tblManagerTable->add_field('hierarchylevel',XMLDB_TYPE_INTEGER,'2',null, XMLDB_NOTNULL, null,null);
+            /* Mapped   */
+            $tblManagerTable->add_field('mapped',XMLDB_TYPE_CHAR,'50',null, null,null,null);
             /* timecreated      */
             $tblManagerTable->add_field('timecreated',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
 
@@ -747,6 +749,8 @@ class CompetenceManager_Install {
             $tblReporterTable->add_field('levelthree',XMLDB_TYPE_INTEGER,'10',null, null, null,null);
             /* hierarchylevel   */
             $tblReporterTable->add_field('hierarchylevel',XMLDB_TYPE_INTEGER,'2',null, XMLDB_NOTNULL, null,null);
+            /* Mapped   */
+            $tblReporterTable->add_field('mapped',XMLDB_TYPE_CHAR,'50',null, null,null,null);
             /* timecreated      */
             $tblReporterTable->add_field('timecreated',XMLDB_TYPE_INTEGER,'10',null, XMLDB_NOTNULL, null,null);
 

@@ -27,6 +27,7 @@
  * @author          eFaktor     (fbv)
  *
  */
+global $CFG,$SESSION,$PAGE,$SITE,$OUTPUT,$USER;
 
 require_once('../../../../config.php');
 require_once( '../company_structurelib.php');

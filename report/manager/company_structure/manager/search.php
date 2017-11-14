@@ -29,6 +29,7 @@
  */
 define('AJAX_SCRIPT', true);
 
+global $PAGE, $OUTPUT,$USER;
 require_once('../../../../config.php');
 require_once( 'managerslib.php');
 
@@ -47,6 +48,7 @@ $json           = array();
 $groupName      = null;
 $groupData      = null;
 $parents        = array();
+$tardis         = null;
 
 $context        = context_system::instance();
 $url            = new moodle_url('/report/manager/company_structure/manager/search.php');
@@ -97,7 +99,7 @@ $optSelector = $USER->manager_selectors[$selectorId];
 /* Get Class    */
 $class = $optSelector['class'];
 
-$results = Managers::$class($search,$parents,$level);
+list($results,$tardis) = Managers::$class($search,$parents,$level);
 
 foreach ($results as $groupName => $managers) {
     $groupData = array('name' => $groupName, 'users' => array());
@@ -108,7 +110,12 @@ foreach ($results as $groupName => $managers) {
         $output     = new stdClass;
         $output->id     = $id;
         $output->name   = $user;
-
+        $output->tardis = 0;
+        if ($tardis) {
+            if (array_key_exists($id,$tardis)) {
+                $output->tardis = 1;
+            }
+        }
         if (!empty($user->disabled)) {
             $output->disabled = true;
         }

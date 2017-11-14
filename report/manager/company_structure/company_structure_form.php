@@ -152,16 +152,17 @@ class manager_company_structure_form extends moodleform {
             /* Check Only One Company */
             $this->SetOnlyOneCompany($level,$options);
 
-            $unlink_btn = $this->setLevelDefault($level,$form);
+            list($unlink_btn,$default) = $this->setLevelDefault($level,$form);
             if (($level == 0) && $myCompanies) {
                 $unlink_btn = ' lnk_disabled';
             }
         
             // Public or private
-            $form->addElement('checkbox', 'public_' . $level,'',get_string('public', 'report_manager'),'disabled');
+            $form->addElement('checkbox', 'public_' . $level,'',get_string('public', 'report_manager'),'disabled ');
 
             // Mapped with
-            $label = "<label id=mapped_" . $level . " class='label_mapped_hidden'>" . get_string('mapped_with','report_manager') . "</label>";
+            $class = 'label_mapped_hidden';
+            $label = "<label id=mapped_" . $level . " class=$class>" . get_string('mapped_with','report_manager') . "</label>";
             $form->addElement('html',$label);
         
             /* Add Action Buttons   */
@@ -369,7 +370,7 @@ class manager_company_structure_form extends moodleform {
         }//if_elvel
 
 
-        return $unlink;
+        return array($unlink,$default);
     }//setLevelDefault
 
     /**

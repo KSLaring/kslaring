@@ -30,6 +30,7 @@
 
 define('AJAX_SCRIPT', true);
 
+global $PAGE,$OUTPUT,$USER;
 require_once('../../../../config.php');
 require_once( 'reporterlib.php');
 
@@ -48,6 +49,7 @@ $json           = array();
 $groupName      = null;
 $groupData      = null;
 $parents        = array();
+$tardis         = null;
 
 $context        = context_system::instance();
 $url            = new moodle_url('/report/manager/company_structure/reporter/search.php');
@@ -98,7 +100,7 @@ $optSelector = $USER->reporter_selectors[$selectorId];
 /* Get Class    */
 $class = $optSelector['class'];
 
-$results = Reporters::$class($search,$parents,$level);
+list($results,$tardis) = Reporters::$class($search,$parents,$level);
 
 foreach ($results as $groupName => $reporters) {
     $groupData = array('name' => $groupName, 'users' => array());
@@ -109,7 +111,12 @@ foreach ($results as $groupName => $reporters) {
         $output     = new stdClass;
         $output->id     = $id;
         $output->name   = $user;
-
+        $output->tardis = 0;
+        if ($tardis) {
+            if (array_key_exists($id,$tardis)) {
+                $output->tardis = 1;
+            }
+        }
         if (!empty($user->disabled)) {
             $output->disabled = true;
         }
