@@ -39,7 +39,7 @@ M.core_user.get_level_structure = function (name) {
     return this.organization[name] || null;
 };
 
-M.core_user.init_organization = function (Y,name,employeeSel,outcomeSel,superUser,myAccess,btnActions,delString) {
+M.core_user.init_organization = function (Y,name,employeeSel,superUser,myAccess,btnActions,delString) {
 var level_structure = {
     /** Number of seconds to delay before submitting a query request */
     querydelay : 0.5,
@@ -55,9 +55,6 @@ var level_structure = {
 
     /* Employee Selector    */
     employeeLst : Y.one('#id_' + employeeSel) || null,
-
-    /* Outcome Selector */
-    outcomeLst : Y.one('#id_' + outcomeSel) || null,
 
     delEmployees : Y.one('#id_btn-delete_employees3'),
 
@@ -109,8 +106,6 @@ var level_structure = {
             this.levelThree.on('change', this.Load_Employees, this);
             this.delEmployees.on('click',this.Delete_Employees,this);
             this.delAllEmployees.on('click',this.Delete_All_Employees,this);
-        }else if (this.outcomeLst) {
-            this.levelThree.on('change', this.Load_Outcomes, this);
         }
 
         this.ActivateDeactivateActionButtons();
@@ -206,12 +201,6 @@ var level_structure = {
         this.timeoutid = Y.later(this.querydelay * 1000, e, function(obj){obj.confirm_delete_all_employees(false)}, this);
     },
 
-    Load_Outcomes : function (e) {
-        //  Trigger an ajax search after a delay.
-        this.cancel_timeout();
-        this.timeoutid = Y.later(this.querydelay * 1000, e, function(obj){obj.send_query_outcomes(false)}, this);
-    },
-
     /**
      * Fires off the ajax search request.
      */
@@ -270,7 +259,6 @@ var level_structure = {
      */
     output_options : function(data) {
         var level;
-        var copublic;
         var dataSelector;
         var companies;
         var index;
@@ -528,93 +516,6 @@ var level_structure = {
                 var option = Y.Node.create('<option value="' + user.id + '">' + user.name + '</option>');
 
                 this.employeeLst.append(option);
-            }
-        }//for_level
-    },
-
-    send_query_outcomes : function (forceresearch) {
-        var valueZero   = this.levelZero.get('value') || 0;
-        var valueOne    = this.levelOne.get('value') || 0;
-        var valueTwo    = this.levelTwo.get('value') || 0;
-        var valueThree  = this.levelTwo.get('value') || 0;
-
-        // Cancel any pending timeout.
-        this.cancel_timeout();
-
-        // Try to cancel existing transactions.
-        Y.Object.each(this.iotransactions, function(trans) {
-            trans.abort();
-        });
-
-        var iotrans = Y.io(M.cfg.wwwroot + '/report/manager/employee_report/outcomes.php',
-            {
-                method: 'POST',
-                data: 'levelZero=' + valueZero + '&levelOne=' + valueOne + '&levelTwo=' + valueTwo + '&levelThree=' + valueThree + '&sesskey=' + M.cfg.sesskey,
-                on: {
-                    complete: this.handle_responseOutcomes,
-                    end: this.ActivateDeactivateActionButtons
-                },
-                context:this
-            }
-        );
-        this.iotransactions[iotrans.id] = iotrans;
-    },
-
-    /**
-     * Handle what happens when we get some data back from the search.
-     * @param {int} requestid not used.
-     * @param {object} response the list of users that was returned.
-     */
-    handle_responseOutcomes : function(requestid, response) {
-        try {
-            delete this.iotransactions[requestid];
-            if (!Y.Object.isEmpty(this.iotransactions)) {
-                // More searches pending. Wait until they are all done.
-                return;
-            }
-            var data = Y.JSON.parse(response.responseText);
-            if (data.error) {
-                this.levelThree.addClass('error');
-                return new M.core.ajaxException(data);
-            }
-            this.output_optionsOutcomes(data);
-        } catch (e) {
-            this.levelThree.addClass('error');
-            return new M.core.exception(e);
-        }
-    },
-
-    /**
-     * This method should do the same sort of thing as the PHP method
-     * user_selector_base::output_options.
-     * @param {object} data the list of users to populate the list box with.
-     */
-    output_optionsOutcomes : function(data) {
-        var index;
-        var dataOutcomes;
-        var outcomes;
-        var indexOut;
-        var out;
-
-        /* Clean the List Before Add the news   */
-        this.outcomeLst.all('option').each(function(option){
-            option.remove();
-        });
-
-        // Clear out the existing options, keeping any ones that are already selected.
-        for (index in data.results) {
-            /* Get Outcomes    */
-            dataOutcomes   = data.results[index];
-            outcomes       = dataOutcomes.outcomes;
-
-            /* Add to the list  */
-            for (indexOut in outcomes) {
-                /* Get Info Employee    */
-                out = outcomes[indexOut];
-
-                var option = Y.Node.create('<option value="' + out.id + '">' + out.name + '</option>');
-
-                this.outcomeLst.append(option);
             }
         }//for_level
     },
@@ -917,7 +818,6 @@ var level_structure = {
 
         // Clear out the existing options, keeping any ones that are already selected.
         for (index in data.results) {
-            /* Get Outcomes    */
             dataextra   = data.results[index];
             extra       = dataextra.extra;
 
