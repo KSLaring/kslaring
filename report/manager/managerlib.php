@@ -1634,8 +1634,8 @@ class CompetenceManager {
                     // SQL Isntruction - Reporters
                     $sqlre = " SELECT  DISTINCT
                                            re.levelzero,
-                                           cr.companyid 		  AS 'levelone',
-                                           cr_two.companyid 	  AS 'leveltwo',
+                                           cr.companyid 	   AS 'levelone',
+                                           cr_two.companyid    AS 'leveltwo',
                                            cr_tre.companyid    AS 'levelthree',
                                            re.hierarchylevel   AS 'level'
                                FROM	       {report_gen_company_reporter}	re
@@ -1651,8 +1651,8 @@ class CompetenceManager {
                     // SQL Isntruction - Managers
                     $sqlma = " SELECT  DISTINCT
                                            re.levelzero,
-                                           cr.companyid 		  AS 'levelone',
-                                           cr_two.companyid 	  AS 'leveltwo',
+                                           cr.companyid 	  AS 'levelone',
+                                           cr_two.companyid   AS 'leveltwo',
                                            cr_tre.companyid    AS 'levelthree',
                                            re.hierarchylevel   AS 'level'
                                FROM	       {report_gen_company_manager}	re

@@ -152,7 +152,7 @@ class manager_company_structure_form extends moodleform {
             /* Check Only One Company */
             $this->SetOnlyOneCompany($level,$options);
 
-            list($unlink_btn,$default) = $this->setLevelDefault($level,$form);
+            $unlink_btn = $this->setLevelDefault($level,$form);
             if (($level == 0) && $myCompanies) {
                 $unlink_btn = ' lnk_disabled';
             }
@@ -370,7 +370,7 @@ class manager_company_structure_form extends moodleform {
         }//if_elvel
 
 
-        return array($unlink,$default);
+        return $unlink;
     }//setLevelDefault
 
     /**

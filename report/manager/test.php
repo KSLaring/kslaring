@@ -28,9 +28,9 @@ echo "TEST " . "</br>";
 // Create view profile - empty
 //Manager_Cron::cron();
 
-$orgnumber = 991939490;
-$brregdata = file_get_contents('http://w2.brreg.no/enhet/sok/detalj.jsp?orgnr=991939490');
-echo $brregdata;
+//$orgnumber = 991939490;
+//$brregdata = file_get_contents('http://w2.brreg.no/enhet/sok/detalj.jsp?orgnr=991939490');
+//echo $brregdata;
 
 /* Print Footer */
 echo $OUTPUT->footer();
