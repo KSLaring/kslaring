@@ -32,7 +32,9 @@ define('AJAX_SCRIPT', true);
 require_once('../../config.php');
 require_once('managerlib.php');
 
-/* PARAMS   */
+global $PAGE,$SITE,$OUTPUT,$USER,$SESSION;
+
+// Params
 $parent         = optional_param('parent',0,PARAM_INT);
 $levelZero      = optional_param('levelZero',0,PARAM_INT);
 $level          = required_param('level',PARAM_INT);
@@ -57,19 +59,19 @@ $url            = new moodle_url('/report/manager/organization.php');
 $PAGE->set_context($context);
 $PAGE->set_url($url);
 
-/* Check the correct access */
+// Check the correct access
 require_login();
 require_sesskey();
 
 echo $OUTPUT->header();
 
-/* Get Companies connected with super user  */
+// Get Companies connected with super user
 $IsReporter = CompetenceManager::IsReporter($USER->id);
 if ($superUser) {
     $myAccess   = CompetenceManager::Get_MyAccess($USER->id);
 }else {
     /* My Hierarchy */
-    $myHierarchy = CompetenceManager::get_MyHierarchyLevel($USER->id,$context,$IsReporter,0);
+    $myHierarchy = CompetenceManager::get_my_hierarchy_level($USER->id,$context,$IsReporter,0);
     if ($IsReporter) {
         $myLevelZero  = array_keys($myHierarchy->competence);
         $myLevelOne   = $myHierarchy->competence[$levelZero]->levelOne;

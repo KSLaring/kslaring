@@ -30,6 +30,7 @@
 
 define('AJAX_SCRIPT', true);
 
+global $PAGE,$OUTPUT,$USER;
 require_once('../../../../config.php');
 require_once( 'reporterlib.php');
 

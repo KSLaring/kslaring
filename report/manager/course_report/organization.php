@@ -119,7 +119,7 @@ $data['clean'] = $toClean;
 /* Get My Companies by Level    */
 /* My Hierarchy */
 $IsReporter = CompetenceManager::IsReporter($USER->id);
-$myHierarchy = CompetenceManager::get_MyHierarchyLevel($USER->id,$context,$IsReporter,$reportLevel);
+$myHierarchy = CompetenceManager::get_my_hierarchy_level($USER->id,$context,$IsReporter,$reportLevel);
 if ($IsReporter) {
     $myLevelZero  = array_keys($myHierarchy->competence);
     $myLevelOne   = $myHierarchy->competence[$levelZero]->levelOne;

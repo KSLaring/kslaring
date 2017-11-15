@@ -280,12 +280,14 @@ class company_structure {
             $sql = " SELECT    		rc.id,
                                     rc.name,
                                     rc.industrycode,
-                                    rc.public
+                                    rc.public,
+                                    rc.mapped
                      FROM			{report_gen_companydata}	rc
                      WHERE          rc.id = :company ";
 
             // Execute
             $rdo = $DB->get_record_sql($sql,$params);
+            /**
             if ($rdo) {
                 // Info company
                 $company_info = new stdClass();
@@ -293,9 +295,9 @@ class company_structure {
                 $company_info->name         = $rdo->name;
                 $company_info->industrycode = $rdo->industrycode;
                 $company_info->public       = $rdo->public;
-            }//if_rdo
+            }//if_rdo **/
 
-            return $company_info;
+            return $rdo;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch

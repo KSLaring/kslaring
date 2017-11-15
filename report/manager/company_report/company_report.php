@@ -89,7 +89,7 @@ $PAGE->navbar->add(get_string('company_report_link','report_manager'),$url);
 
 
 // My hierarchy
-$my_hierarchy = CompetenceManager::get_MyHierarchyLevel($USER->id,$site_context,$IsReporter,0);
+$my_hierarchy = CompetenceManager::get_my_hierarchy_level($USER->id,$site_context,$IsReporter,0);
 
 // User filer
 $user_filter = new company_report_filtering(null,$url,null);

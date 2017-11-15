@@ -130,6 +130,24 @@ function xmldb_report_manager_upgrade($old_version) {
             }//if_exists
         }
 
+        // Add mapped field for managers && reporters
+        if ($old_version < 2017111400) {
+            // field
+            $fieldMapped = new xmldb_field ('mapped',XMLDB_TYPE_CHAR,'50',null, null,null,null,'hierarchylevel');
+
+            // Mapped - manager
+            $tbl = new xmldb_table('report_gen_company_manager');
+            if (!$db_man->field_exists($tbl, $fieldMapped)) {
+                $db_man->add_field($tbl, $fieldMapped);
+            }//if_exists
+
+            // Mapped - reporter
+            $tbl = new xmldb_table('report_gen_company_reporter');
+            if (!$db_man->field_exists($tbl, $fieldMapped)) {
+                $db_man->add_field($tbl, $fieldMapped);
+            }//if_exists
+        }//2017111300
+
         return true;
     }catch (Exception $ex) {
         throw $ex;

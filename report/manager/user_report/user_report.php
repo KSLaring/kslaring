@@ -71,7 +71,7 @@ if (empty($CFG->loginhttps)) {
 $PAGE->verify_https_required();
 
 // My hierarchy
-$myHierarchy = CompetenceManager::get_MyHierarchyLevel($USER->id,$site_context,$IsReporter,4);
+$myHierarchy = CompetenceManager::get_my_hierarchy_level($USER->id,$site_context,$IsReporter,4);
 
 // Form
 $form = new manager_user_report_form(null,array($myHierarchy,$IsReporter));

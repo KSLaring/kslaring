@@ -39,7 +39,7 @@ M.core_user.get_level_structure = function (name) {
     return this.organization[name] || null;
 };
 
-M.core_user.init_organization = function (Y,name,employeeSel,outcomeSel,superUser,myAccess,btnActions,delString) {
+M.core_user.init_organization = function (Y,name,employeeSel,superUser,myAccess,btnActions,delString) {
 var level_structure = {
     /** Number of seconds to delay before submitting a query request */
     querydelay : 0.5,
@@ -55,9 +55,6 @@ var level_structure = {
 
     /* Employee Selector    */
     employeeLst : Y.one('#id_' + employeeSel) || null,
-
-    /* Outcome Selector */
-    outcomeLst : Y.one('#id_' + outcomeSel) || null,
 
     delEmployees : Y.one('#id_btn-delete_employees3'),
 
@@ -75,6 +72,8 @@ var level_structure = {
     /** Stores any in-progress remote requests. */
     iotransactions : {},
 
+    tardis_zero:    null,
+    tardis_one:     null,
     tardis_two:     null,
     tardis_three:   null,
 
@@ -83,6 +82,8 @@ var level_structure = {
     public_two:     Y.one('#id_public_2'),
     public_three:   Y.one('#id_public_3'),
 
+    mapped_zero:    Y.one('#mapped_0'),
+    mapped_one:     Y.one('#mapped_1'),
     mapped_two:     Y.one('#mapped_2'),
     mapped_three:   Y.one('#mapped_3'),
 
@@ -105,29 +106,19 @@ var level_structure = {
             this.levelThree.on('change', this.Load_Employees, this);
             this.delEmployees.on('click',this.Delete_Employees,this);
             this.delAllEmployees.on('click',this.Delete_All_Employees,this);
-        }else if (this.outcomeLst) {
-            this.levelThree.on('change', this.Load_Outcomes, this);
         }
-        // Clean  info
-        this.tardis_two     = 0;
-        this.tardis_three   = 0;
-        this.public_zero.set('checked',0);
-        this.public_one.set('checked',0);
-        this.public_two.set('checked',0);
-        this.public_three.set('checked',0);
-        this.mapped_two.removeClass('label_mapped_display');
-        this.mapped_two.addClass('label_mapped_hidden');
-        this.mapped_three.removeClass('label_mapped_display');
-        this.mapped_three.addClass('label_mapped_hidden');
 
         this.ActivateDeactivateActionButtons();
     },
+
 
     Activate_LevelOne : function(e) {
         var parent  = this.levelZero.get('value');
         var level   = 1;
 
         // Clean tardis info
+        this.tardis_zero    = 0;
+        this.tardis_one     = 0;
         this.tardis_two     = 0;
         this.tardis_three   = 0;
         this.public_zero.set('checked',0);
@@ -149,6 +140,8 @@ var level_structure = {
         var level       = 2;
 
         // Clean tardis info
+        this.tardis_zero    = 0;
+        this.tardis_one     = 0;
         this.tardis_two     = 0;
         this.tardis_three   = 0;
         this.public_one.set('checked',0);
@@ -169,6 +162,8 @@ var level_structure = {
         var level   = 3;
 
         // Clean tardis info
+        this.tardis_zero    = 0;
+        this.tardis_one     = 0;
         this.tardis_two     = 0;
         this.tardis_three   = 0;
         this.public_two.set('checked',0);
@@ -204,12 +199,6 @@ var level_structure = {
         //  Trigger an ajax search after a delay.
         this.cancel_timeout();
         this.timeoutid = Y.later(this.querydelay * 1000, e, function(obj){obj.confirm_delete_all_employees(false)}, this);
-    },
-
-    Load_Outcomes : function (e) {
-        //  Trigger an ajax search after a delay.
-        this.cancel_timeout();
-        this.timeoutid = Y.later(this.querydelay * 1000, e, function(obj){obj.send_query_outcomes(false)}, this);
     },
 
     /**
@@ -270,10 +259,8 @@ var level_structure = {
      */
     output_options : function(data) {
         var level;
-        var copublic;
         var dataSelector;
         var companies;
-        var extra;
         var index;
         var indexCompany;
         var infoCompany;
@@ -333,28 +320,6 @@ var level_structure = {
                     option.removeAttribute('selected');
                 }
             });
-
-            // Extra information from parent
-            extra = dataSelector.extra;
-            if (extra) {
-                copublic = extra.public == '1' ? 1 : 0;
-                switch (level) {
-                    case 'level_1':
-
-                        this.public_zero.set('checked',copublic);
-                        break;
-
-                    case 'level_2':
-                        this.public_one.set('checked',copublic);
-                        break;
-
-                    case 'level_3':
-                        this.public_two.set('checked',copublic);
-                        this.tardis_two = extra.tardis;
-
-                        break;
-                }
-            }
         }//for_level
     },
 
@@ -552,105 +517,15 @@ var level_structure = {
 
                 this.employeeLst.append(option);
             }
-
-            // Extra information from parent
-            extra = dataEmployees.extra;
-            if (extra) {
-                copublic = extra.public == '1' ? 1 : 0;
-                this.tardis_three = extra.tardis;
-                this.public_three.set('checked',copublic);
-            }
-        }//for_level
-    },
-
-    send_query_outcomes : function (forceresearch) {
-        var valueZero   = this.levelZero.get('value') || 0;
-        var valueOne    = this.levelOne.get('value') || 0;
-        var valueTwo    = this.levelTwo.get('value') || 0;
-        var valueThree  = this.levelTwo.get('value') || 0;
-
-        // Cancel any pending timeout.
-        this.cancel_timeout();
-
-        // Try to cancel existing transactions.
-        Y.Object.each(this.iotransactions, function(trans) {
-            trans.abort();
-        });
-
-        var iotrans = Y.io(M.cfg.wwwroot + '/report/manager/employee_report/outcomes.php',
-            {
-                method: 'POST',
-                data: 'levelZero=' + valueZero + '&levelOne=' + valueOne + '&levelTwo=' + valueTwo + '&levelThree=' + valueThree + '&sesskey=' + M.cfg.sesskey,
-                on: {
-                    complete: this.handle_responseOutcomes,
-                    end: this.ActivateDeactivateActionButtons
-                },
-                context:this
-            }
-        );
-        this.iotransactions[iotrans.id] = iotrans;
-    },
-
-    /**
-     * Handle what happens when we get some data back from the search.
-     * @param {int} requestid not used.
-     * @param {object} response the list of users that was returned.
-     */
-    handle_responseOutcomes : function(requestid, response) {
-        try {
-            delete this.iotransactions[requestid];
-            if (!Y.Object.isEmpty(this.iotransactions)) {
-                // More searches pending. Wait until they are all done.
-                return;
-            }
-            var data = Y.JSON.parse(response.responseText);
-            if (data.error) {
-                this.levelThree.addClass('error');
-                return new M.core.ajaxException(data);
-            }
-            this.output_optionsOutcomes(data);
-        } catch (e) {
-            this.levelThree.addClass('error');
-            return new M.core.exception(e);
-        }
-    },
-
-    /**
-     * This method should do the same sort of thing as the PHP method
-     * user_selector_base::output_options.
-     * @param {object} data the list of users to populate the list box with.
-     */
-    output_optionsOutcomes : function(data) {
-        var index;
-        var dataOutcomes;
-        var outcomes;
-        var indexOut;
-        var out;
-
-        /* Clean the List Before Add the news   */
-        this.outcomeLst.all('option').each(function(option){
-            option.remove();
-        });
-
-        // Clear out the existing options, keeping any ones that are already selected.
-        for (index in data.results) {
-            /* Get Outcomes    */
-            dataOutcomes   = data.results[index];
-            outcomes       = dataOutcomes.outcomes;
-
-            /* Add to the list  */
-            for (indexOut in outcomes) {
-                /* Get Info Employee    */
-                out = outcomes[indexOut];
-
-                var option = Y.Node.create('<option value="' + out.id + '">' + out.name + '</option>');
-
-                this.outcomeLst.append(option);
-            }
         }//for_level
     },
 
     ActivateDeactivateActionButtons : function () {
+        var zero;
+        var one;
+        var two;
+        var three;
+
         if (this.btnActions) {
             /* Level Zero   */
             if (this.sp_user) {
@@ -681,10 +556,10 @@ var level_structure = {
                 }else {
                     Y.one('#id_btn-managers_selected1').removeAttribute('disabled');
                     Y.one('#id_btn-reporters_selected1').removeAttribute('disabled');
+                    Y.one('#id_btn-add_item2').removeAttribute('disabled');
                     Y.one('#id_btn-rename_selected1').removeAttribute('disabled');
                     Y.one('#id_btn-delete_selected1').removeAttribute('disabled');
                     Y.one('#id_btn-move_selected1').removeAttribute('disabled');
-                    Y.one('#id_btn-add_item2').removeAttribute('disabled');
                 }
 
                 /* Level Two    */
@@ -699,23 +574,9 @@ var level_structure = {
                     Y.one('#id_btn-managers_selected2').removeAttribute('disabled');
                     Y.one('#id_btn-reporters_selected2').removeAttribute('disabled');
                     Y.one('#id_btn-add_item3').removeAttribute('disabled');
-                    if (this.tardis_two == 1) {
-                        Y.one('#id_btn-add_item2').setStyle('display', 'none');
-                        Y.one('#id_btn-add_item3').setStyle('display', 'none');
-                        Y.one('#id_btn-rename_selected2').setAttribute('disabled','disabled');
-                        Y.one('#id_btn-delete_selected2').setAttribute('disabled','disabled');
-                        Y.one('#id_btn-move_selected2').setAttribute('disabled','disabled');
-                        this.mapped_two.removeClass('label_mapped_hidden');
-                        this.mapped_two.addClass('label_mapped_display');
-                    }else {
-                        Y.one('#id_btn-add_item2').setStyle('display', 'inline-block');
-                        Y.one('#id_btn-add_item3').setStyle('display', 'inline-block');
                         Y.one('#id_btn-rename_selected2').removeAttribute('disabled');
                         Y.one('#id_btn-delete_selected2').removeAttribute('disabled');
                         Y.one('#id_btn-move_selected2').removeAttribute('disabled');
-                        this.mapped_two.removeClass('label_mapped_display');
-                        this.mapped_two.addClass('label_mapped_hidden');
-                    }//Tardis
                 }//levelTwo
 
                 /* Level Three  */
@@ -732,28 +593,40 @@ var level_structure = {
                     Y.one('#id_btn-reporters_selected3').removeAttribute('disabled');
                     Y.one('#id_btn-delete_employees3').removeAttribute('disabled');
                     Y.one('#id_btn-delete_all_employees3').removeAttribute('disabled');
-                    if (this.tardis_three == 1) {
-                        Y.one('#id_btn-rename_selected3').setAttribute('disabled','disabled');
-                        Y.one('#id_btn-delete_selected3').setAttribute('disabled','disabled');
-                        Y.one('#id_btn-move_selected3').setAttribute('disabled','disabled');
-                        this.mapped_three.removeClass('label_mapped_hidden');
-                        this.mapped_three.addClass('label_mapped_display');
-                    }else {
                         Y.one('#id_btn-rename_selected3').removeAttribute('disabled');
                         Y.one('#id_btn-delete_selected3').removeAttribute('disabled');
                         Y.one('#id_btn-move_selected3').removeAttribute('disabled');
-                        this.mapped_three.removeClass('label_mapped_display');
-                        this.mapped_three.addClass('label_mapped_hidden');
-                    }//tardis
-                    // If TARDIS mapped then hide the »Add« button.
-                    if (this.tardis_two == 1 || this.tardis_three == 1) {
-                        Y.one('#id_btn-add_item3').setStyle('display', 'none');
-                    } else {
-                        Y.one('#id_btn-add_item3').setStyle('display', 'inline-block');
-                    }
                 }//levelThree
             }
         }//ifbtnActions
+
+        zero    = this.levelZero.get('value');
+        one     = this.levelOne.get('value');
+        two     = this.levelTwo.get('value');
+        three   = this.levelThree.get('value');
+
+        // Cancel any pending timeout.
+        this.cancel_timeout();
+
+        // Try to cancel existing transactions.
+        Y.Object.each(this.iotransactions, function(trans) {
+            trans.abort();
+        });
+
+        if ((zero != '0') && (one != '0')) {
+            var iotrans = Y.io(M.cfg.wwwroot + '/report/manager/company_structure/extra.php',
+                {
+                    method: 'POST',
+                    data: 'zero=' + zero + '&one=' + one + '&two=' + two + '&three=' + three + '&sesskey=' + M.cfg.sesskey,
+                    on: {
+                        complete: this.handle_extra
+                    },
+                    context:this
+                }
+            );
+            this.iotransactions[iotrans.id] = iotrans;
+        }
+
     },
 
     ActivateDeactivateActionButtons_SuperUser :  function() {
@@ -761,11 +634,6 @@ var level_structure = {
         var accessOne   = 0;
         var accessTwo   = 0;
         var accessThree = 0;
-
-        var spZero  = 0;
-        var spOne   = 0;
-        var spTwo   = 0;
-        var spThree = 0;
 
         /* Level Zero   */
         Y.one('#id_btn-add_item0').setAttribute('disabled','disabled');
@@ -855,15 +723,6 @@ var level_structure = {
                     Y.one('#id_btn-add_item2').removeAttribute('disabled');
                 }
 
-                // If TARDIS mapped then hide the »Add« button.
-                if (this.tardis_two == 1) {
-                    Y.one('#id_btn-add_item2').setStyle('display', 'none');
-                    Y.one('#id_btn-add_item3').setStyle('display', 'none');
-                } else {
-                    Y.one('#id_btn-add_item2').setStyle('display', 'inline-block');
-                    Y.one('#id_btn-add_item3').setStyle('display', 'inline-block');
-                }
-
                 if (this.levelTwo.get('value') == 0) {
                     Y.one('#id_btn-rename_selected2').setAttribute('disabled','disabled');
                     Y.one('#id_btn-delete_selected2').setAttribute('disabled','disabled');
@@ -875,21 +734,9 @@ var level_structure = {
                     Y.one('#id_btn-managers_selected2').removeAttribute('disabled');
                     Y.one('#id_btn-reporters_selected2').removeAttribute('disabled');
                     Y.one('#id_btn-add_item3').removeAttribute('disabled');
-                    if (this.tardis_two == 1) {
-                        Y.one('#id_btn-add_item2').setStyle('display', 'none');
-                        Y.one('#id_btn-rename_selected2').setAttribute('disabled','disabled');
-                        Y.one('#id_btn-delete_selected2').setAttribute('disabled','disabled');
-                        Y.one('#id_btn-move_selected2').setAttribute('disabled','disabled');
-                        this.mapped_two.removeClass('label_mapped_hidden');
-                        this.mapped_two.addClass('label_mapped_display');
-                    }else {
-                        Y.one('#id_btn-add_item2').setStyle('display', 'inline-block');
                         Y.one('#id_btn-rename_selected2').removeAttribute('disabled');
                         Y.one('#id_btn-delete_selected2').removeAttribute('disabled');
                         Y.one('#id_btn-move_selected2').removeAttribute('disabled');
-                        this.mapped_two.removeClass('label_mapped_display');
-                        this.mapped_two.addClass('label_mapped_hidden');
-                    }//tardis
                 }//leveltwo
             }else {
                 if (!accessThree && this.levelTwo.get('value') != 0) {
@@ -907,13 +754,6 @@ var level_structure = {
                     Y.one('#id_btn-add_item3').removeAttribute('disabled');
                 }
 
-                // If TARDIS mapped then hide the »Add« button.
-                if (this.tardis_two == 1 || this.tardis_three == 1) {
-                    Y.one('#id_btn-add_item3').setStyle('display', 'none');
-                } else {
-                    Y.one('#id_btn-add_item3').setStyle('display', 'inline-block');
-                }
-
                 if (this.levelThree.get('value') == 0) {
                     Y.one('#id_btn-managers_selected3').setAttribute('disabled','disabled');
                     Y.one('#id_btn-reporters_selected3').setAttribute('disabled','disabled');
@@ -927,19 +767,9 @@ var level_structure = {
                     Y.one('#id_btn-reporters_selected3').removeAttribute('disabled');
                     Y.one('#id_btn-delete_employees3').removeAttribute('disabled');
                     Y.one('#id_btn-delete_all_employees3').removeAttribute('disabled');
-                    if (this.tardis_three == 1) {
-                        Y.one('#id_btn-rename_selected3').setAttribute('disabled','disabled');
-                        Y.one('#id_btn-delete_selected3').setAttribute('disabled','disabled');
-                        Y.one('#id_btn-move_selected3').setAttribute('disabled','disabled');
-                        this.mapped_three.removeClass('label_mapped_hidden');
-                        this.mapped_three.addClass('label_mapped_display');
-                    }else {
                         Y.one('#id_btn-rename_selected3').removeAttribute('disabled');
                         Y.one('#id_btn-delete_selected3').removeAttribute('disabled');
                         Y.one('#id_btn-move_selected3').removeAttribute('disabled');
-                        this.mapped_three.removeClass('label_mapped_display');
-                        this.mapped_three.addClass('label_mapped_hidden');
-                    }//tardis
                 }//levelThree
             }else {
                 if (this.levelThree.get('value') != 0) {
@@ -955,6 +785,104 @@ var level_structure = {
                 }
             }//accessThree
         }
+    },
+
+
+    handle_extra : function(requestid, response) {
+        try {
+            delete this.iotransactions[requestid];
+            if (!Y.Object.isEmpty(this.iotransactions)) {
+                // More searches pending. Wait until they are all done.
+                return;
+            }
+            var data = Y.JSON.parse(response.responseText);
+            if (data.error) {
+                this.levelOne.addClass('error');
+                return new M.core.ajaxException(data);
+            }
+            this.output_extra(data);
+        } catch (e) {
+            this.levelOne.addClass('error');
+            return new M.core.exception(e);
+        }
+    },
+
+    output_extra : function(data) {
+        var index;
+        var extra;
+        var dataextra;
+        var indexOut;
+        var out;
+
+
+
+        // Clear out the existing options, keeping any ones that are already selected.
+        for (index in data.results) {
+            dataextra   = data.results[index];
+            extra       = dataextra.extra;
+
+            for (index in extra) {
+                var zero = extra.zero;
+                this.public_zero.set('checked',zero.public == 1 ? 1 : 0);
+                var one  = extra.one;
+                this.public_one.set('checked',one.public == 1 ? 1 : 0);
+                if (one.tardis == 1) {
+                    Y.one('#id_btn-add_item2').setAttribute('disabled', 'disabled');
+                    Y.one('#id_btn-add_item3').setAttribute('disabled', 'disabled');
+                    Y.one('#id_btn-rename_selected1').setAttribute('disabled','disabled');
+                    Y.one('#id_btn-delete_selected1').setAttribute('disabled','disabled');
+                    Y.one('#id_btn-move_selected1').setAttribute('disabled','disabled');
+                    this.mapped_one.removeClass('label_mapped_hidden');
+                    this.mapped_one.addClass('label_mapped_display');
+                }else {
+                    Y.one('#id_btn-add_item2').removeAttribute('disabled');
+                    Y.one('#id_btn-add_item3').removeAttribute('disabled');
+                    Y.one('#id_btn-rename_selected1').removeAttribute('disabled');
+                    Y.one('#id_btn-delete_selected1').removeAttribute('disabled');
+                    Y.one('#id_btn-move_selected1').removeAttribute('disabled');
+                    this.mapped_one.removeClass('label_mapped_display');
+                    this.mapped_one.addClass('label_mapped_hidden');
+                }
+                var two  = extra.two;
+                if (two != 0) {
+                    this.public_two.set('checked',two.public == 1 ? 1 : 0);
+                    if (two.tardis == 1) {
+                        Y.one('#id_btn-add_item3').setAttribute('disabled', 'disabled');
+                        Y.one('#id_btn-rename_selected2').setAttribute('disabled','disabled');
+                        Y.one('#id_btn-delete_selected2').setAttribute('disabled','disabled');
+                        Y.one('#id_btn-move_selected2').setAttribute('disabled','disabled');
+                        this.mapped_two.removeClass('label_mapped_hidden');
+                        this.mapped_two.addClass('label_mapped_display');
+                    }else {
+                        Y.one('#id_btn-add_item3').removeAttribute('disabled');
+                        Y.one('#id_btn-rename_selected2').removeAttribute('disabled');
+                        Y.one('#id_btn-delete_selected2').removeAttribute('disabled');
+                        Y.one('#id_btn-move_selected2').removeAttribute('disabled');
+                        this.mapped_two.removeClass('label_mapped_display');
+                        this.mapped_two.addClass('label_mapped_hidden');
+                    }
+                }
+                var three = extra.three;
+                if (three != 0) {
+                    this.public_three.set('checked',three.public == 1 ? 1 : 0);
+                    if (three.tardis == 1) {
+                        Y.one('#id_btn-rename_selected3').setAttribute('disabled','disabled');
+                        Y.one('#id_btn-delete_selected3').setAttribute('disabled','disabled');
+                        Y.one('#id_btn-move_selected3').setAttribute('disabled','disabled');
+                        this.mapped_three.removeClass('label_mapped_hidden');
+                        this.mapped_three.addClass('label_mapped_display');
+                    }else {
+                        Y.one('#id_btn-rename_selected3').removeAttribute('disabled');
+                        Y.one('#id_btn-delete_selected3').removeAttribute('disabled');
+                        Y.one('#id_btn-move_selected3').removeAttribute('disabled');
+                        this.mapped_three.removeClass('label_mapped_display');
+                        this.mapped_three.addClass('label_mapped_hidden');
+                    }
+                }
+            }
+
+
+        }//for_level
     },
 
     /**

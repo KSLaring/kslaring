@@ -571,7 +571,7 @@ class CompetenceManager {
      * Description
      * Get my hierarchy level
      */
-    public static function get_MyHierarchyLevel($user_id,$site_context,$IsReporterManager,$reportLevel) {
+    public static function get_my_hierarchy_level($user_id,$site_context,$IsReporterManager,$reportLevel) {
         /* Variables    */
         $myHierarchy   = null;
 
@@ -591,7 +591,7 @@ class CompetenceManager {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//get_MyHierarchyLevel
+    }//get_my_hierarchy_level
 
     /**
      * @param           $my_companies

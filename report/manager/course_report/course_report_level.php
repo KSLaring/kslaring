@@ -118,7 +118,7 @@ if (empty($CFG->loginhttps)) {
 $PAGE->verify_https_required();
 
 // My hierarchy
-$myHierarchy = CompetenceManager::get_MyHierarchyLevel($USER->id,$site_context,$IsReporter,$report_level);
+$myHierarchy = CompetenceManager::get_my_hierarchy_level($USER->id,$site_context,$IsReporter,$report_level);
 
 // Show form
 $SESSION->onlyCompany = array();
