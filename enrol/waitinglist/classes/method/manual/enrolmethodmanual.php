@@ -575,7 +575,7 @@ class enrolmethodmanual extends \enrol_waitinglist\method\enrolmethodbase{
      * Description
      * Get compentece data
      */
-    public function GetCompetenceData($userId) {
+    public static function GetCompetenceData($userId) {
         /* Variables */
         $wl             = null;
         $myCompetence   = null;
