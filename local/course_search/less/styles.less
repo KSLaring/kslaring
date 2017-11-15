@@ -82,6 +82,7 @@
     }
     // Search area.
     #search-area {
+        border: 1px solid @kommitGrayWarm;
         min-height: 10em;
 
         .form-switch-display {
@@ -210,6 +211,39 @@
         td {
             padding: .2em .2em;
             vertical-align: top;
+
+            @media (max-width: 767px) {
+                display: table-cell;
+            }
+            @media only screen and (max-width: 760px), (max-device-width: 1024px) and (min-device-width: 768px) {
+                display: table-cell;
+
+                &.c0 {
+                    width: 40%;
+                }
+                &.c1 {
+                    width: 12%;
+                    min-width: 5em;
+                }
+                &.c2 {
+                    width: 12%;
+                    min-width: 2em;
+                }
+                &.c3 {
+                    width: 12%;
+                    min-width: 5em;
+                }
+                &.c4 {
+                    width: 12%;
+                    max-width: 6em;
+                    min-width: 6em;
+                }
+                &.c5 {
+                    width: 12%;
+                    max-width: 5em;
+                    min-width: 5em;
+                }
+            }
         }
         .c0 {
             width: 40%;
@@ -306,6 +340,7 @@
         }
         .course-card-item {
             background-color: @white;
+            border: 1px solid @kommitGrayWarm;
             display: inline-block;
             margin: 0 1% 1em 1%;
             min-height: 15em;
@@ -316,13 +351,20 @@
             @media (max-width: 499px) {
                 width: 94%;
             }
-
             @media (min-width: 900px) {
                 width: 26.5%;
             }
-
             &.hide-item {
                 display: none;
+            }
+            a {
+                &:hover {
+                    text-decoration: none;
+
+                    .course-title {
+                        text-decoration: underline;
+                    }
+                }
             }
             .course-img {
                 //background-color: @kommitMenuBg;

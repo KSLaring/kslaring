@@ -23,6 +23,7 @@
   margin-bottom: 1em;
 }
 #page-course-search #search-area {
+  border: 1px solid #e8e8e8;
   min-height: 10em;
 }
 #page-course-search #search-area .form-switch-display {
@@ -124,6 +125,49 @@
   padding: .2em .2em;
   vertical-align: top;
 }
+@media (max-width: 767px) {
+  #page-course-search #course-list th,
+  #page-course-search #course-list td {
+    display: table-cell;
+  }
+}
+@media only screen and (max-width: 760px), (max-device-width: 1024px) and (min-device-width: 768px) {
+  #page-course-search #course-list th,
+  #page-course-search #course-list td {
+    display: table-cell;
+  }
+  #page-course-search #course-list th.c0,
+  #page-course-search #course-list td.c0 {
+    width: 40%;
+  }
+  #page-course-search #course-list th.c1,
+  #page-course-search #course-list td.c1 {
+    width: 12%;
+    min-width: 5em;
+  }
+  #page-course-search #course-list th.c2,
+  #page-course-search #course-list td.c2 {
+    width: 12%;
+    min-width: 2em;
+  }
+  #page-course-search #course-list th.c3,
+  #page-course-search #course-list td.c3 {
+    width: 12%;
+    min-width: 5em;
+  }
+  #page-course-search #course-list th.c4,
+  #page-course-search #course-list td.c4 {
+    width: 12%;
+    max-width: 6em;
+    min-width: 6em;
+  }
+  #page-course-search #course-list th.c5,
+  #page-course-search #course-list td.c5 {
+    width: 12%;
+    max-width: 5em;
+    min-width: 5em;
+  }
+}
 #page-course-search #course-list .c0 {
   width: 40%;
 }
@@ -195,6 +239,7 @@
 }
 #page-course-search #course-cards .course-card-item {
   background-color: #fff;
+  border: 1px solid #e8e8e8;
   display: inline-block;
   margin: 0 1% 1em 1%;
   min-height: 15em;
@@ -214,6 +259,12 @@
 }
 #page-course-search #course-cards .course-card-item.hide-item {
   display: none;
+}
+#page-course-search #course-cards .course-card-item a:hover {
+  text-decoration: none;
+}
+#page-course-search #course-cards .course-card-item a:hover .course-title {
+  text-decoration: underline;
 }
 #page-course-search #course-cards .course-card-item .course-img {
   background: #f9f9f9 50% 50% no-repeat;
