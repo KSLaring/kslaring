@@ -63,6 +63,10 @@ class format_classroom extends format_base {
 
     static protected $lastlessonpage = null;
 
+    //protected function __construct($format, $courseid) {
+    //    parent::__construct($format, $courseid);
+    //}
+
     /**
      * Returns true if this course format uses sections
      *
@@ -176,8 +180,15 @@ class format_classroom extends format_base {
     public function page_set_course(moodle_page $page) {
         global $USER, $FULLME, $ME;
 
-        // No specific changes if a file shall be downloaded.
-        if (strpos($ME, 'forcedownload=1') !== false) {
+        // No specific changes on download, pluginfile or ajax requests.
+        if (strpos($ME, 'forcedownload=1') !== false ||
+            strpos($ME, 'ajax/') !== false ||
+            strpos($ME, 'pluginfile.php') !== false) {
+            return;
+        }
+
+        // No specific changes if a certificate shall be downloaded.
+        if (strpos($ME, 'certificate/') !== false && strpos($ME, 'action=get') !== false) {
             return;
         }
 
@@ -891,8 +902,6 @@ class format_classroom extends format_base {
 
         // Initialize javascripts
         $PAGE->requires->js(new moodle_url('/local/course_page/yui/formatopt.js'));
-        course_page::init_locations_sector();
-
         course_page::init_locations_sector();
 
         foreach ($options as $optionname => $option) {
