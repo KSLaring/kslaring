@@ -1186,6 +1186,9 @@ class friadminrpt {
                 }//if_Cattegory
             }//if_rdo
 
+            echo "CATEGORIES : " . $categories . "</br>";
+            echo "CAT PATH: " . $categoriespath . "</br>";
+
             return array($categories,$categoriespath);
         }catch (Exception $ex) {
             throw $ex;
