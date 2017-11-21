@@ -782,6 +782,7 @@ class CompetenceManager {
             $rdo = $DB->get_records_sql($sql);
             if ($rdo) {
                 foreach ($rdo as $instance) {
+                    echo "INSTANCE : " . $instance->id . "-" . $instance->name . "</br>";
                     // Add company
                     $companies[$instance->id] = $instance->name;
                 }//for_rdo
