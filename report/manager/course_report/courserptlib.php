@@ -1093,25 +1093,27 @@ class course_report {
 
         try {
             // Get information connected with level one
+            echo "LEVEL ONE : " . $coemployees->levelone . "</br>";
             $levelOne       = CompetenceManager::get_companies_info($coemployees->levelone);
 
-            foreach ($levelOne as $id => $company) {
-                // level two connected
-                $two   = self::get_companies_by_level(2,$company->id,$coemployees->leveltwo);
-                if ($two) {
-                    $levelTwo       = self::get_reportinfo_leveltwo($courserpt,$company_list,$coemployees->levelthree);
-                    if ($levelTwo) {
-                        // Level one
-                        $companyInfo = new stdClass();
-                        $companyInfo->name      = $company;
-                        $companyInfo->id        = $id;
-                        $companyInfo->levelTwo  = $levelTwo;
+            if ($levelOne) {
+                foreach ($levelOne as $id => $company) {
+                    // level two connected
+                    $two   = self::get_companies_by_level(2,$company->id,$coemployees->leveltwo);
+                    if ($two) {
+                        $levelTwo       = self::get_reportinfo_leveltwo($courserpt,$company_list,$coemployees->levelthree);
+                        if ($levelTwo) {
+                            // Level one
+                            $companyInfo = new stdClass();
+                            $companyInfo->name      = $company;
+                            $companyInfo->id        = $id;
+                            $companyInfo->levelTwo  = $levelTwo;
 
-                        $courserpt->levelOne[$id] = $companyInfo;
-                    }//if_levelTwo
-                }
-
-            }//for_levelOne
+                            $courserpt->levelOne[$id] = $companyInfo;
+                        }//if_levelTwo
+                    }
+                }//for_levelOne
+            }
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -1153,26 +1155,28 @@ class course_report {
 
         try {
             // Get information level two
-            foreach ($parent_lst as $id=>$company) {
-                // Get level three connected with
-                $three = self::get_companies_by_level(3,$company->id,$inthree);
-                // Level three
-                if ($three) {
-                    // Get info level three
-                    $levelThree = self::get_reportinfo_levelthree($courserpt,$company_list);
+            if ($parent_lst) {
+                foreach ($parent_lst as $id=>$company) {
+                    // Get level three connected with
+                    $three = self::get_companies_by_level(3,$company->id,$inthree);
+                    // Level three
+                    if ($three) {
+                        // Get info level three
+                        $levelThree = self::get_reportinfo_levelthree($courserpt,$company_list);
 
-                    // Add level two
-                    if ($levelThree) {
-                        // Level two info
-                        $companyInfo = new stdClass();
-                        $companyInfo->name       = $company;
-                        $companyInfo->id         = $id;
-                        $companyInfo->levelThree = $levelThree;
+                        // Add level two
+                        if ($levelThree) {
+                            // Level two info
+                            $companyInfo = new stdClass();
+                            $companyInfo->name       = $company;
+                            $companyInfo->id         = $id;
+                            $companyInfo->levelThree = $levelThree;
 
-                        $levelTwo[$id] = $companyInfo;
-                    }//if_levelTwo
-                }//if_company_list
-            }//for_companies_level_Two
+                            $levelTwo[$id] = $companyInfo;
+                        }//if_levelTwo
+                    }//if_company_list
+                }//for_companies_level_Two
+            }
 
             return $levelTwo;
         }catch (Exception $ex) {

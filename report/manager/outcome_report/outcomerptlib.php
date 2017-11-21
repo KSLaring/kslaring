@@ -1137,23 +1137,24 @@ class outcome_report {
             // Level one information
             $levelOne       = CompetenceManager::get_companies_info($coemployees->levelone);
 
-            foreach ($levelOne as $id => $company) {
-                // Get level two connected with
-                $two   = self::get_companies_by_level(2,$id,$coemployees->leveltwo);
-                if ($two) {
-                    $levelTwo       = self::get_company_reportinfo_leveltwo($outcome_report,$two,$coemployees->levelthree);
-                    if ($levelTwo) {
-                        // Level one info
-                        $companyInfo = new stdClass();
-                        $companyInfo->name      = $company;
-                        $companyInfo->id        = $id;
-                        $companyInfo->levelTwo  = $levelTwo;
+            if ($levelOne) {
+                foreach ($levelOne as $id => $company) {
+                    // Get level two connected with
+                    $two   = self::get_companies_by_level(2,$id,$coemployees->leveltwo);
+                    if ($two) {
+                        $levelTwo       = self::get_company_reportinfo_leveltwo($outcome_report,$two,$coemployees->levelthree);
+                        if ($levelTwo) {
+                            // Level one info
+                            $companyInfo = new stdClass();
+                            $companyInfo->name      = $company;
+                            $companyInfo->id        = $id;
+                            $companyInfo->levelTwo  = $levelTwo;
 
-                        $outcome_report->levelOne[$id] = $companyInfo;
-                    }//if_levelTwo
-                }//if_company_lst
-
-            }//for_levelOne
+                            $outcome_report->levelOne[$id] = $companyInfo;
+                        }//if_levelTwo
+                    }//if_company_lst
+                }//for_levelOne
+            }
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -1197,24 +1198,26 @@ class outcome_report {
 
         try {
             // Get information level two
-            foreach ($parent_lst as $id=>$company) {
-                // Get level three connected with
-                $three   = self::get_companies_by_level(3,$id,$inThree);
+            if ($parent_lst) {
+                foreach ($parent_lst as $id=>$company) {
+                    // Get level three connected with
+                    $three   = self::get_companies_by_level(3,$id,$inThree);
 
-                // Level three
-                if ($three) {
-                    $levelThree = self::get_company_reportinfo_levelthree($outcome_report,$three);
-                    if ($levelThree) {
-                        // Level two
-                        $companyInfo = new stdClass();
-                        $companyInfo->name       = $company;
-                        $companyInfo->id         = $id;
-                        $companyInfo->levelThree = $levelThree;
+                    // Level three
+                    if ($three) {
+                        $levelThree = self::get_company_reportinfo_levelthree($outcome_report,$three);
+                        if ($levelThree) {
+                            // Level two
+                            $companyInfo = new stdClass();
+                            $companyInfo->name       = $company;
+                            $companyInfo->id         = $id;
+                            $companyInfo->levelThree = $levelThree;
 
-                        $levelTwo[$id] = $companyInfo;
-                    }//if_levelTwo
-                }//if_company_list
-            }//for_companies_level_Two
+                            $levelTwo[$id] = $companyInfo;
+                        }//if_levelTwo
+                    }//if_company_list
+                }//for_companies_level_Two
+            }
 
             return $levelTwo;
         }catch (Exception $ex) {
