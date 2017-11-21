@@ -293,15 +293,15 @@ class outcome_report {
                         if ($outcome_report->courses) {
                             // Courses
                             $courses = implode(',',array_keys($outcome_report->courses));
-                            self::GetUsers_EnrolledIn($outcome_id,$courses,$outcome_report->job_roles,$coemployees->levelThree);
-                            self::GetUsers_NotEnrolIn($outcome_id,$outcome_report->courses,$outcome_report->job_roles,$coemployees->levelThree);
+                            self::GetUsers_EnrolledIn($outcome_id,$courses,$outcome_report->job_roles,$coemployees->levelthree);
+                            self::GetUsers_NotEnrolIn($outcome_id,$outcome_report->courses,$outcome_report->job_roles,$coemployees->levelthree);
                         }//if_courses
 
                         // Check level
                         switch ($data_form['rpt']) {
                             case 0:
                                 // Get info connected with level zero
-                                if ($coemployees->levelOne) {
+                                if ($coemployees->levelone) {
                                     self::get_company_reportinfo_levelone($outcome_report,$coemployees);
                                 }else {
                                     $outcome_report->levelOne = null;
@@ -310,11 +310,11 @@ class outcome_report {
                                 break;
                             case 1:
                                 // Get info connected with level one
-                                if ($coemployees->levelTwo) {
-                                    $levelTwo   = CompetenceManager::get_companies_info($coemployees->levelTwo);
+                                if ($coemployees->leveltwo) {
+                                    $levelTwo   = CompetenceManager::get_companies_info($coemployees->leveltwo);
                                     if ($levelTwo) {
                                         // Get info connected with level two
-                                        $levelOne->levelTwo      = self::get_company_reportinfo_leveltwo($outcome_report,$levelTwo,$coemployees->levelThree);
+                                        $levelOne->levelTwo      = self::get_company_reportinfo_leveltwo($outcome_report,$levelTwo,$coemployees->levelthree);
                                         if ($levelOne->levelTwo) {
                                             $outcome_report->levelOne[$levelOne->id]  = $levelOne;
                                         }else {
@@ -332,8 +332,8 @@ class outcome_report {
                                 break;
                             case 2:
                                 // Get info connected with level two
-                                if ($coemployees->levelThree) {
-                                    $levelThree   = CompetenceManager::get_companies_info($coemployees->levelThree);
+                                if ($coemployees->levelthree) {
+                                    $levelThree   = CompetenceManager::get_companies_info($coemployees->levelthree);
                                     if ($levelThree) {
                                         // Get info connected with leel three
                                         $levelTwo->levelThree      = self::get_company_reportinfo_levelthree($outcome_report,$levelThree);
@@ -356,8 +356,8 @@ class outcome_report {
                                 break;
                             case 3:
                                 // Get info connected with level three
-                                if ($coemployees->levelThree) {
-                                    $levelThree   = CompetenceManager::get_companies_info($coemployees->levelThree);
+                                if ($coemployees->levelthree) {
+                                    $levelThree   = CompetenceManager::get_companies_info($coemployees->levelthree);
 
                                     // Level three
                                     if ($levelThree) {
@@ -1135,13 +1135,13 @@ class outcome_report {
 
         try {
             // Level one information
-            $levelOne       = CompetenceManager::get_companies_info($coemployees->levelOne);
+            $levelOne       = CompetenceManager::get_companies_info($coemployees->levelone);
 
             foreach ($levelOne as $id => $company) {
                 // Get level two connected with
-                $two   = self::get_companies_by_level(2,$id,$coemployees->levelTwo);
+                $two   = self::get_companies_by_level(2,$id,$coemployees->leveltwo);
                 if ($two) {
-                    $levelTwo       = self::get_company_reportinfo_leveltwo($outcome_report,$two,$coemployees->levelThree);
+                    $levelTwo       = self::get_company_reportinfo_leveltwo($outcome_report,$two,$coemployees->levelthree);
                     if ($levelTwo) {
                         // Level one info
                         $companyInfo = new stdClass();

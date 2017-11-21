@@ -1093,13 +1093,13 @@ class course_report {
 
         try {
             // Get information connected with level one
-            $levelOne       = CompetenceManager::get_companies_info($coemployees->levelOne);
+            $levelOne       = CompetenceManager::get_companies_info($coemployees->levelone);
 
             foreach ($levelOne as $id => $company) {
                 // level two connected
                 $two   = self::get_companies_by_level(2,$company->id,$coemployees->leveltwo);
                 if ($two) {
-                    $levelTwo       = self::get_reportinfo_leveltwo($courserpt,$company_list,$coemployees->levelThree);
+                    $levelTwo       = self::get_reportinfo_leveltwo($courserpt,$company_list,$coemployees->levelthree);
                     if ($levelTwo) {
                         // Level one
                         $companyInfo = new stdClass();
