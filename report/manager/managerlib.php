@@ -745,15 +745,8 @@ class CompetenceManager {
 
             // Execute 
             $rdo = $DB->get_record_sql($sql,$params);
-            if ($rdo) {
-                $companies = new stdClass();
-                $companies->levelZero   = $rdo->levelzero;
-                $companies->levelOne    = $rdo->levelone;
-                $companies->levelTwo    = $rdo->leveltwo;
-                $companies->levelThree  = $rdo->levelthree;
-            }//if_rdo
 
-            return $companies;
+            return $rdo;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
