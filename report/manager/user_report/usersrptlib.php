@@ -153,11 +153,6 @@ class UserReport {
             // SQL order
             $sqlOrder = " ORDER BY 	up.zero,up.one,up.two,up.three, up.lastname,up.firstname, uc.fullname ";
 
-            echo "Zero : " . $params['zero'] . "</br>";
-            echo "One : " . $params['one'] . "</br>";
-            echo "Two : " . $params['two'] . "</br>";
-            echo "Three : " . $params['three'] . "</br>";
-
             // Execute
             $sql .= $sqlWhere . $sqlOrder;
             $report->data = $DB->get_records_sql($sql,$params);
