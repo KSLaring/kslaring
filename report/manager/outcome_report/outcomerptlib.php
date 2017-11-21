@@ -283,6 +283,9 @@ class outcome_report {
                     // Companies with employees
                     if ($data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'3']) {
                         $inThree = $data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'3'];
+                        if (is_array($inThree)) {
+                            $inThree = implode(',',$inThree);
+                        }
                     }
                     $coemployees = self::GetCompaniesEmployees($data_form,$inOne,$inTwo,$inThree);
                     if ($coemployees) {
