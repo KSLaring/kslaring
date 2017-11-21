@@ -1170,13 +1170,11 @@ class friadminrpt {
 
                     // Extract all path categories
                     $categoriespath = str_replace(',/',',',$rdo->category_path);
-                    $categoriespath = str_replace('/',',',$categoriespath) . ",";
+                    $categoriespath = str_replace('/',',',$categoriespath);
                     // clean first element
                     $first = substr($categoriespath,0,1);
                     if ($first == ',') {
-                        echo $first . "</br>";
                         $categoriespath = substr($categoriespath,1);
-                        echo " AFTER CLEAN : " . $categoriespath . "</br>";
                     }
                     // Clean last element
                     $length = strlen($categoriespath);
@@ -1187,9 +1185,6 @@ class friadminrpt {
 
                 }//if_Cattegory
             }//if_rdo
-
-            echo "CATEGORIES : " . $categories . "</br>";
-            echo "CAT PATH: " . $categoriespath . "</br>";
 
             return array($categories,$categoriespath);
         }catch (Exception $ex) {
