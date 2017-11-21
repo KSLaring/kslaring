@@ -123,14 +123,14 @@ Class Managers {
             // SQL Instruction
             $sql = " SELECT	DISTINCT
                               u.id,
-                              u.firstname,
-                              u.lastname,
+                            u.firstname,
+                            u.lastname,
                               u.email,
                               IF(cm.mapped='TARDIS',1,0) as 'tardis'
                      FROM 	  {report_gen_company_manager}	cm
                         JOIN  {user}						u	ON 	u.id 		= cm.managerid
                                                                 AND	u.deleted 	= 0
-                     WHERE	  cm.hierarchylevel	= :level ";
+                     WHERE	cm.hierarchylevel	= :level ";
 
             // Get companies levels
             switch ($level) {
@@ -272,13 +272,13 @@ Class Managers {
             // SQL instruction
             $sql = " SELECT	  DISTINCT
                                   u.id,
-                                  u.firstname,
-                                  u.lastname,
+                                u.firstname,
+                                u.lastname,
                                   u.email,
                                   IF(cm.mapped = 'TARDIS',1,0) as 'mapped'
-                     FROM		  {user}						u
-                        LEFT JOIN {report_gen_company_manager}  cm	ON  cm.managerid 		= u.id
-                                                                    AND	cm.hierarchylevel 	= :level ";
+                     FROM			{user}						  u
+                        LEFT JOIN	{report_gen_company_manager}  cm	ON  cm.managerid 		= u.id
+                                                                        AND	cm.hierarchylevel 	= :level ";
 
             // Get companies level
             switch ($level) {
@@ -503,7 +503,7 @@ Class Managers {
             // Search criteria
             $params = array();
             $params['level']    = $level;
-            $params['mapped']   = 'MANUAL';
+            $params['mapped']   = 'TARDIS';
 
             // Get companies level
             switch ($level) {
@@ -554,7 +554,7 @@ Class Managers {
             // Sql instruction
             $sql = " DELETE FROM {report_gen_company_manager}
                      WHERE  hierarchylevel  = :level
-                        AND mapped          = : mapped
+                        AND mapped          != : mapped
                         AND managerid IN ($managersLst) ";
 
             // Execute

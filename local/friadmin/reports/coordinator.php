@@ -25,6 +25,7 @@
  * @author          eFaktor
  *
  */
+global $USER,$PAGE,$SITE,$OUTPUT,$CFG;
 
 require_once( '../../../config.php');
 require_once( 'forms/rpt_forms.php');
@@ -32,8 +33,12 @@ require_once( 'lib/categoryrptlib.php');
 require_once($CFG->dirroot . '/lib/excellib.class.php');
 
 require_login();
-
-global $CFG,$PAGE,$OUTPUT,$USER;
+// Checking access
+if (isguestuser($USER)) {
+    require_logout();
+    print_error('guestsarenotallowed');
+    die();
+}
 
 // Params
 $parent             = optional_param('parentcat', 0,PARAM_INT);

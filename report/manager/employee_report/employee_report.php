@@ -50,7 +50,13 @@ $employeeTracker    = null;
 $company            = null;
 $out                = '';
 
+// Checking access
 require_login();
+if (isguestuser($USER)) {
+    require_logout();
+    print_error('guestsarenotallowed');
+    die();
+}
 
 // Settings page
 $site_context = context_system::instance();
@@ -63,7 +69,7 @@ $PAGE->set_heading($SITE->fullname);
 $PAGE->navbar->add(get_string('report_manager','local_tracker_manager'),$return);
 $PAGE->navbar->add(get_string('employee_report_link','report_manager'),$url);
 
-$IsReporter = CompetenceManager::IsReporter($USER->id);
+$IsReporter = CompetenceManager::is_reporter($USER->id);
 if (!$IsReporter) {
     require_capability('report/manager:viewlevel4', $site_context,$USER->id);
 }
@@ -77,9 +83,8 @@ if (empty($CFG->loginhttps)) {
 $PAGE->verify_https_required();
 
 
-/**
 // My hierarchy
-$myHierarchy = CompetenceManager::get_MyHierarchyLevel($USER->id,$site_context,$IsReporter,4);
+$myHierarchy = CompetenceManager::get_my_hierarchy_level($USER->id,$site_context,$IsReporter,4);
 
 // Show form
 $form = new manager_employee_report_form(null,array($myHierarchy,$IsReporter));
@@ -109,30 +114,22 @@ if ($form->is_cancelled()) {
     $out = EmployeeReport::Print_EmployeeTracker($employeeTracker,$data_form[REPORT_MANAGER_COMPLETED_LIST]);
 }//if_form
 
- * **/
 
 // Header
 echo $OUTPUT->header();
-// tabs at the top
-$current_tab = 'manager_reports';
 
-require('../tabs.php');
-
-/**
 if (!empty($out)) {
     echo $out;
 }else {
+    // tabs at the top
+    $current_tab = 'manager_reports';
     require('../tabs.php');
 
     $form->display();
 
     // Initialise Organization Structure
-    CompetenceManager::Init_Organization_Structure(COMPANY_STRUCTURE_LEVEL,null,REPORT_MANAGER_OUTCOME_LIST,0,null,false);
+    CompetenceManager::init_organization_structure(COMPANY_STRUCTURE_LEVEL,null,REPORT_MANAGER_OUTCOME_LIST,0,null,false);
 }//if_out
-**/
-echo $OUTPUT->heading(get_string('employee_report_link','report_manager'));
-echo get_string('underconstruction','report_manager');
-echo "</br></br></br>";
-echo "<a href='" . $return ."' class='button_reports'>" . get_string('back') . "</a>";
+
 // Footer
 echo $OUTPUT->footer();

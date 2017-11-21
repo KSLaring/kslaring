@@ -29,9 +29,17 @@ require_once('../../../config.php');
 require_once('lib/coursetemplatelib.php');
 require_once('../../../course/lib.php');
 
-require_login();
+global $USER,$PAGE,$SITE,$OUTPUT;
 
-/* PARAMS   */
+require_login();
+// Checking access
+if (isguestuser($USER)) {
+    require_logout();
+    print_error('guestsarenotallowed');
+    die();
+}
+
+// Params
 $courseId       = required_param('id',PARAM_INT);
 $course         = get_course($courseId);
 $contextCourse  = context_course::instance($courseId);
@@ -40,6 +48,7 @@ $url            = new moodle_url('/local/friadmin/course_template/course_templat
 $strTitle       = get_string('coursetemplate_title', 'local_friadmin');
 $strSubTitle    = get_string('coursetemplate_last', 'local_friadmin');
 
+// Page settings
 $PAGE->set_url($url);
 $PAGE->set_context($contextCourse);
 $PAGE->set_pagelayout('admin');
@@ -47,14 +56,14 @@ $PAGE->set_title($SITE->fullname);
 $PAGE->set_heading($SITE->fullname);
 $PAGE->navbar->add(get_string('pluginname', 'local_friadmin'));
 
-/* Check Permissions/Capability */
+// Check permissions/Capability
 if (!has_capability('local/friadmin:view',context_system::instance())) {
     if (!local_friadmin_helper::CheckCapabilityFriAdmin()) {
         print_error('nopermissions', 'error', '', 'block/frikomport:view');
     }//if_superuser
 }
 
-/* Header   */
+// Header
 echo $OUTPUT->header();
 $info = array('id'          => $course->id,
               'shortname'   => $course->shortname,
@@ -75,7 +84,6 @@ $linkLst->create_linklist($courseId);
 echo $result;
 echo $linkLst->getContentListLink();
 
-
-/* Footer   */
+// Footer
 echo $OUTPUT->footer();
 

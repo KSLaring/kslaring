@@ -28,12 +28,13 @@
  * @author          eFaktor     (fbv)
  *
  */
+global $USER,$CFG,$PAGE,$SITE,$OUTPUT;
 
 require_once('../../../../../config.php');
 require_once('../competencelib.php');
 require_once($CFG->libdir . '/adminlib.php');
 
-/* PARAMS */
+// Params
 $contextSystem      = context_system::instance();
 $returnUrl          = $CFG->wwwroot . '/index.php';
 $url                = new moodle_url('/user/profile/field/competence/actions/approve.php');
@@ -41,32 +42,41 @@ $competenceRequest  = null;
 $info               = null;
 $user               = null;
 
-$relativePath   = get_file_argument();
 //extract relative path components
+$relativePath   = get_file_argument();
 $args   = explode('/', ltrim($relativePath, '/'));
 
+// Page settings
 $PAGE->set_url($url);
 $PAGE->set_context($contextSystem);
 $PAGE->set_pagelayout('standard');
 $PAGE->set_title($SITE->fullname);
 $PAGE->set_heading($SITE->fullname);
 
-/* Print Header */
+// Checking access
+if (isguestuser($USER)) {
+    require_logout();
+    print_error('guestsarenotallowed');
+    die();
+}
+
+// Header
 echo $OUTPUT->header();
 
+// Check args and content
 if (count($args) != 2) {
     echo html_writer::start_tag('div',array('class' => 'loginerrors'));
     echo $OUTPUT->error_text('<h4>' . get_string('err_link','profilefield_competence') . '</h4>');
     echo html_writer::end_tag('div');
 }else {
-    $competenceRequest = Competence::competence_request($args[0]);
+    $competenceRequest = Competence::competence_request($args[0],$args[1]);
 
     if (!$competenceRequest) {
         echo html_writer::start_tag('div',array('class' => 'loginerrors'));
         echo $OUTPUT->error_text('<h4>' . get_string('err_link','profilefield_competence') . '</h4>');
         echo html_writer::end_tag('div');
     }else {
-        /* User Info    */
+        // User info
         $user = get_complete_user_data('id',$competenceRequest->userid);
         $info = new stdClass();
         $info->company  = $competenceRequest->company;
@@ -90,5 +100,5 @@ if (count($args) != 2) {
     }//if_competenceRequest
 }//if_arg
 
-/* Print Footer */
+// Footer
 echo $OUTPUT->footer();

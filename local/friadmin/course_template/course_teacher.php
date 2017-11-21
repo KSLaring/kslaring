@@ -33,9 +33,17 @@ require_once('lib/coursetemplatelib.php');
 require_once('classes/ct_teacher_form.php');
 require_once('../../../course/lib.php');
 
-require_login();
+global $USER,$PAGE,$SITE,$OUTPUT;
 
-/* PARAMS   */
+require_login();
+// Checking access
+if (isguestuser($USER)) {
+    require_logout();
+    print_error('guestsarenotallowed');
+    die();
+}
+
+// Params
 $courseId       = required_param('id',PARAM_INT);
 $courseTemplate = required_param('ct',PARAM_INT);
 $addSearch      = optional_param('addselect_searchtext', '', PARAM_RAW);
@@ -50,13 +58,14 @@ $strTitle       = get_string('coursetemplate_title', 'local_friadmin');
 $strSubTitle    = get_string('course_teachers', 'local_friadmin');
 $instance       = null;
 
-/* Check Permissions/Capability */
+// Check permissions/Capability
 if (!has_capability('local/friadmin:view',context_system::instance())) {
     if (!local_friadmin_helper::CheckCapabilityFriAdmin()) {
         print_error('nopermissions', 'error', '', 'block/frikomport:view');
     }//if_superuser
 }
 
+// Page settings
 $PAGE->set_url($url);
 $PAGE->set_context($contextCourse);
 $PAGE->set_pagelayout('admin');
@@ -66,7 +75,7 @@ $PAGE->navbar->add(get_string('pluginname', 'local_friadmin'));
 $PAGE->navbar->add($strTitle);
 $PAGE->navbar->add($strSubTitle);
 
-/* FORM */
+// Form
 $form = new ct_enrolment_teachers_form(null,array($courseId,$courseTemplate,$addSearch,$removeSearch));
 if ($form->is_cancelled()) {
     $_POST = array();
@@ -76,14 +85,14 @@ if ($form->is_cancelled()) {
         $_POST = array();
         redirect($redirectUrl);
     }else {
-        /* Add Teachers     */
+        // Add teacher
         if (!empty($data->add_sel)) {
             if (isset($data->addselect)) {
                 CourseTemplate::assign_teacher($courseId,$data->addselect);
             }//if_addselect
         }//if_add
 
-        /* Remove Teachers  */
+        // Remove teachers
         if (!empty($data->remove_sel)) {
             if (isset($data->removeselect)) {
                 CourseTemplate::unassign_teacher($courseId,$data->removeselect);
@@ -92,15 +101,14 @@ if ($form->is_cancelled()) {
     }//if_continues
 }//if_form
 
-/* Header   */
+// Header
 echo $OUTPUT->header();
-
 echo $OUTPUT->heading($strSubTitle,3);
 
 $form->display();
 
-/* Initialise Selectors */
+// Initialise Selectors
 CourseTemplate::init_teachers_selectors($addSearch,$removeSearch,$courseId);
 
-/* Footer   */
+// Footer
 echo $OUTPUT->footer();

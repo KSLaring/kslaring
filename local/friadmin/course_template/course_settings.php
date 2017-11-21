@@ -33,9 +33,17 @@ require_once('lib/coursetemplatelib.php');
 require_once('classes/ct_settings_form.php');
 require_once('../../../course/lib.php');
 
-require_login();
+global $USER,$PAGE,$SITE,$OUTPUT,$CFG;
 
-/* PARAMS   */
+require_login();
+// Checking access
+if (isguestuser($USER)) {
+    require_logout();
+    print_error('guestsarenotallowed');
+    die();
+}
+
+// Params
 $courseId       = required_param('id',PARAM_INT);
 $courseTemplate = required_param('ct',PARAM_INT);
 $contextCourse  = context_course::instance($courseId);
@@ -52,13 +60,14 @@ $category       = null;
 $editorOpt      = null;
 $fileOpt        = null;
 
-/* Check Permissions/Capability */
+// Check permissions/capability
 if (!has_capability('local/friadmin:view',context_system::instance())) {
     if (!local_friadmin_helper::CheckCapabilityFriAdmin()) {
         print_error('nopermissions', 'error', '', 'block/frikomport:view');
     }//if_superuser
 }
 
+// Page settings
 $PAGE->set_url($url);
 $PAGE->set_context($contextCourse);
 $PAGE->set_pagelayout('admin');
@@ -68,11 +77,11 @@ $PAGE->navbar->add(get_string('pluginname', 'local_friadmin'));
 $PAGE->navbar->add($strTitle);
 $PAGE->navbar->add($strSubTitle);
 
-/* Prepare Editor       */
+// Prepare editor
 $editorOpt  = array('maxfiles' => EDITOR_UNLIMITED_FILES, 'maxbytes'=>$CFG->maxbytes, 'trusttext'=>false, 'noclean'=>true,'context' => $contextCourse);
 $course     = file_prepare_standard_editor($course, 'summary', $editorOpt, $contextCourse, 'course', 'summary', 0);
 
-/* Prepare File Editor  */
+// Preapre file editor
 $fileOpt = course_overviewfiles_options($course);
 $fileOpt['subdirs']         = 0;
 $fileOpt['maxfiles']        = 1;
@@ -85,23 +94,23 @@ if (!CourseTemplate::has_correct_permissions()) {
     print_error('nopermissions', 'error', '', 'block/frikomport:view');
 }//if_Has_not_permissions
 
-/* Category Name */
+// Category name
 $category = CourseTemplate::get_category_name($course->category);
 
-/* Form */
+// Form
 $form = new ct_settings_form(null, array($course,$category,$editorOpt,$courseTemplate));
 if ($form->is_cancelled()) {
     $_POST = array();
     redirect($returnUrl);
 }else if ($data = $form->get_data()) {
-    /* Update Course */
+    // Update course
     update_course($data, $editorOpt);
 
-    /* Redirect Enrolment Method*/
+    // Redirect enrolment method
     redirect($enrolUrl);
 }//if_form
 
-/* Header   */
+// Header
 echo $OUTPUT->header();
 
 echo $OUTPUT->heading($strTitle,2);
@@ -109,11 +118,9 @@ echo $OUTPUT->heading($strSubTitle,3);
 
 $form->display();
 
-/**
- * Initialize Locations/Sector - Javascript
- */
+// Initialise locations/sectors - Javascript
 CourseTemplate::init_locations_sector();
 
-/* Footer   */
+// Footer
 echo $OUTPUT->footer();
 

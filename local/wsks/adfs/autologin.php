@@ -11,13 +11,21 @@
  *
  */
 
+global $USER,$OUTPUT,$SESSION;
 require( '../../../config.php' );
 
 /* PARAMS       */
 /* Log In URL   */
 $url        = new moodle_url('/local/wsks/adfs/login.php');
 
-$SESSION->user          = $_GET['id'];
+// Checking access
+if (isguestuser($USER)) {
+    require_logout();
+    print_error('guestsarenotallowed');
+}
+
+
+$SESSION->user          = (isset($_GET['id']) ? $_GET['id'] :0);
 
 /**
  * @updateDate  15/08/2016

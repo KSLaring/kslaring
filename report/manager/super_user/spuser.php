@@ -24,15 +24,16 @@
  * @creationDate    14/10/2015
  * @author          eFaktor     (fbv)
  */
+
+global $CFG,$SESSION,$PAGE,$USER,$SITE,$OUTPUT;
+
 require_once('../../../config.php');
 require_once('spuser_form.php');
 require_once('spuserlib.php');
 require_once('../managerlib.php');
 require_once($CFG->libdir . '/adminlib.php');
 
-require_login();
-
-/* PARAMS   */
+// Params
 $removeSelected = optional_param_array('removeselect',0,PARAM_INT);
 $addSelected    = optional_param_array('addselect',0,PARAM_INT);
 $addSearch      = optional_param('addselect_searchtext', '', PARAM_RAW);
@@ -46,9 +47,8 @@ $levelOne       = null;
 $levelTwo       = null;
 $levelThree     = null;
 
-/* Start the page */
+// Page settings
 $PAGE->https_required();
-
 $PAGE->set_pagelayout('report');
 $PAGE->set_url($url);
 $PAGE->set_context($site_context);
@@ -61,58 +61,56 @@ unset($SESSION->parents);
 
 $PAGE->verify_https_required();
 
-/* ADD require_capability */
+// Checking access
+require_login();
+if (isguestuser($USER)) {
+    require_logout();
+    print_error('guestsarenotallowed');
+    die();
+}
 require_capability('report/manager:edit', $site_context);
 
-
-/* Show Form */
+// Form
 $form = new manager_spuser_form(null,array($addSearch,$removeSearch,$addSelected,$removeSelected));
-
 if ($form->is_cancelled()) {
     $_POST = array();
     redirect($returnUrl);
 }else if($data = $form->get_data()) {
-
-    /* Get Levels Super User    */
+    // Get levels super user
     list($levelZero,$levelOne,$levelTwo,$levelThree) = SuperUser::GetLevels_SuperUser($data);
 
     if (!empty($data->add_sel)) {
         if ($addSelected) {
-            /* Create Super Users   */
+            // Create super user
             SuperUser::AddSuperUsers($addSelected,$levelZero,$levelOne,$levelTwo,$levelThree);
         }//if_addselect
     }
 
     if (!empty($data->remove_sel)) {
         if ($removeSelected) {
-            /* Remove Super Users   */
+            // Remove super user
             SuperUser::RemoveSuperUsers($removeSelected,$levelZero,$levelOne,$levelTwo,$levelThree);
         }//if_addselect
     }
 
     $_POST = array();
-    //redirect($returnUrl);
 }//if_else
 
-
-
-/* Print Header */
+// Header
 echo $OUTPUT->header();
-
-/* Print tabs at the top */
+// Tabs
 $current_tab = 'spuser';
 $show_roles = 1;
 require('../tabs.php');
 
-/* Print Title */
 echo $OUTPUT->heading(get_string('spuser', 'report_manager'));
 
 $form->display();
 
-/* Initialise Selectors */
+// Initialise Selectors
 SuperUser::Init_SuperUsers_Selectors($addSearch,$removeSearch,$removeSelected);
-/* Initialise Organization Structure    */
+// Initialise Organization Structure
 SuperUser::Init_Organization_Structure();
 
-/* Print Footer */
+// Footer
 echo $OUTPUT->footer();

@@ -33,7 +33,9 @@ require_once('../../../config.php');
 require_once('company_structurelib.php');
 require_once('../managerlib.php');
 
-/* PARAMS   */
+global $PAGE,$OUTPUT,$USER;
+
+// Params
 $levelThree     = optional_param('levelThree',0,PARAM_TEXT);
 $employees      = optional_param('employees',0,PARAM_TEXT);
 $delete         = optional_param('delete',0,PARAM_INT);
@@ -49,17 +51,23 @@ $url            = new moodle_url('/report/manager/company_structure/employees.ph
 $PAGE->set_context($context);
 $PAGE->set_url($url);
 
-/* Check the correct access */
+// Checking access
+if (isguestuser($USER)) {
+    require_logout();
+    print_error('guestsarenotallowed');
+    die();
+}
 require_login();
 require_sesskey();
 
 echo $OUTPUT->header();
 
-/* Get Company */
+// Get company
 if ($levelThree) {
     $levelThree = str_replace('#',',',$levelThree);
 }
-/* Get Employees */
+
+// get employees
 if ($employees) {
     $employees = str_replace('#',',',$employees);
 }
@@ -70,8 +78,9 @@ if ($deleteAll) {
 }else {
     $employees = company_structure::get_employee_level($levelThree);
 
-    /* GEt Employees Info to Send */
+    // GEt Employees Info to Send
     $employeesInfo = array();
+    if ($employees) {
     foreach ($employees as $id=>$user) {
         /* Info */
         $info = new stdClass();
@@ -81,7 +90,8 @@ if ($deleteAll) {
         /* Add Employee Info    */
         $employeesInfo[$info->name] = $info;
     }
-    /* Get Data */
+    }
+    // Get data
     $data           =  array('users' => array());
     $data['users']  = $employeesInfo;
 }//if_delete

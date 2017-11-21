@@ -9,6 +9,9 @@
  * @creationDate    06/07/2016
  * @author          eFaktor     (fbv)
  */
+
+global $CFG,$PAGE,$USER,$OUTPUT,$SESSION;
+
 require_once('../../config.php');
 require_once($CFG->libdir.'/adminlib.php');
 require_once('lib/participantslib.php');
@@ -36,13 +39,26 @@ $filter             = null;
 $location           = null;
 $instructors        = null;
 
+// Set page
+$PAGE->set_url($url);
+$PAGE->set_context($context);
+$PAGE->set_pagelayout('admin');
+$PAGE->requires->js('/local/participants/js/sort.js');
 
-// Check permissions
+// Checking access
+require_login();
+if (isguestuser($USER)) {
+    require_logout();
+    print_error('guestsarenotallowed');
+    die();
+}else {
 if (!has_capability('local/participants:manage',$context)) {
     require_login();
 }else {
     require_login($course);
 }//if_capabilities
+}
+
 
 $SESSION->xls_download  = $urlxls;
 $SESSION->pdf_download  = $urlpdf;
@@ -60,12 +76,6 @@ if (isset($_COOKIE['field'])) {
 }else {
     $fieldSort = 'firstname';
 }//if_dir
-
-// Set page
-$PAGE->set_url($url);
-$PAGE->set_context($context);
-$PAGE->set_pagelayout('admin');
-$PAGE->requires->js('/local/participants/js/sort.js');
 
 // Location
 $location    = ParticipantsList::get_location($courseId);

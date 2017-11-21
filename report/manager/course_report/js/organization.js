@@ -173,7 +173,10 @@ var level_structure = {
      * Fires off the ajax search request.
      */
     send_query : function(forceresearch,level) {
-        var levelZero = this.levelZero.get('value');
+        var zero;
+        var one;
+        var two;
+
         // Cancel any pending timeout.
         this.cancel_timeout();
 
@@ -182,31 +185,26 @@ var level_structure = {
             trans.abort();
         });
 
-        var zero;
-        var one;
-        var two;
-
+        // Get selectors
+        zero = this.levelZero.get('value');
         switch (level) {
             case 1:
-                zero = this.levelZero.get('value');
                 one = 0;
                 two = 0;
 
                 break;
             case 2:
-                zero = this.levelZero.get('value');
-                one = this.levelOne.get('value');
-                two = 0;
+                one  = this.levelOne.get('value');
+                two  = 0;
 
                 break;
             case 3:
-                zero = this.levelZero.get('value');
                 one = this.levelOne.get('value');
-                two = this.levelTwo.get('value');
+                two  = this.levelTwo.get('value');
 
                 break;
+        }//switch_level
 
-        }
         var iotrans = Y.io(M.cfg.wwwroot + '/report/manager/course_report/organization.php',
                            {
                             method: 'POST',
@@ -261,7 +259,6 @@ var level_structure = {
 
         // Clear out the existing options, keeping any ones that are already selected.
         for (index in data.results) {
-
             // Get data
             dataSelector = data.results[index];
 

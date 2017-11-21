@@ -29,13 +29,20 @@
  */
 
 global $CFG,$OUTPUT,$SITE,$PAGE,$SITE,$SESSION,$USER;
+
 require_once('../../../config.php');
 require_once( 'outcomerptlib.php');
 require_once( '../managerlib.php');
 require_once('outcome_report_level_form.php');
 require_once($CFG->libdir . '/adminlib.php');
 
+// Checking access
 require_login();
+if (isguestuser($USER)) {
+    require_logout();
+    print_error('guestsarenotallowed');
+    die();
+}
 
 // Params
 $url        = new moodle_url('/report/manager/outcome_report/outcome_report.php');
@@ -58,8 +65,8 @@ $PAGE->navbar->add(get_string('outcome_report', 'report_manager'),$url);
 unset($SESSION->parents);
 unset($SESSION->selection);
 
-// Capability
-if (!CompetenceManager::IsReporter($USER->id)) {
+// Checking access
+if (!CompetenceManager::is_reporter($USER->id)) {
     require_capability('report/manager:viewlevel3', $site_context);
 }
 
@@ -83,14 +90,11 @@ require('../tabs.php');
 // Title
 echo $OUTPUT->heading(get_string('outcome_report', 'report_manager'));
 
-/**
 // Report levels links
 outcome_report::CleanTemporary();
-CompetenceManager::GetLevelLink_ReportPage('outcome_report',$site_context);
+CompetenceManager::get_level_link_report_page('outcome_report',$site_context);
 
-**/
-echo get_string('underconstruction','report_manager');
-echo "</br></br></br>";
+echo "</br>";
 echo "<a href='" . $return_url ."' class='button_reports'>" . get_string('back') . "</a>";
 
 /* Print Foot */

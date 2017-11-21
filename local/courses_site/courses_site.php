@@ -12,7 +12,7 @@
  * @author          eFaktor     (fbv)
  *
  */
-require_once($CFG->libdir.'/formslib.php');
+require_once($CFG->dirroot.'/lib/formslib.php');
 
 class courses_site  {
 

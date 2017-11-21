@@ -222,7 +222,7 @@ class manager_add_job_role_form extends moodleform {
         switch ($level) {
             case 0:
                 /* Companies for Level Zero */
-                $options    = CompetenceManager::GetCompanies_LevelList($level,0,$myCompanies);
+                $options    = CompetenceManager::get_companies_level_list($level,0,$myCompanies);
 
                 break;
             default:
@@ -231,7 +231,7 @@ class manager_add_job_role_form extends moodleform {
 
                 /* Companies for the current level */
                 if ($parent) {
-                    $options = CompetenceManager::GetCompanies_LevelList($level,$parent,$myCompanies);
+                    $options = CompetenceManager::get_companies_level_list($level,$parent,$myCompanies);
                 }else {
                     $options[0] = get_string('select_level_list','report_manager');
                 }//if_parent

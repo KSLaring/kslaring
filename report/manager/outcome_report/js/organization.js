@@ -102,8 +102,12 @@ var level_structure = {
         var valueThree = 0;
         
         this.hZero.set('value',this.levelZero.get('value'));
+        if (this.levelOne) {
         this.hOne.set('value',this.levelOne.get('value'));
+        }
+        if (this.levelTwo) {
         this.hTwo.set('value',this.levelTwo.get('value'));
+        }
         if (this.levelThree) {
             this.levelThree.all('option').each(function(option){
                 if (option.get('selected') && (option.get('value') != 0)) {
@@ -125,11 +129,10 @@ var level_structure = {
         this.hTwo.set('value',0);
         this.hThree.set('value',0);
         if (this.report_level > 0) {
-            var parent  = this.levelZero.get('value');
             var level   = 1;
             //  Trigger an ajax search after a delay.
             this.cancel_timeout();
-            this.timeoutid  = Y.later(this.querydelay * 1000, e, function(obj){obj.send_query(false,parent,level)}, this);
+            this.timeoutid  = Y.later(this.querydelay * 1000, e, function(obj){obj.send_query(false,level)}, this);
         }else {
             this.Load_JobRoles();
         }
@@ -140,11 +143,10 @@ var level_structure = {
         this.hTwo.set('value',0);
         this.hThree.set('value',0);
         if (this.report_level > 1) {
-            var parent      = this.levelOne.get('value');
             var level       = 2;
             //  Trigger an ajax search after a delay.
             this.cancel_timeout();
-            this.timeoutid = Y.later(this.querydelay * 1000, e, function(obj){obj.send_query(false,parent,level)}, this);
+            this.timeoutid = Y.later(this.querydelay * 1000, e, function(obj){obj.send_query(false,level)}, this);
         }else {
             this.Load_JobRoles();
         }
@@ -154,11 +156,10 @@ var level_structure = {
         this.hTwo.set('value',this.levelTwo.get('value'));
         this.hThree.set('value',0);
         if (this.report_level > 2) {
-            var parent  = this.levelTwo.get('value');
             var level   = 3;
             //  Trigger an ajax search after a delay.
             this.cancel_timeout();
-            this.timeoutid = Y.later(this.querydelay * 1000, e, function(obj){obj.send_query(false,parent,level)}, this);
+            this.timeoutid = Y.later(this.querydelay * 1000, e, function(obj){obj.send_query(false,level)}, this);
         }else {
             this.Load_JobRoles();
         }
@@ -174,8 +175,11 @@ var level_structure = {
     /**
      * Fires off the ajax search request.
      */
-    send_query : function(forceresearch,parent,level) {
-        var levelZero = this.levelZero.get('value');
+    send_query : function(forceresearch,level) {
+        var zero;
+        var one;
+        var two;
+
         // Cancel any pending timeout.
         this.cancel_timeout();
 
@@ -184,10 +188,30 @@ var level_structure = {
             trans.abort();
         });
 
+        // Get selectors
+        zero = this.levelZero.get('value');
+        switch (level) {
+            case 1:
+                one = 0;
+                two = 0;
+
+                break;
+            case 2:
+                one  = this.levelOne.get('value');
+                two  = 0;
+
+                break;
+            case 3:
+                one = this.levelOne.get('value');
+                two  = this.levelTwo.get('value');
+
+                break;
+        }//switch_level
+
         var iotrans = Y.io(M.cfg.wwwroot + '/report/manager/outcome_report/organization.php',
                            {
                             method: 'POST',
-                            data: 'parent=' + parent + '&levelZero=' + levelZero + '&level' + '=' + level + '&rpt=' + this.report_level + '&sesskey=' + M.cfg.sesskey,
+                            data: 'level' + '=' + level + '&zero=' + zero + '&one=' + one + '&two=' + two + '&rpt=' + this.report_level + '&sesskey=' + M.cfg.sesskey,
                             on: {
                                     complete: this.handle_response,
                                     end: this.Load_JobRoles

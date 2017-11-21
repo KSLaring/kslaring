@@ -14,41 +14,45 @@ require_once( '../../../../config.php');
 require_once('slaves_forms.php');
 require_once('../lib/slaveslib.php');
 
-/* PARAMS */
+global $USER,$PAGE,$OUTPUT;
+
+// Params
 $url        = new moodle_url('/local/wsks/slaves/classes/add_slave.php');
 $returnUrl  = new moodle_url('/local/wsks/slaves/classes/slaves.php');
 $context    = context_system::instance();
 
+// Checking access
 require_login();
+if (isguestuser($USER)) {
+    require_logout();
+    print_error('guestsarenotallowed');
+    die();
+}
 
-/* Capability   */
+// Capability
 require_capability('local/wsks:manage',$context);
 
-/* Start Page */
+// Start page
 $PAGE->set_url($url);
 $PAGE->set_pagelayout('admin');
 $PAGE->set_context($context);
 
-/**
- * Form
- */
+// Form
 $form = new add_slave_form(null,null);
 if ($form->is_cancelled()) {
     $_POST = array();
     redirect($returnUrl);
 }else if ($data = $form->get_data()) {
-    /**
-     * Create new slave system
-     */
+    // Create new slave system
     Slaves::Process_New_SlaveSystem($data);
     redirect($returnUrl);
 }
 
-/* Print Header */
+// Header
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('new_slave','local_wsks'));
 
 $form->display();
 
-/* Print Footer */
+// Footer
 echo $OUTPUT->footer();

@@ -59,11 +59,17 @@ if (!isset($SESSION->bulk_users)) {
     $SESSION->bulk_users = array();
 }
 
+// Checking access
 require_login();
+if (isguestuser($USER)) {
+    require_logout();
+    print_error('guestsarenotallowed');
+    die();
+}
 
 // Start page
 $site_context = context_system::instance();
-$IsReporter = CompetenceManager::IsReporter($USER->id);
+$IsReporter = CompetenceManager::is_reporter($USER->id);
 if (!$IsReporter) {
     require_capability('report/manager:viewlevel4', $site_context,$USER->id);
 }
@@ -87,9 +93,9 @@ $PAGE->set_heading($SITE->fullname);
 $PAGE->navbar->add(get_string('report_manager','local_tracker_manager'),$return_url);
 $PAGE->navbar->add(get_string('company_report_link','report_manager'),$url);
 
-/**
+
 // My hierarchy
-$my_hierarchy = CompetenceManager::get_MyHierarchyLevel($USER->id,$site_context,$IsReporter,0);
+$my_hierarchy = CompetenceManager::get_my_hierarchy_level($USER->id,$site_context,$IsReporter,0);
 
 // User filer
 $user_filter = new company_report_filtering(null,$url,null);
@@ -97,18 +103,21 @@ $user_filter = new company_report_filtering(null,$url,null);
 if ($my_hierarchy->competence) {
     if ($IsReporter) {
         $myLevelThree = null;
-        foreach($my_hierarchy->competence as $key => $competence) {
-            if ($myLevelThree) {
-                $myLevelThree .= ',' . implode(',',$competence->levelThree);
-            }else {
-                $myLevelThree = implode(',',$competence->levelThree);
-            }//if_lvelThree
-        }//for_competence
+        if ($my_hierarchy->competence->levelthree) {
+
+            foreach ($my_hierarchy->competence->levelthree as $key => $three) {
+                if ($myLevelThree) {
+                    $myLevelThree .= "," . implode(',',$three);
+                }else {
+                    $myLevelThree = implode(',',$three);
+                }
+            }
+        }
 
         $user_filter->set_MyCompanies($myLevelThree);
     }else {
-        $myCompanies = CompanyReport::Get_MyCompanies($my_hierarchy->competence,$my_hierarchy->my_level);
-        $user_filter->set_MyCompanies(implode(',',array_keys($myCompanies)));
+        list($levelZero,$levelOne,$levelTwo,$levelThree) = CompetenceManager::get_my_companies_by_Level($my_hierarchy->competence);
+        $user_filter->set_MyCompanies($levelThree);
     }//if_IsReporter
 }else {
     $user_filter->set_MyCompanies(null);
@@ -216,16 +225,10 @@ if ($form->is_cancelled()) {
 
     $SESSION->bulk_users = array();
 }//if_else
-**/
+
 // Header
 echo $OUTPUT->header();
 
-// Print tabs at the top
-$current_tab = 'manager_reports';
-$show_roles = 1;
-require('../tabs.php');
-
-/**
 if (!empty($out)) {
     // Print report
     echo $out;
@@ -260,11 +263,6 @@ if (!empty($out)) {
     // Initialise Organization Structure
     CompetenceManager::Init_Organization_Structure(COMPANY_STRUCTURE_LEVEL,null,null,0,null,false);
 }//if_else
-**/
 
-echo $OUTPUT->heading(get_string('company_report_link','report_manager'));
-echo get_string('underconstruction','report_manager');
-echo "</br></br></br>";
-echo "<a href='" . $return_url ."' class='button_reports'>" . get_string('back') . "</a>";
 // Footer
 echo $OUTPUT->footer();

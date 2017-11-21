@@ -123,14 +123,14 @@ Class Reporters {
             // SQL Instruction
             $sql = " SELECT	DISTINCT
                               u.id,
-                              u.firstname,
-                              u.lastname,
+                            u.firstname,
+                            u.lastname,
                               u.email,
                               IF(cr.mapped='TARDIS',1,0) as 'tardis'
-                     FROM 	  {report_gen_company_reporter}	 cr
-                        JOIN  {user}						 u	ON 	u.id 		= cr.reporterid
-                                                                AND	u.deleted 	= 0
-                     WHERE	  cr.hierarchylevel	= :level ";
+                     FROM 		{report_gen_company_reporter}	cr
+                        JOIN	{user}						    u	ON 	u.id 		= cr.reporterid
+                                                                    AND	u.deleted 	= 0
+                     WHERE	cr.hierarchylevel	= :level ";
 
             // Get companies levels
             switch ($level) {
@@ -272,12 +272,12 @@ Class Reporters {
             // SQL Instruction
             $sql = " SELECT	DISTINCT	
                                   u.id,
-                                  u.firstname,
-                                  u.lastname,
-                                  u.email
-                     FROM		  {user}						u
-                        LEFT JOIN {report_gen_company_reporter} cr	ON 	cr.reporterid 		= u.id
-                                                                    AND	cr.hierarchylevel 	= :level ";
+                                u.firstname,
+                                u.lastname,
+                                u.email
+                     FROM			{user}						  u
+                        LEFT JOIN	{report_gen_company_reporter} cr	ON 	cr.reporterid 		= u.id
+                                                                        AND	cr.hierarchylevel 	= :level ";
 
             // Get companies level
             switch ($level) {
@@ -498,7 +498,7 @@ Class Reporters {
             // Search criteria
             $params = array();
             $params['level']    = $level;
-            $params['mapped']   = 'MANUAL';
+            $params['mapped']   = 'TARDIS';
 
             // Get companies level
             switch ($level) {
@@ -549,7 +549,7 @@ Class Reporters {
             // SQL Instruction
             $sql = " DELETE FROM {report_gen_company_reporter}
                      WHERE  hierarchylevel  = :level
-                        AND mapped          = :mapped
+                        AND mapped          != :mapped
                         AND reporterid IN ($reportersLst) ";
 
             // Execute

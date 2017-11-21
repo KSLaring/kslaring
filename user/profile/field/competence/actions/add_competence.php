@@ -35,18 +35,18 @@
  *
  */
 
-global $CFG, $PAGE, $SESSION, $SITE, $OUTPUT;
-
+global $CFG, $PAGE, $SESSION, $SITE, $OUTPUT,$USER;
 require_once('../../../../../config.php');
 require_once('../competencelib.php');
 require_once('add_competence_form.php');
 require_once($CFG->libdir . '/adminlib.php');
 
+// Checking access
 require_login();
-
-// Guest can not edit.
-if (isguestuser()) {
-    print_error('guestnoeditprofile');
+if (isguestuser($USER)) {
+    require_logout();
+    print_error('guestsarenotallowed');
+    die();
 }
 
 // PARAMS

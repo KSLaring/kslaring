@@ -30,23 +30,22 @@
  *
  */
 
+global $CFG,$SESSION,$PAGE,$SITE,$OUTPUT,$USER;
+
 require_once('../../../config.php');
 require_once('../managerlib.php');
 require_once('company_structurelib.php');
 require_once('add_company_structure_form.php');
 require_once($CFG->libdir . '/adminlib.php');
 
-/* Params */
+// Params
 $level      = required_param('level', PARAM_INT);
 $returnUrl  = new moodle_url('/report/manager/company_structure/company_structure.php');
 $url        = new moodle_url('/report/manager/company_structure/add_company_structure.php',array('level' => $level));
-$parents    = $SESSION->parents;
 $params     = array();
-
-/* Start the page */
 $site_context = context_system::instance();
 
-//HTTPS is required in this page when $CFG->loginhttps enabled
+// Page settigns
 $PAGE->https_required();
 $PAGE->set_context($site_context);
 $PAGE->set_pagelayout('report');
@@ -57,8 +56,14 @@ $PAGE->navbar->add(get_string('report_manager','report_manager'),new moodle_url(
 $PAGE->navbar->add(get_string('company_structure','report_manager'),$returnUrl);
 $PAGE->navbar->add(get_string('add_company_level','report_manager'));
 
-/* ADD require_capability */
-if (!CompetenceManager::IsSuperUser($USER->id)) {
+// Checking access
+require_login();
+if (isguestuser($USER)) {
+    require_logout();
+    print_error('guestsarenotallowed');
+    die();
+}
+if (!CompetenceManager::is_super_user($USER->id)) {
     require_capability('report/manager:edit', $site_context);
 }//if_SuperUser
 
@@ -68,7 +73,10 @@ if (empty($CFG->loginhttps)) {
     $secure_www_root = str_replace('http:','https:',$CFG->wwwroot);
 }//if_security
 
-/* Return Url   */
+// Parents
+$parents        = $SESSION->parents;
+
+// Return url
 $levelZero  = COMPANY_STRUCTURE_LEVEL . 0;
 $levelOne   = COMPANY_STRUCTURE_LEVEL . 1;
 $levelTwo   = COMPANY_STRUCTURE_LEVEL . 2;
@@ -87,14 +95,14 @@ if (isset($parents[3]) && $parents[3]) {
 }
 $returnUrl = new moodle_url('/report/manager/company_structure/company_structure.php',$params);
 
-/* Show Form */
+// Form
 $form = new manager_add_company_structure_form(null,$level);
 
 if ($form->is_cancelled()) {
     $_POST = array();
     redirect($returnUrl);
 }else if($data = $form->get_data()) {
-    /* Add a new Company Level. New One or Link */
+    // Add new company
     company_structure::add_company_level($data,$parents,$level);
 
     $_POST = array();
@@ -103,10 +111,10 @@ if ($form->is_cancelled()) {
 
 $PAGE->verify_https_required();
 
-/* Print Header */
+// Header
 echo $OUTPUT->header();
 
 $form->display();
 
-/* Print Footer */
+// Footer
 echo $OUTPUT->footer();

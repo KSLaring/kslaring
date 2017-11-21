@@ -17,13 +17,13 @@ require_once('../../../config.php');
 require_once('microuserslib.php');
 require_once('filter/lib.php');
 
-/* PARAMS   */
+global $PAGE,$SITE,$USER,$OUTPUT;
+
+// Params
 $search             = required_param('search',PARAM_RAW);
 $selectorId         = required_param('selectorid',PARAM_ALPHANUM);
 $courseId           = null;
 $campaignId         = null;
-
-
 $results            = null;
 $infoUser           = null;
 $usersSelector      = array();
@@ -38,34 +38,40 @@ $url            = new moodle_url('/local/microlearning/users/search.php');
 $PAGE->set_context($context);
 $PAGE->set_url($url);
 
-/* Check the correct access */
+// Checking access
+if (isguestuser($USER)) {
+    require_logout();
+    print_error('guestsarenotallowed');
+    die();
+}
 require_login();
 require_sesskey();
 
 echo $OUTPUT->header();
 
-/* Validate if exits the selector   */
+// Validate if selector exists
 if (!isset($USER->userselectors[$selectorId])) {
     print_error('unknownuserselector');
 }//if_userselector
 
-/* Get the options connected with the selector  */
+// Get options connected with the selector
 $optSelector = $USER->userselectors[$selectorId];
 
-/* Get Class    */
+// Get class
 $class = $optSelector['class'];
 
-/* Find Users   */
-/* Create the user filter   */
+// Find users
+// Create user filter
 $user_filter = new microlearning_users_filtering(null,$url,null);
 $courseId   = $user_filter->course_id = $optSelector['course'];
 $campaignId = $optSelector['campaign'];
 
-/* Get Users Selector   */
+// Get users selector
 $results        = Micro_Users::$class($user_filter,$search,$courseId,$campaignId);
 
-/* Get Data */
+// Get data
 $data       = array('users' => array());
+if ($results) {
 foreach ($results as $key=>$user) {
     $infoUser = new stdClass();
     $infoUser->id = $key;
@@ -73,7 +79,8 @@ foreach ($results as $key=>$user) {
 
     $data['users'][] = $infoUser;
 }//for_user
+}
 
-/* Encode and Send */
+// Send data
 $json[] = $data;
 echo json_encode(array('results' => $json));

@@ -33,7 +33,7 @@ require_once('../../../config.php');
 require_once('company_structurelib.php');
 require_once('../managerlib.php');
 
-global $CFG,$PAGE,$OUTPUT;
+global $CFG,$PAGE,$OUTPUT,$USER;
 
 /* PARAMS   */
 $zero   = required_param('zero',PARAM_INT);
@@ -51,8 +51,13 @@ $url            = new moodle_url('/report/manager/company_structure/extra.php');
 $PAGE->set_context($context);
 $PAGE->set_url($url);
 
-/* Check the correct access */
+// Checking access
 require_login();
+if (isguestuser($USER)) {
+    require_logout();
+    print_error('guestsarenotallowed');
+    die();
+}
 require_sesskey();
 
 echo $OUTPUT->header();

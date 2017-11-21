@@ -57,7 +57,12 @@ $url            = new moodle_url('/report/manager/company_structure/reporter/sea
 $PAGE->set_context($context);
 $PAGE->set_url($url);
 
-/* Check the correct access */
+// Checking access
+if (isguestuser($USER)) {
+    require_logout();
+    print_error('guestsarenotallowed');
+    die();
+}
 require_login();
 require_sesskey();
 
@@ -102,6 +107,7 @@ $class = $optSelector['class'];
 
 list($results,$tardis) = Reporters::$class($search,$parents,$level);
 
+if ($results) {
 foreach ($results as $groupName => $reporters) {
     $groupData = array('name' => $groupName, 'users' => array());
 
@@ -111,12 +117,12 @@ foreach ($results as $groupName => $reporters) {
         $output     = new stdClass;
         $output->id     = $id;
         $output->name   = $user;
-        $output->tardis = 0;
-        if ($tardis) {
-            if (array_key_exists($id,$tardis)) {
-                $output->tardis = 1;
+            $output->tardis = 0;
+            if ($tardis) {
+                if (array_key_exists($id,$tardis)) {
+                    $output->tardis = 1;
+                }
             }
-        }
         if (!empty($user->disabled)) {
             $output->disabled = true;
         }
@@ -127,6 +133,7 @@ foreach ($results as $groupName => $reporters) {
     }
 
     $json[] = $groupData;
+}
 }
 
 echo json_encode(array('results' => $json));

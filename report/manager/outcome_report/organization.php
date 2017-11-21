@@ -32,16 +32,22 @@ define('AJAX_SCRIPT', true);
 require_once('../../../config.php');
 require_once('../managerlib.php');
 
-/* PARAMS   */
-$parent         = optional_param('parent',0,PARAM_INT);
-$levelZero      = optional_param('levelZero',0,PARAM_INT);
+global $PAGE,$OUTPUT,$USER;
+
+// Params
+$zero           = required_param('zero',PARAM_INT);
+$one            = required_param('one',PARAM_INT);
+$two            = required_param('two',PARAM_INT);
 $level          = required_param('level',PARAM_INT);
 $reportLevel    = required_param('rpt',PARAM_INT);
+
 $myLevelZero    = null;
 $myLevelOne     = null;
 $myLevelTwo     = null;
 $myLevelThree   = null;
 $myCompanies    = null;
+$parent         = null;
+$options        = array();
 
 $json           = array();
 $data           = array();
@@ -54,14 +60,72 @@ global $PAGE,$USER;
 $PAGE->set_context($context);
 $PAGE->set_url($url);
 
-/* Check the correct access */
+// Check the correct access
 require_login();
+if (isguestuser($USER)) {
+    require_logout();
+    print_error('guestsarenotallowed');
+    die();
+}
 require_sesskey();
 
 echo $OUTPUT->header();
 
-/* Get Data */
-$data       = array('name' => COMPANY_STRUCTURE_LEVEL . $level, 'items' => array(),'clean' => array());
+// Get my hierarchy level
+$IsReporter     = CompetenceManager::is_reporter($USER->id);
+$myHierarchy    = CompetenceManager::get_my_hierarchy_level($USER->id,$context,$IsReporter,$reportLevel);
+
+if ($IsReporter) {
+    $hierarchy = null;
+    switch ($reportLevel) {
+        case 0:
+            $hierarchy  = $myHierarchy->competence->hierarchyzero;
+
+            break;
+        case 1:
+            $hierarchy  = $myHierarchy->competence->hierarchyone;
+
+            break;
+        case 2:
+            $hierarchy  = $myHierarchy->competence->hierarchytwo;
+
+            break;
+        case 3:
+            $hierarchy  = $myHierarchy->competence->hierarchythree;
+
+            break;
+    }
+
+    switch ($level) {
+        case 1:
+            if (($hierarchy->one) && isset($hierarchy->one[$zero])) {
+                $myLevelOne = $hierarchy->one[$zero];
+                $myLevelOne = implode(',',$myLevelOne);
+            }
+
+            break;
+        case 2:
+            if (($hierarchy->two) && isset($hierarchy->two[$one])) {
+                $myLevelTwo = $hierarchy->two[$one];
+                $myLevelTwo = implode(',',$myLevelTwo);
+            }
+
+            break;
+        case 3:
+            if (($hierarchy->three) && isset($hierarchy->three[$two])) {
+                $myLevelThree   = $hierarchy->three[$two];
+                $myLevelThree   = implode(',',$myLevelThree);
+            }
+
+            break;
+    }
+}else {
+    list($myLevelZero,$myLevelOne,$myLevelTwo,$myLevelThree) = CompetenceManager::get_my_companies_by_level($myHierarchy->competence);
+}//if_IsReporter
+
+// Get data
+$name       = COMPANY_STRUCTURE_LEVEL . $level;
+$data       = array('name' => $name, 'items' => array(),'clean' => array());
 $toClean    = array();
 
 switch ($reportLevel) {
@@ -78,16 +142,15 @@ switch ($reportLevel) {
         switch ($level) {
             case 1:
                 $toClean[0] = COMPANY_STRUCTURE_LEVEL . 1;
-
+                $toClean[1] = COMPANY_STRUCTURE_LEVEL . 2;
+                $toClean[2] = REPORT_MANAGER_JOB_ROLE_LIST;
 
                 break;
             case 2:
-                $toClean[0] = COMPANY_STRUCTURE_LEVEL . 2;
+                $toClean[1] = REPORT_MANAGER_JOB_ROLE_LIST;
 
                 break;
         }
-
-        $toClean[1] = REPORT_MANAGER_JOB_ROLE_LIST;
 
         break;
     case 3:
@@ -115,64 +178,49 @@ switch ($reportLevel) {
 }//switch_reportLevel
 $data['clean'] = $toClean;
 
-/* Get My Companies by Level    */
-/* My Hierarchy */
-$IsReporter = CompetenceManager::IsReporter($USER->id);
-$myHierarchy = CompetenceManager::get_MyHierarchyLevel($USER->id,$context,$IsReporter,$reportLevel);
-if ($IsReporter) {
-    $myLevelZero  = array_keys($myHierarchy->competence);
-    $myLevelOne   = $myHierarchy->competence[$levelZero]->levelOne;
-    $myLevelTwo   = $myHierarchy->competence[$levelZero]->levelTwo;
-    $myLevelThree = $myHierarchy->competence[$levelZero]->levelThree;
-}else {
-    list($myLevelZero,$myLevelOne,$myLevelTwo,$myLevelThree) = CompetenceManager::GetMyCompanies_By_Level($myHierarchy->competence,$myHierarchy->my_level);
-}//if_IsReporter
-
 switch ($level) {
     case 0:
-        if ($myLevelZero) {
-            $myCompanies = implode(',',$myLevelZero);
-        }//if_myLevelZero
+        $myCompanies = $myLevelZero;
 
         break;
     case 1:
-        if ($myLevelOne) {
-            $myCompanies = implode(',',$myLevelOne);
-        }//if_myLevelZero
+        $parent      = $zero;
+        $myCompanies = $myLevelOne;
 
         break;
     case 2:
-        if ($myLevelTwo) {
-            $myCompanies = implode(',',$myLevelTwo);
-        }//if_myLevelZero
+        $parent      = $one;
+        $myCompanies = $myLevelTwo;
 
         break;
     case 3:
-        if ($myLevelThree) {
-            $myCompanies = implode(',',$myLevelThree);
-        }//if_myLevelZero
+        $parent      = $two;
+        $myCompanies = $myLevelThree;
 
         break;
 }//switch_level
 
-/* Get Companies List   */
+
+// Company list
 if ($parent) {
-    $options = CompetenceManager::GetCompanies_LevelList($level,$parent,$myCompanies);
+    $options = CompetenceManager::get_companies_level_list($level,$parent,$myCompanies);
 }else {
     $options[0] = get_string('select_level_list','report_manager');
 }//if_parent
 
+if ($options) {
 foreach ($options as $companyId => $company) {
-    /* Info Company */
+        // Info
     $infoCompany            = new stdClass;
     $infoCompany->id        = $companyId;
     $infoCompany->name      = $company;
 
-    /* Add Company*/
+        // Add company
     $data['items'][$infoCompany->name] = $infoCompany;
 }
+}
 
-/* Encode and Send */
+// Send
 $json[] = $data;
 echo json_encode(array('results' => $json));
 

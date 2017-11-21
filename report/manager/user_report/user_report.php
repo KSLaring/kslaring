@@ -26,6 +26,7 @@
  * @creationDate    24/05/2017
  * @author          eFaktor     (fbv)
  */
+global $CFG,$USER,$PAGE,$SITE,$SESSION,$OUTPUT;
 
 require_once('../../../config.php');
 require_once( 'usersrptlib.php');
@@ -33,7 +34,13 @@ require_once( 'user_report_form.php');
 require_once( '../managerlib.php');
 require_once($CFG->libdir . '/adminlib.php');
 
+// Checking access
 require_login();
+if (isguestuser($USER)) {
+    require_logout();
+    print_error('guestsarenotallowed');
+    die();
+}
 
 // Params
 $url            = new moodle_url('/report/manager/user_report/user_report.php');
@@ -44,7 +51,7 @@ $out            = null;
 $data_rpt       = null;
 
 $site_context = context_system::instance();
-$IsReporter = CompetenceManager::IsReporter($USER->id);
+$IsReporter = CompetenceManager::is_reporter($USER->id);
 if (!$IsReporter) {
     require_capability('report/manager:viewlevel4', $site_context,$USER->id);
 }
@@ -71,7 +78,7 @@ if (empty($CFG->loginhttps)) {
 $PAGE->verify_https_required();
 
 // My hierarchy
-$myHierarchy = CompetenceManager::get_MyHierarchyLevel($USER->id,$site_context,$IsReporter,4);
+$myHierarchy = CompetenceManager::get_my_hierarchy_level($USER->id,$site_context,$IsReporter,4);
 
 // Form
 $form = new manager_user_report_form(null,array($myHierarchy,$IsReporter));

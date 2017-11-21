@@ -10,7 +10,7 @@
  * @creationDate    01/12/2014
  * @author          eFaktor     (fbv)
  */
-
+global $USER,$CFG,$OUTPUT,$PAGE;
 include_once('../../config.php');
 require_once('expressloginlib.php');
 
@@ -18,10 +18,12 @@ require_once('expressloginlib.php');
 $PAGE->set_context(context_system::instance());
 $PAGE->set_url("$CFG->httpswwwroot/login/index.php");
 
-/* Guess USer -- Logout */
+// Checking access
 if (isguestuser($USER)) {
     require_logout();
-}//if_guestuser
+    print_error('guestsarenotallowed');
+    die();
+}
 
 $relative_path = get_file_argument();
 //extract relative path components

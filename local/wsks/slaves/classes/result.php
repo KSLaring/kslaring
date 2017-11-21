@@ -13,18 +13,27 @@
 require_once( '../../../../config.php');
 require_once('../lib/slaveslib.php');
 
-/* PARAMS */
+global $USER,$PAGE,$OUTPUT;
+
+// Params
 $error      = optional_param('er',0,PARAM_INT);
 $url        = new moodle_url('/local/wsks/slaves/classes/result.php',array('er' => $error));
 $returnUrl  = new moodle_url('/local/wsks/slaves/classes/slaves.php');
 $context    = context_system::instance();
 $strMessage = null;
-require_login();
 
-/* Capability   */
+// Checking access
+require_login();
+if (isguestuser($USER)) {
+    require_logout();
+    print_error('guestsarenotallowed');
+    die();
+}
+
+// Capability
 require_capability('local/wsks:manage',$context);
 
-/* Start Page */
+// Start page
 $PAGE->set_url($url);
 $PAGE->set_pagelayout('admin');
 $PAGE->set_context($context);
@@ -48,11 +57,11 @@ switch ($error) {
         break;
 }//switch_error
 
-/* Print Header */
+// Header
 echo $OUTPUT->header();
 
 echo $OUTPUT->notification($strMessage, 'notifysuccess');
 echo $OUTPUT->continue_button($returnUrl);
 
-/* Print Footer */
+// Footer
 echo $OUTPUT->footer();

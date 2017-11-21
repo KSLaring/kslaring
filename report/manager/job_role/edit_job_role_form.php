@@ -240,7 +240,7 @@ class manager_edit_job_role_form extends moodleform {
         /* Get Company List */
         switch ($level) {
             case 0:
-                $options    = CompetenceManager::GetCompanies_LevelList($level,0,$myCompanies);
+                $options    = CompetenceManager::get_companies_level_list($level,0,$myCompanies);
 
                 break;
             case 1:
@@ -253,9 +253,9 @@ class manager_edit_job_role_form extends moodleform {
                     $options[0] = get_string('select_level_list','report_manager');
                 }else {
                     if ($myCompanies) {
-                        $options = CompetenceManager::GetCompanies_LevelList($level,$parent,$myCompanies);
+                        $options = CompetenceManager::get_companies_level_list($level,$parent,$myCompanies);
                     }else {
-                        $options = CompetenceManager::GetCompanies_LevelList($level,$parent);
+                        $options = CompetenceManager::get_companies_level_list($level,$parent);
                     }//if_companies
                 }//if_parent
 
@@ -270,9 +270,9 @@ class manager_edit_job_role_form extends moodleform {
                     $options[0] = get_string('select_level_list','report_manager');
                 }else {
                     if ($myCompanies) {
-                        $options = CompetenceManager::GetCompanies_LevelList($level,$parent,$myCompanies);
+                        $options = CompetenceManager::get_companies_level_list($level,$parent,$myCompanies);
                     }else {
-                        $options = CompetenceManager::GetCompanies_LevelList($level,$parent);
+                        $options = CompetenceManager::get_companies_level_list($level,$parent);
                     }//if_companies
                 }//if_parent
 
@@ -287,9 +287,9 @@ class manager_edit_job_role_form extends moodleform {
                     $options[0] = get_string('select_level_list','report_manager');
                 }else {
                     if ($myCompanies) {
-                        $options = CompetenceManager::GetCompanies_LevelList($level,$parent,$myCompanies);
+                        $options = CompetenceManager::get_companies_level_list($level,$parent,$myCompanies);
                     }else {
-                        $options = CompetenceManager::GetCompanies_LevelList($level,$parent);
+                        $options = CompetenceManager::get_companies_level_list($level,$parent);
                     }//if_companies
                 }//if_parent
 
@@ -303,7 +303,6 @@ class manager_edit_job_role_form extends moodleform {
      * @param           $level
      * @param           $jr_info
      * @param           $form
-     * @return          mixed
      *
      * @creationDate    26/01/2015
      * @author          eFaktor     (fbv)

@@ -56,6 +56,14 @@ $PAGE->requires->strings_for_js(array_keys($strings), 'local_first_access');
 $strings = $stringman->load_component_strings('local_first_access', 'no');
 $PAGE->requires->strings_for_js(array_keys($strings), 'local_first_access');
 
+// Checking access
+require_login();
+if (isguestuser($USER)) {
+    require_logout();
+    print_error('guestsarenotallowed');
+    die();
+}
+
 // Show form
 $form = new first_access_form(null,$userId);
 if ($form->is_cancelled()) {

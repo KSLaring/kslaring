@@ -25,13 +25,12 @@
  * @author          eFaktor
  *
  */
+global $USER,$PAGE,$SITE,$OUTPUT,$CFG;
 
 require_once( '../../../config.php');
 require_once( 'forms/rpt_forms.php');
 require_once( 'lib/categoryrptlib.php');
 require_once($CFG->dirroot . '/lib/excellib.class.php');
-
-global $PAGE,$USER,$OUTPUT;
 
 // Params
 $parent         = optional_param('parentcat', 0,PARAM_INT);
@@ -40,6 +39,12 @@ $contextsystem  = context_system::instance();
 $url            = new moodle_url('/local/friadmin/reports/summary.php');
 
 require_login();
+// Checking access
+if (isguestuser($USER)) {
+    require_logout();
+    print_error('guestsarenotallowed');
+    die();
+}
 
 // Startpage
 $PAGE->set_url($url);

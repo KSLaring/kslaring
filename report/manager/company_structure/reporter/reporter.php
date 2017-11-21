@@ -61,8 +61,14 @@ $PAGE->navbar->add(get_string('title_reporters','report_manager'));
 
 $PAGE->verify_https_required();
 
-/* ADD require_capability */
-$superUser  = CompetenceManager::IsSuperUser($USER->id);
+// Checking access
+require_login();
+if (isguestuser($USER)) {
+    require_logout();
+    print_error('guestsarenotallowed');
+    die();
+}
+$superUser  = CompetenceManager::is_super_user($USER->id);
 if (!$superUser) {
     require_capability('report/manager:edit', $siteContext);
 }

@@ -25,6 +25,8 @@
 
 require_once('../../config.php');
 
+global $DB,$USER,$CFG,$PAGE,$SITE,$OUTPUT;
+
 $courseid = required_param('id', PARAM_INT);
 
 require_login($courseid);

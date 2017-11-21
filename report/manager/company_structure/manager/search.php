@@ -33,7 +33,7 @@ global $PAGE, $OUTPUT,$USER;
 require_once('../../../../config.php');
 require_once( 'managerslib.php');
 
-/* PARAMS   */
+// Params
 $level      = required_param('level',PARAM_INT);
 $levelZero  = required_param('levelzero',PARAM_INT);
 $levelOne   = required_param('levelone',PARAM_INT);
@@ -56,13 +56,18 @@ $url            = new moodle_url('/report/manager/company_structure/manager/sear
 $PAGE->set_context($context);
 $PAGE->set_url($url);
 
-/* Check the correct access */
+// Checking access
+if (isguestuser($USER)) {
+    require_logout();
+    print_error('guestsarenotallowed');
+    die();
+}
 require_login();
 require_sesskey();
 
 echo $OUTPUT->header();
 
-/* Get Companies by Level */
+// Get companies by level
 switch ($level) {
     case 0:
         $parents[0] = $levelZero;
@@ -93,14 +98,15 @@ if (!isset($USER->manager_selectors[$selectorId])) {
     print_error('unknownuserselector');
 }//if_userselector
 
-/* Get the options connected with the selector  */
+// Get selector connected
 $optSelector = $USER->manager_selectors[$selectorId];
 
-/* Get Class    */
+// Get class
 $class = $optSelector['class'];
 
 list($results,$tardis) = Managers::$class($search,$parents,$level);
 
+if ($results) {
 foreach ($results as $groupName => $managers) {
     $groupData = array('name' => $groupName, 'users' => array());
 
@@ -110,12 +116,12 @@ foreach ($results as $groupName => $managers) {
         $output     = new stdClass;
         $output->id     = $id;
         $output->name   = $user;
-        $output->tardis = 0;
-        if ($tardis) {
-            if (array_key_exists($id,$tardis)) {
-                $output->tardis = 1;
+            $output->tardis = 0;
+            if ($tardis) {
+                if (array_key_exists($id,$tardis)) {
+                    $output->tardis = 1;
+                }
             }
-        }
         if (!empty($user->disabled)) {
             $output->disabled = true;
         }
@@ -128,4 +134,7 @@ foreach ($results as $groupName => $managers) {
     $json[] = $groupData;
 }
 
+}
+
+// send data
 echo json_encode(array('results' => $json));

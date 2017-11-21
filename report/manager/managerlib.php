@@ -81,9 +81,6 @@ define('NON_ERROR','non_error');
 
 define('ORG_MAPPED_TARDIS','TARDIS');
 
-define('TBL_REPORTERS','report_gen_company_reporter');
-define('TBL_MANAGERS','report_gen_company_manager');
-
 if (!defined('MAX_BULK_USERS')) {
     define('MAX_BULK_USERS', 2000);
 }
@@ -148,6 +145,9 @@ class CompetenceManager {
     }//check_capability_reports
 
     /**
+     * Description
+     * Check if the user is reporter
+     *
      * @param           $userId
      * @param           $level
      *
@@ -157,24 +157,21 @@ class CompetenceManager {
      * @creationDate    01/12/2015
      * @author          eFaktor     (fbv)
      *
-     * Description
-     * Check if the user is reporter
-     *
      */
-    public static function IsReporter($userId,$level=-1) {
+    public static function is_reporter($userId,$level=-1) {
         /* Variables */
         global $DB;
         $params = null;
         $rdo    = null;
 
         try {
-            /* Search Criteria  */
+            // Search criteria
             $params = array();
             $params['managerid']           = $userId;
             if ($level >= 0) {
                 $params['hierarchylevel']   = $level;
             }
-            /* Execute  */
+            // Execute
             $rdo = $DB->get_records('report_gen_company_manager',$params);
 
             if ($rdo) {
@@ -192,48 +189,13 @@ class CompetenceManager {
         }catch (Exception $ex) {
             throw $ex;
         }
-    }//IsReporter
+    }//is_reporter
+
 
     /**
-     * @param           $userId
-     * @param           $level
-     *
-     * @return          bool
-     * @throws          Exception
-     *
-     * @creationDate    18/02/2016
-     * @author          eFaktor     (fbv)
-     *
      * Description
-     * Check if the user is a manager
-     */
-    public static function IsManager($userId,$level=-1) {
-        /* Variables */
-        global $DB;
-        $params = null;
-        $rdo    = null;
-
-        try {
-            /* Search Criteria  */
-            $params = array();
-            $params['managerid']           = $userId;
-            if ($level >= 0) {
-                $params['hierarchylevel']   = $level;
-            }
-            /* Execute  */
-            $rdo = $DB->get_records('report_gen_company_manager',$params);
-
-            if ($rdo) {
-                return true;
-            }else {
-                return false;
-            }
-        }catch (Exception $ex) {
-            throw $ex;
-        }
-    }//IsManager
-
-    /**
+     * Check if the user is a Super User
+     *
      * @param           $userId
      *
      * @return          bool
@@ -241,11 +203,8 @@ class CompetenceManager {
      *
      * @creationDate    23/10/2015
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Check if the user is a Super User
      */
-    public static function IsSuperUser($userId) {
+    public static function is_super_user($userId) {
         /* Variables    */
         global $DB;
         $params = null;
@@ -253,12 +212,12 @@ class CompetenceManager {
         $sql    = null;
 
         try {
-            /* Search Criteria  */
+            // Search criteria
             $params = array();
             $params['user']     = $userId;
             $params['deleted']  = 0;
 
-            /* SQL Instruction  */
+            // SQL Instruction
             $sql = " SELECT		sp.id
                      FROM		{report_gen_super_user}	sp
                         JOIN	{user}					u	ON 	u.id 		= sp.userid
@@ -266,7 +225,7 @@ class CompetenceManager {
                      WHERE		sp.userid = :user ";
 
 
-            /* Execute  */
+            // Execute
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 return true;
@@ -276,9 +235,12 @@ class CompetenceManager {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//IsSuperUser
+    }//is_super_user
 
     /**
+     * Description
+     * Get level access connected with user.
+     *
      * @param           $userId
      * @return          array
      *
@@ -286,11 +248,8 @@ class CompetenceManager {
      *
      * @creationDate    23/10/2015
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get level access connected with user.
      */
-    public static function Get_MyAccess($userId) {
+    public static function get_my_access($userId) {
         /* Variables    */
         global $DB;
         $params     = null;
@@ -300,11 +259,11 @@ class CompetenceManager {
         $infoAccess = null;
 
         try {
-            /* Search Criteria  */
+            // Search criteria
             $params = array();
             $params['user'] = $userId;
 
-            /* SQL Instruction  */
+            // SQL Instruction
             $sql = " SELECT		sp.levelzero,
                                 GROUP_CONCAT(DISTINCT sp.levelone 	ORDER BY sp.levelone 	SEPARATOR ',') 	as 'levelone',
                                 GROUP_CONCAT(DISTINCT sp.leveltwo 	ORDER BY sp.leveltwo 	SEPARATOR ',') 	as 'leveltwo',
@@ -313,18 +272,18 @@ class CompetenceManager {
                      WHERE		sp.userid = :user
                      GROUP BY	sp.levelzero ";
 
-            /* Execute  */
+            // Execute
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 foreach ($rdo as $instance) {
-                    /* Info Access  */
+                    // Info access
                     $infoAccess = new stdClass();
                     $infoAccess->levelZero  = ($instance->levelzero ? $instance->levelzero : 0);
                     $infoAccess->levelOne   = ($instance->levelone ? $instance->levelone : 0);
                     $infoAccess->levelTwo   = ($instance->leveltwo ? $instance->leveltwo : 0);
                     $infoAccess->levelThree = ($instance->levelthree ? $instance->levelthree : 0);
 
-                    /* Add Access   */
+                    // Add access
                     $myAccess[$instance->levelzero] = $infoAccess;
                 }//for_rdo
             }//if_rdo
@@ -333,9 +292,12 @@ class CompetenceManager {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//Get_MyAccess
+    }//get_my_access
 
     /**
+     * Description
+     * Initialize the organization structure selectors
+     *
      * @param           $selector
      * @param           $employeeSel
      * @param           $outcomeSel
@@ -347,11 +309,8 @@ class CompetenceManager {
      *
      * @creationDate    27/10/2015
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Initialize the organization structure selectors
      */
-    public static function Init_Organization_Structure($selector,$employeeSel,$outcomeSel,$superUser,$myAccess,$btnActions) {
+    public static function init_organization_structure($selector,$employeeSel,$outcomeSel,$superUser,$myAccess,$btnActions) {
         /* Variables    */
         global $PAGE;
         $options        = null;
@@ -368,14 +327,14 @@ class CompetenceManager {
         $delEmployees   = null;
 
         try {
-            /* Initialise variables */
+            // Initialise variables
             $name       = 'level_structure';
             $path       = '/report/manager/js/organization.js';
             $requires   = array('node', 'event-custom', 'datasource', 'json', 'moodle-core-notification');
             $grpThree   = array('none', 'moodle');
             $strings    = array($grpThree);
 
-            /* Initialise js module */
+            // Initialise js module
             $jsModule = array('name'        => $name,
                               'fullpath'    => $path,
                               'requires'    => $requires,
@@ -384,7 +343,7 @@ class CompetenceManager {
 
             $sp = ($superUser ? 1 : 0);
 
-            /* Window Confirm parameters    */
+            // Window Confirm parameters
             $delEmployees = array();
             $delEmployees['title']      = get_string('del_title','report_manager');
             $delEmployees['question']   = get_string('delete_all_employees','report_manager');
@@ -398,7 +357,7 @@ class CompetenceManager {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//Init_Organization_Structure
+    }//init_organization_structure
 
     /**
      * Description
@@ -416,7 +375,7 @@ class CompetenceManager {
      *
      * @throws          Exception
      */
-    public static function init_company_structure($selector,$employeeSel,$superUser,$myAccess,$btnActions) {
+    public static function init_company_structure($selector,$employeeSel,$outcomeSel,$superUser,$myAccess,$btnActions) {
         /* Variables    */
         global $PAGE;
         $options        = null;
@@ -449,14 +408,14 @@ class CompetenceManager {
 
             $sp = ($superUser ? 1 : 0);
 
-            // Window confirm parameters
+            // Window Confirm parameters
             $delEmployees = array();
             $delEmployees['title']      = get_string('del_title','report_manager');
             $delEmployees['question']   = get_string('delete_all_employees','report_manager');
             $delEmployees['yes']        = get_string('del_yes','report_manager');
             $delEmployees['no']         = get_string('del_no','report_manager');
             $PAGE->requires->js_init_call('M.core_user.init_organization',
-                array($selector,$employeeSel,$sp,$myAccess,$btnActions,$delEmployees),
+                array($selector,$employeeSel,$outcomeSel,$sp,$myAccess,$btnActions,$delEmployees),
                 false,
                 $jsModule
             );
@@ -466,6 +425,9 @@ class CompetenceManager {
     }//Init_company_Structure
 
     /**
+     * Description
+     * Initialize the organization structure selectors for course report
+     *
      * @param           $selector
      * @param           $jrSelector
      * @param           $rptLevel
@@ -474,11 +436,8 @@ class CompetenceManager {
      *
      * @creationDate    27/10/2015
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Initialize the organization structure selectors for course report
      */
-    public static function Init_OrganizationStructure_CourseReport($selector,$jrSelector,$rptLevel) {
+    public static function init_organization_structure_coursereport($selector,$jrSelector,$rptLevel) {
         /* Variables    */
         global $PAGE;
         $options    = null;
@@ -494,14 +453,14 @@ class CompetenceManager {
         $sp         = null;
 
         try {
-            /* Initialise variables */
+            // Initialise variables
             $name       = 'level_structure';
             $path       = '/report/manager/course_report/js/organization.js';
             $requires   = array('node', 'event-custom', 'datasource', 'json', 'moodle-core-notification');
             $grpThree   = array('none', 'moodle');
             $strings    = array($grpThree);
 
-            /* Initialise js module */
+            // Initialise js module
             $jsModule = array('name'        => $name,
                               'fullpath'    => $path,
                               'requires'    => $requires,
@@ -516,9 +475,12 @@ class CompetenceManager {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//Init_OrganizationStructure_CourseReport
+    }//init_organization_structure_coursereport
 
     /**
+     * Description
+     * Initialize the organization structure selectors for outcome report
+     *
      * @param           $selector
      * @param           $jrSelector
      * @param           $outSelector
@@ -528,11 +490,8 @@ class CompetenceManager {
      *
      * @creationDate    27/10/2015
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Initialize the organization structure selectors for outcome report
      */
-    public static function Init_OrganizationStructure_OutcomeReport($selector,$jrSelector,$outSelector,$rptLevel) {
+    public static function init_organization_structure_outcome_report($selector,$jrSelector,$outSelector,$rptLevel) {
         /* Variables    */
         global $PAGE;
         $options    = null;
@@ -548,14 +507,14 @@ class CompetenceManager {
         $sp         = null;
 
         try {
-            /* Initialise variables */
+            // Initialise variables
             $name       = 'level_structure';
             $path       = '/report/manager/outcome_report/js/organization.js';
             $requires   = array('node', 'event-custom', 'datasource', 'json', 'moodle-core-notification');
             $grpThree   = array('none', 'moodle');
             $strings    = array($grpThree);
 
-            /* Initialise js module */
+            // Initialise js module
             $jsModule = array('name'        => $name,
                               'fullpath'    => $path,
                               'requires'    => $requires,
@@ -570,44 +529,44 @@ class CompetenceManager {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//Init_OrganizationStructure_OutcomeReport
+    }//init_organization_structure_outcome_report
 
     /**
+     * Description
+     * Get the Level links to the main page
+     *
      * @param           $tab
      * @param           $site_context
      *
      * @creationDate    26/03/2015
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get the Level links to the main page
      */
-    public static function GetLevelLink_ReportPage($tab,$site_context) {
+    public static function get_level_link_report_page($tab,$site_context) {
         /* Variables    */
         global $USER;
 
         /* Create links - It's depend on View permissions */
         $out = '<ul class="unlist report-selection">' . "\n";
-        if (self::IsReporter($USER->id,0)) {
-            $out = self::Get_ZeroLevelLink($tab);
-        }else if (self::IsReporter($USER->id,1)) {
-            $out = self::Get_FirstLevelLink($tab);
-        }else if (self::IsReporter($USER->id,2)) {
-            $out = self::Get_SecondLevelLink($tab);
-        }else if (self::IsReporter($USER->id,3)) {
-            $out = self::Get_ThirdLevelLink($tab);
+        if (self::is_reporter($USER->id,0)) {
+            $out = self::get_zero_level_link($tab);
+        }else if (self::is_reporter($USER->id,1)) {
+            $out = self::get_first_level_link($tab);
+        }else if (self::is_reporter($USER->id,2)) {
+            $out = self::get_second_level_link($tab);
+        }else if (self::is_reporter($USER->id,3)) {
+            $out = self::get_third_level_link($tab);
         }else {
             if (is_siteadmin($USER->id)) {
-                $out = self::Get_ZeroLevelLink($tab);
+                $out = self::get_zero_level_link($tab);
             }else {
                 if (has_capability('report/manager:viewlevel0', $site_context)) {
-                    $out = self::Get_ZeroLevelLink($tab);
+                    $out = self::get_zero_level_link($tab);
                 }else if (has_capability('report/manager:viewlevel1', $site_context)) {
-                    $out = self::Get_FirstLevelLink($tab);
+                    $out = self::get_first_level_link($tab);
                 }else if(has_capability('report/manager:viewlevel2', $site_context)) {
-                    $out = self::Get_SecondLevelLink($tab);
+                    $out = self::get_second_level_link($tab);
                 }else if (has_capability('report/manager:viewlevel3', $site_context)) {
-                    $out = self::Get_ThirdLevelLink($tab);
+                    $out = self::get_third_level_link($tab);
                 }//if_capabitity
             }
         }
@@ -615,7 +574,7 @@ class CompetenceManager {
 
         /* Draw Links */
         echo $out;
-    }//GetLevelLink_ReportPage
+    }//get_level_link_report_page
 
     /**
      * @static
@@ -632,30 +591,34 @@ class CompetenceManager {
      * Description
      * Get my hierarchy level
      */
-    public static function get_MyHierarchyLevel($user_id,$site_context,$IsReporterManager,$reportLevel) {
+    public static function get_my_hierarchy_level($user_id,$site_context,$IsReporterManager,$reportLevel) {
         /* Variables    */
         $myHierarchy   = null;
 
         try {
-            /* Build my hierarchy   */
+            // Build hierarchy
             $myHierarchy               = new stdClass();
             $myHierarchy->IsRepoter         = $IsReporterManager;
             if ($IsReporterManager) {
                 $myHierarchy->competence    = self::get_myreporter_competence($user_id);
                 $myHierarchy->my_level      = $reportLevel;
             }else {
-                $myHierarchy->competence    = self::get_mycompetence($user_id);
-                $myHierarchy->my_level      = self::Get_MyLevelView($user_id,$site_context);
+                $myHierarchy->competence    = self::get_my_competence($user_id);
+                $myHierarchy->my_level      = self::get_my_level_view($user_id,$site_context);
             }//if_IsReporter
 
             return $myHierarchy;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//get_MyHierarchyLevel
+    }//get_my_hierarchy_level
 
     /**
+     * Description
+     * Get the companies connected with my level and/or my competence
+     *
      * @param           $my_companies
+     *
      * @return          array
      * @throws          Exception
      *
@@ -667,15 +630,16 @@ class CompetenceManager {
      *
      * @updateDate      15/06/2015
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get the companies connected with my level and/or my competence
      */
-    public static function get_mycompanies_by_level($my_companies) {
+    public static function get_my_companies_by_Level($my_companies) {
         /* Variables    */
+        $levelThree = array();
         $three      = null;
+        $levelTwo   = array();
         $two        = null;
+        $levelOne   = array();
         $one        = null;
+        $levelZero  = array();
         $zero       = null;
 
         try {
@@ -683,45 +647,51 @@ class CompetenceManager {
             if ($my_companies) {
                 foreach ($my_companies as $company) {
                     // Level zero
-                    if ($company->levelzero) {
-                        if ($zero) {
-                            $zero .= ',';
-                        }
+                    if ($company->levelZero) {
+                        $levelZero[$company->levelZero] = $company->levelZero;
 
-                        $zero .= $company->levelzero;
                     }//level_zero
 
                     // Level one
-                    if ($company->levelone) {
-                        if ($one) {
-                            $one .= ',';
-                        }
-
-                        $one .= $company->levelone;
+                    if ($company->levelOne) {
+                        $levelOne[$company->levelOne] = $company->levelOne;
                     }//level_one
 
                     // Level two
-                    if ($company->leveltwo) {
-                        if ($two) {
-                            $two .= ',';
-                        }
-                        $two .= $company->leveltwo;
+                    if ($company->levelTwo) {
+                        $levelTwo[$company->levelTwo] = $company->levelTwo;
                     }//level_two
 
-                    if ($three) {
-                        $three .= ',';
-                    }
-                    $three .= $company->levelthree;
+                    // Level three
+                    if ($company->levelThree) {
+                        $levelThree[$company->levelThree]   = $company->levelThree;
+                    }//level_three
                 }//ofr_my_companies
+            }
+
+            if ($levelZero) {
+                $zero = implode(',',$levelZero);
+            }
+            if ($levelOne) {
+                $one = implode(',',$levelOne);
+            }
+            if ($levelTwo) {
+                $two = implode(',',$levelTwo);
+            }
+            if ($levelThree) {
+                $three = implode(',',$levelThree);
             }
 
             return array($zero,$one,$two,$three);
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//GetMyCompanies_By_Level
+    }//get_my_companies_by_Level
 
     /**
+     * Description
+     * Get companies with employees
+     *
      * @param           $levelZero
      * @param           $levelOne
      * @param           $levelTwo
@@ -732,11 +702,8 @@ class CompetenceManager {
      *
      * @creationDate    27/11/2015
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get companies with employees
      */
-    public static function GetCompanies_WithEmployees($levelZero,$levelOne=null,$levelTwo=null,$levelThree=null) {
+    public static function get_Companies_with_employees($levelZero,$levelOne=null,$levelTwo=null,$levelThree=null) {
         /* Variables    */
         global $DB;
         $params     = null;
@@ -749,37 +716,48 @@ class CompetenceManager {
             $params = array();
             $params['zero'] = $levelZero;
 
-            // SQL Instruction
-            $sql = " SELECT	co.levelzero  	as 'levelzero',
-                            GROUP_CONCAT(DISTINCT co.levelone  	 ORDER BY co.levelone 	SEPARATOR ',') 	as 'levelone',
-                            GROUP_CONCAT(DISTINCT co.leveltwo  	 ORDER BY co.leveltwo 	SEPARATOR ',') 	as 'leveltwo',
-                            GROUP_CONCAT(DISTINCT co.levelthree  ORDER BY co.levelthree SEPARATOR ',') 	as 'levelthree'
-                     FROM	companies_with_users co
-                     WHERE	co.levelzero = :zero
-                     ";
+            // SQL Isntruction - Get only companies with employees
+            $sql = " SELECT		GROUP_CONCAT(DISTINCT uicd.companyid  	ORDER BY uicd.companyid SEPARATOR ',') 		as 'levelthree',
+                                GROUP_CONCAT(DISTINCT cr_two.parentid  	ORDER BY cr_two.parentid SEPARATOR ',') 	as 'leveltwo',
+                                GROUP_CONCAT(DISTINCT cr_one.parentid  	ORDER BY cr_one.parentid SEPARATOR ',') 	as 'levelone',
+                                GROUP_CONCAT(DISTINCT cr_zero.parentid  ORDER BY cr_zero.parentid SEPARATOR ',') 	as 'levelzero'
+                     FROM		{user_info_competence_data} 		uicd
+                        -- LEVEL TWO
+                        JOIN	{report_gen_company_relation}   	cr_two	ON 	cr_two.companyid 		= uicd.companyid
+                        JOIN	{report_gen_companydata}			co_two	ON 	co_two.id 				= cr_two.parentid
+                                                                            AND co_two.hierarchylevel 	= 2
+                                                                            AND co_two.id IN ($levelTwo)
+                        -- LEVEL ONE
+                        JOIN	{report_gen_company_relation}   	cr_one	ON 	cr_one.companyid 		= cr_two.parentid
+                        JOIN	{report_gen_companydata}			co_one	ON 	co_one.id 				= cr_one.parentid
+                                                                            AND co_one.hierarchylevel 	= 1
+                                                                            AND co_one.id IN ($levelOne)
+                        -- LEVEL ZERO
+                        JOIN	{report_gen_company_relation} 	    cr_zero	ON 	cr_zero.companyid 		= cr_one.parentid
+                        JOIN	{report_gen_companydata}			co_zero	ON 	co_zero.id 				= cr_zero.parentid
+                                                                            AND co_zero.hierarchylevel 	= 0
+                                                                            AND co_zero.id = :zero ";
 
-            // Criteria level one
-            if ($levelOne) {
-                $sql .= " AND co.levelone IN ($levelOne) ";
-            }
-            // Criteria level two
-            if ($levelTwo) {
-                $sql .= " AND co.leveltwo IN ($levelTwo) ";
-            }
-            // Criteria level three
+            // Filter level three
             if ($levelThree) {
-                $sql .= " AND co.levelthree IN ($levelThree) ";
+                $sql .= " WHERE uicd.companyid IN ($levelThree) ";
             }//if_levelThree
 
-            // Execute
-            $sql .= " GROUP BY co.levelzero ";
+            // Execute 
             $rdo = $DB->get_record_sql($sql,$params);
+            if ($rdo) {
+                $companies = new stdClass();
+                $companies->levelZero   = $rdo->levelzero;
+                $companies->levelOne    = $rdo->levelone;
+                $companies->levelTwo    = $rdo->leveltwo;
+                $companies->levelThree  = $rdo->levelthree;
+            }//if_rdo
 
-            return $rdo;
+            return $companies;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//GetCompanies_WithEmployees
+    }//get_Companies_with_employees
 
     /**
      * @param           $companyLst
@@ -791,7 +769,7 @@ class CompetenceManager {
      * @author          eFaktor     (fbv)
      *
      */
-    public static function GetCompaniesInfo($companyLst) {
+    public static function get_companies_info($companyLst) {
         /* Variables */
         global $DB;
         $sql = null;
@@ -800,33 +778,39 @@ class CompetenceManager {
         $companies      = null;
 
         try {
-            /* SQL Instruction  */
+            // SQL Instruction
             $sql = " SELECT c.id,
                             c.name
                      FROM   {report_gen_companydata} c
                      WHERE  c.id IN ($companyLst)
                      ORDER BY c.name ";
 
-            /* Execute */
+            // Execute
             $rdo = $DB->get_records_sql($sql);
+            if ($rdo) {
+                foreach ($rdo as $instance) {
+                    // Add company
+                    $companies[$instance->id] = $instance->name;
+                }//for_rdo
+            }//if_rdo
 
-            return $rdo;
+            return $companies;
         }catch (Exception $ex) {
             throw $ex;
         }//trY_catch
-    }
+    }//get_companies_info
 
     /**
+     * Description
+     * Get completed list
+     *
      * @return          array
      * @throws          Exception
      *
      * @creationDate    26/03/2015
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get completed list
      */
-    public static function GetCompletedList() {
+    public static function get_completed_list() {
         /* Variables    */
         $list = null;
 
@@ -850,9 +834,12 @@ class CompetenceManager {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//GetCompletedList
+    }//get_completed_list
 
     /**
+     * Description
+     * Calculate the completion date
+     *
      * @param           $index
      * @param           bool $future
      * @return          int
@@ -860,11 +847,8 @@ class CompetenceManager {
      *
      * @creationDate    14/04/2015
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Calculate the completion date
      */
-    public static function Get_CompletedDate_Timestamp($index, $future = false) {
+    public static function get_completed_date_timestamp($index, $future = false) {
         /* Variables    */
         $today = strtotime("today", usertime( time() ));
         $future = $future ? 1 : -1;
@@ -928,25 +912,25 @@ class CompetenceManager {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//Get_CompletedDate_Timestamp
+    }//get_completed_date_timestamp
 
     /**
+     * Description
+     * Check if the company is public or private
+     *
      * @param           $company
      * @return          bool
      * @throws          Exception
      *
      * @creationDate    26/03/2015
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Check if the company is public or private
      */
-    public static function IsPublic($company) {
+    public static function is_public($company) {
         /* Variables    */
         global $DB;
 
         try {
-            /* Get Public Field */
+            // Get public field
             $rdo = $DB->get_record('report_gen_companydata',array('id' => $company),'public');
             if ($rdo) {
                 if ($rdo->public) {
@@ -960,41 +944,41 @@ class CompetenceManager {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//IsPublic
+    }//is_public
 
     /**
      * @static
+     * Description
+     * Get the Job Roles List
+     *
      * @param           $jr_lst
      * @return          array
      * @throws          Exception
      *
      * @creationDate    26/03/2015
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get the Job Roles List
      */
-    public static function Get_JobRolesList($jr_lst = null) {
+    public static function get_jobroles_list($jr_lst = null) {
         /* Variables    */
         global $DB;
         $job_roles_lst = array();
 
         try {
-            /* SQL Instruction  */
+            // SQL Instruction
             $sql = " SELECT     DISTINCT id,
                                          name,
                                          industrycode
                      FROM       {report_gen_jobrole} ";
 
-            /* Search Criteria  */
+            // Search criteria
             if ($jr_lst) {
                 $sql .= " WHERE id IN ($jr_lst) ";
             }//if_jr_lst
 
-            /* ORDER    */
+            // Order
             $sql .= " ORDER BY   industrycode, name ASC ";
 
-            /* Execute  */
+            // Execute
             $rdo = $DB->get_records_sql($sql);
             if ($rdo) {
                 foreach ($rdo as $job_role) {
@@ -1005,25 +989,25 @@ class CompetenceManager {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//Get_JobRolesList
+    }//get_jobroles_list
 
 
     /**
+     * Description
+     * Get all the job roles that are generics
+     *
      * @param           $options
      * @throws          Exception
      *
      * @creationDate    26/03/2015
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get all the job roles that are generics
      */
-    public static function GetJobRoles_Generics(&$options) {
+    public static function get_jobroles_generics(&$options) {
         /* Variables    */
         global $DB;
 
         try {
-            /* SQL Instruction  */
+            // SQL Instruction
             $sql = " SELECT		DISTINCT      jr.id,
                                               jr.name,
                                               jr.industrycode
@@ -1032,7 +1016,7 @@ class CompetenceManager {
                                                                             AND jr_rel.levelzero IS NULL
                      ORDER BY jr.industrycode, jr.name ";
 
-            /* Execute  */
+            // Execute
             $rdo = $DB->get_records_sql($sql);
             if ($rdo) {
                 foreach ($rdo as $instance) {
@@ -1042,9 +1026,12 @@ class CompetenceManager {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//GetJobRoles_Generics
+    }//get_jobroles_generics
 
     /**
+     * Description
+     * Get the job roles connected with the levels
+     *
      * @param           $options
      * @param           $level
      * @param           $levelZero
@@ -1055,11 +1042,8 @@ class CompetenceManager {
      *
      * @creationDate    26/03/2015
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get the job roles connected with the levels
      */
-    public static function GetJobRoles_Hierarchy(&$options,$level,$levelZero,$levelOne=null,$levelTwo=null, $levelThree=null) {
+    public static function get_jobroles_hierarchy(&$options,$level,$levelZero,$levelOne=null,$levelTwo=null, $levelThree=null) {
         /* Variables    */
         global $DB;
         $sqlOne     = null;
@@ -1204,9 +1188,12 @@ class CompetenceManager {
         }catch (Exception $ex) {
             throw $ex;
         }//try_Catch
-    }//GetJobRoles_Hierarchy
+    }//get_jobroles_hierarchy
 
     /**
+     * Description
+     * Get a list of all the companies are connected a specific level.
+     *
      * @param               $level
      * @param       int     $parent_id
      * @param       null    $companies_in
@@ -1215,50 +1202,48 @@ class CompetenceManager {
      *
      * @creationDate        26/03/2015
      * @author              eFaktor     (fbv)
-     *
-     * Description
-     * Get a list of all the companies are connected a specific level.
      */
-    public static function GetCompanies_LevelList($level, $parent_id = 0,$companies_in = null) {
+    public static function get_companies_level_list($level, $parent_id = 0,$companies_in = null) {
         /* Variables */
         global $DB;
         $levels = array();
 
         try {
-            /* List Companies   */
+            // First element
             $levels[0] = get_string('select_level_list','report_manager');
 
-            /* Research Criteria */
+            // Search criteria
             $params = array();
             $params['level']    = $level;
 
-            /* SQL Instruction */
+            // SQL Instruction
             $sql = " SELECT     DISTINCT  rcd.id,
                                           rcd.name,
                                           rcd.industrycode
                      FROM       {report_gen_companydata} rcd ";
 
-            /* Parents  */
+            // Parents
             if ($parent_id) {
                 $sql .= " JOIN  {report_gen_company_relation} rcr   ON    rcr.companyid = rcd.id
                                                                     AND   rcr.parentid  IN ($parent_id) ";
             }//if_level
 
-            /* Conditions   */
+            // Conditions
             $sql .= " WHERE     rcd.hierarchylevel = :level ";
-            /* Companies In */
+
+            // Companies in
             if ($companies_in) {
                 $sql .= " AND rcd.id IN ($companies_in) ";
             }//if_companies_in
 
-            /* Order    */
+            // Order by
             $sql .= " ORDER BY  rcd.industrycode, rcd.name ASC ";
 
-            /* Execute  */
+            // Execute
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 foreach ($rdo as $field) {
-                    $levels[$field->id] = $field->industrycode . ' - '. $field->name;
+                    $levels[$field->id] = $field->industrycode . ' - '. trim($field->name);
                 }//foreach
             }//if_rdo
 
@@ -1266,7 +1251,7 @@ class CompetenceManager {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//Get_Companies_LevelList
+    }//get_companies_level_list
 
     /**
      * Description
@@ -1308,17 +1293,17 @@ class CompetenceManager {
     }//get_extra_info_company
 
     /**
+     * Description
+     * Get the company name
+     *
      * @param           $company
      * @return          null
      * @throws          Exception
      *
      * @creationDate    26/03/2015
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get the company name
      */
-    public static function GetCompany_Name($company) {
+    public static function get_company_name($company) {
         global $DB;
 
         try {
@@ -1342,9 +1327,12 @@ class CompetenceManager {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//GetCompany_Name
+    }//get_company_name
 
     /**
+     * Description
+     * Get all the users connected with my companies
+     *
      * @param           $my_companies
      * @param           $user_id
      * @return          null|string
@@ -1352,28 +1340,25 @@ class CompetenceManager {
      *
      * @creationDate    08/04/2015
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Get all the users connected with my companies
      */
-    public static function GetUsers_MyCompanies($my_companies,$user_id) {
+    public static function get_users_my_companies($my_companies,$user_id) {
         /* Variables    */
         global $DB;
         $my_users   = null;
 
         try {
-            /* Search Criteria  */
+            // Search criteria
             $params = array();
             $params['user'] = $user_id;
 
-            /* SQL Instruction  */
+            // SQL Instruction
             $sql = " SELECT     DISTINCT	u.id
                      FROM		{user}						u
                         JOIN	{user_info_competence_data}	uicd	ON 	uicd.userid = u.id
                                                                     AND uicd.companyid  IN ($my_companies)
                      WHERE		u.deleted = 0 ";
 
-            /* Execute  */
+            // Execute
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 $my_users = implode(',',array_keys($rdo));
@@ -1383,8 +1368,106 @@ class CompetenceManager {
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//GetUsers_MyCompanies
+    }//get_users_my_companies
 
+
+
+    public static function extract_reporter_competence_by_level($mycompetence,$report,$zero,$one=null,$two=null) {
+        /* Variables */
+        $keys       = null;
+        $myzero     = null;
+        $myones     = null;
+        $mytwo      = null;
+        $mythree    = null;
+        $hierarchy  = null;
+
+        try {
+            switch ($report) {
+                case 0:
+                    $hierarchy  = $mycompetence->competence->hierarchyzero;
+
+                    // Get ones
+                    if (($hierarchy->one) && isset($hierarchy->one[$zero])) {
+                        $myones = $hierarchy->one[$zero];
+                    }
+
+                    // Get two
+                    if ($myones) {
+                        $mytwo  = array();
+                        $keys   = array_intersect_key($myones,$hierarchy->two);
+                        if ($keys) {
+                            foreach ($keys as $one) {
+                                foreach ($hierarchy->two[$one] as $two) {
+                                    $mytwo[$two] = $two;
+                                }//for_competence_two
+                            }//for_keys
+                        }//if_keys
+                    }//if_ones
+
+                    // Get three
+                    if ($mytwo) {
+                        $mythree    = array();
+                        $keys       = array_intersect_key($mytwo,$hierarchy->three);
+                        if ($keys) {
+                            foreach ($keys as $two) {
+                                foreach ($hierarchy->three[$two] as $three) {
+                                    $mythree[$three] = $three;
+                                }//for_mytre
+                            }//for_two
+                        }//if_keys
+                    }//if_two
+
+                    $myones     = ($myones ? implode(',',$myones) : 0);
+                    $mytwo      = ($mytwo ? implode(',',$mytwo) : 0);
+                    $mythree    = ($mythree ? implode(',',$mythree) : 0);
+
+                    break;
+                case 1:
+                    $hierarchy  = $mycompetence->competence->hierarchyone;
+
+                    // Get two
+                    $myzero = $zero;
+                    $myones = $one;
+                    $mytwo  = ($hierarchy->two ? $hierarchy->two[$one] : null);
+
+                    // Get three
+                    if ($mytwo) {
+                        $mythree    = array();
+                        $keys       = array_intersect_key($mytwo,$hierarchy->three);
+                        if ($keys) {
+                            foreach ($keys as $two) {
+                                foreach ($hierarchy->three[$two] as $three) {
+                                    $mythree[$three] = $three;
+                                }//for_mytre
+                            }//for_two
+                        }//if_keys
+                    }//if_two
+
+                    $mytwo      = ($mytwo ? implode(',',$mytwo) : 0);
+                    $mythree    = ($mythree ? implode(',',$mythree) : 0);
+
+                    break;
+                case 2:
+                    $hierarchy  = $mycompetence->competence->hierarchytwo;
+
+                    // Get three
+                    $myzero = $zero;
+                    $myones = $one;
+                    $mytwo  = $two;
+                    $mythree = ($hierarchy->three ? $hierarchy->three[$two] : null);
+
+                    $mythree    = ($mythree ? implode(',',$mythree) : 0);
+
+                    break;
+                case 3:
+
+                    break;
+            }//switch_report
+            return array($myzero,$myones,$mytwo,$mythree);
+        }catch (Exception $ex) {
+            throw $ex;
+        }
+    }
     /*********************/
     /* PRIVATE FUNCTIONS */
     /*********************/
@@ -1400,7 +1483,7 @@ class CompetenceManager {
      * Description
      * Add links to level Zero
      */
-    private static function Get_ZeroLevelLink($tab) {
+    private static function get_zero_level_link($tab) {
         /* Variables    */
         $out        = null;
         $url_zero   = new moodle_url('/report/manager/' . $tab .'/' . $tab .'_level.php',array('rpt'=>0));
@@ -1408,10 +1491,10 @@ class CompetenceManager {
         $out  = '<li>' . "\n";
         $out .= '<a href="'.$url_zero .'">'. get_string('level_report','report_manager',0) .'</a>';
         $out .= '</li>' . "\n";
-        $out .= self::Get_FirstLevelLink($tab);
+        $out .= self::get_first_level_link($tab);
 
         return $out;
-    }//Get_ZeroLevelLink
+    }//get_zero_level_link
 
     /**
      * @param           $tab
@@ -1423,7 +1506,7 @@ class CompetenceManager {
      * Description
      * Add the links to level one
      */
-    private static function Get_FirstLevelLink($tab) {
+    private static function get_first_level_link($tab) {
         /* Variables    */
         $out            = null;
         $url_first      = new moodle_url('/report/manager/' . $tab .'/' . $tab .'_level.php',array('rpt'=>1));
@@ -1431,10 +1514,10 @@ class CompetenceManager {
         $out  = '<li>' . "\n";
         $out .= '<a href="'.$url_first .'">'. get_string('level_report','report_manager',1) .'</a>';
         $out .= '</li>' . "\n";
-        $out .= self::Get_SecondLevelLink($tab);
+        $out .= self::get_second_level_link($tab);
 
         return $out;
-    }//Get_FirstLevelLink
+    }//get_first_level_link
 
     /**
      * @param           $tab
@@ -1446,7 +1529,7 @@ class CompetenceManager {
      * Description
      * Add links to level two
      */
-    private static function Get_SecondLevelLink($tab) {
+    private static function get_second_level_link($tab) {
         /* Variables    */
         $out                = null;
         $url_second         = new moodle_url('/report/manager/' . $tab .'/' . $tab .'_level.php',array('rpt'=>2));
@@ -1454,10 +1537,10 @@ class CompetenceManager {
         $out  = '<li>' . "\n";
         $out .= '<a href="'.$url_second .'">'. get_string('level_report','report_manager',2) .'</a>';
         $out .= '</li>' . "\n";
-        $out .= self::Get_ThirdLevelLink($tab);
+        $out .= self::get_third_level_link($tab);
 
         return $out;
-    }//Get_SecondLevelLink
+    }//get_second_level_link
 
     /**
      * @param           $tab
@@ -1469,7 +1552,7 @@ class CompetenceManager {
      * Description
      * Add link to the third level
      */
-    private static function Get_ThirdLevelLink($tab) {
+    private static function get_third_level_link($tab) {
         /* Variables    */
         $out            = null;
         $url_third      = new moodle_url('/report/manager/' . $tab .'/' . $tab .'_level.php',array('rpt'=>3));
@@ -1479,65 +1562,75 @@ class CompetenceManager {
         $out .= '</li>' . "\n";
 
         return $out;
-    }//Get_ThirdLevelLink
+    }//get_third_level_link
 
     /**
      * Description
-     * Get comptence connected with the user
+     * Get competence data connected with the user
      *
-     * @param           $user
-     *
+     * @param           $user_id
      * @return          null
      * @throws          Exception
      *
      * @creationDate    13/03/2015
      * @author          eFaktor     (fbv)
-     *
-     * @updateDate      20/09/2017
-     * @author          eFaktor     (fbv)
      */
-    private static function get_mycompetence($user) {
-        /* Variables */
+    private static function get_my_competence($user_id) {
+        /* Variables    */
         global $DB;
-        $competence = null;
-        $sql        = null;
-        $rdo        = null;
-        $params     = null;
+        $my_competence      = array();
+        $info_hierarchy     = null;
+
 
         try {
             // Search criteria
             $params = array();
-            $params['user']  = $user;
+            $params['user_id']  = $user_id;
 
             // SQL Instruction
-            $sql = " SELECT	  cr_zero.parentid as 'levelzero',
-                              GROUP_CONCAT(DISTINCT cr_one.parentid  	ORDER BY cr_one.parentid SEPARATOR ',') as 'levelone',
-                              GROUP_CONCAT(DISTINCT cr_two.parentid  	ORDER BY cr_two.parentid SEPARATOR ',') as 'leveltwo',
-                              GROUP_CONCAT(DISTINCT uicd.companyid ORDER BY uicd.companyid SEPARATOR ',') 	    as 'levelthree',
-                              uicd.jobroles
-                     FROM	  {user_info_competence_data} 	uicd
+            $sql = " SELECT		uicd.companyid 		as 'levelthree',
+                                cr_two.parentid  	as 'leveltwo',
+                                cr_one.parentid  	as 'levelone',
+                                cr_zero.parentid  	as 'levelzero',
+                                uicd.jobroles
+                     FROM		{user_info_competence_data} 	uicd
                         -- LEVEL TWO
-                        JOIN  {report_gen_company_relation} cr_two	ON 	cr_two.companyid  = uicd.companyid
+                        JOIN	{report_gen_company_relation}   cr_two	ON 	cr_two.companyid 		= uicd.companyid
+                        JOIN	{report_gen_companydata}		co_two	ON 	co_two.id 				= cr_two.parentid
+                                                                        AND co_two.hierarchylevel 	= 2
                         -- LEVEL ONE
-                        JOIN  {report_gen_company_relation} cr_one	ON 	cr_one.companyid  = cr_two.parentid
+                        JOIN	{report_gen_company_relation}   cr_one	ON 	cr_one.companyid 		= cr_two.parentid
+                        JOIN	{report_gen_companydata}		co_one	ON 	co_one.id 				= cr_one.parentid
+                                                                        AND co_one.hierarchylevel 	= 1
                         -- LEVEL ZERO
-                        JOIN  {report_gen_company_relation} cr_zero	ON 	cr_zero.companyid = cr_one.parentid
-                     WHERE	  uicd.userid = :user
-                     GROUP BY cr_zero.parentid ";
+                        JOIN	{report_gen_company_relation} cr_zero	ON 	cr_zero.companyid 		= cr_one.parentid
+                        JOIN	{report_gen_companydata}	  co_zero	ON 	co_zero.id 				= cr_zero.parentid
+                                                                        AND co_zero.hierarchylevel 	= 0
+                     WHERE		uicd.userid = :user_id
+                     ";
 
             // Execute
             $rdo = $DB->get_records_sql($sql,$params);
             if ($rdo) {
                 foreach ($rdo as $instance) {
-                    $competence[$instance->levelzero] = $instance;
-                }//for_rdo
+                    // Hierarchy info
+                    $info_hierarchy = new stdClass();
+                    $info_hierarchy->levelThree     = $instance->levelthree;
+                    $info_hierarchy->levelTwo       = $instance->leveltwo;
+                    $info_hierarchy->levelOne       = $instance->levelone;
+                    $info_hierarchy->levelZero      = $instance->levelzero;
+                    $info_hierarchy->roles          = $instance->jobroles;
+
+                    // Add
+                    $my_competence[$instance->levelthree] = $info_hierarchy;
+                }//for_companies
             }//if_rdo
 
-            return $competence;
+            return $my_competence;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//get_mycompetence
+    }//get_my_competence
 
     /**
      * Description
@@ -1556,36 +1649,29 @@ class CompetenceManager {
      */
     private static function get_myreporter_competence($userid) {
         /* Variables */
-        $allzero   = array();
-        $allone    = array();
-        $alltwo    = array();
-        $allthree  = array();
+        $competence = null;
 
         try {
             // Competence
             $competence = new stdClass();
-            $competence->zero       = null;
-            $competence->one        = null;
-            $competence->two        = null;
-            $competence->three      = null;
-            $competence->allzero    = null;
-            $competence->allone     = null;
-            $competence->alltwo     = null;
-            $competence->allthree   = null;
+            $competence->hierarchyzero       = null;
+            $competence->hierarchyone        = null;
+            $competence->hierarchytwo        = null;
+            $competence->hierarchythree      = null;
+            // All
+            $competence->levelzero       = array();
+            $competence->levelone        = array();
+            $competence->leveltwo        = array();
+            $competence->levelthree      = array();
 
             // Level zero
-            CompetenceManager::get_myreporter_competence_by_level(0,$userid,$competence,$allzero,$allone,$alltwo,$allthree);
+            $competence->hierarchyzero  = CompetenceManager::get_myreporter_competence_by_level(0,$userid,$competence);
             // Level one
-            CompetenceManager::get_myreporter_competence_by_level(1,$userid,$competence,$allzero,$allone,$alltwo,$allthree);
+            $competence->hierarchyone   = CompetenceManager::get_myreporter_competence_by_level(1,$userid,$competence);
             // Level two
-            CompetenceManager::get_myreporter_competence_by_level(2,$userid,$competence,$allzero,$allone,$alltwo,$allthree);
+            $competence->hierarchytwo   = CompetenceManager::get_myreporter_competence_by_level(2,$userid,$competence);
             // Level three
-            CompetenceManager::get_myreporter_competence_by_level(3,$userid,$competence,$allzero,$allone,$alltwo,$allthree);
-
-            $competence->allzero    = $allzero;
-            $competence->allone     = $allone;
-            $competence->alltwo     = $alltwo;
-            $competence->allthree   = $allthree;
+            $competence->hierarchythree = CompetenceManager::get_myreporter_competence_by_level(3,$userid,$competence);
 
             return $competence;
         }catch (Exception $ex) {
@@ -1593,24 +1679,7 @@ class CompetenceManager {
         }//try_catch
     }//Get_MyReporterCompetence
 
-    /**
-     * Description
-     * Get the competence connected with reporter by level
-     *
-     * @param           $level
-     * @param           $user
-     * @param           $competence
-     * @param           $allzero
-     * @param           $allone
-     * @param           $alltwo
-     * @param           $allthree
-     *
-     * @throws          Exception
-     *
-     * @creationDate    28/09/2017
-     * @author          eFaktor     (fbv)
-     */
-    private static function get_myreporter_competence_by_level($level,$user,&$competence,&$allzero,&$allone,&$alltwo,&$allthree) {
+    private static function get_myreporter_competence_by_level($level,$user,&$competence) {
         /* Variables */
         global  $DB;
         $rdo        = null;
@@ -1619,18 +1688,25 @@ class CompetenceManager {
         $sql        = null;
         $params     = null;
         $field      = null;
+        $hierarchy  = null;
 
         try {
+            // Hierarchy by level
+            $hierarchy = new stdClass();
+            $hierarchy->zero    = array();
+            $hierarchy->one     = array();
+            $hierarchy->two     = array();
+            $hierarchy->three   = array();
 
             // Search criteria
             $params = array();
             $params['reporter'] = $user;
-            $params['manager'] = $user;
-            $params['lere']    = $level;
-            $params['lema']    = $level;
+            $params['manager']  = $user;
+            $params['lere']     = $level;
+            $params['lema']     = $level;
 
             switch ($level) {
-                case 0:
+                case '0':
                     // SQL Isntruction - Reporters
                     $sqlre = " SELECT  DISTINCT
                                            re.levelzero,
@@ -1666,9 +1742,15 @@ class CompetenceManager {
                                     AND     re.hierarchylevel = :lema ";
 
                     break;
-                case 1:
-                    // Exclude
-                    $notzero = ($allzero ? implode(',',array_keys($allzero)):0);
+                case '1':
+                    // Level zero
+                    if (($competence->hierarchyzero) && ($competence->hierarchyzero->zero)) {
+                        $hierarchy->zero = $competence->hierarchyzero->zero;
+                    }
+                    // Level one
+                    if (($competence->hierarchyzero) && ($competence->hierarchyzero->one)) {
+                        $hierarchy->one = $competence->hierarchyzero->one;
+                    }
 
                     // SQL Isntruction - Reporters
                     $sqlre = " SELECT  DISTINCT 
@@ -1683,8 +1765,7 @@ class CompetenceManager {
                                   -- Level Three
                                   LEFT JOIN {report_gen_company_relation} 	cr_tre 	ON  cr_tre.parentid = cr_two.companyid
                                WHERE	    re.reporterid 		= :reporter
-                                    AND     re.hierarchylevel  	= :lere
-                                    AND     re.levelzero NOT IN ($notzero) ";
+                                    AND     re.hierarchylevel  	= :lere ";
 
                     // SQL Instruction - managers
                     $sqlma = " SELECT   DISTINCT 
@@ -1699,14 +1780,29 @@ class CompetenceManager {
                                   -- Level Three
                                   LEFT JOIN {report_gen_company_relation} 	cr_tre 	ON  cr_tre.parentid = cr_two.companyid
                                WHERE	    re.managerid 		= :manager
-                                    AND     re.hierarchylevel  	= :lema
-                                    AND     re.levelzero NOT IN ($notzero) ";
+                                    AND     re.hierarchylevel  	= :lema ";
 
                     break;
-                case 2:
-                    // Exclude
-                    $notzero = ($allzero ? implode(',',array_keys($allzero)):0);
-                    $notone  = ($allone ? implode(',',$allone):0);
+                case '2':
+                    // Level zero
+                    if (($competence->hierarchyone) && ($competence->hierarchyone->zero)) {
+                        $hierarchy->zero = $competence->hierarchyone->zero;
+                    }else if (($competence->hierarchyzero) && ($competence->hierarchyzero->zero)) {
+                        $hierarchy->zero = $competence->hierarchyzero->zero;
+                    }
+                    // Level one
+                    if (($competence->hierarchyone) && ($competence->hierarchyone->one)) {
+                        $hierarchy->one = $competence->hierarchyone->one;
+                    }else if (($competence->hierarchyzero) && ($competence->hierarchyzero->one)) {
+                        $hierarchy->one = $competence->hierarchyzero->one;
+                    }
+
+                    // Level two
+                    if (($competence->hierarchyone) && ($competence->hierarchyone->two)) {
+                        $hierarchy->two = $competence->hierarchyone->two;
+                    }else if (($competence->hierarchyzero) && ($competence->hierarchyzero->two)) {
+                        $hierarchy->two = $competence->hierarchyzero->two;
+                    }
 
                     // SQL Isntruction - reporters
                     $sqlre = " SELECT   DISTINCT 
@@ -1719,9 +1815,7 @@ class CompetenceManager {
                                   -- Level Three
                                   LEFT JOIN {report_gen_company_relation} cr_tre 	ON  cr_tre.parentid = re.leveltwo
                                WHERE	    re.reporterid		= :reporter
-                                  AND       re.hierarchylevel  	= :lere
-                                  AND       re.levelzero  NOT IN ($notzero)
-                                  AND       re.levelone   NOT IN ($notone) ";
+                                  AND       re.hierarchylevel  	= :lere";
 
                     // SQL instruction - managers
                     $sqlma = " SELECT   DISTINCT 
@@ -1734,18 +1828,44 @@ class CompetenceManager {
                                   -- Level Three
                                   LEFT JOIN {report_gen_company_relation} cr_tre 	ON  cr_tre.parentid = re.leveltwo
                                WHERE	    re.managerid		= :manager
-                                  AND       re.hierarchylevel  	= :lema
-                                  AND       re.levelzero  NOT IN ($notzero)
-                                  AND       re.levelone   NOT IN ($notone) ";
-
+                                  AND       re.hierarchylevel  	= :lema ";
 
                     break;
-                case 3:
-                    // Exclude
-                    $notzero = ($allzero ? implode(',',array_keys($allzero)):0);
-                    $notone  = ($allone ? implode(',',$allone):0);
-                    $nottwo  = ($alltwo ? implode(',',$alltwo):0);
-                    $nottre  = ($allthree ? implode(',',$allthree):0);
+                case '3':
+                    // Level zero
+                    if (($competence->hierarchytwo) && ($competence->hierarchytwo->zero)) {
+                        $hierarchy->zero = $competence->hierarchytwo->zero;
+                    }else if (($competence->hierarchyone) && ($competence->hierarchyone->zero)) {
+                        $hierarchy->zero = $competence->hierarchyone->zero;
+                    }else if (($competence->hierarchyzero) && ($competence->hierarchyzero->zero)) {
+                        $hierarchy->zero = $competence->hierarchyzero->zero;
+                    }
+                    // Level one
+                    if (($competence->hierarchytwo) && ($competence->hierarchytwo->one)) {
+                        $hierarchy->one = $competence->hierarchytwo->one;
+                    }else if (($competence->hierarchyone) && ($competence->hierarchyone->one)) {
+                        $hierarchy->one = $competence->hierarchyone->one;
+                    }else if (($competence->hierarchyzero) && ($competence->hierarchyzero->one)) {
+                        $hierarchy->one = $competence->hierarchyzero->one;
+                    }
+
+                    // Level two
+                    if (($competence->hierarchytwo) && ($competence->hierarchytwo->two)) {
+                        $hierarchy->two = $competence->hierarchytwo->two;
+                    }else if (($competence->hierarchyone) && ($competence->hierarchyone->two)) {
+                        $hierarchy->two = $competence->hierarchyone->two;
+                    }else if (($competence->hierarchyzero) && ($competence->hierarchyzero->two)) {
+                        $hierarchy->two = $competence->hierarchyzero->two;
+                    }
+
+                    // Level three
+                    if (($competence->hierarchytwo) && ($competence->hierarchytwo->three)) {
+                        $hierarchy->three = $competence->hierarchytwo->three;
+                    }else if (($competence->hierarchyone) && ($competence->hierarchyone->three)) {
+                        $hierarchy->three = $competence->hierarchyone->three;
+                    }else if (($competence->hierarchyzero) && ($competence->hierarchyzero->three)) {
+                        $hierarchy->three = $competence->hierarchyzero->three;
+                    }
 
                     // SQL Isntruction - reporters
                     $sqlre = " SELECT  DISTINCT 
@@ -1756,11 +1876,7 @@ class CompetenceManager {
                                           re.hierarchylevel as 'level'
                                FROM	      {report_gen_company_reporter} 	 re
                                WHERE	  re.reporterid 		= :reporter
-                                  AND     re.hierarchylevel  	= :lere
-                                  AND     re.levelzero    NOT IN ($notzero)
-                                  AND     re.levelone     NOT IN ($notone) 
-                                  AND     re.leveltwo     NOT IN ($nottwo) 
-                                  AND     re.levelthree   NOT IN ($nottre)";
+                                  AND     re.hierarchylevel  	= :lere ";
 
                     // SQL Instruction - manager
                     $sqlma = " SELECT  DISTINCT 
@@ -1771,11 +1887,7 @@ class CompetenceManager {
                                           re.hierarchylevel as 'level'
                                FROM	      {report_gen_company_manager} 	 re
                                WHERE	  re.managerid 		= :manager
-                                  AND     re.hierarchylevel = :lema
-                                  AND     re.levelzero    NOT IN ($notzero)
-                                  AND     re.levelone     NOT IN ($notone) 
-                                  AND     re.leveltwo     NOT IN ($nottwo) 
-                                  AND     re.levelthree   NOT IN ($nottre)";
+                                  AND     re.hierarchylevel = :lema ";
 
                     break;
             }//switch
@@ -1784,163 +1896,48 @@ class CompetenceManager {
             $sql = $sqlre . " UNION ALL " . $sqlma;
             $rdo = $DB->get_recordset_sql($sql,$params);
             if ($rdo) {
-                // Get previous values
-                $zero   = $competence->zero;
-                $one    = $competence->one;
-                $two    = $competence->two;
-                $three  = $competence->three;
-
                 foreach ($rdo as $instance) {
-                    // Zero
-                    $allzero[$instance->levelzero] = $instance->levelzero;
-                    $zero[$instance->levelzero] = $instance;
-                    // One
+                    if ($instance->levelzero) {
+                        $hierarchy->zero[$instance->levelzero]          = $instance->levelzero;
+                        $competence->levelzero[$instance->levelzero]    = $instance->levelzero;
+                    }
+
                     if ($instance->levelone) {
-                        $allone[$instance->levelone] = $instance->levelone;
-                        $one[$instance->levelzero][$instance->levelone] = $instance->levelone;
+                        $hierarchy->one[$instance->levelzero][$instance->levelone]          = $instance->levelone;
+                        $competence->levelone[$instance->levelzero][$instance->levelone]    = $instance->levelone;
                     }
 
-                    // Two
                     if ($instance->leveltwo) {
-                        $alltwo[$instance->leveltwo] = $instance->leveltwo;
-                        $two[$instance->levelone][$instance->leveltwo] = $instance->leveltwo;
+                        $hierarchy->two[$instance->levelone][$instance->leveltwo]       = $instance->leveltwo;
+                        $competence->leveltwo[$instance->levelone][$instance->leveltwo] = $instance->leveltwo;
                     }
 
-                    // Three
                     if ($instance->levelthree) {
-                        $allthree[$instance->levelthree] = $instance->levelthree;
-                        $three[$instance->leveltwo][$instance->levelthree] = $instance->levelthree;
+                        $hierarchy->three[$instance->leveltwo][$instance->levelthree]       = $instance->levelthree;
+                        $competence->levelthree[$instance->leveltwo][$instance->levelthree] = $instance->levelthree;
                     }
                 }//for
-
-                // New values
-                $competence->zero   = $zero;
-                $competence->one    = $one;
-                $competence->two    = $two;
-                $competence->three  = $three;
             }//if_rdo
+
+            return $hierarchy;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
     }//get_myreporter_competence_by_level
 
+
     /**
      * Description
-     * Extract one level from the report competence
+     * Get the report/manager view permissions to see the reports
      *
-     * @param           $competence
-     * @param           $level
-     * @param           $zero
-     * @param       null $one
-     * @param       null $two
-     *
-     * @return          array
-     * @throws          Exception
-     *
-     * @creationDate    29/09/2017
-     * @author          eFaktor     (fbv)
-     */
-    public static function extract_level_reporter_competence($competence,$level,$zero,$one=null,$two=null) {
-        /* Variables */
-        $keys       = null;
-        $myzero     = null;
-        $myones     = null;
-        $mytwo      = null;
-        $mythree    = null;
-        $mylevel    = null;
-
-        try {
-            switch ($level) {
-                case 0:
-                    // Get ones
-                    $myzero = $zero;
-                    $myones = ($competence->one ? $competence->one[$zero] : null);
-
-                    // Get two
-                    if ($myones) {
-                        $mytwo  = array();
-                        $keys   = array_intersect_key($myones,$competence->two);
-                        if ($keys) {
-                            foreach ($keys as $one) {
-                                foreach ($competence->two[$one] as $two) {
-                                    $mytwo[$two] = $two;
-                                }//for_competence_two
-                            }//for_keys
-                        }//if_keys
-                    }//if_ones
-
-                    // Get three
-                    if ($mytwo) {
-                        $mythree    = array();
-                        $keys       = array_intersect_key($mytwo,$competence->three);
-                        if ($keys) {
-                            foreach ($keys as $two) {
-                                foreach ($competence->three[$two] as $three) {
-                                    $mythree[$three] = $three;
-                                }//for_mytre
-                            }//for_two
-                        }//if_keys
-                    }//if_two
-
-                    $myones     = ($myones ? implode(',',$myones) : 0);
-                    $mytwo      = ($mytwo ? implode(',',$mytwo) : 0);
-                    $mythree    = ($mythree ? implode(',',$mythree) : 0);
-
-                    break;
-                case 1:
-                    // Get two
-                    $myzero = $zero;
-                    $myones = $one;
-                    $mytwo  = ($competence->two ? $competence->two[$one] : null);
-
-                    // Get three
-                    if ($mytwo) {
-                        $mythree    = array();
-                        $keys       = array_intersect_key($mytwo,$competence->three);
-                        if ($keys) {
-                            foreach ($keys as $two) {
-                                foreach ($competence->three[$two] as $three) {
-                                    $mythree[$three] = $three;
-                                }//for_mytre
-                            }//for_two
-                        }//if_keys
-                    }//if_two
-
-                    $mytwo      = ($mytwo ? implode(',',$mytwo) : 0);
-                    $mythree    = ($mythree ? implode(',',$mythree) : 0);
-
-                    break;
-                case 2:
-                    // Get three
-                    $myzero = $zero;
-                    $myones = $one;
-                    $mytwo  = $two;
-                    $mythree = ($competence->three ? $competence->three[$two] : null);
-
-                    $mythree    = ($mythree ? implode(',',$mythree) : 0);
-
-                    break;
-            }//switch_elvel
-
-            return array($myzero,$myones,$mytwo,$mythree);
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//extract_level_reporter_competence
-
-    /**
-     * @static
      * @param           $user_id
      * @param           $site_context
      * @return          int
      *
      * @creationDate    17/03/2015
      * @author          eFaktor     (fbV)
-     *
-     * Description
-     * Get the report/manager view permissions to see the reports
      */
-    private static function Get_MyLevelView($user_id,$site_context) {
+    private static function get_my_level_view($user_id,$site_context) {
         /* Variables    */
         $my_level = 4;
 
@@ -1990,6 +1987,6 @@ class CompetenceManager {
         }//if_else_level_zero
 
         return $my_level;
-    }//Get_MyLevelView
+    }//get_my_level_view
 }//CompetenceManager
 

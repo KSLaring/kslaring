@@ -2,8 +2,9 @@
 
 define('SAML_INTERNAL', 1);
 
-    try{
+global $CFG, $USER, $SAML_COURSE_INFO, $SESSION, $err, $DB, $PAGE;
 
+    try{
         // In order to avoid session problems we first do the SAML issues and then
         // we log in and register the attributes of user, but we need to read the value of the $CFG->dataroot
         $dataroot = null;
@@ -65,7 +66,12 @@ define('SAML_INTERNAL', 1);
         require_once('../../config.php');
         require_once('error.php');
 
-        global $err, $PAGE, $OUTPUT;
+        // Checking access
+        if (isguestuser($USER)) {
+            require_logout();
+            print_error('guestsarenotallowed');
+            die();
+        }
         $PAGE->set_url('/auth/saml/index.php');
         $PAGE->set_context(CONTEXT_SYSTEM::instance());
 
@@ -86,8 +92,6 @@ define('SAML_INTERNAL', 1);
     // We load all moodle config and libs
     require_once('../../config.php');
     require_once('error.php');
-
-    global $CFG, $USER, $SAML_COURSE_INFO, $SESSION, $err, $DB, $PAGE;
 
     $PAGE->set_url('/auth/saml/index.php');
     $PAGE->set_context(CONTEXT_SYSTEM::instance());
@@ -209,6 +213,7 @@ define('SAML_INTERNAL', 1);
             // To avoid logins from admin and guest
             $err['login'] = get_string("auth_saml_error_complete_user_data", "auth_saml", $username);
             auth_saml_error($err['login'], '?logout', $pluginconfig->samllogfile);
+            require_logout();
         }
         $user = complete_user_login($user);
 

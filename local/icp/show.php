@@ -13,24 +13,33 @@
 require_once('../../config.php');
 require_once('icplib.php');
 
+global $USER,$PAGE,$SITE,$OUTPUT;
+
 /* PARAMS   */
 $courseID       = required_param('id',PARAM_INT);
 $url            = new moodle_url('/local/icp/show.php',array('id' => $courseID));
 $urlIndex       = new moodle_url('/local/icp/index.php',array('id' => $courseID));
 $urlClean       = new moodle_url('/local/icp/clean.php',array('id' => $courseID));
 $return         = new moodle_url('/course/view.php',array('id' => $courseID));
-
 $totalCompleted     = null;
 $totalNotCompleted  = null;
 $tableInfo          = null;
 
 $context        = context_system::instance();
 $contextCourse  = context_course::instance($courseID);
-require_login($courseID);
 
+// Checking access
+require_login();
+if (isguestuser($USER)) {
+    require_logout();
+    print_error('guestsarenotallowed');
+    die();
+}
+require_login($courseID);
 
 require_capability('local/icp:manage',$contextCourse);
 
+// Page settings
 $PAGE->set_url($url);
 $PAGE->set_context($contextCourse);
 $PAGE->set_pagelayout('course');
@@ -39,12 +48,12 @@ $PAGE->set_heading($SITE->fullname);
 $PAGE->navbar->add(get_string('title_index','local_icp'),$urlIndex);
 $PAGE->navbar->add(get_string('users_inconsistencies','local_icp'),$url);
 
-/* Total Completed Inconsistencies      */
+// Total completed inconsistencies
 $totalCompleted     = InconsistenciesCompletions::GetTotalUsers_CompletedWithInconsistencies($courseID);
-/* Total Not Completed Inconsistencies  */
+// Total not completed inconsistencies
 $totalNotCompleted  = InconsistenciesCompletions::GetTotalUsers_NotCompletedWithInconsistencies($courseID);
 
-/* Header   */
+// Header
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('users_inconsistencies','local_icp'));
 
@@ -59,5 +68,5 @@ if (!$totalCompleted && !$totalNotCompleted) {
     echo "</br>";
 }
 
-/* Footer   */
+// Footer
 echo $OUTPUT->footer();

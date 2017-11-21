@@ -28,25 +28,23 @@
  *
  */
 
+global $CFG,$SESSION,$PAGE,$SITE,$OUTPUT,$USER;
+
 require_once('../../../config.php');
 require_once( '../managerlib.php');
 require_once('company_structurelib.php');
 require_once($CFG->libdir . '/adminlib.php');
 require_once('unlink_company_structure_form.php');
 
-/* Params */
+// Params
 $company_id     = required_param('id',PARAM_INT);
 $url            = new moodle_url('/report/manager/company_structure/unlink_company_structure.php',array('id' => $company_id));
 $index_url      = new moodle_url('/report/manager/index.php');
 $returnUrl      = new moodle_url('/report/manager/company_structure/company_structure.php');
-$parents        = $SESSION->parents;
 $params         = array();
-
-
-/* Start the page */
 $site_context = context_system::instance();
 
-//HTTPS is required in this page when $CFG->loginhttps enabled
+// Page settings
 $PAGE->https_required();
 $PAGE->set_context($site_context);
 $PAGE->set_pagelayout('report');
@@ -57,8 +55,14 @@ $PAGE->navbar->add(get_string('report_manager','report_manager'),$index_url);
 $PAGE->navbar->add(get_string('company_structure','report_manager'),$returnUrl);
 $PAGE->navbar->add(get_string('unlink_title','report_manager'));
 
-/* ADD require_capability */
-if (!CompetenceManager::IsSuperUser($USER->id)) {
+// Checking access
+require_login();
+if (isguestuser($USER)) {
+    require_logout();
+    print_error('guestsarenotallowed');
+    die();
+}
+if (!CompetenceManager::is_super_user($USER->id)) {
     require_capability('report/manager:edit', $site_context);
 }//if_SuperUser
 
@@ -70,7 +74,10 @@ if (empty($CFG->loginhttps)) {
 
 $PAGE->verify_https_required();
 
-/* Return Url   */
+// Parents
+$parents        = $SESSION->parents;
+
+// Return url
 $levelZero  = COMPANY_STRUCTURE_LEVEL . 0;
 $levelOne   = COMPANY_STRUCTURE_LEVEL . 1;
 $levelTwo   = COMPANY_STRUCTURE_LEVEL . 2;
@@ -89,14 +96,14 @@ if (isset($parents[3]) && $parents[3]) {
 }
 $returnUrl = new moodle_url('/report/manager/company_structure/company_structure.php',$params);
 
-/* Form */
+// Form
 $form = new unlink_company_structure_form(null,array($company_id));
 if ($form->is_cancelled()) {
     $_POST = array();
     redirect($returnUrl);
 }else if($data = $form->get_data()) {
     /* Unlink Company and Parent    */
-    company_structure::Unlink_Company($company_id,$data->parent_sel);
+    //company_structure::Unlink_Company($company_id,$data->parent_sel);
 
     $_POST = array();
     redirect($returnUrl);

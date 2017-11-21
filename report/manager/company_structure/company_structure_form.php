@@ -158,7 +158,7 @@ class manager_company_structure_form extends moodleform {
             }
         
             // Public or private
-            $form->addElement('checkbox', 'public_' . $level,'',get_string('public', 'report_manager'),'disabled ');
+            $form->addElement('checkbox', 'public_' . $level,'',get_string('public', 'report_manager'),'disabled');
 
             // Mapped with
             $class = 'label_mapped_hidden';
@@ -297,7 +297,7 @@ class manager_company_structure_form extends moodleform {
         switch ($level) {
             case 0:
                 /* Companies for Level Zero */
-                $options    = CompetenceManager::GetCompanies_LevelList($level,0,$myCompanies);
+                $options    = CompetenceManager::get_companies_level_list($level,0,$myCompanies);
 
                 break;
             default:
@@ -306,11 +306,11 @@ class manager_company_structure_form extends moodleform {
 
                 /* Companies for the current level */
                 if ($parent) {
-                    $options = CompetenceManager::GetCompanies_LevelList($level,$parent,$myCompanies);
+                    $options = CompetenceManager::get_companies_level_list($level,$parent,$myCompanies);
                 }else {
                     /* Check if there is only one company */
                     if (isset($SESSION->onlyCompany)) {
-                        $options = CompetenceManager::GetCompanies_LevelList($level,$SESSION->onlyCompany[$level-1],$myCompanies);
+                        $options = CompetenceManager::get_companies_level_list($level,$SESSION->onlyCompany[$level-1],$myCompanies);
                     }else {
                         $options[0] = get_string('select_level_list','report_manager');
                     }

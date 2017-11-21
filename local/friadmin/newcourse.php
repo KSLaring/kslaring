@@ -28,8 +28,16 @@
 
 require_once('../../config.php');
 require_once('classes/newcourse_form.php');
-require_login();
 
+global $USER,$PAGE,$SITE,$OUTPUT;
+
+require_login();
+// Checking access
+if (isguestuser($USER)) {
+    require_logout();
+    print_error('guestsarenotallowed');
+    die();
+}
 /* PARAMS   */
 $url            = new moodle_url('/local/friadmin/newcourse.php');
 $return_url     = new moodle_url('/my/index.php');

@@ -69,16 +69,14 @@ switch ($type) {
         $categories   = course_report::get_my_categories_by_depth($depth,$parentcat);
 
         // set data to send javascript
-        $data       = array('categories' => array(),'parentcat' => null);
+        $data   = array('categories' => array(),'parentcat' => null);
         if ($categories) {
             foreach ($categories as $id => $category) {
-                if ($id != 0) {
-                    $key = "'" . $category . "'#" . $id;
-                }else {
-                    $key = $id;
-                }
-                $data['categories'][$key] = $category;
+                $info       = new stdClass();
+                $info->id   = $id;
+                $info->name = $category;
 
+                $data['categories'][$info->id] = $info;
             }
         }//if_lstcategories
 
@@ -97,13 +95,11 @@ switch ($type) {
         $data   = array('mycourses' => array());
         if ($courses) {
             foreach ($courses as $id => $course) {
-                if ($id != 0) {
-                    $key = "'" . $course . "'#" . $id;
-                }else {
-                    $key = $id;
-                }
-                $data['mycourses'][$key] = $course;
+                $info       = new stdClass();
+                $info->id   = $id;
+                $info->name = $course;
 
+                $data['mycourses'][$info->id] = $info;
             }
         }//if_lstcategories
 

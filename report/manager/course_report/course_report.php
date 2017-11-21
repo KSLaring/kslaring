@@ -38,14 +38,20 @@ require_once( 'courserptlib.php');
 require_once( '../managerlib.php');
 require_once($CFG->libdir . '/adminlib.php');
 
-require_login();
-
 // Params
 $url        = new moodle_url('/report/manager/course_report/course_report.php');
 $return_url = new moodle_url('/report/manager/index.php');
 
 $site_context = CONTEXT_SYSTEM::instance();
 $site = get_site();
+
+// Checking access
+require_login();
+if (isguestuser($USER)) {
+    require_logout();
+    print_error('guestsarenotallowed');
+    die();
+}
 
 // Page settings
 $PAGE->https_required();
@@ -58,6 +64,7 @@ $PAGE->set_title($SITE->fullname);
 $PAGE->set_heading($SITE->fullname);
 $PAGE->navbar->add(get_string('report_manager','local_tracker_manager'),$return_url);
 $PAGE->navbar->add(get_string('course_report', 'report_manager'),$url);
+
 
 if (empty($CFG->loginhttps)) {
     $secure_www_root = $CFG->wwwroot;
@@ -72,9 +79,10 @@ unset($SESSION->parents);
 unset($SESSION->selection);
 
 // Capability
-if (!CompetenceManager::IsReporter($USER->id)) {
+if (!CompetenceManager::is_reporter($USER->id)) {
     require_capability('report/manager:viewlevel3', $site_context);
 }
+
 
 // Header
 echo $OUTPUT->header();
@@ -89,7 +97,7 @@ echo $OUTPUT->heading(get_string('course_report', 'report_manager'));
 
 // Levels report links
 course_report::CleanTemporary();
-CompetenceManager::GetLevelLink_ReportPage('course_report',$site_context);
+CompetenceManager::get_level_link_report_page('course_report',$site_context);
 
 echo "</br>";
 echo "<a href='" . $return_url ."' class='button_reports'>" . get_string('back') . "</a>";

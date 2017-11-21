@@ -26,9 +26,17 @@
 
 require_once(__DIR__ . '/../../config.php');
 
+global $USER,$PAGE;
+
 $courseid = required_param('id', PARAM_INT);
 
 require_login();
+// Checking access
+if (isguestuser($USER)) {
+    require_logout();
+    print_error('guestsarenotallowed');
+    die();
+}
 
 $friadmin = new local_friadmin\friadmin();
 

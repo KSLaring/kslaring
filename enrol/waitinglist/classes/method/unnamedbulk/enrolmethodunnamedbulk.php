@@ -1057,7 +1057,7 @@ class enrolmethodunnamedbulk extends \enrol_waitinglist\method\enrolmethodbase {
                         $ret = array(true,$message);
                     }else {
                         $message = $OUTPUT->box($enrolstatus);
-                        $company = \CompetenceManager::GetCompany_Name($data->level_3);
+                        $company = \CompetenceManager::get_company_name($data->level_3);
 
                         $redirect = $CFG->wwwroot . '/index.php';
                         $out = '<div>';

@@ -28,23 +28,29 @@
  *
  */
 
+global $CFG,$SESSION,$PAGE,$USER,$SITE,$OUTPUT;
+
 require_once('../../../config.php');
 require_once( 'jobrolelib.php');
 require_once('../managerlib.php');
 require_once($CFG->libdir . '/adminlib.php');
 
-require_login();
-
-/* PARAMS */
+// Params
 $url        = new moodle_url('/report/manager/job_role/job_role.php');
 $return_url = new moodle_url('/report/manager/index.php');
 $superUser      = false;
 $myAccess       = null;
+$site_context   = CONTEXT_SYSTEM::instance();
 
+// Checking access
+require_login();
+if (isguestuser($USER)) {
+    require_logout();
+    print_error('guestsarenotallowed');
+    die();
+}
 
-/* Start the page */
-$site_context = CONTEXT_SYSTEM::instance();
-//HTTPS is required in this page when $CFG->loginhttps enabled
+// Page settings
 $PAGE->https_required();
 $PAGE->set_pagelayout('report');
 $PAGE->set_url($url);
@@ -52,10 +58,10 @@ $PAGE->set_context($site_context);
 $PAGE->set_title($SITE->fullname);
 $PAGE->set_heading($SITE->fullname);
 
-/* Info Super Users */
-$superUser  = CompetenceManager::IsSuperUser($USER->id);
-$myAccess   = CompetenceManager::Get_MyAccess($USER->id);
-
+// Super user
+$superUser  = CompetenceManager::is_super_user($USER->id);
+$myAccess   = CompetenceManager::get_my_access($USER->id);
+// Capability
 if (!$superUser) {
     require_capability('report/manager:edit', $site_context);
     $PAGE->navbar->add(get_string('report_manager','local_tracker_manager'),$return_url);
@@ -73,30 +79,27 @@ if (empty($CFG->loginhttps)) {
 
 $PAGE->verify_https_required();
 
-/* Print Header */
+// Header
 echo $OUTPUT->header();
-/* Print tabs at the top */
+// Tabs
 $current_tab = 'job_roles';
 $show_roles = 1;
 require('../tabs.php');
 
-
-/* Get Job Role List */
+// Job role list
 $job_roles = job_role::JobRole_With_Outcomes($superUser,$myAccess);
 
-/* Add Levels Links */
+// Add jr link
 $url_edit = new moodle_url('/report/manager/job_role/add_job_role.php');
 echo $OUTPUT->action_link($url_edit,get_string('add_job_role','report_manager'));
 
 if (empty($job_roles)) {
-    /* Print Title */
     echo $OUTPUT->heading(get_string('available_job_roles', 'report_manager'));
     echo '<p>' . get_string('no_job_roles_available', 'report_manager') . '</p>';
 }else {
-    /* Print Title */
     echo $OUTPUT->heading(get_string('job_roles', 'report_manager'));
 
-    /* Add Levels Links */
+    // Job role table
     $url_edit = new moodle_url('/report/manager/job_role/add_job_role.php');
     $table = job_role::JobRoles_table($job_roles,$superUser);
 
@@ -105,5 +108,5 @@ if (empty($job_roles)) {
 
 echo $OUTPUT->action_link($url_edit,get_string('add_job_role','report_manager'));
 
-/* Print Footer */
+// Footer
 echo $OUTPUT->footer();

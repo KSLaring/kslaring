@@ -13,31 +13,38 @@
 require_once( '../../../../config.php');
 require_once('../lib/slaveslib.php');
 
-/* PARAMS */
+global $USER,$PAGE,$OUTPUT;
+
+// Params
 $url        = new moodle_url('/local/wsks/slaves/classes/slaves.php');
 $context    = context_system::instance();
 $lstSlaves  = null;
-require_login();
 
-/* Capability   */
+// Checking access
+require_login();
+if (isguestuser($USER)) {
+    require_logout();
+    print_error('guestsarenotallowed');
+    die();
+}
+
+// Capability
 require_capability('local/wsks:manage',$context);
 
-/* Start Page */
+// Start page
 $PAGE->set_url($url);
 $PAGE->set_pagelayout('admin');
 $PAGE->set_context($context);
 
-/**
- * Slaves Systems
- */
+// Slaves systems
 $lstSlaves = Slaves::GetSlavesSystems();
 $out = Slaves::Display_SlavesSystems($lstSlaves);
 
-/* Print Header */
+// Header
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('lst_slaves','local_wsks'));
 
 echo $out;
 
-/* Print Footer */
+// Footer
 echo $OUTPUT->footer();

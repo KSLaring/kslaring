@@ -36,9 +36,17 @@ require_once('../../../config.php');
 require_once('locationslib.php');
 require_once('locations_form.php');
 
-require_login();
+global $USER,$PAGE,$SITE,$OUTPUT,$CFG;
 
-/* PARAMS   */
+require_login();
+// Checking access
+if (isguestuser($USER)) {
+    require_logout();
+    print_error('guestsarenotallowed');
+    die();
+}
+
+// Params
 $url            = new moodle_url('/local/friadmin/course_locations/add_location.php');
 $return_url     = new moodle_url('/local/friadmin/course_locations/index.php');
 $context        = context_system::instance();
@@ -60,6 +68,7 @@ if (!has_capability('local/friadmin:course_locations_manage',$context)) {
     }//if_superuser
 }
 
+// Page settings
 $PAGE->set_url($url);
 $PAGE->set_context($context);
 $PAGE->set_pagelayout('admin');
@@ -69,21 +78,21 @@ $PAGE->navbar->add(get_string('plugin_course_locations','local_friadmin'),$retur
 $PAGE->navbar->add(get_string('new_location','local_friadmin'),$url);
 $PAGE->requires->js('/local/friadmin/course_locations/js/locations.js');
 
-/* Get My Competence Locations  */
+// Get locations connected with the competence
 $myCompetence = CourseLocations::Get_MyCompetence($USER->id);
 
-/* Editor Options */
+// Editor options
 $edit_options   = array('maxfiles' => 0, 'maxbytes'=>$CFG->maxbytes, 'trusttext'=>false, 'noclean'=>true, 'context' => $context);
-/* Prepare the editor   */
+// Prepare editor
 $location_info = new stdClass();
 $location_info->description            = '';
 $location_info->descriptionformat      = FORMAT_HTML;
 $location_info = file_prepare_standard_editor($location_info, 'description', $edit_options,$context, 'local', 'course_locations',0);
 
-/* Check if it's admin          */
+// Check if it is admin user
 $IsAdmin = is_siteadmin($USER->id);
 
-/* Form */
+// Form
 $form = new add_location_form(null,array($myCompetence,$IsAdmin,$edit_options));
 if ($form->is_cancelled()) {
     setcookie('parentCounty',0);
@@ -93,16 +102,16 @@ if ($form->is_cancelled()) {
     $_POST = array();
     redirect($return_url);
 }else if($data = $form->get_data()) {
-    /* Get Data */
+    // Get data
     $dataForm = (Array)$data;
 
-    /* Get Editor Info  */
+    // Get editor info
     $location_info->description_editor   = $dataForm['description_editor'];
     $location_info->description          = '';
     $location_info           = file_postupdate_standard_editor($location_info, 'description', $edit_options, $context, 'local', 'course_locations', 0);
     $dataForm['description'] = $location_info->description;
 
-    /* Add New Location */
+    // Add new location
     CourseLocations::Add_NewLocation($dataForm,$USER->id);
 
     setcookie('parentCounty',0);
@@ -113,7 +122,7 @@ if ($form->is_cancelled()) {
     redirect($url);
 }//if_cancel
 
-/* Header   */
+// Header
 echo $OUTPUT->header();
 
 if ($myCompetence && !$myCompetence->levelZero && !$IsAdmin) {
@@ -122,6 +131,5 @@ if ($myCompetence && !$myCompetence->levelZero && !$IsAdmin) {
     $form->display();
 }
 
-
-/* Footer   */
+// Footer
 echo $OUTPUT->footer();

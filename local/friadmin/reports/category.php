@@ -47,6 +47,13 @@ $url            = new moodle_url('/local/friadmin/reports/category.php');
 $PAGE->set_context($context);
 $PAGE->set_url($url);
 
+// Checking access
+if (isguestuser($USER)) {
+    require_logout();
+    print_error('guestsarenotallowed');
+    die();
+}
+
 // Access
 require_login();
 require_sesskey();

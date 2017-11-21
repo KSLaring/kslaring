@@ -64,10 +64,10 @@ class EmployeeReport {
         try {
 
             /* Job Roles connected to the level Three    */
-            if (CompetenceManager::IsPublic($levelThree)) {
-                CompetenceManager::GetJobRoles_Generics($job_roles);
+            if (CompetenceManager::is_public($levelThree)) {
+                CompetenceManager::get_jobroles_generics($job_roles);
             }//if_isPublic
-            CompetenceManager::GetJobRoles_Hierarchy($job_roles,3,$levelZero,$levelOne,$levelTwo,$levelThree);
+            CompetenceManager::get_jobroles_hierarchy($job_roles,3,$levelZero,$levelOne,$levelTwo,$levelThree);
 
             /* Outcome Courses  */
             if ($job_roles) {
@@ -121,12 +121,12 @@ class EmployeeReport {
 
         try {
             /* My Users     */
-            $my_users = CompetenceManager::GetUsers_MyCompanies($company,$USER->id);
+            $my_users = CompetenceManager::get_users_my_companies($company,$USER->id);
 
             /* Employee Tracker */
             $employeeTracker = new stdClass();
             $employeeTracker->levelThree         = $company;
-            $employeeTracker->name               = CompetenceManager::GetCompany_Name($company);
+            $employeeTracker->name               = CompetenceManager::get_company_name($company);
             $employeeTracker->users              = null;
             $employeeTracker->outcome            = self::Get_DetailOutcome($outcome);
 
@@ -198,7 +198,7 @@ class EmployeeReport {
                     $out_report .= '</h5>';
 
                     /* Expiration Before    */
-                    $options = CompetenceManager::GetCompletedList();
+                    $options = CompetenceManager::get_completed_list();
                     $out_report .= html_writer::start_div('expiration');
                         $out_report .= get_string('expired_next', 'report_manager') . ': ' .  $options[$completed_list];
                     $out_report .= html_writer::end_div();//expiration
@@ -620,7 +620,7 @@ class EmployeeReport {
                                         $content .= '<u>' . get_string('outcome_course_expired','local_tracker_manager') . '</u>';
                                     $content .= html_writer::end_tag('td');
                                 }else {
-                                    $expiration_time = CompetenceManager::Get_CompletedDate_Timestamp($completed_time,true);
+                                    $expiration_time = CompetenceManager::get_completed_date_timestamp($completed_time,true);
                                     if ($ts < $expiration_time) {
                                         $content .= html_writer::start_tag('td',array('class' => 'valid'));
                                             $content .= '<u>' . get_string('outcome_valid_until','local_tracker_manager') . '</u>: ' . '</br>' . userdate($ts,'%d.%m.%Y',99,false);

@@ -43,23 +43,32 @@
  *
  */
 
+global $CFG,$SESSION,$PAGE,$USER,$SITE,$OUTPUT;
+
 require_once('../../../config.php');
 require_once( 'jobrolelib.php');
 require_once('../managerlib.php');
 require_once('edit_job_role_form.php');
 require_once($CFG->libdir . '/adminlib.php');
 
-/* Params */
+// Params
 $job_role_id    = required_param('id',PARAM_INT);
 $return_url     = new moodle_url('/report/manager/job_role/job_role.php');
 $url            = new moodle_url('/report/manager/job_role/edit_job_role.php',array('id' => $job_role_id));
 $return         = new moodle_url('/report/manager/index.php');
 $superUser      = false;
 $myAccess       = null;
+$site_context   = CONTEXT_SYSTEM::instance();
 
-/* Start the page */
-$site_context = CONTEXT_SYSTEM::instance();
-//HTTPS is required in this page when $CFG->loginhttps enabled
+// Checking access
+require_login();
+if (isguestuser($USER)) {
+    require_logout();
+    print_error('guestsarenotallowed');
+    die();
+}
+
+// Page settings
 $PAGE->https_required();
 $PAGE->set_pagelayout('report');
 $PAGE->set_url($url);
@@ -69,22 +78,21 @@ $PAGE->set_heading($SITE->fullname);
 $PAGE->navbar->add(get_string('job_roles', 'report_manager'),$return_url);
 $PAGE->navbar->add(get_string('edit_job_roles', 'report_manager'));
 
-/* Info Super Users */
-$superUser  = CompetenceManager::IsSuperUser($USER->id);
-$myAccess   = CompetenceManager::Get_MyAccess($USER->id);
-
-/* Check permissions */
+// Super users
+$superUser  = CompetenceManager::is_super_user($USER->id);
+$myAccess   = CompetenceManager::get_my_access($USER->id);
+// Capability
 if (!$superUser) {
     require_capability('report/manager:edit', $site_context);
     $PAGE->navbar->add(get_string('report_manager','local_tracker_manager'),$return);
 }else {
-    /* Check job role is valid  */
+    // Check job role is valid
     if (!job_role::CheckJobRoleAccess($myAccess,$job_role_id)){
         print_error('nopermissions', 'error', '', 'report/manager:edit');
     }
 }//if_SuperUser
 
-/* Security */
+// Security
 if (empty($CFG->loginhttps)) {
     $secure_www_root = $CFG->wwwroot;
 } else {
@@ -93,29 +101,29 @@ if (empty($CFG->loginhttps)) {
 
 $PAGE->verify_https_required();
 
-/* Job Role Info    */
+// Info job role
 $jr_info = job_role::JobRole_Info($job_role_id);
-/* Form     */
+
+// Form
 $form = new manager_edit_job_role_form(null,array($jr_info,$myAccess));
 if ($form->is_cancelled()) {
-
     $_POST = array();
     redirect($return_url);
 }else if($data = $form->get_data()) {
-    /* Update New Job Role */
+    // Update job role
     job_role::Update_JobRole($data);
 
     $_POST = array();
     redirect($return_url);
 }//if_else
 
-/* Print Header */
+// Header
 echo $OUTPUT->header();
 
 $form->display();
 
-/* Initialise Organization Structure    */
-CompetenceManager::Init_Organization_Structure(COMPANY_STRUCTURE_LEVEL,null,null,$superUser,$myAccess,false);
+// Initialise Organization Structure
+CompetenceManager::init_organization_structure(COMPANY_STRUCTURE_LEVEL,null,null,$superUser,$myAccess,false);
 
-/* Print Footer */
+// Footer
 echo $OUTPUT->footer();

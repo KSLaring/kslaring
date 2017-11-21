@@ -32,7 +32,9 @@ define('AJAX_SCRIPT', true);
 require_once('../../config.php');
 require_once('managerlib.php');
 
-/* PARAMS   */
+global $PAGE,$USER,$OUTPUT;
+
+// Params
 $parent         = optional_param('parent',0,PARAM_INT);
 $levelZero      = optional_param('levelZero',0,PARAM_INT);
 $level          = required_param('level',PARAM_INT);
@@ -49,6 +51,7 @@ $IsReporter     = null;
 
 $json           = array();
 $data           = array();
+$options        = array();
 $info           = null;
 
 $context        = context_system::instance();
@@ -57,18 +60,23 @@ $url            = new moodle_url('/report/manager/organization.php');
 $PAGE->set_context($context);
 $PAGE->set_url($url);
 
-/* Check the correct access */
+// Checking access
 require_login();
+if (isguestuser($USER)) {
+    require_logout();
+    print_error('guestsarenotallowed');
+    die();
+}
 require_sesskey();
 
 echo $OUTPUT->header();
 
-/* Get Companies connected with super user  */
+// Comapnies connected with super user
 if ($superUser) {
-    $myAccess   = CompetenceManager::Get_MyAccess($USER->id);
+    $myAccess   = CompetenceManager::get_my_access($USER->id);
 }//if_superUser
 
-/* Get Data */
+// Get data
 $data       = array('name' => COMPANY_STRUCTURE_LEVEL . $level, 'items' => array(),'clean' => array());
 $toClean    = array();
 
@@ -129,12 +137,12 @@ switch ($level) {
 }//switch
 $data['clean'] = $toClean;
 
-/* Get Companies List   */
+// Company list
 if ($parent) {
     if ($superUser) {
-        $options = CompetenceManager::GetCompanies_LevelList($level,$parent,$myLevelAccess);
+        $options = CompetenceManager::get_companies_level_list($level,$parent,$myLevelAccess);
     }else {
-        $options = CompetenceManager::GetCompanies_LevelList($level,$parent);
+        $options = CompetenceManager::get_companies_level_list($level,$parent);
     }
 
 }else {
@@ -142,21 +150,22 @@ if ($parent) {
     $options[0] = get_string('select_level_list','report_manager');
 }//if_parent
 
-foreach ($options as $companyId => $company) {
+if ($options) {
+    foreach ($options as $companyId => $company) {
+        /* Info Company */
+        $info            = new stdClass;
+        $info->id        = $companyId;
+        $info->name      = $company;
 
-    /* Info Company */
-    $info            = new stdClass;
-    $info->id        = $companyId;
-    $info->name      = $company;
-
-    /* Add Company*/
-    $data['items'][$info->name] = $info;
+        /* Add Company*/
+        $data['items'][$info->name] = $info;
+    }
 }
 
 $extra = CompetenceManager::get_extra_info_company($parent);
 $data['extra'] = $extra;
 
-/* Encode and Send */
+// Send data
 $json[] = $data;
 echo json_encode(array('results' => $json));
 

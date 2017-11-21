@@ -1,5 +1,7 @@
 <?php
 
+global $CFG,$USER,$PAGE,$OUTPUT,$DB,$SITE;
+
 /* Imports */
 require_once("../../config.php");
 require_once($CFG->dirroot.'/repository/lib.php');
@@ -30,12 +32,15 @@ $url = new moodle_url('/local/background_image/editimage.php', array(
     'mode' => $formdata->mode));
 
 require_login();
-if (isguestuser()) {
-    die();
+
+// Checking access
+if (isguestuser($USER)) {
+    require_logout();
 }
 
 $PAGE->set_url($url);
 $PAGE->set_context($context);
+
 
 /* Functional part. Create the form and display it, handle results, etc */
 $options = array(

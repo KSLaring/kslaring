@@ -574,7 +574,7 @@ class company_structure {
                 $params['parent_public'] = $instance->public;
 
                 // Level One
-                $levelOne = CompetenceManager::GetCompanies_LevelList(1,$data->company);
+                $levelOne = CompetenceManager::get_companies_level_list(1,$data->company);
                 unset($levelOne[0]);
                 $levelOne = implode(',',array_keys($levelOne));
                 if ($levelOne) {
@@ -586,7 +586,7 @@ class company_structure {
                     $DB->execute($sqlUpdate,$params);
 
                     // Level Two
-                    $levelTwo = CompetenceManager::GetCompanies_LevelList(2,$levelOne);
+                    $levelTwo = CompetenceManager::get_companies_level_list(2,$levelOne);
                     unset($levelTwo[0]);
                     $levelTwo = implode(',',array_keys($levelTwo));
                     if ($levelTwo) {
@@ -598,7 +598,7 @@ class company_structure {
                         $DB->execute($sqlUpdate,$params);
 
                         // Level Three
-                        $levelTre = CompetenceManager::GetCompanies_LevelList(3,$levelTwo);
+                        $levelTre = CompetenceManager::get_companies_level_list(3,$levelTwo);
                         unset($levelTre[0]);
                         $levelTre = implode(',',array_keys($levelTre));
                         if ($levelTre) {

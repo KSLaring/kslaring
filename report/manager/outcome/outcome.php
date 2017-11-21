@@ -28,19 +28,18 @@
  *
  */
 
+global $CFG,$SESSION,$PAGE,$USER,$SITE,$OUTPUT;
+
 require_once('../../../config.php');
 require_once( 'outcomelib.php');
 require_once($CFG->libdir . '/adminlib.php');
 
-require_login();
-
-/* PARAMS   */
+// Params
 $url        = new moodle_url('/report/manager/outcome/outcome.php');
 $return_url = new moodle_url('/report/manager/index.php');
-
-/* Start the page */
 $site_context = CONTEXT_SYSTEM::instance();
-//HTTPS is required in this page when $CFG->loginhttps enabled
+
+// Page settings
 $PAGE->https_required();
 $PAGE->set_pagelayout('report');
 $PAGE->set_url($url);
@@ -52,7 +51,13 @@ $PAGE->navbar->add(get_string('outcome', 'report_manager'),$url);
 
 unset($SESSION->parents);
 
-/* ADD require_capability */
+// Checking access
+require_login();
+if (isguestuser($USER)) {
+    require_logout();
+    print_error('guestsarenotallowed');
+    die();
+}
 if (!has_capability('report/manager:edit', $site_context)) {
     print_error('nopermissions', 'error', '', 'report/manager:edit');
 }
@@ -65,27 +70,25 @@ if (empty($CFG->loginhttps)) {
 
 $PAGE->verify_https_required();
 
-/* Print Header */
+// Header
 echo $OUTPUT->header();
-/* Print tabs at the top */
+// Tabs
 $current_tab = 'outcomes';
 $show_roles = 1;
 require('../tabs.php');
 
-/* Get Outcome List */
+// Outcome list
 $outcome_list = outcome::Outcomes_With_JobRoles();
 
 if (empty($outcome_list)) {
-    /* Print Title */
     echo $OUTPUT->heading(get_string('available_outcomes', 'report_manager'));
     echo '<p>' . get_string('no_outcomes_available', 'report_manager') . '</p>';
 }else {
-    /* Print Title */
     echo $OUTPUT->heading(get_string('outcome', 'report_manager'));
     $table = outcome::Outcomes_Table($outcome_list);
 
     echo html_writer::table($table);
 }//if_else
 
-/* Print Footer */
+// Footer
 echo $OUTPUT->footer();

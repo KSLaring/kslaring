@@ -35,9 +35,17 @@ require_once('../../../config.php');
 require_once('locationslib.php');
 require_once('locations_form.php');
 
-require_login();
+global $USER,$PAGE,$SITE,$OUTPUT,$CFG,$SESSION;
 
-/* PARAMS   */
+require_login();
+// Checking access
+if (isguestuser($USER)) {
+    require_logout();
+    print_error('guestsarenotallowed');
+    die();
+}
+
+// Params
 $url            = new moodle_url('/local/friadmin/course_locations/index.php');
 $url_view       = new moodle_url('/local/friadmin/course_locations/locations.php');
 $context        = context_system::instance();
@@ -57,6 +65,7 @@ if (!has_capability('local/friadmin:course_locations_manage',$context)) {
     }//if_superuser
 }
 
+// Page settings
 $PAGE->set_url($url);
 $PAGE->set_context($context);
 $PAGE->set_pagelayout('admin');
@@ -77,23 +86,23 @@ if (isset($SESSION->act)) {
     $SESSION->act = null;
 }
 
-/* Clean Cookies    */
+// Clean cookies
 setcookie('dir','ASC');
 setcookie('field','');
 
-/* Check if it's admin          */
+// Check if it´s admin
 $IsAdmin = is_siteadmin($USER->id);
 
-/* Get My Competence Locations  */
+// Get locations connected with the competence
 $myCompetence = CourseLocations::Get_MyCompetence($USER->id);
 
-/* Form */
+// Form
 $form = new locations_search_form(null,array($myCompetence,$IsAdmin));
 if($data = $form->get_data()) {
-    /* Get Data */
+    // Get data
     $dataForm = (Array)$data;
 
-    /* Get the filter - Search Criteria */
+    // Get filter - Search criteria
     $SESSION->county   = $dataForm[COURSE_LOCATION_COUNTY];
     if (isset($dataForm[COURSE_LOCATION_MUNICIPALITY]) && $dataForm[COURSE_LOCATION_MUNICIPALITY]) {
         $SESSION->muni     = $dataForm[COURSE_LOCATION_MUNICIPALITY];
@@ -111,10 +120,10 @@ if($data = $form->get_data()) {
     redirect($url_view);
 }//if_cancel
 
-/* Header   */
+// Header
 echo $OUTPUT->header();
 
-/* Table with locations */
+// Table with locations
 echo $OUTPUT->heading(get_string('filter','local_friadmin'));
 
 if (!$myCompetence) {
@@ -125,5 +134,5 @@ if (!$myCompetence) {
     $form->display();
 }
 
-/* Footer   */
+// Footer
 echo $OUTPUT->footer();

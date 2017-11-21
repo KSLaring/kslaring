@@ -36,18 +36,14 @@ require_once( 'courserptlib.php');
 require_once( '../managerlib.php');
 require_once('course_report_level_form.php');
 
-// Params
 global $PAGE,$CFG,$SESSION,$SITE,$USER,$OUTPUT;
+
+// Params
 $report_level           = optional_param('rpt',0,PARAM_INT);
-$course                 = optional_param('c',0,PARAM_INT);
 $company_id             = optional_param('co',0,PARAM_INT);
 $parentTwo              = optional_param('lt',0,PARAM_INT);
 $parentOne              = optional_param('lo',0,PARAM_INT);
-$parentZero             = optional_param('lz',0,PARAM_INT);
 $completed_option       = optional_param('opt',0,PARAM_INT);
-$parentcat              = optional_param('parentcat', 0,PARAM_INT);
-$depth                  = optional_param('depth', 1,PARAM_INT);
-$back                   = optional_param('re',0,PARAM_INT);
 $return_url             = new moodle_url('/report/manager/course_report/course_report.php',array('rpt' => $report_level));
 $url                    = new moodle_url('/report/manager/course_report/course_report_level.php',array('rpt' => $report_level));
 $course_report          = null;
@@ -61,7 +57,13 @@ $site = get_site();
 // Report
 $out     = '';
 
+// Checking access
 require_login();
+if (isguestuser($USER)) {
+    require_logout();
+    print_error('guestsarenotallowed');
+    die();
+}
 
 $PAGE->requires->js(new moodle_url('/report/manager/js/tracker.js'));
 $PAGE->https_required();
@@ -77,7 +79,7 @@ $PAGE->navbar->add(get_string('course_report', 'report_manager'),$return_url);
 $PAGE->navbar->add(get_string('level_report','report_manager',$report_level),$url);
 
 // Require capabilty
-$IsReporter = CompetenceManager::IsReporter($USER->id);
+$IsReporter = CompetenceManager::is_reporter($USER->id);
 CompetenceManager::check_capability_reports($IsReporter,$report_level,$site_context);
 
 if (empty($CFG->loginhttps)) {
@@ -90,12 +92,10 @@ if (empty($CFG->loginhttps)) {
 $PAGE->verify_https_required();
 
 // My hierarchy
-$myHierarchy = CompetenceManager::get_MyHierarchyLevel($USER->id,$site_context,$IsReporter,$report_level);;
+$myHierarchy = CompetenceManager::get_my_hierarchy_level($USER->id,$site_context,$IsReporter,$report_level);
 
 // Show form
 $SESSION->onlyCompany = array();
-
-
 if ($company_id) {
     $data_form = array();
     if (isset($SESSION->job_roles)) {
@@ -106,27 +106,30 @@ if ($company_id) {
 
     $data_form['rpt']                               = $report_level;
     $data_form[COURSE_REPORT_FORMAT_LIST]           = COURSE_REPORT_FORMAT_SCREEN;
-    $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'0'] = $parentZero;
+    $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'0'] = $USER->levelZero;
     $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'1'] = $parentOne;
     $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'2'] = $parentTwo;
     $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'3'] = array($company_id => $company_id);
+    $data_form[REPORT_MANAGER_COURSE_LIST]          = $USER->courseReport;
     $data_form[REPORT_MANAGER_COMPLETED_LIST]       = $completed_option;
-    $data_form[REPORT_MANAGER_COURSE_LIST]          = $course;
 
     // Keep selection data --> when it returns to the main page
     $SESSION->selection = array();
-    $SESSION->selection[MANAGER_COURSE_STRUCTURE_LEVEL . '0']   = $parentZero;
-    $SESSION->selection[MANAGER_COURSE_STRUCTURE_LEVEL . '1']   = $parentZero;
+    $SESSION->selection[MANAGER_COURSE_STRUCTURE_LEVEL . '0']   = $USER->levelZero;
+    $SESSION->selection[MANAGER_COURSE_STRUCTURE_LEVEL . '1']   = $parentOne;
     $SESSION->selection[MANAGER_COURSE_STRUCTURE_LEVEL . '2']   = $parentTwo;
-    $SESSION->selection[MANAGER_COURSE_STRUCTURE_LEVEL . '3']   = $company_id;
-    $SESSION->selection[REPORT_MANAGER_COURSE_LIST]             = $course;
+    $SESSION->selection[MANAGER_COURSE_STRUCTURE_LEVEL . '3']   = array($company_id => $company_id);
+    $SESSION->selection[REPORT_MANAGER_COURSE_LIST]             = $USER->courseReport;
 
-    // Get the data to the report
+    // Get data report
     $course_report = course_report::Get_CourseReportLevel($data_form,$myHierarchy,$IsReporter);
     $out = course_report::Print_CourseReport_Screen($course_report,$data_form[REPORT_MANAGER_COMPLETED_LIST]);
+}else {
+    // Clean temporary
+    course_report::CleanTemporary();
 }
 
-$form = new manager_course_report_level_form(null,array($report_level,$myHierarchy,$IsReporter,$parentcat,$depth));
+$form = new manager_course_report_level_form(null,array($report_level,$myHierarchy,$IsReporter));
 if ($form->is_cancelled()) {
     unset($SESSION->selection);
 
@@ -147,9 +150,8 @@ if ($form->is_cancelled()) {
     }
     $data_form[MANAGER_COURSE_STRUCTURE_LEVEL . '3'] = $three;
     $data_form['h3']                                 = $three;
-
+    
     // Report data
-    $data_form[REPORT_MANAGER_COURSE_LIST] = $data_form['hcourse'];
     $course_report = course_report::Get_CourseReportLevel($data_form,$myHierarchy,$IsReporter);
 
     if (isset($data_form[REPORT_MANAGER_JOB_ROLE_LIST]) && $data_form[REPORT_MANAGER_JOB_ROLE_LIST]) {
@@ -196,22 +198,19 @@ echo $OUTPUT->header();
 if (!empty($out)) {
     echo $OUTPUT->heading($out);
 }else {
-    // Print tabs at the top
+    // Add tabs on the top
     $current_tab = 'manager_reports';
     $show_roles = 1;
     require('../tabs.php');
 
-    // Add levels links
+    // Add level links
     $linkLevels = '<a href="' . $return_url . '">' . get_string('select_report_levels','report_manager') . '</a>';
     echo $OUTPUT->action_link($return_url,get_string('select_report_levels','report_manager'));
 
     $form->display();
 
-    // Initialise organization structure
-    CompetenceManager::Init_OrganizationStructure_CourseReport(COMPANY_STRUCTURE_LEVEL,REPORT_MANAGER_JOB_ROLE_LIST,$report_level);
-
-    // Javascript to et categories and courses
-    course_report::ini_data_reports('parent','category',REPORT_MANAGER_COURSE_LIST,'depth');
+    // Initialise Organization structure
+    CompetenceManager::init_organization_structure_coursereport(COMPANY_STRUCTURE_LEVEL,REPORT_MANAGER_JOB_ROLE_LIST,$report_level);
 }//if_else
 
 // Footer

@@ -27,31 +27,38 @@
  * @author          eFaktor     (fbv)
  *
  */
+global $CFG,$SITE,$PAGE,$OUTPUT,$USER;
+
 require_once('../../../config.php');
 require_once('trackerlib.php');
 require_once($CFG->libdir . '/adminlib.php');
 
-require_login();
-
-/* PARAMS */
+// Params
 $edit           = optional_param('edit', -1, PARAM_BOOL);
 $block_action   = optional_param('blockaction', '', PARAM_ALPHA);
 $pdf            = optional_param('pdf', '', PARAM_ALPHA);
-
+$out            = null;
 $url = new moodle_url('/report/manager/tracker/index.php');
+$site_context   = context_system::instance();
 
-$site_context = context_system::instance();
+// Page settings
 $PAGE->set_context($site_context);
 $PAGE->set_url($url);
-
 $PAGE->set_title($SITE->fullname);
 $PAGE->set_heading($SITE->fullname);
 $PAGE->set_pagelayout('admin');
 $PAGE->requires->js(new moodle_url('/report/manager/js/tracker.js'));
 
-/* Get Tracker User */
-$trackerUser = TrackerManager::get_user_tracker($USER->id);
+// Checking access
+require_login();
+if (isguestuser($USER)) {
+    require_logout();
+    print_error('guestsarenotallowed');
+    die();
+}
 
+// Tracker user
+$trackerUser = TrackerManager::get_user_tracker($USER->id);
 switch ($pdf) {
     case TRACKER_PDF_DOWNLOAD:
         TrackerManager::download_tracker_report($trackerUser);
@@ -62,8 +69,9 @@ switch ($pdf) {
         break;
 }//switch_pdf
 
+// Header
 echo $OUTPUT->header();
 echo $OUTPUT->heading($out);
 
-/* Print Footer */
+// Footer
 echo $OUTPUT->footer();

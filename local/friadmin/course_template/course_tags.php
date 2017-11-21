@@ -24,13 +24,19 @@
  */
 
 require_once('../../../config.php');
-//require_once('lib/coursetemplatelib.php');
 require_once('classes/ct_course_tags_linklist.php');
-//require_once('../../../course/lib.php');
+
+global $USER,$PAGE,$SITE,$OUTPUT;
 
 require_login();
+// Checking access
+if (isguestuser($USER)) {
+    require_logout();
+    print_error('guestsarenotallowed');
+    die();
+}
 
-/* PARAMS   */
+// Params
 $courseid = required_param('id', PARAM_INT);
 
 $course = get_course($courseid);
@@ -50,7 +56,7 @@ $PAGE->set_pagelayout('admin');
 $PAGE->set_title($strtitle . '- ' . $strsubtitle);
 $PAGE->navbar->add(get_string('pluginname', 'local_friadmin'));
 
-/* Check Permissions/Capability */
+// Check permissions/Capability
 if (!has_capability('local/friadmin:view', context_system::instance())) {
     if (!local_friadmin_helper::CheckCapabilityFriAdmin()) {
         print_error('nopermissions', 'error', '', 'block/frikomport:view');
@@ -68,7 +74,7 @@ $pagecontents = $blockrenderer->settags_page($course, $tagcollid, $contextcourse
 // Get the wizard buttons.
 $linklist = new ct_course_tags_linklist($courseid);
 
-/* Header   */
+// Header
 echo $OUTPUT->header();
 
 echo $OUTPUT->heading($strtitle, 2);
@@ -77,5 +83,5 @@ echo $OUTPUT->heading($strsubtitle, 3);
 echo $pagecontents;
 echo $linklist->getlinklistcontent();
 
-/* Footer   */
+// Footer
 echo $OUTPUT->footer();

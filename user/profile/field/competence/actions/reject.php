@@ -27,7 +27,7 @@
  * @author          eFaktor     (fbv)
  *
  */
-global $CFG, $PAGE, $SESSION, $SITE, $OUTPUT;
+global $CFG, $PAGE, $SESSION, $SITE, $OUTPUT,$USER;
 
 require_once('../../../../../config.php');
 require_once('../competencelib.php');
@@ -43,9 +43,8 @@ $infolog            = null;
 $confirmed          = null;
 $infomssg           = null;
 $strconfirm         = null;
-
-$relativePath   = get_file_argument();
 //extract relative path components
+$relativePath   = get_file_argument();
 $args   = explode('/', ltrim($relativePath, '/'));
 
 // Page settings
@@ -55,9 +54,17 @@ $PAGE->set_pagelayout('standard');
 $PAGE->set_title($SITE->fullname);
 $PAGE->set_heading($SITE->fullname);
 
+// Checking access
+if (isguestuser($USER)) {
+    require_logout();
+    print_error('guestsarenotallowed');
+    die();
+}
+
 // Header
 echo $OUTPUT->header();
 
+// Check args and content
 if (count($args) != 3) {
     echo html_writer::start_tag('div',array('class' => 'loginerrors'));
         echo $OUTPUT->error_text('<h4>' . get_string('err_link','profilefield_competence') . '</h4>');
