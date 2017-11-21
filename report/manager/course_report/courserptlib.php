@@ -1093,13 +1093,12 @@ class course_report {
 
         try {
             // Get information connected with level one
-            echo "LEVEL ONE : " . $coemployees->levelone . "</br>";
             $levelOne       = CompetenceManager::get_companies_info($coemployees->levelone);
 
             if ($levelOne) {
                 foreach ($levelOne as $id => $company) {
                     // level two connected
-                    $two   = self::get_companies_by_level(2,$company->id,$coemployees->leveltwo);
+                    $two   = self::get_companies_by_level(2,$id,$coemployees->leveltwo);
                     if ($two) {
                         $levelTwo       = self::get_reportinfo_leveltwo($courserpt,$company_list,$coemployees->levelthree);
                         if ($levelTwo) {
@@ -1158,7 +1157,7 @@ class course_report {
             if ($parent_lst) {
                 foreach ($parent_lst as $id=>$company) {
                     // Get level three connected with
-                    $three = self::get_companies_by_level(3,$company->id,$inthree);
+                    $three = self::get_companies_by_level(3,$id,$inthree);
                     // Level three
                     if ($three) {
                         // Get info level three
