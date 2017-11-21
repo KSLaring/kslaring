@@ -1172,7 +1172,7 @@ class friadminrpt {
                     $categoriespath = str_replace(',/',',',$rdo->category_path);
                     $categoriespath = str_replace('/',',',$categoriespath) . ",";
                     // clean first element
-                    $first = substr($categoriespath,1,1);
+                    $first = substr($categoriespath,0,1);
                     if ($first == ',') {
                         echo $first . "</br>";
                         $categoriespath = substr($categoriespath,1);
