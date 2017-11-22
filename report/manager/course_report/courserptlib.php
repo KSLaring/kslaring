@@ -1215,6 +1215,9 @@ class course_report {
                     $company_info = new stdClass();
                     $company_info->name       = $company;
                     $company_info->id         = $id;
+                    $company_info->completed = null;
+                    $company_info->not_completed = null;
+                    $company_info->not_enrol = null;
                     // Users completed, not completed && not enrolled
                     list($company_info->completed,$company_info->not_completed,$company_info->not_enrol) = self::GetUsers_CompanyCourse($id,$course_report->id,$course_report->completed_before);
 
