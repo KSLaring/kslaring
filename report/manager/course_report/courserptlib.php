@@ -263,7 +263,7 @@ class course_report {
 
                                 if ($levelthree) {
                                     $levelTwo->levelThree      = self::get_reportinfo_levelthree($rptcourse->id,$levelthree);
-                                    if ($levelTwo->levelthree) {
+                                    if ($levelTwo->levelThree) {
                                         $rptcourse->levelTwo[$levelTwo->id] = $levelTwo;
                                     }else {
                                         $levelTwo->levelThree = null;
