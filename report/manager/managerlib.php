@@ -710,11 +710,17 @@ class CompetenceManager {
         $sql        = null;
         $rdo        = null;
         $companies  = null;
+        $sqltwo     = null;
+        $sqlone     = null;
 
         try {
             // Search criteria
             $params = array();
             $params['zero'] = $levelZero;
+
+            // Extra criterias by level
+            $sqltwo = ($levelTwo ? " AND co_two.id IN ($levelTwo) " : '');
+            $sqlone = ($levelOne ? " AND co_one.id IN ($levelOne) " : '');
 
             // SQL Isntruction - Get only companies with employees
             $sql = " SELECT		GROUP_CONCAT(DISTINCT uicd.companyid  	ORDER BY uicd.companyid SEPARATOR ',') 		as 'levelthree',
@@ -726,12 +732,12 @@ class CompetenceManager {
                         JOIN	{report_gen_company_relation}   	cr_two	ON 	cr_two.companyid 		= uicd.companyid
                         JOIN	{report_gen_companydata}			co_two	ON 	co_two.id 				= cr_two.parentid
                                                                             AND co_two.hierarchylevel 	= 2
-                                                                            AND co_two.id IN ($levelTwo)
+                                                                            $sqltwo
                         -- LEVEL ONE
                         JOIN	{report_gen_company_relation}   	cr_one	ON 	cr_one.companyid 		= cr_two.parentid
                         JOIN	{report_gen_companydata}			co_one	ON 	co_one.id 				= cr_one.parentid
                                                                             AND co_one.hierarchylevel 	= 1
-                                                                            AND co_one.id IN ($levelOne)
+                                                                            $sqlone
                         -- LEVEL ZERO
                         JOIN	{report_gen_company_relation} 	    cr_zero	ON 	cr_zero.companyid 		= cr_one.parentid
                         JOIN	{report_gen_companydata}			co_zero	ON 	co_zero.id 				= cr_zero.parentid
