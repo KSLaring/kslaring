@@ -285,7 +285,7 @@ class course_report {
                                 $levelthree = self::get_companies_by_level(3,$levelTwo->id ,$coemployees->levelthree);
 
                                 if ($levelthree) {
-                                    $three     = self::get_reportinfo_levelthree($rptcourse->id,$levelthree);
+                                    $three     = self::get_reportinfo_levelthree($rptcourse,$levelthree);
                                     if ($three) {
                                         $rptcourse->levelThree = $three;
                                     }else {
