@@ -165,7 +165,7 @@ class course_report {
 
 
                 //Common for all levels
-                $rptcourse->levelzero           = $selzero;
+                $rptcourse->levelZero           = $selzero;
                 $rptcourse->zero_name           = CompetenceManager::get_company_name($selzero);
                 $rptcourse->rpt                 = $data_form['rpt'];
                 $rptcourse->completed_before    = $data_form[REPORT_MANAGER_COMPLETED_LIST];
@@ -177,8 +177,8 @@ class course_report {
                         $levelOne = new stdClass();
                         $levelOne->id                       = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'1'];
                         $levelOne->name                     = CompetenceManager::get_company_name($levelOne->id);
-                        $levelOne->leveltwo                 = null;
-                        $rptcourse->levelone[$levelOne->id] = $levelOne;
+                        $levelOne->levelTwo                 = null;
+                        $rptcourse->levelOne[$levelOne->id] = $levelOne;
 
                         if ($IsReporter) {
                             list($inZero,$inOne,$inTwo,$inThree) = CompetenceManager::extract_reporter_competence_by_level($myhierarchy,$data_form['rpt'],$selzero,$levelOne->id);
@@ -192,15 +192,15 @@ class course_report {
                         $levelOne = new stdClass();
                         $levelOne->id                           = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'1'];
                         $levelOne->name                         = CompetenceManager::get_company_name($levelOne->id);
-                        $levelOne->leveltwo                     = null;
-                        $rptcourse->levelone[$levelOne->id]     = $levelOne;
+                        $levelOne->levelTwo                     = null;
+                        $rptcourse->levelOne[$levelOne->id]     = $levelOne;
 
                         // Level two
                         $levelTwo = new stdClass();
                         $levelTwo->id                           = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'2'];
                         $levelTwo->name                         = CompetenceManager::get_company_name($levelTwo->id );
-                        $levelTwo->levelthree                   = null;
-                        $rptcourse->leveltwo[$levelTwo->id]     = $levelTwo;
+                        $levelTwo->levelThree                   = null;
+                        $rptcourse->levelTwo[$levelTwo->id]     = $levelTwo;
 
 
                 if ($IsReporter) {
@@ -232,7 +232,7 @@ class course_report {
                             if ($coemployees->levelone) {
                                 self::get_reportinfo_levelone($rptcourse,$coemployees);
                             }else {
-                                $rptcourse->levelone = null;
+                                $rptcourse->levelOne = null;
                             }//if_levelOne
 
                             break;
@@ -241,17 +241,17 @@ class course_report {
                             if ($coemployees->leveltwo) {
                                 $levelTwo = CompetenceManager::get_companies_info($coemployees->leveltwo);
                                 if ($levelTwo) {
-                                    $levelOne->leveltwo = self::get_reportinfo_leveltwo($rptcourse->id,$levelTwo,$coemployees->levelthree);
+                                    $levelOne->levelTwo = self::get_reportinfo_leveltwo($rptcourse->id,$levelTwo,$coemployees->levelthree);
 
-                                    if ($levelOne->leveltwo) {
-                                        $rptcourse->levelone[$levelOne->id] = $levelOne;
+                                    if ($levelOne->levelTwo) {
+                                        $rptcourse->levelOne[$levelOne->id] = $levelOne;
                                     }else {
-                                        $levelOne->leveltwo = null;
-                                        $rptcourse->levelone[$levelOne->id] = $levelOne;
+                                        $levelOne->levelTwo = null;
+                                        $rptcourse->levelOne[$levelOne->id] = $levelOne;
                                     }
                                 }else {
-                                    $levelOne->leveltwo = null;
-                                    $rptcourse->levelone[$levelOne->id] = $levelOne;
+                                    $levelOne->levelTwo = null;
+                                    $rptcourse->levelOne[$levelOne->id] = $levelOne;
                                 }//if_level_two_companies
                             }//if_leveltwo
 
@@ -262,20 +262,20 @@ class course_report {
                                 $levelthree = self::get_companies_by_level(3,$levelTwo->id ,$coemployees->levelthree);
 
                                 if ($levelthree) {
-                                    $levelTwo->levelthree      = self::get_reportinfo_levelthree($rptcourse->id,$levelthree);
+                                    $levelTwo->levelThree      = self::get_reportinfo_levelthree($rptcourse->id,$levelthree);
                                     if ($levelTwo->levelthree) {
-                                        $rptcourse->leveltwo[$levelTwo->id] = $levelTwo;
+                                        $rptcourse->levelTwo[$levelTwo->id] = $levelTwo;
                                     }else {
-                                        $levelTwo->levelthree = null;
-                                        $rptcourse->leveltwo[$levelTwo->id] = $levelTwo;
+                                        $levelTwo->levelThree = null;
+                                        $rptcourse->levelTwo[$levelTwo->id] = $levelTwo;
                                     }
                                 }else {
-                                    $levelTwo->levelthree = null;
-                                    $rptcourse->leveltwo[$levelTwo->id] = $levelTwo;
+                                    $levelTwo->levelThree = null;
+                                    $rptcourse->levelTwo[$levelTwo->id] = $levelTwo;
                                 }//if_level_two_companies
                             }else {
-                                $levelTwo->levelthree = null;
-                                $rptcourse->leveltwo[$levelTwo->id] = $levelTwo;
+                                $levelTwo->levelThree = null;
+                                $rptcourse->levelTwo[$levelTwo->id] = $levelTwo;
                             }//if_companies_employees_levelthree
 
                             break;
@@ -287,15 +287,15 @@ class course_report {
                                 if ($levelthree) {
                                     $three     = self::get_reportinfo_levelthree($rptcourse->id,$levelthree);
                                     if ($three) {
-                                        $rptcourse->levelthree = $three;
+                                        $rptcourse->levelThree = $three;
                                     }else {
-                                        $rptcourse->levelthree = null;
+                                        $rptcourse->levelThree = null;
                                     }
                                 }else {
-                                    $rptcourse->levelthree = null;
+                                    $rptcourse->levelThree = null;
                                 }//if_level_two_companies
                             }else {
-                                $rptcourse->levelthree = null;
+                                $rptcourse->levelThree = null;
                             }//if_companies_employees_levelthree
 
                             break;

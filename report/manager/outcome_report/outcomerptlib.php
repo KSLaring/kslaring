@@ -238,7 +238,7 @@ class outcome_report {
                         $levelOne = new stdClass();
                         $levelOne->id                       = $data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'1'];
                         $levelOne->name                     = CompetenceManager::get_company_name($levelOne->id);
-                        $levelOne->leveltwo                 = null;
+                        $levelOne->levelTwo                 = null;
                         $outcome_report->levelone[$levelOne->id] = $levelOne;
 
                         if ($IsReporter) {
@@ -253,15 +253,15 @@ class outcome_report {
                         $levelOne = new stdClass();
                         $levelOne->id                           = $data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'1'];
                         $levelOne->name                         = CompetenceManager::get_company_name($levelOne->id);
-                        $levelOne->leveltwo                     = null;
-                        $outcome_report->levelone[$levelOne->id]     = $levelOne;
+                        $levelOne->levelTwo                     = null;
+                        $outcome_report->levelOne[$levelOne->id]     = $levelOne;
 
                         // Level two
                         $levelTwo = new stdClass();
                         $levelTwo->id                           = $data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'2'];
                         $levelTwo->name                         = CompetenceManager::get_company_name($levelTwo->id );
-                        $levelTwo->levelthree                   = null;
-                        $outcome_report->leveltwo[$levelTwo->id]     = $levelTwo;
+                        $levelTwo->levelThree                   = null;
+                        $outcome_report->levelTwo[$levelTwo->id]     = $levelTwo;
 
 
                 if ($IsReporter) {
