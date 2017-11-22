@@ -224,6 +224,10 @@ class course_report {
                 }
                 $coemployees = self::GetCompaniesEmployees($data_form,$inOne,$inTwo,$inThree);
                 if ($coemployees) {
+                    // Get info courses
+                    self::GetUsers_EnrolledIn($course_id,$rptcourse->job_roles,$coemployees->levelThree);
+                    self::GetUsers_NotEnrolIn($course_id,$rptcourse->job_roles,$coemployees->levelThree);
+
                     // Check level
                     switch ($data_form['rpt']) {
                         case 0:
