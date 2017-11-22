@@ -241,7 +241,7 @@ class course_report {
                             if ($coemployees->leveltwo) {
                                 $levelTwo = CompetenceManager::get_companies_info($coemployees->leveltwo);
                                 if ($levelTwo) {
-                                    $levelOne->levelTwo = self::get_reportinfo_leveltwo($rptcourse->id,$levelTwo,$coemployees->levelthree);
+                                    $levelOne->levelTwo = self::get_reportinfo_leveltwo($rptcourse,$levelTwo,$coemployees->levelthree);
 
                                     if ($levelOne->levelTwo) {
                                         $rptcourse->levelOne[$levelOne->id] = $levelOne;
@@ -262,7 +262,7 @@ class course_report {
                                 $levelthree = self::get_companies_by_level(3,$levelTwo->id ,$coemployees->levelthree);
 
                                 if ($levelthree) {
-                                    $levelTwo->levelThree      = self::get_reportinfo_levelthree($rptcourse->id,$levelthree);
+                                    $levelTwo->levelThree      = self::get_reportinfo_levelthree($rptcourse,$levelthree);
                                     if ($levelTwo->levelThree) {
                                         $rptcourse->levelTwo[$levelTwo->id] = $levelTwo;
                                     }else {
@@ -1218,11 +1218,8 @@ class course_report {
                     $company_info->completed = null;
                     $company_info->not_completed = null;
                     $company_info->not_enrol = null;
-                    echo " ID : " . $id . "</br>";
-                    echo " COURSE REPORT: " . $course_report->id . "</br>";
-                    echo " COMPLETED BEFORE: " . $course_report->completed_before . "</br>";
                     // Users completed, not completed && not enrolled
-                    //list($company_info->completed,$company_info->not_completed,$company_info->not_enrol) = self::GetUsers_CompanyCourse($id,$course_report->id,$course_report->completed_before);
+                    list($company_info->completed,$company_info->not_completed,$company_info->not_enrol) = self::GetUsers_CompanyCourse($id,$course_report->id,$course_report->completed_before);
 
                     // Add level three
                     if ($company_info->completed || $company_info->not_completed || $company_info->not_enrol) {
