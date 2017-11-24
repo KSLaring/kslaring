@@ -14,7 +14,7 @@ require_once('../../config.php');
 require_once('microlearninglib.php');
 require_once('index_form.php');
 
-global $PAGE,$USER,$OUTPUT,$SITE;
+global $PAGE,$USER,$OUTPUT,$SITE,$CFG;
 
 // Params
 $course_id      = required_param('id',PARAM_INT);
@@ -30,9 +30,15 @@ $campaign_id    = null;
 $url_users      = null;
 
 // Checking access
+require_login();
 if (isguestuser($USER)) {
     require_logout();
-    print_error('guestsarenotallowed');
+
+    echo $OUTPUT->header();
+    echo $OUTPUT->notification(get_string('guestsarenotallowed','error'), 'notifysuccess');
+    echo $OUTPUT->continue_button($CFG->wwwroot);
+    echo $OUTPUT->footer();
+
     die();
 }
 if (!has_capability('local/microlearning:manage',$context)) {

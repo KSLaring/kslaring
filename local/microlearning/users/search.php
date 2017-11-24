@@ -17,7 +17,7 @@ require_once('../../../config.php');
 require_once('microuserslib.php');
 require_once('filter/lib.php');
 
-global $PAGE,$SITE,$USER,$OUTPUT;
+global $PAGE,$SITE,$USER,$OUTPUT,$CFG;
 
 // Params
 $search             = required_param('search',PARAM_RAW);
@@ -39,12 +39,17 @@ $PAGE->set_context($context);
 $PAGE->set_url($url);
 
 // Checking access
+require_login();
 if (isguestuser($USER)) {
     require_logout();
-    print_error('guestsarenotallowed');
+
+    echo $OUTPUT->header();
+    echo $OUTPUT->notification(get_string('guestsarenotallowed','error'), 'notifysuccess');
+    echo $OUTPUT->continue_button($CFG->wwwroot);
+    echo $OUTPUT->footer();
+
     die();
 }
-require_login();
 require_sesskey();
 
 echo $OUTPUT->header();

@@ -13,7 +13,7 @@
 require_once('../../config.php');
 require_once('icplib.php');
 
-global $USER,$PAGE,$SITE,$OUTPUT;
+global $USER,$PAGE,$SITE,$OUTPUT,$CFG;
 
 // Params
 $courseID       = required_param('id',PARAM_INT);
@@ -33,7 +33,12 @@ $contextCourse  = context_course::instance($courseID);
 require_login();
 if (isguestuser($USER)) {
     require_logout();
-    print_error('guestsarenotallowed');
+
+    echo $OUTPUT->header();
+    echo $OUTPUT->notification(get_string('guestsarenotallowed','error'), 'notifysuccess');
+    echo $OUTPUT->continue_button($CFG->wwwroot);
+    echo $OUTPUT->footer();
+
     die();
 }
 require_login($courseID);

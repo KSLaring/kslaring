@@ -33,9 +33,15 @@ $return_url     = new moodle_url('/local/microlearning/index.php',array('id'=>$c
 $delivery_info  = null;
 
 // Checking access
+require_login();
 if (isguestuser($USER)) {
     require_logout();
-    print_error('guestsarenotallowed');
+
+    echo $OUTPUT->header();
+    echo $OUTPUT->notification(get_string('guestsarenotallowed','error'), 'notifysuccess');
+    echo $OUTPUT->continue_button($CFG->wwwroot);
+    echo $OUTPUT->footer();
+
     die();
 }
 if (!has_capability('local/microlearning:manage',$context)) {

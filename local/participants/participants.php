@@ -49,14 +49,19 @@ $PAGE->requires->js('/local/participants/js/sort.js');
 require_login();
 if (isguestuser($USER)) {
     require_logout();
-    print_error('guestsarenotallowed');
+
+    echo $OUTPUT->header();
+    echo $OUTPUT->notification(get_string('guestsarenotallowed','error'), 'notifysuccess');
+    echo $OUTPUT->continue_button($CFG->wwwroot);
+    echo $OUTPUT->footer();
+
     die();
 }else {
-if (!has_capability('local/participants:manage',$context)) {
-    require_login();
-}else {
-    require_login($course);
-}//if_capabilities
+    if (!has_capability('local/participants:manage',$context)) {
+        require_login();
+    }else {
+        require_login($course);
+    }//if_capabilities
 }
 
 

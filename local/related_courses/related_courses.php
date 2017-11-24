@@ -16,7 +16,7 @@ require_once( '../../config.php');
 require_once('locallib.php');
 require_once('related_courses_form.php');
 
-global $USER,$PAGE,$OUTPUT;
+global $USER,$PAGE,$OUTPUT,$CFG;
 
 // Params
 $course_id          = optional_param('id',1,PARAM_INT);
@@ -25,11 +25,23 @@ $context_course     = context_course::instance($course_id);
 $return_url         = new moodle_url('/course/view.php',array('id' => $course_id));
 
 // Checking access
+// Checking access
 require_login();
 if (isguestuser($USER)) {
     require_logout();
-    print_error('guestsarenotallowed');
+
+    echo $OUTPUT->header();
+    echo $OUTPUT->notification(get_string('guestsarenotallowed','error'), 'notifysuccess');
+    echo $OUTPUT->continue_button($CFG->wwwroot);
+    echo $OUTPUT->footer();
+
     die();
+}else {
+    if (!has_capability('local/participants:manage',$context_course)) {
+        require_login();
+    }else {
+        require_login($course);
+    }//if_capabilities
 }
 require_login($course);
 require_capability('moodle/course:update',$context_course);

@@ -29,13 +29,18 @@ require_once('../../../config.php');
 require_once('lib/coursetemplatelib.php');
 require_once('../../../course/lib.php');
 
-global $USER,$PAGE,$SITE,$OUTPUT;
+global $USER,$PAGE,$SITE,$OUTPUT,$CFG;
 
-require_login();
 // Checking access
+require_login();
 if (isguestuser($USER)) {
     require_logout();
-    print_error('guestsarenotallowed');
+
+    echo $OUTPUT->header();
+    echo $OUTPUT->notification(get_string('guestsarenotallowed','error'), 'notifysuccess');
+    echo $OUTPUT->continue_button($CFG->wwwroot);
+    echo $OUTPUT->footer();
+
     die();
 }
 

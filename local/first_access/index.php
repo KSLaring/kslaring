@@ -31,7 +31,7 @@
 require_once('../../config.php');
 require_once('locallib.php');
 
-global $USER,$PAGE,$OUTPUT,$SITE;
+global $CFG,$USER,$PAGE,$OUTPUT,$SITE;
 
 // Params
 $userId         = required_param('id',PARAM_INT);
@@ -57,13 +57,19 @@ $PAGE->requires->strings_for_js(array_keys($strings), 'local_first_access');
 $strings = $stringman->load_component_strings('local_first_access', 'no');
 $PAGE->requires->strings_for_js(array_keys($strings), 'local_first_access');
 
-require_login();
 // Checking access
+require_login();
 if (isguestuser($USER)) {
     require_logout();
-    print_error('guestsarenotallowed');
+
+    echo $OUTPUT->header();
+    echo $OUTPUT->notification(get_string('guestsarenotallowed','error'), 'notifysuccess');
+    echo $OUTPUT->continue_button($CFG->wwwroot);
+    echo $OUTPUT->footer();
+
     die();
 }
+
 
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('welcome_title','local_first_access',$SITE->shortname));

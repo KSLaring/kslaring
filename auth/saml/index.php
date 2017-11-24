@@ -2,7 +2,7 @@
 
 define('SAML_INTERNAL', 1);
 
-global $CFG, $USER, $SAML_COURSE_INFO, $SESSION, $err, $DB, $PAGE;
+global $CFG, $USER, $SAML_COURSE_INFO, $SESSION, $err, $DB, $PAGE,$OUTPUT;
 
     try{
         // In order to avoid session problems we first do the SAML issues and then
@@ -67,9 +67,15 @@ global $CFG, $USER, $SAML_COURSE_INFO, $SESSION, $err, $DB, $PAGE;
         require_once('error.php');
 
         // Checking access
+        require_login();
         if (isguestuser($USER)) {
             require_logout();
-            print_error('guestsarenotallowed');
+
+            echo $OUTPUT->header();
+            echo $OUTPUT->notification(get_string('guestsarenotallowed','error'), 'notifysuccess');
+            echo $OUTPUT->continue_button($CFG->wwwroot);
+            echo $OUTPUT->footer();
+
             die();
         }
         $PAGE->set_url('/auth/saml/index.php');

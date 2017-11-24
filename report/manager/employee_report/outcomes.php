@@ -53,11 +53,16 @@ $url            = new moodle_url('/report/manager/employee_report/outcomes.php')
 $PAGE->set_context($context);
 $PAGE->set_url($url);
 
-// Check the correct access
+// Checking access
 require_login();
 if (isguestuser($USER)) {
     require_logout();
-    print_error('guestsarenotallowed');
+
+    echo $OUTPUT->header();
+    echo $OUTPUT->notification(get_string('guestsarenotallowed','error'), 'notifysuccess');
+    echo $OUTPUT->continue_button($CFG->wwwroot);
+    echo $OUTPUT->footer();
+
     die();
 }
 require_sesskey();

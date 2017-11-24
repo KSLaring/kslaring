@@ -26,12 +26,17 @@
 
 require_once(__DIR__ . "/../../config.php");
 
-global $USER,$PAGE,$CFG;
+global $USER,$PAGE,$CFG,$OUTPUT;
 
 // Checking access
 if (isguestuser($USER)) {
     require_logout();
-    print_error('guestsarenotallowed');
+
+    echo $OUTPUT->header();
+    echo $OUTPUT->notification(get_string('guestsarenotallowed','error'), 'notifysuccess');
+    echo $OUTPUT->continue_button($CFG->wwwroot);
+    echo $OUTPUT->footer();
+
     die();
 }
 $PAGE->set_url('/local/friadmin/index.php');

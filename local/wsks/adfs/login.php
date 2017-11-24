@@ -10,7 +10,7 @@
  * @author          eFaktor     (fbv)
  *
  */
-global $PAGE,$USER,$OUTPUT,$SESSION;
+global $PAGE,$USER,$OUTPUT,$SESSION,$CFG;
 require( '../../../config.php' );
 require_once ('../wsadfslib.php');
 
@@ -22,9 +22,14 @@ $errUrl         = new moodle_url('/local/wsks/adfs/error.php');
 // Checking access
 if (isguestuser($USER)) {
     require_logout();
-    print_error('guestsarenotallowed');
-}
 
+    echo $OUTPUT->header();
+    echo $OUTPUT->notification(get_string('guestsarenotallowed','error'), 'notifysuccess');
+    echo $OUTPUT->continue_button($CFG->wwwroot);
+    echo $OUTPUT->footer();
+
+    die();
+}
 
 /* Start PAGE   */
 $PAGE->https_required();
@@ -97,7 +102,10 @@ try {
         }//if_first_access
     } else {
         require_logout();
-        print_error('guestsarenotallowed');
+        echo $OUTPUT->header();
+        echo $OUTPUT->notification(get_string('guestsarenotallowed','error'), 'notifysuccess');
+        echo $OUTPUT->continue_button($CFG->wwwroot);
+        echo $OUTPUT->footer();
     }//if_guest_user
 
 }catch (Exception $ex) {

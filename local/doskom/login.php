@@ -49,9 +49,15 @@ $PAGE->set_pagelayout('login');
 // Checking access
 if (isguestuser($USER)) {
     require_logout();
-    print_error('guestsarenotallowed');
+
+    echo $OUTPUT->header();
+    echo $OUTPUT->notification(get_string('guestsarenotallowed','error'), 'notifysuccess');
+    echo $OUTPUT->continue_button($CFG->wwwroot);
+    echo $OUTPUT->footer();
+
     die();
 }
+
 if (!$id || !$key || !$RedirectPage || !$LogoutUrl) {
     // Print Header
     echo $OUTPUT->header();
@@ -62,27 +68,28 @@ if (!$id || !$key || !$RedirectPage || !$LogoutUrl) {
     // Print Footer
     echo $OUTPUT->footer();
 }else {
-
 // Authenticate the user to log in
-$authenticated = wsdoskom::authenticate_user($id,$key);
+    $authenticated = wsdoskom::authenticate_user($id,$key);
 
-if ($authenticated) {
-    wsdoskom::delete_key($authenticated);
-    $user = get_complete_user_data('id',$id);
-    complete_user_login($user);
+    if ($authenticated) {
+        wsdoskom::delete_key($authenticated);
+        $user = get_complete_user_data('id',$id);
+        complete_user_login($user);
 
-    redirect($RedirectPage);
-}else {
-    // Print Header
-    echo $OUTPUT->header();
+        redirect($RedirectPage);
+    }else {
+        // Print Header
+        echo $OUTPUT->header();
 
-    echo $OUTPUT->notification(get_string('err_authenticate','local_doskom'), 'notifysuccess');
-    echo '<br>';
-    if ($LogoutUrl) {
-        $return = $LogoutUrl;
-    }//if_back
-    echo $OUTPUT->continue_button($return);
+        echo $OUTPUT->notification(get_string('err_authenticate','local_doskom'), 'notifysuccess');
+        echo '<br>';
+        if ($LogoutUrl) {
+            $return = $LogoutUrl;
+        }//if_back
+        echo $OUTPUT->continue_button($return);
 
-    // Print Footer
-    echo $OUTPUT->footer();
-}//if_else_authenticated
+        // Print Footer
+        echo $OUTPUT->footer();
+    }//if_else_authenticated
+}
+

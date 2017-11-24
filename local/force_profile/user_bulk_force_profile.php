@@ -22,13 +22,19 @@ require_once($CFG->dirroot.'/'.$CFG->admin.'/user/lib.php');
 require_once('forceprofilelib.php');
 require_once('force_profile_form.php');
 
-require_login();
 // Checking access
+require_login();
 if (isguestuser($USER)) {
     require_logout();
-    print_error('guestsarenotallowed');
+
+    echo $OUTPUT->header();
+    echo $OUTPUT->notification(get_string('guestsarenotallowed','error'), 'notifysuccess');
+    echo $OUTPUT->continue_button($CFG->wwwroot);
+    echo $OUTPUT->footer();
+
     die();
 }
+
 admin_externalpage_setup('userbulk');
 
 // Params
@@ -54,16 +60,6 @@ if (empty($users)) {
 
 $PAGE->set_url($url);
 $PAGE->set_context($context);
-
-// Checking access
-if (isguestuser($USER)) {
-    echo $OUTPUT->header();
-    $strmessage = get_string('USER_NOT_VALID','local_first_access');
-    echo html_writer::start_tag('div',array('class' => 'loginerrors'));
-    echo $OUTPUT->error_text('<h4>' . $strmessage . '</h4>');
-    echo html_writer::end_tag('div');
-    echo $OUTPUT->footer();
-}
 
 // Form
 $add_sel    = ForceProfile::ForceProfile_GetChoicesProfile();

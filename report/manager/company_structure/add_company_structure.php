@@ -60,7 +60,12 @@ $PAGE->navbar->add(get_string('add_company_level','report_manager'));
 require_login();
 if (isguestuser($USER)) {
     require_logout();
-    print_error('guestsarenotallowed');
+
+    echo $OUTPUT->header();
+    echo $OUTPUT->notification(get_string('guestsarenotallowed','error'), 'notifysuccess');
+    echo $OUTPUT->continue_button($CFG->wwwroot);
+    echo $OUTPUT->footer();
+
     die();
 }
 if (!CompetenceManager::is_super_user($USER->id)) {

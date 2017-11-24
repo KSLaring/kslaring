@@ -22,9 +22,14 @@ $PAGE->set_pagelayout('login');
 // Checking access
 if (isguestuser($USER)) {
     require_logout();
-    print_error('guestsarenotallowed');
-}
 
+    echo $OUTPUT->header();
+    echo $OUTPUT->notification(get_string('guestsarenotallowed','error'), 'notifysuccess');
+    echo $OUTPUT->continue_button($CFG->wwwroot);
+    echo $OUTPUT->footer();
+
+    die();
+}
 // Params
 $userInfo   = null;
 $userId     = null;
@@ -77,7 +82,10 @@ if ($login) {
         }//if_first_access
     } else {
         require_logout();
-        print_error('guestsarenotallowed');
+        echo $OUTPUT->header();
+        echo $OUTPUT->notification(get_string('guestsarenotallowed','error'), 'notifysuccess');
+        echo $OUTPUT->continue_button($CFG->wwwroot);
+        echo $OUTPUT->footer();
     }//if_guest_user
 }else {
     redirect($errURL);

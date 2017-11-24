@@ -27,7 +27,6 @@ require_once($CFG->dirroot.'/tag/lib.php');
 require_once('forceprofilelib.php');
 require_once('confirm_profile_form.php');
 
-require_login();
 
 // Params
 $user_id    = required_param('id',PARAM_INT);
@@ -52,11 +51,18 @@ $PAGE->set_pagelayout('admin');
 $PAGE->navbar->add(get_string('force_bulk','local_force_profile'));
 
 // Checking access
+require_login();
 if (isguestuser($USER)) {
     require_logout();
-    print_error('guestsarenotallowed');
+
+    echo $OUTPUT->header();
+    echo $OUTPUT->notification(get_string('guestsarenotallowed','error'), 'notifysuccess');
+    echo $OUTPUT->continue_button($CFG->wwwroot);
+    echo $OUTPUT->footer();
+
     die();
 }
+
 
 // My fields
 $my_fields  = ForceProfile::ForceProfile_GetFieldsToUpdate($user_id);
