@@ -225,10 +225,17 @@ M.core_user.init_managers_selector = function (Y, name, hash, level, companies, 
         output_group : function(groupname, managers, selected_managers, processsingle) {
             var optgroup    = Y.Node.create('<optgroup></optgroup>');
             var count       = 0;
+            var option;
 
             for (var key in managers) {
                 var manager = managers[key];
-                var option = Y.Node.create('<option value="' + manager.id + '">' + manager.name + '</option>');
+
+                if (manager.tardis == '1') {
+                    option = Y.Node.create('<option disabled="disabled" class="userselector-infobelow" value="' + manager.id + '">' + manager.name + '</option>');
+                }else {
+                    option = Y.Node.create('<option value="' + manager.id + '">' + manager.name + '</option>');
+                }
+
 
                 optgroup.append(option);
                 if (manager.infobelow) {

@@ -18,6 +18,8 @@
  * Add the correct identifier for the profile fields, instead of the language string
  */
 
+global $CFG,$SESSION,$PAGE,$DB,$SITE,$OUTPUT,$USER;
+
 require_once('../../config.php');
 require_once($CFG->libdir.'/adminlib.php');
 require_once($CFG->dirroot.'/user/editlib.php');
@@ -25,9 +27,8 @@ require_once($CFG->dirroot.'/tag/lib.php');
 require_once('forceprofilelib.php');
 require_once('confirm_profile_form.php');
 
-require_login();
 
-/* PARAMS */
+// Params
 $user_id    = required_param('id',PARAM_INT);
 $context    = context_system::instance();
 $url        = new moodle_url('/local/force_profile/confirm_profile.php',array('id'=>$user_id));
@@ -49,7 +50,21 @@ $PAGE->set_title($SITE->fullname);
 $PAGE->set_pagelayout('admin');
 $PAGE->navbar->add(get_string('force_bulk','local_force_profile'));
 
-/* My Fields    */
+// Checking access
+require_login();
+if (isguestuser($USER)) {
+    require_logout();
+
+    echo $OUTPUT->header();
+    echo $OUTPUT->notification(get_string('guestsarenotallowed','error'), 'notifysuccess');
+    echo $OUTPUT->continue_button($CFG->wwwroot);
+    echo $OUTPUT->footer();
+
+    die();
+}
+
+
+// My fields
 $my_fields  = ForceProfile::ForceProfile_GetFieldsToUpdate($user_id);
 $user       = $DB->get_record('user',array('id' => $user_id));
 // Prepare the editor and create form
@@ -63,10 +78,10 @@ $filemanageroptions = array('maxbytes'       => $CFG->maxbytes,
 file_prepare_draft_area($draftitemid, $user_context->id, 'user', 'newicon', 0, $filemanageroptions);
 $user->imagefile = $draftitemid;
 
-/* Add Form */
+// Add form
 $form = new confirm_profile_form(null,array($my_fields,$user,$filemanageroptions));
 if ($data = $form->get_data()) {
-    /* First Normal Fields  */
+    // First normal fields
     if ($my_fields->normal) {
         $normal_fields = $my_fields->normal;
         foreach ($normal_fields as $field) {
@@ -105,7 +120,7 @@ if ($data = $form->get_data()) {
         }//for_normal_fields
     }//normal_fields
 
-    /* Extra Fields Profile */
+    // Extra profile fields
     if ($my_fields->profile) {
         $profile_fields = $my_fields->profile;
         foreach ($profile_fields as $field) {
@@ -119,8 +134,7 @@ if ($data = $form->get_data()) {
         }//for_profile_fields
     }//profile_fields
 
-
-    /* Check that the user has updated all fields*/
+    // Check that the user has updated all fields
     if (!ForceProfile::ForceProfile_HasToUpdateProfile($user_id)) {
         unset($SESSION->elements);
         unset($SESSION->force_profile);

@@ -163,7 +163,7 @@ class company_report_filtering {
         /* Remove  users fron not my company */
         /* Users  allowed to see          */
         if ($this->_my_companies) {
-            $my_users = CompetenceManager::GetUsers_MyCompanies($this->_my_companies,$USER->id);
+            $my_users = CompetenceManager::get_users_my_companies($this->_my_companies,$USER->id);
         }//if_my_companies
 
         if (empty($sqls)) {

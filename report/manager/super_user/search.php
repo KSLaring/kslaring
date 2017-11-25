@@ -33,7 +33,9 @@ define('AJAX_SCRIPT', true);
 require_once('../../../config.php');
 require_once('spuserlib.php');
 
-/* PARAMS   */
+global $PAGE,$USER,$OUTPUT;
+
+// Params
 $search             = required_param('search',PARAM_RAW);
 $selectorId         = required_param('selectorid',PARAM_ALPHANUM);
 $levelZero          = optional_param('levelZero',0,PARAM_INT);
@@ -53,30 +55,40 @@ $url            = new moodle_url('/report/manager/super_user/search.php');
 $PAGE->set_context($context);
 $PAGE->set_url($url);
 
-/* Check the correct access */
+// Checking access
 require_login();
+if (isguestuser($USER)) {
+    require_logout();
+
+    echo $OUTPUT->header();
+    echo $OUTPUT->notification(get_string('guestsarenotallowed','error'), 'notifysuccess');
+    echo $OUTPUT->continue_button($CFG->wwwroot);
+    echo $OUTPUT->footer();
+
+    die();
+}
 require_sesskey();
 
 echo $OUTPUT->header();
 
-/* Validate if exits the selector   */
+// Validate if exits the selector
 if (!isset($USER->userselectors[$selectorId])) {
    print_error('unknownuserselector');
 }//if_userselector
 
-/* Get the options connected with the selector  */
+// Get the options connected with the selector
 $optSelector = $USER->userselectors[$selectorId];
 
-/* Get Class    */
+// Get class
 $class = $optSelector['class'];
 
 if ($levelThree) {
     $levelThree = str_replace('#',',',$levelThree);
 }
 
-/* Find Users   */
+// Find users
 $results = SuperUser::$class($search,$levelZero,$levelOne,$levelTwo,$levelThree);
-
+if ($results) {
 foreach ($results as $groupName => $users) {
     $groupData = array('name' => $groupName, 'users' => array());
 
@@ -98,5 +110,7 @@ foreach ($results as $groupName => $users) {
 
     $json[] = $groupData;
 }
+}
 
+// Send data
 echo json_encode(array('results' => $json));

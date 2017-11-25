@@ -70,10 +70,10 @@ class move_company_structure_form extends moodleform {
         /* Get companies where it's possible to move */
         switch ($level) {
             case 1:
-                $moveTo = CompetenceManager::GetCompanies_LevelList($level-1);
+                $moveTo = CompetenceManager::get_companies_level_list($level-1);
                 break;
             default:
-                $moveTo = CompetenceManager::GetCompanies_LevelList($level-1,$parents[$level-2]);
+                $moveTo = CompetenceManager::get_companies_level_list($level-1,$parents[$level-2]);
                 break;
         }
 

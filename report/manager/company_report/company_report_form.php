@@ -173,30 +173,14 @@ class manager_company_report_form extends moodleform {
 
         // Get My Companies by Level
         if ($IsReporter) {
-            $levelZero  = array_keys($myHierarchy->competence);
-
-            if (count($levelZero) == 1) {
-                $parentZero = implode(',',$levelZero);
+            $levelZero  = implode(',',$myHierarchy->competence->levelzero);
             }else {
-                $parentZero = optional_param(COMPANY_STRUCTURE_LEVEL . 0, 0, PARAM_INT);
-                if ((!$parentZero) && isset($SESSION->selection)) {
-                    $parentZero = $SESSION->selection[COMPANY_STRUCTURE_LEVEL . 0];
-                }
-            }//if_onlyOne
-
-            if ($parentZero) {
-                $levelOne   = $myHierarchy->competence[$parentZero]->levelOne;
-                $levelTwo   = $myHierarchy->competence[$parentZero]->levelTwo;
-                $levelThree = $myHierarchy->competence[$parentZero]->levelThree;
-            }
-        }else {
-            list($levelZero,$levelOne,$levelTwo,$levelThree) = CompetenceManager::GetMyCompanies_By_Level($myHierarchy->competence,$myHierarchy->my_level);
+            list($levelZero,$levelOne,$levelTwo,$levelThree) = CompetenceManager::get_my_companies_by_Level($myHierarchy->competence);
         }//if_IsReporter
 
         // Parent
         if ($level) {
             $parent     = optional_param(COMPANY_STRUCTURE_LEVEL . ($level-1), 0, PARAM_INT);
-
             if ((!$parent) && isset($SESSION->selection)) {
                 $parent = $SESSION->selection[COMPANY_STRUCTURE_LEVEL . ($level-1)];
             }//if_selection
@@ -205,46 +189,32 @@ class manager_company_report_form extends moodleform {
         switch ($level) {
             case 0:
                 // Only My Companies
-                if ($levelZero) {
-                    $companies_in = implode(',',$levelZero);
-                }//if_level_zero
-
-                $options = CompetenceManager::GetCompanies_LevelList($level,null,$companies_in);
+                $options = CompetenceManager::get_companies_level_list($level,null,$levelZero);
 
                 break;
             case 1:
-                // Only My Companies
-                if ($levelOne) {
-                    $companies_in = implode(',',$levelOne);
-                }//if_level_One
-
                if ($parent) {
-                    $options = CompetenceManager::GetCompanies_LevelList($level,$parent,$companies_in);
+                    $options = CompetenceManager::get_companies_level_list($level,$parent,$levelOne);
                 }else if (isset($_COOKIE['level' . ($level-1)]) && $_COOKIE['level' . ($level-1)]) {
-                   $options = CompetenceManager::GetCompanies_LevelList($level,$_COOKIE['level' . ($level-1)],$companies_in);
+                   $options = CompetenceManager::get_companies_level_list($level,$_COOKIE['level' . ($level-1)],$levelOne);
                }else {
                    // Check if there is only one company
                    if (isset($SESSION->onlyCompany)) {
-                       $options = CompetenceManager::GetCompanies_LevelList($level,$SESSION->onlyCompany[$level-1],$companies_in);
+                       $options = CompetenceManager::get_companies_level_list($level,$SESSION->onlyCompany[$level-1],$levelOne);
                    }else {
                        $options[0] = get_string('select_level_list','report_manager');
                    }
                }
                 break;
             case 2:
-                // Only My Companies
-                if ($levelTwo) {
-                    $companies_in = implode(',',$levelTwo);
-                }//if_level_Two
-
                 if ($parent) {
-                    $options = CompetenceManager::GetCompanies_LevelList($level,$parent,$companies_in);
+                    $options = CompetenceManager::get_companies_level_list($level,$parent,$levelTwo);
                 }else if (isset($_COOKIE['level' . ($level-1)]) && $_COOKIE['level' . ($level-1)]) {
-                    $options = CompetenceManager::GetCompanies_LevelList($level,$_COOKIE['level' . ($level-1)],$companies_in);
+                    $options = CompetenceManager::get_companies_level_list($level,$_COOKIE['level' . ($level-1)],$levelTwo);
                 }else {
                     // If there is only one company
                     if (isset($SESSION->onlyCompany)) {
-                        $options = CompetenceManager::GetCompanies_LevelList($level,$SESSION->onlyCompany[$level-1],$companies_in);
+                        $options = CompetenceManager::get_companies_level_list($level,$SESSION->onlyCompany[$level-1],$levelTwo);
                     }else {
                         $options[0] = get_string('select_level_list','report_manager');
                     }
@@ -252,18 +222,14 @@ class manager_company_report_form extends moodleform {
 
                 break;
             case 3:
-                if ($levelThree) {
-                    $companies_in = implode(',',$levelThree);
-                }//if_level_Two
-
                 if ($parent) {
-                    $options = CompetenceManager::GetCompanies_LevelList($level,$parent,$companies_in);
+                    $options = CompetenceManager::get_companies_level_list($level,$parent,$levelThree);
                 }else if (isset($_COOKIE['level' . ($level-1)]) && $_COOKIE['level' . ($level-1)]) {
-                    $options = CompetenceManager::GetCompanies_LevelList($level,$_COOKIE['level' . ($level-1)],$companies_in);
+                    $options = CompetenceManager::get_companies_level_list($level,$_COOKIE['level' . ($level-1)],$levelThree);
                 }else {
                     // If there is only one company
                     if (isset($SESSION->onlyCompany)) {
-                        $options = CompetenceManager::GetCompanies_LevelList($level,$SESSION->onlyCompany[$level-1],$companies_in);
+                        $options = CompetenceManager::get_companies_level_list($level,$SESSION->onlyCompany[$level-1],$levelThree);
                     }else {
                         $options[0] = get_string('select_level_list','report_manager');
                     }

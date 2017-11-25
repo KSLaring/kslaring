@@ -9,29 +9,49 @@
  * @creationDate    02/12/2014
  * @author          eFaktor     (fbv)
  */
+global $CFG,$PAGE,$OUTPUT,$PAGE,$USER;
+
 require_once('../../config.php');
 require_once($CFG->libdir.'/adminlib.php');
 require_once($CFG->dirroot . '/my/lib.php');
 require_once('expressloginlib.php');
 require_once('index_form.php');
 
+// Checking access
 require_login();
+if (isguestuser($USER)) {
+    require_logout();
 
-/* Params   */
+    echo $OUTPUT->header();
+    echo $OUTPUT->notification(get_string('guestsarenotallowed','error'), 'notifysuccess');
+    echo $OUTPUT->continue_button($CFG->wwwroot);
+    echo $OUTPUT->footer();
+
+    die();
+}
+
+// Params
 $id              = optional_param('id',0,PARAM_INT);
 $user_id         = $USER->id;
 $current_page    = null;
 $plugin_info     = null;
 $return_url      = new moodle_url('/user/profile.php',array('id' => $user_id));
 
+// Settings page
+$PAGE->set_context(CONTEXT_USER::instance($user_id));
+$PAGE->set_pagelayout('mypublic');
+$PAGE->set_pagetype('user-profile');
 $PAGE->set_url(new moodle_url('/local/express_login/regenerate_express.php'));
 
 // Get the profile page.  Should always return something unless the database is broken.
 if (!$current_page = my_get_page($user_id, MY_PAGE_PUBLIC)) {
     print_error('mymoodlesetup');
 }
+// Start setting up the page.
+$PAGE->set_subpage($current_page->id);
+$PAGE->navbar->add(get_string('pluginname','local_express_login'));
 
-/* Check the User */
+// Check the user
 if ($id && ($user_id != $id)) {
     $PAGE->set_context(CONTEXT_SYSTEM::instance());
     echo $OUTPUT->header();
@@ -41,22 +61,14 @@ if ($id && ($user_id != $id)) {
     die();
 }
 
-/* Settings Page    */
-$PAGE->set_context(CONTEXT_USER::instance($user_id));
-$PAGE->set_pagelayout('mypublic');
-$PAGE->set_pagetype('user-profile');
-// Start setting up the page.
-$PAGE->set_subpage($current_page->id);
-$PAGE->navbar->add(get_string('pluginname','local_express_login'));
-
-/* Add Form */
+// Add form
 $exists_express = Express_Login::Exists_ExpressLogin($user_id);
 $form = new express_login_regenerate_link(null,$exists_express);
 if ($form->is_cancelled()) {
     $_POST = array();
     redirect($return_url);
 }else if ($data = $form->get_data()) {
-    /* Re-Generate Express Link */
+    // Re-generate express link
     $regenerate_link = Express_Login::ReGenerate_ExpressLink($data);
 
     if ($regenerate_link) {

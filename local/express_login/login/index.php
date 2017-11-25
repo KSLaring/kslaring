@@ -3,11 +3,25 @@
 include_once('../../../config.php');
 require_once('loginlib.php');
 
+global $PAGE,$SITE,$OUTPUT,$CFG,$USER;
+
 $PAGE->set_url("$CFG->httpswwwroot/login/index.php");
 $PAGE->set_context(CONTEXT_SYSTEM::instance());
 $PAGE->set_pagelayout('login');
 
-/* USER */
+// Checking access
+if (isguestuser($USER)) {
+    require_logout();
+
+    echo $OUTPUT->header();
+    echo $OUTPUT->notification(get_string('guestsarenotallowed','error'), 'notifysuccess');
+    echo $OUTPUT->continue_button($CFG->wwwroot);
+    echo $OUTPUT->footer();
+
+    die();
+}
+
+// User
 if (isset($_POST['UserName'])) {
     $username = $_POST['UserName'];
 }else {
@@ -15,7 +29,7 @@ if (isset($_POST['UserName'])) {
     unset($_SESSION['UserName']);
 }//if_user
 
-/* MICRO LEARNING */
+// Micro learning
 if (isset($_POST['micro'])) {
     $micro = $_POST['micro'];
 }else {
@@ -35,10 +49,10 @@ if (!$num_attempts) {
     redirect($err_url);
 }
 
-/* PARAMS   */
+// Params
 $er = optional_param('er',0,PARAM_INT);
 
-/* Plugins Info */
+// Plugin info
 $plugin_info     = get_config('local_express_login');
 $minimum    = array('4','6','8');
 $digits     = $minimum[$plugin_info->minimum_digits];
@@ -71,4 +85,5 @@ if (!empty($er)) {
 
 <?php
 echo $OUTPUT->footer();
+
 ?>

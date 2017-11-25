@@ -25,6 +25,8 @@
  * @author          eFaktor     (fbv)
  */
 
+global $CFG,$SESSION,$PAGE,$USER,$SITE,$OUTPUT;
+
 require_once('../../../config.php');
 require_once('importlib.php');
 require_once('../managerlib.php');
@@ -32,7 +34,7 @@ require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->libdir.'/csvlib.class.php');
 require_once('import_form.php');
 
-/* PARAMS   */
+// Params
 $level              = required_param('level',PARAM_INT);
 $return             = new moodle_url('/report/manager/index.php');
 $return_url         = new moodle_url('/report/manager/company_structure/company_structure.php',array('level'=>$level));
@@ -46,6 +48,19 @@ $per_page           = 4;
 $total_not_imported = 0;
 /* Array of all fields for validation */
 $std_fields = array('company','industry');
+
+// Checking access
+require_login();
+if (isguestuser($USER)) {
+    require_logout();
+
+    echo $OUTPUT->header();
+    echo $OUTPUT->notification(get_string('guestsarenotallowed','error'), 'notifysuccess');
+    echo $OUTPUT->continue_button($CFG->wwwroot);
+    echo $OUTPUT->footer();
+
+    die();
+}
 
 @set_time_limit(60*60); // 1 hour should be enough
 raise_memory_limit(MEMORY_HUGE);
@@ -63,6 +78,7 @@ $PAGE->set_heading($SITE->fullname);
 $PAGE->navbar->add(get_string('report_manager','local_tracker_manager'),$return);
 $PAGE->navbar->add(get_string('company_structure', 'report_manager'),$return_url);
 $PAGE->navbar->add(get_string('header_import', 'report_manager'),$url);
+
 
 unset($SESSION->parents);
 

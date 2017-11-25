@@ -122,7 +122,7 @@ class manager_import_structure_form extends moodleform {
         /* Public Checkbox  */
         if (isset($_COOKIE['parentImportLevel']) && ($_COOKIE['parentImportLevel']) && ($_COOKIE['parentImportLevel'] != 0)) {
             if (isset($_COOKIE['parentImportZero']) && ($_COOKIE['parentImportZero']) && ($_COOKIE['parentImportZero'] != 0)) {
-                if (CompetenceManager::IsPublic($_COOKIE['parentImportZero'])) {
+                if (CompetenceManager::is_public($_COOKIE['parentImportZero'])) {
                     $default = 1;
                 }else {
                     $default = 0;

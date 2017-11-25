@@ -204,7 +204,7 @@ class enrolmethodself_enrolform extends \moodleform {
             case 0:
                 /* Companies for Level Zero */
                 if ($myCompetence) {
-                    $options    = \CompetenceManager::GetCompanies_LevelList($level,0,$myCompetence->levelzero);
+                    $options    = \CompetenceManager::get_companies_level_list($level,0,$myCompetence->levelzero);
                 }else {
                     $options    = array();
                     $options[0] = get_string('select_level_list','report_manager');
@@ -227,20 +227,20 @@ class enrolmethodself_enrolform extends \moodleform {
                     if ($myCompetence) {
                         switch ($level) {
                             case 1:
-                                $options    = \CompetenceManager::GetCompanies_LevelList($level,$parent,$myCompetence->levelone);
+                                $options    = \CompetenceManager::get_companies_level_list($level,$parent,$myCompetence->levelone);
 
                                 break;
                             case 2:
-                                $options    = \CompetenceManager::GetCompanies_LevelList($level,$parent,$myCompetence->leveltwo);
+                                $options    = \CompetenceManager::get_companies_level_list($level,$parent,$myCompetence->leveltwo);
 
                                 break;
                             case 3:
-                                $options    = \CompetenceManager::GetCompanies_LevelList($level,$parent,$myCompetence->levelthree);
+                                $options    = \CompetenceManager::get_companies_level_list($level,$parent,$myCompetence->levelthree);
 
                                 break;
                         }
                     }else {
-                        $options = \CompetenceManager::GetCompanies_LevelList($level,$parent);
+                        $options = \CompetenceManager::get_companies_level_list($level,$parent);
                     }
                 }else {
                     $options[0] = get_string('select_level_list','report_manager');

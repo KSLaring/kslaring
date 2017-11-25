@@ -36,9 +36,22 @@ require_once('../../../config.php');
 require_once('locationslib.php');
 require_once('locations_form.php');
 
-require_login();
+global $USER,$PAGE,$SITE,$OUTPUT,$CFG;
 
-/* PARAMS   */
+// Checking access
+require_login();
+if (isguestuser($USER)) {
+    require_logout();
+
+    echo $OUTPUT->header();
+    echo $OUTPUT->notification(get_string('guestsarenotallowed','error'), 'notifysuccess');
+    echo $OUTPUT->continue_button($CFG->wwwroot);
+    echo $OUTPUT->footer();
+
+    die();
+}
+
+// Params
 $locationId     = optional_param('id',0,PARAM_INT);
 $page           = optional_param('page', 0, PARAM_INT);
 $perpage        = optional_param('perpage', 20, PARAM_INT);        // how many per page
@@ -63,6 +76,7 @@ if (!has_capability('local/friadmin:course_locations_manage',$context)) {
     }//if_superuser
 }
 
+// Page settings
 $PAGE->set_url($url);
 $PAGE->set_context($context);
 $PAGE->set_pagelayout('admin');
@@ -72,40 +86,40 @@ $PAGE->navbar->add(get_string('plugin_course_locations','local_friadmin'),$index
 $PAGE->navbar->add(get_string('lst_locations','local_friadmin'),$return);
 $PAGE->navbar->add(get_string('edit_location','local_friadmin'),$url);
 
-/* Get Location */
+// Get location
 $location   = CourseLocations::Get_LocationDetail($locationId);
 
-/* Editor Options */
+// Editor options
 $edit_options   = array('maxfiles' => 0, 'maxbytes'=>$CFG->maxbytes, 'trusttext'=>false, 'noclean'=>true, 'context' => $context);
-/* Prepare the editor   */
+// Prepare editor
 $location->descriptionformat      = FORMAT_HTML;
 $location = file_prepare_standard_editor($location, 'description', $edit_options,$context, 'local', 'course_locations',0);
 
-/* Form */
+// Form
 $form = new edit_location_form(null,array($location,$edit_options));
 if ($form->is_cancelled()) {
     $_POST = array();
     redirect($return);
 }else if($data = $form->get_data()) {
-    /* Get Data */
+    // Get data
     $dataForm = (Array)$data;
 
-    /* Get Editor Info  */
+    // Get editor info
     $location->description_editor   = $dataForm['description_editor'];
     $location                       = file_postupdate_standard_editor($location, 'description', $edit_options, $context, 'local', 'course_locations', 0);
     $dataForm['description']        = $location->description;
 
-    /* Save Location    */
+    // Save location
     CourseLocations::Update_Location($dataForm);
 
     $_POST = array();
     redirect($return);
 }//if_cancel
 
-/* Header   */
+// Header
 echo $OUTPUT->header();
 
 $form->display();
 
-/* Footer   */
+// Footer
 echo $OUTPUT->footer();

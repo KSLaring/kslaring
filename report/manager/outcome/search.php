@@ -33,11 +33,12 @@ define('AJAX_SCRIPT', true);
 require_once('../../../config.php');
 require_once('outcomelib.php');
 
-/* PARAMS   */
+global $PAGE,$USER,$OUTPUT;
+
+// Params
 $search             = required_param('search',PARAM_RAW);
 $selectorId         = required_param('selectorid',PARAM_ALPHANUM);
 $outcomeId          = required_param('outcome',PARAM_INT);
-
 $optSelector    = null;
 $class          = null;
 $json           = array();
@@ -51,8 +52,18 @@ $url            = new moodle_url('/report/manager/outcome/search.php');
 $PAGE->set_context($context);
 $PAGE->set_url($url);
 
-/* Check the correct access */
+// Checking access
 require_login();
+if (isguestuser($USER)) {
+    require_logout();
+
+    echo $OUTPUT->header();
+    echo $OUTPUT->notification(get_string('guestsarenotallowed','error'), 'notifysuccess');
+    echo $OUTPUT->continue_button($CFG->wwwroot);
+    echo $OUTPUT->footer();
+
+    die();
+}
 require_sesskey();
 
 echo $OUTPUT->header();
@@ -77,6 +88,7 @@ if ($optSelector['name'] == 'addselect') {
     $results  = outcome::FindJobRoles_Selector($outcomeId,$search);
 }
 $data       = array('jr' => array());
+if ($results) {
 foreach ($results as $id => $jobRole) {
     /* Info Job Role    */
     $info = new stdClass();
@@ -85,6 +97,8 @@ foreach ($results as $id => $jobRole) {
 
     $jobRoles[$info->name] = $info;
 }
+}
+
 $data['jr'] = $jobRoles;
 $json[] = $data;
 echo json_encode(array('results' => $json));

@@ -12,13 +12,17 @@
 require_once('../../../config.php');
 require_once('loginlib.php');
 
+global $PAGE,$SITE,$OUTPUT,$CFG,$USER;
+
 /* PARAMS   */
-$err_code       = optional_param('er',0,PARAM_INT);
+$err_code       = optional_param('er',3,PARAM_INT);
 $message_err    = null;
 
 $PAGE->set_url("$CFG->httpswwwroot/login/index.php");
 $PAGE->set_context(CONTEXT_SYSTEM::instance());
 $PAGE->set_pagelayout('login');
+
+
 
 echo $OUTPUT->header();
 if (isloggedin()) {

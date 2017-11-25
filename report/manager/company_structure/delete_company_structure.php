@@ -30,25 +30,23 @@
  *
  */
 
+global $CFG,$SESSION,$PAGE,$SITE,$OUTPUT,$USER;
+
 require_once('../../../config.php');
 require_once( '../managerlib.php');
 require_once('company_structurelib.php');
 require_once($CFG->libdir . '/adminlib.php');
 
-
-/* Params */
+// Params
 $company_id     = required_param('id',PARAM_INT);
 $level          = optional_param('level', 0, PARAM_INT);
 $confirmed      = optional_param('confirm', false, PARAM_BOOL);
 $url            = new moodle_url('/report/manager/company_structure/delete_company_structure.php',array('level' => $level,'id' => $company_id));
 $returnUrl      = new moodle_url('/report/manager/company_structure/company_structure.php');
-$parents        = $SESSION->parents;
 $params         = array();
-
-/* Start the page */
 $site_context = context_system::instance();
 
-//HTTPS is required in this page when $CFG->loginhttps enabled
+// Page settings
 $PAGE->https_required();
 $PAGE->set_context($site_context);
 $PAGE->set_pagelayout('report');
@@ -59,8 +57,19 @@ $PAGE->navbar->add(get_string('report_manager','report_manager'),new moodle_url(
 $PAGE->navbar->add(get_string('company_structure','report_manager'),$returnUrl);
 $PAGE->navbar->add(get_string('delete_company_level','report_manager'));
 
-/* ADD require_capability */
-if (!CompetenceManager::IsSuperUser($USER->id)) {
+// Checking access
+require_login();
+if (isguestuser($USER)) {
+    require_logout();
+
+    echo $OUTPUT->header();
+    echo $OUTPUT->notification(get_string('guestsarenotallowed','error'), 'notifysuccess');
+    echo $OUTPUT->continue_button($CFG->wwwroot);
+    echo $OUTPUT->footer();
+
+    die();
+}
+if (!CompetenceManager::is_super_user($USER->id)) {
     require_capability('report/manager:edit', $site_context);
 }//if_SuperUser
 
@@ -72,7 +81,10 @@ if (empty($CFG->loginhttps)) {
 
 $PAGE->verify_https_required();
 
-/* Return Url   */
+// Parents
+$parents        = $SESSION->parents;
+
+// Return url
 $levelZero  = COMPANY_STRUCTURE_LEVEL . 0;
 $levelOne   = COMPANY_STRUCTURE_LEVEL . 1;
 $levelTwo   = COMPANY_STRUCTURE_LEVEL . 2;
@@ -91,30 +103,28 @@ if (isset($parents[3]) && $parents[3]) {
 }
 $returnUrl = new moodle_url('/report/manager/company_structure/company_structure.php',$params);
 
-/* Print Header */
+// Header
 echo $OUTPUT->header();
 
 if ($confirmed) {
-    /* Remove */
+    // Remove
     if (company_structure::company_has_children($company_id)) {
-        /* Not Remove */
         echo $OUTPUT->notification(get_string('error_deleting_company_structure','report_manager'), 'notifysuccess');
         echo $OUTPUT->continue_button($returnUrl);
     }else {
-        /* Remove */
         if (company_structure::delete_company($company_id)) {
             echo $OUTPUT->notification(get_string('deleted_company_structure','report_manager'), 'notifysuccess');
             echo $OUTPUT->continue_button($returnUrl);
         }
     }//if_deleted
 }else {
-    /* First Confirm    */
+    // First confirm
     $strMessages = null;
 
     $company_name   = company_structure::get_company_name($company_id);
     $confirm_url    = new moodle_url('/report/manager/company_structure/delete_company_structure.php',array('level' => $level,'id' => $company_id, 'confirm' => true));
 
-    /* With/Without employees */
+    // Check employees
     if (company_structure::company_has_employees($company_id)) {
         $strMessages = get_string('delete_company_structure_employees_are_you_sure','report_manager',$company_name);
     }else {
@@ -124,6 +134,6 @@ if ($confirmed) {
     echo $OUTPUT->confirm($strMessages,$confirm_url,$returnUrl);
 }//if_confirm_delte_company
 
-/* Print Footer */
+// Footer
 echo $OUTPUT->footer();
 

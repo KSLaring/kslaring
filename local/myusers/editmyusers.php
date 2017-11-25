@@ -13,6 +13,8 @@
  *
  */
 
+global $CFG,$USER,$OUTPUT,$SESSION,$DB,$SITE,$PAGE;
+
 require_once( '../../config.php');
 require_once($CFG->libdir.'/gdlib.php');
 require_once($CFG->libdir.'/adminlib.php');
@@ -21,18 +23,22 @@ require_once($CFG->dirroot.'/user/editlib.php');
 require_once($CFG->dirroot.'/user/profile/lib.php');
 require_once($CFG->dirroot.'/user/lib.php');
 
+$id             = required_param('id', PARAM_INT);
+$cat_id         = (isset($SESSION->cat) ? $SESSION->cat :0);
+$course         = optional_param('course', SITEID, PARAM_INT);   // course id (defaults to Site)
+$url = new moodle_url('/local/myusers/editmyusers.php',array('id' => $id,'course' => $course));
+
+if (isguestuser($USER->id)) { // the real guest user can not be edited
+    require_logout();
+    print_error('guestnoeditprofileother');
+    die();
+}
+$context_cat    = context_coursecat::instance($cat_id);
+$course = $DB->get_record('course', array('id'=>$course), '*', MUST_EXIST);
+
 //HTTPS is required in this page when $CFG->loginhttps enabled
 $PAGE->https_required();
-
-$id             = required_param('id', PARAM_INT);
-$cat_id         = $SESSION->cat;
-$context_cat    = context_coursecat::instance($cat_id);
-$course         = optional_param('course', SITEID, PARAM_INT);   // course id (defaults to Site)
-
-$url = new moodle_url('/local/myusers/editmyusers.php',array('id' => $id,'course' => $course));
 $PAGE->set_url($url);
-
-$course = $DB->get_record('course', array('id'=>$course), '*', MUST_EXIST);
 
 if (!empty($USER->newadminuser)) {
     $PAGE->set_course($SITE);
@@ -72,10 +78,6 @@ if ($user->id != -1 and is_mnet_remote_user($user)) {
 
 if ($user->id != $USER->id and is_siteadmin($user) and !is_siteadmin($USER)) {  // Only admins may edit other admins
     print_error('useradmineditadmin');
-}
-
-if (isguestuser($user->id)) { // the real guest user can not be edited
-    print_error('guestnoeditprofileother');
 }
 
 if ($user->deleted) {

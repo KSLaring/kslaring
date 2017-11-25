@@ -30,7 +30,7 @@ define('AJAX_SCRIPT', true);
 require_once('../../../config.php');
 require_once('lib/categoryrptlib.php');
 
-global $PAGE,$USER;
+global $PAGE,$USER,$OUTPUT,$CFGT;
 
 // Params
 $parent         = optional_param('parent', 0,PARAM_INT);
@@ -46,6 +46,19 @@ $url            = new moodle_url('/local/friadmin/reports/category.php');
 // Set page
 $PAGE->set_context($context);
 $PAGE->set_url($url);
+
+// Checking access
+require_login();
+if (isguestuser($USER)) {
+    require_logout();
+
+    echo $OUTPUT->header();
+    echo $OUTPUT->notification(get_string('guestsarenotallowed','error'), 'notifysuccess');
+    echo $OUTPUT->continue_button($CFG->wwwroot);
+    echo $OUTPUT->footer();
+
+    die();
+}
 
 // Access
 require_login();

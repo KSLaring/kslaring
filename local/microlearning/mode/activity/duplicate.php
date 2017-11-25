@@ -16,7 +16,9 @@ require_once('../../microlearninglib.php');
 require_once('activitymodelib.php');
 require_once('duplicate_form.php');
 
-/* PARAMS   */
+global $PAGE,$USER,$OUTPUT,$SITE,$SESSION,$CFG;
+
+// Params
 $course_id      = required_param('id',PARAM_INT);
 $campaign_id    = required_param('cp',PARAM_INT);
 
@@ -28,7 +30,18 @@ $url                = new moodle_url('/local/microlearning/mode/activity/duplica
 $return_url         = new moodle_url('/local/microlearning/index.php',array('id'=>$course_id));
 $error              = false;
 
-/* check right permissions */
+// Checking access
+require_login();
+if (isguestuser($USER)) {
+    require_logout();
+
+    echo $OUTPUT->header();
+    echo $OUTPUT->notification(get_string('guestsarenotallowed','error'), 'notifysuccess');
+    echo $OUTPUT->continue_button($CFG->wwwroot);
+    echo $OUTPUT->footer();
+
+    die();
+}
 if (!has_capability('local/microlearning:manage',$context)) {
     if (!Micro_Learning::HasPermissions($course_id,$USER->id)) {
         print_error('nopermissions', 'error', '', 'local/microlearning:manage');
@@ -36,6 +49,7 @@ if (!has_capability('local/microlearning:manage',$context)) {
 }
 require_login($course);
 
+// Page settings
 $PAGE->set_url($url);
 $PAGE->set_context($context_course);
 $PAGE->set_pagelayout('course');
@@ -45,17 +59,17 @@ $PAGE->navbar->add(get_string('title_index','local_microlearning'),$return_url);
 $PAGE->navbar->add(get_string('title_activity','local_microlearning'));
 $PAGE->navbar->add(get_string('title_duplicate','local_microlearning'));
 
-/* Form     */
+// Form
 $form = new duplicate_activity_form(null,array($course_id,$campaign_id));
 if ($form->is_cancelled()) {
     $_POST = array();
     redirect($return_url);
 }else if ($data = $form->get_data()) {
     try {
-        /* Duplicate Campaign   */
+        // Duplicate Campaign
         $new_campaign = Activity_Mode::DuplicateCampaign($data);
 
-        /* Return Activity Deliveries   */
+        // Return Activity Deliveries
         $return_delivery    = new moodle_url('/local/microlearning/mode/activity/activity_deliveries.php',array('id'=>$course_id,'mode' => ACTIVITY_MODE,'cp' => $new_campaign));
         $_POST = array();
         redirect($return_delivery);
@@ -65,16 +79,15 @@ if ($form->is_cancelled()) {
 }//if_form
 
 
-/* Header   */
+// Header
 echo $OUTPUT->header();
 
 if ($error) {
-    /* Not Duplicated */
     echo $OUTPUT->notification(get_string('err_generic','local_microlearning'), 'notifysuccess');
     echo $OUTPUT->continue_button($return_url);
 }else {
     $form->display();
 }
 
-/* Foot*/
+// Footer
 echo $OUTPUT->footer();

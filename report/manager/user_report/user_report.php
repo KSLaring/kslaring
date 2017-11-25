@@ -26,6 +26,7 @@
  * @creationDate    24/05/2017
  * @author          eFaktor     (fbv)
  */
+global $CFG,$USER,$PAGE,$SITE,$SESSION,$OUTPUT;
 
 require_once('../../../config.php');
 require_once( 'usersrptlib.php');
@@ -33,7 +34,18 @@ require_once( 'user_report_form.php');
 require_once( '../managerlib.php');
 require_once($CFG->libdir . '/adminlib.php');
 
+// Checking access
 require_login();
+if (isguestuser($USER)) {
+    require_logout();
+
+    echo $OUTPUT->header();
+    echo $OUTPUT->notification(get_string('guestsarenotallowed','error'), 'notifysuccess');
+    echo $OUTPUT->continue_button($CFG->wwwroot);
+    echo $OUTPUT->footer();
+
+    die();
+}
 
 // Params
 $url            = new moodle_url('/report/manager/user_report/user_report.php');
@@ -44,7 +56,7 @@ $out            = null;
 $data_rpt       = null;
 
 $site_context = context_system::instance();
-$IsReporter = CompetenceManager::IsReporter($USER->id);
+$IsReporter = CompetenceManager::is_reporter($USER->id);
 if (!$IsReporter) {
     require_capability('report/manager:viewlevel4', $site_context,$USER->id);
 }

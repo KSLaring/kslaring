@@ -225,10 +225,17 @@ M.core_user.init_reporters_selector = function (Y, name, hash, level, companies,
         output_group : function(groupname, reporters, selected_reporters, processsingle) {
             var optgroup    = Y.Node.create('<optgroup></optgroup>');
             var count       = 0;
+            var option;
 
             for (var key in reporters) {
                 var reporter    = reporters[key];
-                var option      = Y.Node.create('<option value="' + reporter.id + '">' + reporter.name + '</option>');
+
+
+                if (reporter.tardis == '1') {
+                    option = Y.Node.create('<option disabled="disabled" class="userselector-infobelow" value="' + reporter.id + '">' + reporter.name + '</option>');
+                }else {
+                    option = Y.Node.create('<option value="' + reporter.id + '">' + reporter.name + '</option>');
+                }
 
                 optgroup.append(option);
                 if (reporter.infobelow) {

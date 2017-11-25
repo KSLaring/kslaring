@@ -33,8 +33,9 @@ require_once('../../../config.php');
 require_once('spuserlib.php');
 require_once('../managerlib.php');
 
+global $USER,$PAGE,$OUTPUT;
 
-/* PARAMS   */
+// Params
 $parent         = optional_param('parent',0,PARAM_INT);
 $level          = required_param('level',PARAM_INT);
 
@@ -48,13 +49,23 @@ $url            = new moodle_url('/report/manager/super_user/structure.php');
 $PAGE->set_context($context);
 $PAGE->set_url($url);
 
-/* Check the correct access */
+// Checking access
 require_login();
+if (isguestuser($USER)) {
+    require_logout();
+
+    echo $OUTPUT->header();
+    echo $OUTPUT->notification(get_string('guestsarenotallowed','error'), 'notifysuccess');
+    echo $OUTPUT->continue_button($CFG->wwwroot);
+    echo $OUTPUT->footer();
+
+    die();
+}
 require_sesskey();
 
 echo $OUTPUT->header();
 
-/* Get Data */
+// Get data
 $data       = array('name' => SP_USER_COMPANY_STRUCTURE_LEVEL . $level, 'items' => array(),'clean' => array());
 $toClean    = array();
 switch ($level) {
@@ -77,11 +88,12 @@ switch ($level) {
 $data['clean'] = $toClean;
 
 if ($parent) {
-    $options = CompetenceManager::GetCompanies_LevelList($level,$parent);
+    $options = CompetenceManager::get_companies_level_list($level,$parent);
 }else {
     $options[0] = get_string('select_level_list','report_manager');
 }//if_parent
 
+if ($options) {
 foreach ($options as $companyId => $company) {
     /* Info Company */
     $infoCompany            = new stdClass;
@@ -91,9 +103,8 @@ foreach ($options as $companyId => $company) {
     /* Add Company*/
     $data['items'][$infoCompany->name] = $infoCompany;
 }
+}
 
-
-
-/* Encode and Send */
+// Send
 $json[] = $data;
 echo json_encode(array('results' => $json));

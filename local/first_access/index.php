@@ -31,7 +31,7 @@
 require_once('../../config.php');
 require_once('locallib.php');
 
-global $USER,$PAGE,$OUTPUT,$SITE;
+global $CFG,$USER,$PAGE,$OUTPUT,$SITE;
 
 // Params
 $userId         = required_param('id',PARAM_INT);
@@ -57,6 +57,20 @@ $PAGE->requires->strings_for_js(array_keys($strings), 'local_first_access');
 $strings = $stringman->load_component_strings('local_first_access', 'no');
 $PAGE->requires->strings_for_js(array_keys($strings), 'local_first_access');
 
+// Checking access
+require_login();
+if (isguestuser($USER)) {
+    require_logout();
+
+    echo $OUTPUT->header();
+    echo $OUTPUT->notification(get_string('guestsarenotallowed','error'), 'notifysuccess');
+    echo $OUTPUT->continue_button($CFG->wwwroot);
+    echo $OUTPUT->footer();
+
+    die();
+}
+
+
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('welcome_title','local_first_access',$SITE->shortname));
 
@@ -65,19 +79,21 @@ if (FirstAccess::has_completed_all_user_profile($userId) && FirstAccess::has_com
     if (!FirstAccess::has_completed_competence_profile($userId)) {
         $urlProfile = $urlCompetence;
     }//if_CompletedCompetenceProfile
+
+    redirect($urlProfile);
 }
 
-echo html_writer::start_div();
-    echo "</br>";
-    echo get_string('welcome_message','local_first_access');
-    echo "</br></br>";
+//echo html_writer::start_div();
+//    echo "</br>";
+//    echo get_string('welcome_message','local_first_access');
+//    echo "</br></br>";
 
-    echo html_writer::start_div('buttons');
-        echo '<a href="' . $urlProfile . '">';
-            echo '<button id="complete">' . get_string('welcome_btn','local_first_access') . '</button>';
-        echo '</a>';
-    echo html_writer::end_div();//buttons
-echo html_writer::end_div();
+//    echo html_writer::start_div('buttons');
+//        echo '<a href="' . $urlProfile . '">';
+//            echo '<button id="complete">' . get_string('welcome_btn','local_first_access') . '</button>';
+//        echo '</a>';
+//    echo html_writer::end_div();//buttons
+//echo html_writer::end_div();
 
 echo $OUTPUT->footer();
 

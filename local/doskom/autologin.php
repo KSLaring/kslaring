@@ -18,10 +18,24 @@ require( '../../config.php' );
 /* Log In URL   */
 $url        = new moodle_url('/local/doskom/login.php');
 
-$SESSION->user          = $_GET['id'];
-$SESSION->ticket        = $_GET['ticket'];
-$SESSION->RedirectPage  = $_GET['RedirectPage'];
-$SESSION->LogoutUrl     = $_GET['LogoutUrl'];
+global $USER,$SESSION,$OUTPUT,$CFG;
+
+// Checking access
+if (isguestuser($USER)) {
+    require_logout();
+
+    echo $OUTPUT->header();
+    echo $OUTPUT->notification(get_string('guestsarenotallowed','error'), 'notifysuccess');
+    echo $OUTPUT->continue_button($CFG->wwwroot);
+    echo $OUTPUT->footer();
+
+    die();
+}
+
+$SESSION->user          = (isset($_GET['id']) ? $_GET['id'] : 0);
+$SESSION->ticket        = (isset($_GET['ticket']) ? $_GET['ticket'] : 0);
+$SESSION->RedirectPage  = (isset($_GET['RedirectPage']) ? $_GET['RedirectPage'] :0);
+$SESSION->LogoutUrl     = (isset($_GET['LogoutUrl']) ? $_GET['LogoutUrl'] : 0);
 
 redirect($url);
 

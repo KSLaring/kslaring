@@ -27,23 +27,26 @@
  * @author          eFaktor     (fbv)
  *
  */
+
+global $CFG,$SESSION,$PAGE,$SITE,$OUTPUT,$USER;
+
 require_once('../../../config.php');
 require_once( '../managerlib.php');
 require_once('company_structurelib.php');
 require_once('move_company_structure_form.php');
 require_once($CFG->libdir . '/adminlib.php');
 
-/* Params */
+// Params
 $company        = required_param('id',PARAM_INT);
 $level          = required_param('le',PARAM_INT);
 $url            = new moodle_url('/report/manager/company_structure/move_company_structure.php',array('id' => $company,'le' => $level));
 $index_url      = new moodle_url('/report/manager/index.php');
 $returnUrl      = new moodle_url('/report/manager/company_structure/company_structure.php');
-$parents        = $SESSION->parents;
+
 $params         = array();
 $siteContext    = context_system::instance();
 
-//HTTPS is required in this page when $CFG->loginhttps enabled
+// Page settings
 $PAGE->https_required();
 $PAGE->set_context($siteContext);
 $PAGE->set_pagelayout('report');
@@ -54,8 +57,19 @@ $PAGE->navbar->add(get_string('report_manager','report_manager'),$index_url);
 $PAGE->navbar->add(get_string('company_structure','report_manager'),$returnUrl);
 $PAGE->navbar->add(get_string('btn_move','report_manager'));
 
-/* ADD require_capability */
-if (!CompetenceManager::IsSuperUser($USER->id)) {
+// Checking access
+require_login();
+if (isguestuser($USER)) {
+    require_logout();
+
+    echo $OUTPUT->header();
+    echo $OUTPUT->notification(get_string('guestsarenotallowed','error'), 'notifysuccess');
+    echo $OUTPUT->continue_button($CFG->wwwroot);
+    echo $OUTPUT->footer();
+
+    die();
+}
+if (!CompetenceManager::is_super_user($USER->id)) {
     require_capability('report/manager:edit', $siteContext);
 }//if_SuperUser
 
@@ -67,7 +81,10 @@ if (empty($CFG->loginhttps)) {
 
 $PAGE->verify_https_required();
 
-/* Return Url   */
+// Parents
+$parents        = $SESSION->parents;
+
+// Return url
 $levelZero  = COMPANY_STRUCTURE_LEVEL . 0;
 $levelOne   = COMPANY_STRUCTURE_LEVEL . 1;
 $levelTwo   = COMPANY_STRUCTURE_LEVEL . 2;
@@ -86,25 +103,23 @@ if (isset($parents[3]) && $parents[3]) {
 }
 $returnUrl = new moodle_url('/report/manager/company_structure/company_structure.php',$params);
 
-/* Form */
+// Form
 $form = new move_company_structure_form(null,array($company,$level));
 if ($form->is_cancelled()) {
     $_POST = array();
     redirect($returnUrl);
 }else if($data = $form->get_data()) {
-    /* Move Company From to    */
-
-    /* Move Company */
+    // Move company
     company_structure::move_from_to($data->id,$parents[($data->le -1)],$data->move_to);
 
     $_POST = array();
     redirect($returnUrl);
 }//if_else_form
 
-/* Print Header */
+// Header
 echo $OUTPUT->header();
 
 $form->display();
 
-/* Print Footer */
+// Footer
 echo $OUTPUT->footer();

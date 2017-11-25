@@ -39,3 +39,6 @@ $string['header_muni']      = 'Municipality';
 $string['btn_save']         = 'Save';
 
 $string['completeprofile']  = 'You must complete your profile before continuing';
+
+$string['btn_save_course']      = 'Save and search for courses';
+$string['btn_save_competence']  = 'Save and go to competence profile';

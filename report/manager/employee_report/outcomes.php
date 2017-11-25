@@ -33,7 +33,9 @@ require_once('../../../config.php');
 require_once( '../managerlib.php');
 require_once('employeelib.php');
 
-/* PARAMS   */
+global $PAGE,$USER,$OUTPUT;
+
+// Params
 $levelZero    = required_param('levelZero',PARAM_INT);
 $levelOne     = required_param('levelOne',PARAM_INT);
 $levelTwo     = required_param('levelTwo',PARAM_INT);
@@ -51,13 +53,23 @@ $url            = new moodle_url('/report/manager/employee_report/outcomes.php')
 $PAGE->set_context($context);
 $PAGE->set_url($url);
 
-/* Check the correct access */
+// Checking access
 require_login();
+if (isguestuser($USER)) {
+    require_logout();
+
+    echo $OUTPUT->header();
+    echo $OUTPUT->notification(get_string('guestsarenotallowed','error'), 'notifysuccess');
+    echo $OUTPUT->continue_button($CFG->wwwroot);
+    echo $OUTPUT->footer();
+
+    die();
+}
 require_sesskey();
 
 echo $OUTPUT->header();
 
-/* Get Outcomes    */
+// Get outcomes
 if ($levelThree) {
     $outcome_lst    = array();
     $outcome_lst = EmployeeReport::GetOutcomes_EmployeeReport($levelZero,$levelOne,$levelTwo,$levelThree);
@@ -66,8 +78,13 @@ if ($levelThree) {
     $outcome_lst[0] = get_string('select');
 }//IF_COOKIE
 
-/* Get Data */
+// get data
 $data               =  array('outcomes' => array());
+if (!$outcome_lst) {
+    $outcome_lst    = array();
+    $outcome_lst[0] = get_string('select');
+}
+
 foreach ($outcome_lst as $id => $outcome) {
     /* Info Company */
     $info            = new stdClass;
@@ -77,8 +94,7 @@ foreach ($outcome_lst as $id => $outcome) {
     /* Add Company*/
     $outcomes[$info->name] = $info;
 }
-
-/* Encode and Send */
+// Send data
 $data['outcomes'] = $outcomes;
 $json[] = $data;
 echo json_encode(array('results' => $json));

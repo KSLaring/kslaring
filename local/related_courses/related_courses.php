@@ -16,28 +16,48 @@ require_once( '../../config.php');
 require_once('locallib.php');
 require_once('related_courses_form.php');
 
-/* PARAMS   */
+global $USER,$PAGE,$OUTPUT,$CFG;
+
+// Params
 $course_id          = optional_param('id',1,PARAM_INT);
 $course             = get_course($course_id);
 $context_course     = context_course::instance($course_id);
 $return_url         = new moodle_url('/course/view.php',array('id' => $course_id));
-require_login($course);
 
-/* Capability   */
+// Checking access
+// Checking access
+require_login();
+if (isguestuser($USER)) {
+    require_logout();
+
+    echo $OUTPUT->header();
+    echo $OUTPUT->notification(get_string('guestsarenotallowed','error'), 'notifysuccess');
+    echo $OUTPUT->continue_button($CFG->wwwroot);
+    echo $OUTPUT->footer();
+
+    die();
+}else {
+    if (!has_capability('local/participants:manage',$context_course)) {
+        require_login();
+    }else {
+        require_login($course);
+    }//if_capabilities
+}
+require_login($course);
 require_capability('moodle/course:update',$context_course);
 
-/* Start Page */
+// Start page
 $url = new moodle_url('/local/related_courses/related_courses.php',array('id' => $course_id));
 $PAGE->set_url($url);
 $PAGE->set_pagelayout('admin');
 $PAGE->set_context($context_course);
 
-/* Get my related courses   */
+// Get my related courses
 $my_related = local_related_courses_getMyRelatedCourses($course_id);
-/* Get all available courses    */
+// Get all available courses
 $available_courses = local_related_courses_getAllAvailableCourses($course_id,$my_related);
 
-/* Form Body    */
+// Form
 $form           = new related_courses_form(null,array($course_id,$my_related,$available_courses));
 if ($data = $form->get_data()) {
     if (!empty($data->addsel)) {
@@ -47,27 +67,27 @@ if ($data = $form->get_data()) {
         local_related_courses_RemoveCourse($course_id,$data->sel_fields);
     }//if_remove
 
-    /* Get my related courses   */
+    // Get my related courses
     $my_related = local_related_courses_getMyRelatedCourses($course_id);
-    /* Get all available courses    */
+    // Get all available courses
     $available_courses = local_related_courses_getAllAvailableCourses($course_id,$my_related);
-    /* Refresh */
+
     $form           = new related_courses_form(null,array($course_id,$my_related,$available_courses));
 }//if_form
 
-/* Form Footer  */
+// Footer form
 $form_footer    = new related_courses_footer(null,$course_id);
 if ($data = $form_footer->get_data()) {
     $_POST = array();
     redirect($return_url);
 }//if_form_footer
 
-/* Print Header */
+// Header
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('title','local_related_courses'));
 
 $form->display();
 $form_footer->display();
 
-/* Print Footer */
+// Footer
 echo $OUTPUT->footer();

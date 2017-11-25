@@ -113,18 +113,20 @@ Class Managers {
         $extra              = null;
         $groupName          = null;
         $total              = null;
+        $tardis             = null;
 
         try {
             // Search criteria
             $params = array();
             $params['level']    = $level;
 
-
-            /* SQL Instruction */
-            $sql = " SELECT	u.id,
+            // SQL Instruction
+            $sql = " SELECT	DISTINCT
+                              u.id,
                             u.firstname,
                             u.lastname,
-                            u.email
+                              u.email,
+                              IF(cm.mapped='TARDIS',1,0) as 'tardis'
                      FROM 	  {report_gen_company_manager}	cm
                         JOIN  {user}						u	ON 	u.id 		= cm.managerid
                                                                 AND	u.deleted 	= 0
@@ -210,12 +212,16 @@ Class Managers {
                         $groupName = get_string('current_users', 'report_manager');
                     }//if_serach
 
-                    /* Get Users    */
+                    // Get users
+                    $tardis = array();
                     foreach ($rdo as $instance) {
+                        if ($instance->tardis) {
+                            $tardis[$instance->id] = $instance->id;
+                        }
                         $managers[$instance->id] = $instance->firstname . " " . $instance->lastname . "(" . $instance->email . ")";
                     }//for_Rdo
 
-                    /* Add users    */
+                    // Add users
                     $availableManagers[$groupName] = $managers;
                 }//if_max
             }else {
@@ -224,7 +230,7 @@ Class Managers {
                 $availableManagers[$groupName]  = array('');
             }//if_rdo
 
-            return $availableManagers;
+            return array($availableManagers,$tardis);
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -256,17 +262,20 @@ Class Managers {
         $extra              = null;
         $groupName          = null;
         $total              = null;
+        $tardis             = null;
 
         try {
             // Search criteria
             $params = array();
             $params['level']    = $level;
 
-            /* SQL Instruction  */
-            $sql = " SELECT		u.id,
+            // SQL instruction
+            $sql = " SELECT	  DISTINCT
+                                  u.id,
                                 u.firstname,
                                 u.lastname,
-                                u.email
+                                  u.email,
+                                  IF(cm.mapped = 'TARDIS',1,0) as 'mapped'
                      FROM			{user}						  u
                         LEFT JOIN	{report_gen_company_manager}  cm	ON  cm.managerid 		= u.id
                                                                         AND	cm.hierarchylevel 	= :level ";
@@ -366,7 +375,7 @@ Class Managers {
                 }//if_tooMany
             }//if_Rdo
 
-            return $availableManagers;
+            return array($availableManagers,$tardis);
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -444,6 +453,7 @@ Class Managers {
                     $infoManager->levelthree        = $levelThree;
                     $infoManager->hierarchylevel    = $level;
                     $infoManager->timecreated       = $time;
+                    $infoManager->mapped            = 'MANUAL';
 
                     // Execute
                     $DB->insert_record('report_gen_company_manager',$infoManager);
@@ -493,6 +503,7 @@ Class Managers {
             // Search criteria
             $params = array();
             $params['level']    = $level;
+            $params['mapped']   = 'TARDIS';
 
             // Get companies level
             switch ($level) {
@@ -543,6 +554,7 @@ Class Managers {
             // Sql instruction
             $sql = " DELETE FROM {report_gen_company_manager}
                      WHERE  hierarchylevel  = :level
+                        AND mapped          != : mapped
                         AND managerid IN ($managersLst) ";
 
             // Execute

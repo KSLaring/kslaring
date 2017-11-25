@@ -1436,6 +1436,7 @@ class WS_FELLESDATA {
                             $IsManager = self::is_manager_reporter($infoManager,MANAGER);
                             if (!$IsManager) {
                                 // Create
+                                $infoManager->mapped = 'TARDIS';
                                 $DB->insert_record('report_gen_company_manager',$infoManager);
                             }//if_manager
                         }else if($reporter) {
@@ -1443,6 +1444,7 @@ class WS_FELLESDATA {
                             $IsReporter = self::is_manager_reporter($infoReporter,REPORTER);
                             if (!$IsReporter) {
                                 // Create
+                                $IsReporter->mapped = 'TARDIS';
                                 $DB->insert_record('report_gen_company_reporter',$infoReporter);
                             }//if_reporter
                         }
@@ -1456,13 +1458,17 @@ class WS_FELLESDATA {
                         if ($manager) {
                             $IsManager = self::is_manager_reporter($infoManager,MANAGER);
                             if ($IsManager) {
-                                $DB->delete_records('report_gen_company_manager',array('id' => $IsManager));
+                                if ($IsManager->mapped = 'TARDIS') {
+                                    $DB->delete_records('report_gen_company_manager',array('id' => $IsManager));
+                                }
                             }//if_Manager
                         }else if ($reporter) {
                             // Delete From Reporter
                             $IsReporter = self::is_manager_reporter($infoReporter,REPORTER);
                             if ($IsReporter) {
-                                $DB->delete_records('report_gen_company_reporter',array('id' => $IsReporter));
+                                if ($IsReporter->mapped = 'TARDIS') {
+                                    $DB->delete_records('report_gen_company_reporter',array('id' => $IsReporter));
+                                }
                             }//if_reporter
                         }//if_manager
 
@@ -1709,7 +1715,8 @@ class WS_FELLESDATA {
             }//switch_type
 
             /* SQL Instruction  */
-            $sql = " SELECT	ma.id
+            $sql = " SELECT	ma.id,
+                            ma.mapped
                      FROM	{". $table . "}	ma
                      WHERE	ma." . $field. " 	= :manager
                         AND	ma.hierarchylevel 	= :level ";

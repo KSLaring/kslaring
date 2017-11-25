@@ -129,11 +129,10 @@ class course_report {
      *                          --> not_enrol.      Array
      *                                              --> name
      */
-    public static function Get_CourseReportLevel($data_form,$my_hierarchy,$IsReporter) {
+    public static function Get_CourseReportLevel($data_form,$myhierarchy,$IsReporter) {
         /* Variables    */
-        global $USER;
         $companies_report   = null;
-        $course_report      = null;
+        $rptcourse      = null;
         $course_id          = null;
         $job_role_list      = null;
         $levelZero          = null;
@@ -145,168 +144,170 @@ class course_report {
         $inOne              = null;
         $inTwo              = null;
         $inThree            = null;
+        $selzero            = null;
 
         try {
             // Course Report - Basic Information
             $course_id      = $data_form[REPORT_MANAGER_COURSE_LIST];
-            $course_report  = self::Get_CourseBasicInfo($course_id);
+            $rptcourse  = self::Get_CourseBasicInfo($course_id);
 
             // Clean temporary data
             self::CleanTemporary($course_id);
 
+
             // Get the rest of data to displat
             // Users and status of each user by company
-            if ($course_report) {
-                $course_report->rpt                = $data_form['rpt'];
-                $course_report->completed_before   = $data_form[REPORT_MANAGER_COMPLETED_LIST];
-
-                // Get companies connected with user by level
-                if ($IsReporter) {
-                    $inOne   = $my_hierarchy->competence[$data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'0']]->levelOne;
-                    $inTwo   = $my_hierarchy->competence[$data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'0']]->levelTwo;
-                    $inThree = $my_hierarchy->competence[$data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'0']]->levelThree;
-                }else {
-                    list($inZero,$inOne,$inTwo,$inThree) = CompetenceManager::GetMyCompanies_By_Level($my_hierarchy->competence,$my_hierarchy->my_level);
-                }//if_reporter
+            if ($rptcourse) {
+                $selzero = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'0'];
 
                 // Job roles selected
-                $course_report->job_roles = self::Get_JobRolesCourse_Report($data_form);
+                $rptcourse->job_roles = self::Get_JobRolesCourse_Report($data_form);
+
+
+                //Common for all levels
+                $rptcourse->levelZero           = $selzero;
+                $rptcourse->zero_name           = CompetenceManager::get_company_name($selzero);
+                $rptcourse->rpt                 = $data_form['rpt'];
+                $rptcourse->completed_before    = $data_form[REPORT_MANAGER_COMPLETED_LIST];
+
+                // Get level basic info
+                switch ($data_form['rpt']) {
+                    case 1:
+                        // Level one
+                        $levelOne = new stdClass();
+                        $levelOne->id                       = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'1'];
+                        $levelOne->name                     = CompetenceManager::get_company_name($levelOne->id);
+                        $levelOne->levelTwo                 = null;
+                        $rptcourse->levelOne[$levelOne->id] = $levelOne;
+
+                        if ($IsReporter) {
+                            list($inZero,$inOne,$inTwo,$inThree) = CompetenceManager::extract_reporter_competence_by_level($myhierarchy,$data_form['rpt'],$selzero,$levelOne->id);
+                        }
+
+                        break;
+
+                    case 2:
+                    case 3:
+                        // Level one
+                        $levelOne = new stdClass();
+                        $levelOne->id                           = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'1'];
+                        $levelOne->name                         = CompetenceManager::get_company_name($levelOne->id);
+                        $levelOne->levelTwo                     = null;
+                        $rptcourse->levelOne[$levelOne->id]     = $levelOne;
+
+                        // Level two
+                        $levelTwo = new stdClass();
+                        $levelTwo->id                           = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'2'];
+                        $levelTwo->name                         = CompetenceManager::get_company_name($levelTwo->id );
+                        $levelTwo->levelThree                   = null;
+                        $rptcourse->levelTwo[$levelTwo->id]     = $levelTwo;
+
+
+                if ($IsReporter) {
+                            list($inZero,$inOne,$inTwo,$inThree) = CompetenceManager::extract_reporter_competence_by_level($myhierarchy,$data_form['rpt'],
+                                $selzero,$levelOne->id,$levelTwo->id);
+                        }
+
+                        break;
+                }//switch_rpt
+
+                if (!$IsReporter) {
+                    list($inZero,$inOne,$inTwo,$inThree) = CompetenceManager::get_my_companies_by_level($myhierarchy->competence);
+                }
 
                 // Companies with employees
                 if ($data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'3']) {
                     $inThree = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'3'];
+                    if (is_array($inThree)) {
+                        $inThree = implode(',',$inThree);
+                    }
                 }
-                $companiesEmployees = self::GetCompaniesEmployees($data_form,$inOne,$inTwo,$inThree);
-                if ($companiesEmployees) {
-                    // Level Zero - Common for all levels
-                    $course_report->levelZero   = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'0'];
-                    $course_report->zero_name   = CompetenceManager::GetCompany_Name($data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'0']);
-                    $course_report->levelOne    = null;
-                    $course_report->levelTwo    = null;
-                    $course_report->levelThree  = null;
-                    
-                    // Get information to display by level
-                    $USER->levelZero            = $course_report->levelZero;
-                    $USER->courseReport         = $course_id;
-
-                    // Get info course
-                    self::GetUsers_EnrolledIn($course_id,$course_report->job_roles,$companiesEmployees->levelThree);
-                    self::GetUsers_NotEnrolIn($course_id,$course_report->job_roles,$companiesEmployees->levelThree);
+                $coemployees = self::GetCompaniesEmployees($data_form,$inOne,$inTwo,$inThree);
+                if ($coemployees) {
+                    // Get info courses
+                    self::GetUsers_EnrolledIn($course_id,$rptcourse->job_roles,$coemployees->levelThree);
+                    self::GetUsers_NotEnrolIn($course_id,$rptcourse->job_roles,$coemployees->levelThree);
 
                     // Check level
                     switch ($data_form['rpt']) {
                         case 0:
                             // Level zero
                             // Get info connected with level zero
-                            if ($companiesEmployees->levelOne) {
-                                self::Get_CompanyReportInfo_LevelOne($course_report,$companiesEmployees);
+                            if ($coemployees->levelone) {
+                                self::get_reportinfo_levelone($rptcourse,$coemployees);
                             }else {
-                                $course_report->levelOne = null;
+                                $rptcourse->levelOne = null;
                             }//if_levelOne
 
                             break;
                         case 1:
-                            // Level one
-                            $levelOne = new stdClass();
-                            $levelOne->id           = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'1'];
-                            $levelOne->name         = CompetenceManager::GetCompany_Name($data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'1']);
-                            $levelOne->levelTwo     = null;
-
                             // Get info connected with level one
-                            if ($companiesEmployees->levelTwo) {
-                                $levelTwo   = CompetenceManager::GetCompaniesInfo($companiesEmployees->levelTwo);
+                            if ($coemployees->leveltwo) {
+                                $levelTwo = CompetenceManager::get_companies_info($coemployees->leveltwo);
                                 if ($levelTwo) {
-                                    $levelOne->levelTwo      = self::Get_CompanyReportInfo_LevelTwo($course_report,$levelTwo,$companiesEmployees->levelThree);
+                                    $levelOne->levelTwo = self::get_reportinfo_leveltwo($rptcourse,$levelTwo,$coemployees->levelthree);
+
                                     if ($levelOne->levelTwo) {
-                                        $course_report->levelOne[$levelOne->id]  = $levelOne;
+                                        $rptcourse->levelOne[$levelOne->id] = $levelOne;
                                     }else {
                                         $levelOne->levelTwo = null;
-                                        $course_report->levelOne[$levelOne->id] = $levelOne;
+                                        $rptcourse->levelOne[$levelOne->id] = $levelOne;
                                     }
                                 }else {
                                     $levelOne->levelTwo = null;
-                                    $course_report->levelOne[$levelOne->id] = $levelOne;
+                                    $rptcourse->levelOne[$levelOne->id] = $levelOne;
                                 }//if_level_two_companies
-                            }else {
-                                $levelOne->levelTwo = null;
-                                $course_report->levelOne[$levelOne->id] = $levelOne;
-                            }//if_companies_employees_leveltwo
+                            }//if_leveltwo
 
                             break;
                         case 2:
-                            // Level one
-                            $levelOne = new stdClass();
-                            $levelOne->id                               = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'1'];
-                            $levelOne->name                             = CompetenceManager::GetCompany_Name($data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'1']);
-                            $levelOne->levelTwo                         = null;
-                            $course_report->levelOne[$levelOne->id]     = $levelOne;
+                            // Get level three connected with
+                            if ($coemployees->levelthree) {
+                                $levelthree = self::get_companies_by_level(3,$levelTwo->id ,$coemployees->levelthree);
 
-                            // Level two
-                            $levelTwo = new stdClass();
-                            $levelTwo->id           = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'2'];
-                            $levelTwo->name         = CompetenceManager::GetCompany_Name($data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'2']);
-                            $levelTwo->levelThree   = null;
-
-                            // Get info connected with level two
-                            if ($companiesEmployees->levelThree) {
-                                $levelThree   = CompetenceManager::GetCompaniesInfo($companiesEmployees->levelThree);
-                                if ($levelThree) {
-                                    $levelTwo->levelThree      = self::Get_CompanyReportInfo_LevelThree($course_report,$levelThree);
+                                if ($levelthree) {
+                                    $levelTwo->levelThree      = self::get_reportinfo_levelthree($rptcourse,$levelthree);
                                     if ($levelTwo->levelThree) {
-                                        $course_report->levelTwo[$levelTwo->id] = $levelTwo;
+                                        $rptcourse->levelTwo[$levelTwo->id] = $levelTwo;
                                     }else {
                                         $levelTwo->levelThree = null;
-                                        $course_report->levelTwo[$levelTwo->id] = $levelTwo;
+                                        $rptcourse->levelTwo[$levelTwo->id] = $levelTwo;
                                     }
                                 }else {
                                     $levelTwo->levelThree = null;
-                                    $course_report->levelTwo[$levelTwo->id] = $levelTwo;
+                                    $rptcourse->levelTwo[$levelTwo->id] = $levelTwo;
                                 }//if_level_two_companies
                             }else {
                                 $levelTwo->levelThree = null;
-                                $course_report->levelTwo[$levelTwo->id] = $levelTwo;
+                                $rptcourse->levelTwo[$levelTwo->id] = $levelTwo;
                             }//if_companies_employees_levelthree
 
                             break;
                         case 3:
-                            // Level one
-                            $levelOne = new stdClass();
-                            $levelOne->id                               = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'1'];
-                            $levelOne->name                             = CompetenceManager::GetCompany_Name($data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'1']);
-                            $levelOne->levelTwo                         = null;
-                            $course_report->levelOne[$levelOne->id]     = $levelOne;
+                            // Get level three connected with
+                            if ($coemployees->levelthree) {
+                                $levelthree = self::get_companies_by_level(3,$levelTwo->id ,$coemployees->levelthree);
 
-                            // Level two
-                            $levelTwo = new stdClass();
-                            $levelTwo->id                               = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'2'];
-                            $levelTwo->name                             = CompetenceManager::GetCompany_Name($data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'2']);
-                            $levelTwo->levelThree                       = null;
-                            $course_report->levelTwo[$levelTwo->id]     = $levelTwo;
-
-                            // Get info connected with level three
-                            if ($companiesEmployees->levelThree) {
-                                $levelThree   = CompetenceManager::GetCompaniesInfo($companiesEmployees->levelThree);
-
-                                // Level three
-                                if ($levelThree) {
-                                    $course_report->levelThree   = self::Get_CompanyReportInfo_LevelThree($course_report,$levelThree);
+                                if ($levelthree) {
+                                    $three     = self::get_reportinfo_levelthree($rptcourse,$levelthree);
+                                    if ($three) {
+                                        $rptcourse->levelThree = $three;
+                                    }else {
+                                        $rptcourse->levelThree = null;
+                                    }
                                 }else {
-                                    $course_report->levelThree = null;
-                                }//if_levelThree
+                                    $rptcourse->levelThree = null;
+                                }//if_level_two_companies
                             }else {
-                                $course_report->levelThree = null;
-                            }//if_employees_levelthree
+                                $rptcourse->levelThree = null;
+                            }//if_companies_employees_levelthree
 
                             break;
-                        default:
-                            $course_report = null;
+                    }//switch_report
+                }//if_coemployees
+            }//if_rdptcourse
 
-                            break;
-                    }//switch_rpt
-                }//if_companies_with employees
-            }//if_course_report
-
-            return $course_report;
+            return $rptcourse;
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -338,72 +339,42 @@ class course_report {
 
             // Rest of the levels
             switch ($data['rpt']) {
+                case 0;
+                    // Get only companies with employees
+                    $companies = CompetenceManager::get_Companies_with_employees($levelZero,$inOne,$inTwo,$inThree);
+
+                    break;
                 case 1:
-                    $levelOne = array('0' => $data[MANAGER_COURSE_STRUCTURE_LEVEL .'1']);
+                    $levelOne = $data[MANAGER_COURSE_STRUCTURE_LEVEL .'1'];
+
+                    // Get only companies with employees
+                    $companies = CompetenceManager::get_Companies_with_employees($levelZero,$levelOne,$inTwo,$inThree);
 
                     break;
                 case 2:
-                    $levelOne = array('0' => $data[MANAGER_COURSE_STRUCTURE_LEVEL .'1']);
-                    $levelTwo = array('0' => $data[MANAGER_COURSE_STRUCTURE_LEVEL .'2']);
+                    $levelOne = $data[MANAGER_COURSE_STRUCTURE_LEVEL .'1'];
+                    $levelTwo = $data[MANAGER_COURSE_STRUCTURE_LEVEL .'2'];
+
+                    // Get only companies with employees
+                    $companies = CompetenceManager::get_Companies_with_employees($levelZero,$levelOne,$levelTwo,$inThree);
 
                     break;
                 case 3:
-                    $levelOne   = array('0' => $data[MANAGER_COURSE_STRUCTURE_LEVEL .'1']);
-                    $levelTwo   = array('0' => $data[MANAGER_COURSE_STRUCTURE_LEVEL .'2']);
+                    $levelOne   = $data[MANAGER_COURSE_STRUCTURE_LEVEL .'1'];
+                    $levelTwo   = $data[MANAGER_COURSE_STRUCTURE_LEVEL .'2'];
 
                     if (isset($data[MANAGER_COURSE_STRUCTURE_LEVEL .'3'])) {
                         if (!in_array(0,$data[MANAGER_COURSE_STRUCTURE_LEVEL .'3'])) {
                             $levelThree = $data[MANAGER_COURSE_STRUCTURE_LEVEL .'3'];
+                            $inThree    = implode(',',$levelThree);
                         }//if_level_three
                     }//if_levelThree
 
+                    // Get only companies with employees
+                    $companies = CompetenceManager::get_Companies_with_employees($levelZero,$levelOne,$levelTwo,$inThree);
+
                     break;
             }//switch_rpt
-
-            // Level one
-            if ($levelOne) {
-                if ($inOne) {
-                    $inOne = array_intersect($inOne,$levelOne);
-                }else {
-                    $inOne = $levelOne;
-                }
-            }//if_levelOne
-            if ($inOne) {
-                $inOne = implode(',',$inOne);
-            }else {
-                $inOne = 0;
-            }
-
-            // Level two
-            if ($levelTwo) {
-                if ($inTwo) {
-                    $inTwo = array_intersect($inTwo,$levelTwo);
-                }else {
-                    $inTwo = $levelTwo;
-                }
-            }//if_levelTwo
-            if ($inTwo) {
-                $inTwo = implode(',',$inTwo);
-            }else {
-                $inTwo = 0;
-            }
-
-            // Level three
-            if ($levelThree) {
-                if ($inThree) {
-                    $inThree = array_intersect($inThree,$levelThree);
-                }else {
-                    $inThree = $levelThree;
-                }
-            }//if_levelThree
-            if ($inThree) {
-                $inThree = implode(',',$inThree);
-            }else {
-                $inThree = 0;
-            }
-
-            // Get only companies with employees
-            $companies = CompetenceManager::GetCompanies_WithEmployees($levelZero,$inOne,$inTwo,$inThree);
 
             return $companies;
         }catch (Exception $ex) {
@@ -963,12 +934,12 @@ class course_report {
         try {
             if (!empty($data_form[REPORT_MANAGER_JOB_ROLE_LIST])) {
                 $list = join(',',$data_form[REPORT_MANAGER_JOB_ROLE_LIST]);
-                $job_roles = CompetenceManager::Get_JobRolesList($list);
+                $job_roles = CompetenceManager::get_jobroles_list($list);
                 /* Save Job Roles Selected  */
                 $SESSION->job_roles = array_keys($job_roles);
             }else {
                 /* Job Roles - Outcome          */
-                $job_roles = CompetenceManager::Get_JobRolesList();
+                $job_roles = CompetenceManager::get_jobroles_list();
                 $SESSION->job_roles = null;
             }//if_else
 
@@ -978,10 +949,10 @@ class course_report {
                     /* Get Level        */
                     $levelZero = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'0'];
                     /* Get Job Roles    */
-                    if (CompetenceManager::IsPublic($levelZero)) {
-                        CompetenceManager::GetJobRoles_Generics($jr_level);
+                    if (CompetenceManager::is_public($levelZero)) {
+                        CompetenceManager::get_jobroles_generics($jr_level);
                     }//if_public
-                    CompetenceManager::GetJobRoles_Hierarchy($jr_level,0,$levelZero);
+                    CompetenceManager::get_jobroles_hierarchy($jr_level,0,$levelZero);
 
                     break;
                 case 1:
@@ -990,11 +961,11 @@ class course_report {
                     $levelOne  = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'1'];
 
                     /* Get Job Roles    */
-                    if (CompetenceManager::IsPublic($levelZero)) {
-                        CompetenceManager::GetJobRoles_Generics($jr_level);
+                    if (CompetenceManager::is_public($levelZero)) {
+                        CompetenceManager::get_jobroles_generics($jr_level);
                     }//if_public
-                    CompetenceManager::GetJobRoles_Hierarchy($jr_level,0,$levelZero);
-                    CompetenceManager::GetJobRoles_Hierarchy($jr_level,1,$levelZero,$levelOne);
+                    CompetenceManager::get_jobroles_hierarchy($jr_level,0,$levelZero);
+                    CompetenceManager::get_jobroles_hierarchy($jr_level,1,$levelZero,$levelOne);
 
                     break;
                 case 2:
@@ -1004,12 +975,12 @@ class course_report {
                     $levelTwo  = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'2'];
 
                     /* Get Job Roles    */
-                    if (CompetenceManager::IsPublic($levelZero)) {
-                        CompetenceManager::GetJobRoles_Generics($jr_level);
+                    if (CompetenceManager::is_public($levelZero)) {
+                        CompetenceManager::get_jobroles_generics($jr_level);
                     }//if_public
-                    CompetenceManager::GetJobRoles_Hierarchy($jr_level,0,$levelZero);
-                    CompetenceManager::GetJobRoles_Hierarchy($jr_level,1,$levelZero,$levelOne);
-                    CompetenceManager::GetJobRoles_Hierarchy($jr_level,2,$levelZero,$levelOne,$levelTwo);
+                    CompetenceManager::get_jobroles_hierarchy($jr_level,0,$levelZero);
+                    CompetenceManager::get_jobroles_hierarchy($jr_level,1,$levelZero,$levelOne);
+                    CompetenceManager::get_jobroles_hierarchy($jr_level,2,$levelZero,$levelOne,$levelTwo);
 
                     break;
                 case 3:
@@ -1019,18 +990,18 @@ class course_report {
                     $levelTwo   = $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'2'];
 
                     /* Get Job Roles    */
-                    if (CompetenceManager::IsPublic($levelZero)) {
-                        CompetenceManager::GetJobRoles_Generics($jr_level);
+                    if (CompetenceManager::is_public($levelZero)) {
+                        CompetenceManager::get_jobroles_generics($jr_level);
                     }//if_public
                     if (isset($data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'3']) && ($data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'3'])) {
                         $levelThree = implode(',',$data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'3']);
 
                         /* Get Job Roles    */
-                        CompetenceManager::GetJobRoles_Hierarchy($jr_level,3,$levelZero,$levelOne,$levelTwo,$levelThree);
+                        CompetenceManager::get_jobroles_hierarchy($jr_level,3,$levelZero,$levelOne,$levelTwo,$levelThree);
                     }else {
-                        CompetenceManager::GetJobRoles_Hierarchy($jr_level,0,$levelZero);
-                        CompetenceManager::GetJobRoles_Hierarchy($jr_level,1,$levelZero,$levelOne);
-                        CompetenceManager::GetJobRoles_Hierarchy($jr_level,2,$levelZero,$levelOne,$levelTwo);
+                        CompetenceManager::get_jobroles_hierarchy($jr_level,0,$levelZero);
+                        CompetenceManager::get_jobroles_hierarchy($jr_level,1,$levelZero,$levelOne);
+                        CompetenceManager::get_jobroles_hierarchy($jr_level,2,$levelZero,$levelOne,$levelTwo);
                     }//if_levelThree
 
                     break;
@@ -1052,8 +1023,55 @@ class course_report {
     }//Get_JobRolesCourse_Report
 
     /**
-     * @param           $course_report
-     * @param           $companiesEmployees
+     * Description
+     * Get all companies connected with a specific parent and level
+     *
+     * @param           $level
+     * @param           $parent
+     * @param      null $in
+     *
+     * @return          array|null
+     * @throws          Exception
+     *
+     * @creationDate    20/09/2017
+     * @author          eFaktor     (fbv)
+     */
+    private static function get_companies_by_level($level,$parent,$in=null) {
+        /* Variables */
+        global $DB;
+        $sql = null;
+        $rdo = null;
+
+        try {
+            // Search criteria
+            $params = array();
+            $params['level']    = $level;
+
+            // SQL Instruction
+            $sql = " SELECT	DISTINCT  
+                              rcd.id,
+                              rcd.name
+                     FROM     {report_gen_companydata} 		 rcd 
+                        JOIN  {report_gen_company_relation}  rcr ON	rcr.companyid = rcd.id
+                                                                 AND rcr.parentid  IN ($parent)
+                     WHERE    rcd.hierarchylevel = :level ";
+
+            if ($in) {
+                $sql .= " AND   rcd.id IN ($in) ";
+            }
+
+            // Execute
+            $rdo = $DB->get_records_sql($sql,$params);
+
+            return $rdo;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//get_companies_by_level
+
+    /**
+     * @param           $courserpt
+     * @param           $coemployees
      *
      * @throws          Exception
      *
@@ -1069,7 +1087,7 @@ class course_report {
      *      - levelTwo
      *      - levelThree
      */
-    private static function Get_CompanyReportInfo_LevelOne(&$course_report,$companiesEmployees) {
+    private static function get_reportinfo_levelone(&$courserpt,$coemployees) {
         /* Variables    */
         $levelOne       = null;
         $company_list   = null;
@@ -1079,37 +1097,35 @@ class course_report {
 
         try {
             // Get information connected with level one
-            $levelOne       = CompetenceManager::GetCompaniesInfo($companiesEmployees->levelOne);
+            $levelOne       = CompetenceManager::get_companies_info($coemployees->levelone);
 
-            foreach ($levelOne as $id => $company) {
-                // Get level two connected two
-                $company_list   = CompetenceManager::GetCompanies_LevelList(2,$id,$companiesEmployees->levelTwo);
-                $output         = array_slice($company_list, 0, 1);
-                $company_list   = array_diff($company_list,$output);
+            if ($levelOne) {
+                foreach ($levelOne as $id => $company) {
+                    // level two connected
+                    $two   = self::get_companies_by_level(2,$id,$coemployees->leveltwo);
+                    if ($two) {
+                        $levelTwo       = self::get_reportinfo_leveltwo($courserpt,$company_list,$coemployees->levelthree);
+                        if ($levelTwo) {
+                            // Level one
+                            $companyInfo = new stdClass();
+                            $companyInfo->name      = $company;
+                            $companyInfo->id        = $id;
+                            $companyInfo->levelTwo  = $levelTwo;
 
-                if ($company_list) {
-                    $levelTwo       = self::Get_CompanyReportInfo_LevelTwo($course_report,$company_list,$companiesEmployees->levelThree);
-                    if ($levelTwo) {
-                        // Level one
-                        $companyInfo = new stdClass();
-                        $companyInfo->name      = $company;
-                        $companyInfo->id        = $id;
-                        $companyInfo->levelTwo  = $levelTwo;
-
-                        $course_report->levelOne[$id] = $companyInfo;
-                    }//if_levelTwo
-                }
-
-            }//for_levelOne
+                            $courserpt->levelOne[$id] = $companyInfo;
+                        }//if_levelTwo
+                    }
+                }//for_levelOne
+            }
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//Get_CompanyReportInfo_LevelOne
+    }//get_reportinfo_levelone
 
     /**
-     * @param           $course_report
+     * @param           $courserpt
      * @param           $parent_lst
-     * @param           $inThree
+     * @param           $inthree
      * @return          array
      * @throws          Exception
      *
@@ -1131,7 +1147,7 @@ class course_report {
      *                              --> not_completed
      *                              --> not_enrol
      */
-    private static function Get_CompanyReportInfo_LevelTwo($course_report,$parent_lst,$inThree) {
+    private static function get_reportinfo_leveltwo($courserpt,$parent_lst,$inthree) {
         /* Variables    */
         $levelTwo       = array();
         $companyInfo    = null;
@@ -1142,27 +1158,28 @@ class course_report {
 
         try {
             // Get information level two
-            foreach ($parent_lst as $id=>$company) {
-                // Get level three connected with
-                $company_list   = CompetenceManager::GetCompanies_LevelList(3,$id,$inThree);
-                $output         = array_slice($company_list, 0, 1);
-                $company_list   = array_diff($company_list,$output);
+            if ($parent_lst) {
+                foreach ($parent_lst as $id=>$company) {
+                    // Get level three connected with
+                    $three = self::get_companies_by_level(3,$id,$inthree);
+                    // Level three
+                    if ($three) {
+                        // Get info level three
+                        $levelThree = self::get_reportinfo_levelthree($courserpt,$company_list);
 
-                // Level three
-                if ($company_list) {
-                    // Get info level three
-                    $levelThree = self::Get_CompanyReportInfo_LevelThree($course_report,$company_list);
-                    if ($levelThree) {
-                        // Level two info
-                        $companyInfo = new stdClass();
-                        $companyInfo->name       = $company;
-                        $companyInfo->id         = $id;
-                        $companyInfo->levelThree = $levelThree;
+                        // Add level two
+                        if ($levelThree) {
+                            // Level two info
+                            $companyInfo = new stdClass();
+                            $companyInfo->name       = $company;
+                            $companyInfo->id         = $id;
+                            $companyInfo->levelThree = $levelThree;
 
-                        $levelTwo[$id] = $companyInfo;
-                    }//if_levelTwo
-                }//if_company_list
-            }//for_companies_level_Two
+                            $levelTwo[$id] = $companyInfo;
+                        }//if_levelTwo
+                    }//if_company_list
+                }//for_companies_level_Two
+            }
 
             return $levelTwo;
         }catch (Exception $ex) {
@@ -1190,7 +1207,7 @@ class course_report {
      *              --> not_completed
      *              --> not_enrol
      */
-    private static function Get_CompanyReportInfo_LevelThree($course_report,$company_list) {
+    private static function get_reportinfo_levelthree($course_report,$company_list) {
         /* Variables    */
         $levelThree     = array();
 
@@ -1202,6 +1219,9 @@ class course_report {
                     $company_info = new stdClass();
                     $company_info->name       = $company;
                     $company_info->id         = $id;
+                    $company_info->completed = null;
+                    $company_info->not_completed = null;
+                    $company_info->not_enrol = null;
                     // Users completed, not completed && not enrolled
                     list($company_info->completed,$company_info->not_completed,$company_info->not_enrol) = self::GetUsers_CompanyCourse($id,$course_report->id,$course_report->completed_before);
 
@@ -1249,7 +1269,7 @@ class course_report {
 
         try {
             /* Get time for the filter  */
-            $timeCompleted = CompetenceManager::Get_CompletedDate_Timestamp($completedLast);
+            $timeCompleted = CompetenceManager::get_completed_date_timestamp($completedLast);
 
             /* Search Criteria  */
             $params = array();
@@ -1399,7 +1419,7 @@ class course_report {
                     $out_report .= '</ul>';
 
                     /* Expiration Before    */
-                    $options = CompetenceManager::GetCompletedList();
+                    $options = CompetenceManager::get_completed_list();
                     $out_report .= html_writer::start_div('expiration');
                         $out_report .= str_replace(' ...',' : ',get_string('completed_list','report_manager')) .  $options[$course_report->completed_before];
                     $out_report .= html_writer::end_div();//expiration
@@ -1558,7 +1578,7 @@ class course_report {
                     $out_report .= '</ul>';
 
                     /* Expiration Before    */
-                    $options = CompetenceManager::GetCompletedList();
+                    $options = CompetenceManager::get_completed_list();
                     $out_report .= html_writer::start_div('expiration');
                         $out_report .= str_replace(' ...',' : ',get_string('completed_list','report_manager')) .  $options[$course_report->completed_before];
                     $out_report .= html_writer::end_div();//expiration
@@ -1715,7 +1735,7 @@ class course_report {
                     $out_report .= '</ul>';
 
                     // Completed last
-                    $options = CompetenceManager::GetCompletedList();
+                    $options = CompetenceManager::get_completed_list();
                     $out_report .= html_writer::start_div('expiration');
                         $out_report .= str_replace(' ...',' : ',get_string('completed_list','report_manager')) .  $options[$course_report->completed_before];
                     $out_report .= html_writer::end_div();//expiration
@@ -1858,7 +1878,7 @@ class course_report {
                     $out_report .= '</ul>';
 
                     /* Expiration Before    */
-                    $options = CompetenceManager::GetCompletedList();
+                    $options = CompetenceManager::get_completed_list();
                     $out_report .= html_writer::start_div('expiration');
                         $out_report .= str_replace(' ...',' : ',get_string('completed_list','report_manager')) .  $options[$course_report->completed_before];
                     $out_report .= html_writer::end_div();//expiration
@@ -2204,7 +2224,7 @@ class course_report {
             $file_name = clean_filename($course_report->name . '_' . $time . ".xls");
 
             /* Get Expiration Period            */
-            $options            = CompetenceManager::GetCompletedList();
+            $options            = CompetenceManager::get_completed_list();
             $completed_before   = $options[$course_report->completed_before];
 
             // Creating a workbook
@@ -2281,7 +2301,7 @@ class course_report {
             $file_name = clean_filename($course_report->name . '_' . $time . ".xls");
 
             /* Get Expiration Period            */
-            $options            = CompetenceManager::GetCompletedList();
+            $options            = CompetenceManager::get_completed_list();
             $completed_before   = $options[$course_report->completed_before];
 
             // Creating a workbook
@@ -2358,7 +2378,7 @@ class course_report {
             $file_name = clean_filename($course_report->name . '_' . $time . ".xls");
 
             /* Get Expiration Period            */
-            $options            = CompetenceManager::GetCompletedList();
+            $options            = CompetenceManager::get_completed_list();
             $completed_before   = $options[$course_report->completed_before];
 
             // Creating a workbook
@@ -2430,7 +2450,7 @@ class course_report {
             $file_name = clean_filename($course_report->name . '_' . $time . ".xls");
 
             /* Get Expiration Period            */
-            $options            = CompetenceManager::GetCompletedList();
+            $options            = CompetenceManager::get_completed_list();
             $completed_before   = $options[$course_report->completed_before];
 
             // Creating a workbook

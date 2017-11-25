@@ -33,9 +33,22 @@ require_once('lib/coursetemplatelib.php');
 require_once('classes/ct_enrolment_form.php');
 require_once('../../../course/lib.php');
 
-require_login();
+global $USER,$PAGE,$SITE,$OUTPUT,$CFG;
 
-/* PARAMS   */
+// Checking access
+require_login();
+if (isguestuser($USER)) {
+    require_logout();
+
+    echo $OUTPUT->header();
+    echo $OUTPUT->notification(get_string('guestsarenotallowed','error'), 'notifysuccess');
+    echo $OUTPUT->continue_button($CFG->wwwroot);
+    echo $OUTPUT->footer();
+
+    die();
+}
+
+// Params
 $courseId       = required_param('id',PARAM_INT);
 $courseTemplate = required_param('ct',PARAM_INT);
 $waitinglist    = optional_param('waitinglist',0,PARAM_INT);
@@ -49,13 +62,14 @@ $strSubTitle    = get_string('course_enrolment', 'local_friadmin');
 $instance       = null;
 $action         = null;
 
-/* Check Permissions/Capability */
+// Permissions/Capability
 if (!has_capability('local/friadmin:view',context_system::instance())) {
     if (!local_friadmin_helper::CheckCapabilityFriAdmin()) {
         print_error('nopermissions', 'error', '', 'block/frikomport:view');
     }//if_superuser
 }
 
+// Page settings
 $PAGE->set_url($url);
 $PAGE->set_context($contextCourse);
 $PAGE->set_pagelayout('admin');
@@ -65,7 +79,6 @@ $PAGE->navbar->add(get_string('pluginname', 'local_friadmin'));
 $PAGE->navbar->add($strTitle);
 $PAGE->navbar->add($strSubTitle);
 
-/* Form */
 /**
  * @updateDate      27/06/2016
  * @author          eFaktor     (fbv)
@@ -73,11 +86,12 @@ $PAGE->navbar->add($strSubTitle);
  * Description
  * Different enrolment method based on course format
  */
+// Form
 switch ($course->format) {
     case 'classroom':
     case 'classroom_frikomport':
         if ($waitinglist) {
-            /* Get Enrol Instance */
+            // Enrol instance
             $instance   = CourseTemplate::get_enrol_instance($courseId,$courseTemplate,$course->format);
             $form       = new ct_enrolment_settings_form(null,array($courseId,$waitinglist,$instance,$courseTemplate));
         }else {
@@ -87,7 +101,7 @@ switch ($course->format) {
         break;
     case 'elearning_frikomport':
     case 'netcourse':
-        /* Get Enrol Instance */
+        // Enrol isntance
         $instance   = CourseTemplate::get_enrol_instance($courseId,$courseTemplate,$course->format);
         $form       = new ct_self_enrolment_settings_form(null,array($courseId,$instance,$courseTemplate));
 
@@ -104,10 +118,10 @@ if ($form->is_cancelled()) {
         case 'classroom_frikomport':
             if ($waitinglist) {
                 if ($data->instanceid) {
-                    /* Update   */
+                    // Update
                     CourseTemplate::update_waiting_enrolment($data);
                 }else {
-                    /* New      */
+                    // New
                     CourseTemplate::create_waiting_enrolment($data);
                 }
                 redirect($returnUrl);
@@ -120,7 +134,7 @@ if ($form->is_cancelled()) {
             }else {
                 $action = 'add';
             }
-            /* Update /Create Instance */
+            // Update/Create
             CourseTemplate::self_enrolment($data,$action);
 
             redirect($returnUrl);

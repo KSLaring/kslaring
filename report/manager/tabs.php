@@ -40,8 +40,8 @@ $top_row    = array();
 
 
 /* Info Super Users */
-$superUser  = CompetenceManager::IsSuperUser($USER->id);
-$isReporter = CompetenceManager::IsReporter($USER->id);
+$superUser  = CompetenceManager::is_super_user($USER->id);
+$isReporter = CompetenceManager::is_reporter($USER->id);
 if ($superUser) {
     if ($isReporter) {
         /* Create Tabs */

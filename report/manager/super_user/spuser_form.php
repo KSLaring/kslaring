@@ -124,7 +124,7 @@ class manager_spuser_form extends moodleform {
         switch ($level) {
             case 0:
                 /* Companies for Level Zero */
-                $options    = CompetenceManager::GetCompanies_LevelList($level);
+                $options    = CompetenceManager::get_companies_level_list($level);
 
                 break;
             default:
@@ -133,7 +133,7 @@ class manager_spuser_form extends moodleform {
 
                 /* Companies for the current level */
                 if ($parent) {
-                    $options = CompetenceManager::GetCompanies_LevelList($level,$parent);
+                    $options = CompetenceManager::get_companies_level_list($level,$parent);
                 }else {
                     $options[0] = get_string('select_level_list','report_manager');
                 }//if_parent

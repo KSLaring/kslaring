@@ -35,10 +35,12 @@ require_once('managerlib.php');
 global $PAGE,$SITE,$OUTPUT,$USER,$SESSION;
 
 // Params
-$parent         = optional_param('parent',0,PARAM_INT);
-$levelZero      = optional_param('levelZero',0,PARAM_INT);
+$zero           = required_param('zero',PARAM_INT);
+$one            = required_param('one',PARAM_INT);
+$two            = required_param('two',PARAM_INT);
 $level          = required_param('level',PARAM_INT);
 $superUser      = required_param('sp',PARAM_INT);
+$parent         = null;
 $myHierarchy    = null;
 $myLevelZero    = null;
 $myLevelOne     = null;
@@ -51,6 +53,7 @@ $IsReporter     = null;
 
 $json           = array();
 $data           = array();
+$options        = array();
 $info           = null;
 
 $context        = context_system::instance();
@@ -59,26 +62,55 @@ $url            = new moodle_url('/report/manager/organization.php');
 $PAGE->set_context($context);
 $PAGE->set_url($url);
 
-// Check the correct access
+// Checking access
 require_login();
+if (isguestuser($USER)) {
+    require_logout();
+
+    echo $OUTPUT->header();
+    echo $OUTPUT->notification(get_string('guestsarenotallowed','error'), 'notifysuccess');
+    echo $OUTPUT->continue_button($CFG->wwwroot);
+    echo $OUTPUT->footer();
+
+    die();
+}
 require_sesskey();
 
 echo $OUTPUT->header();
 
 // Get Companies connected with super user
-$IsReporter = CompetenceManager::IsReporter($USER->id);
+$IsReporter = CompetenceManager::is_reporter($USER->id);
 if ($superUser) {
-    $myAccess   = CompetenceManager::Get_MyAccess($USER->id);
+    $myAccess   = CompetenceManager::get_my_access($USER->id);
 }else {
     /* My Hierarchy */
     $myHierarchy = CompetenceManager::get_my_hierarchy_level($USER->id,$context,$IsReporter,0);
     if ($IsReporter) {
-        $myLevelZero  = array_keys($myHierarchy->competence);
-        $myLevelOne   = $myHierarchy->competence[$levelZero]->levelOne;
-        $myLevelTwo   = $myHierarchy->competence[$levelZero]->levelTwo;
-        $myLevelThree = $myHierarchy->competence[$levelZero]->levelThree;
+        switch ($level) {
+            case 1:
+                if ($myHierarchy->competence->levelone[$zero]) {
+                    $myLevelOne = $myHierarchy->competence->levelone[$zero];
+                    $myLevelOne = implode(',',$myLevelOne);
+                }
+
+                break;
+            case 2:
+                if ($myHierarchy->competence->leveltwo[$one]) {
+                    $myLevelTwo = $myHierarchy->competence->leveltwo[$one];
+                    $myLevelTwo = implode(',',$myLevelTwo);
+                }
+
+                break;
+            case 3:
+                if ($myHierarchy->competence->levelthree[$two]) {
+                    $myLevelThree = $myHierarchy->competence->levelthree[$two];
+                    $myLevelThree = implode(',',$myLevelThree);
+                }
+
+                break;
+        }
     }else {
-        list($myLevelZero,$myLevelOne,$myLevelTwo,$myLevelThree) = CompetenceManager::GetMyCompanies_By_Level($myHierarchy->competence,$myHierarchy->my_level);
+        list($myLevelZero,$myLevelOne,$myLevelTwo,$myLevelThree) = CompetenceManager::get_my_companies_by_Level($myHierarchy->competence);
     }//if_IsReporter
 }//if_superUser
 
@@ -101,12 +133,13 @@ switch ($level) {
             }//if_myAccess
         }else {
             if ($myLevelZero) {
-                $myLevelAccess = implode(',',$myLevelZero);
+                $myLevelAccess = $myLevelZero;
             }//if_myLevelZero
         }
 
         break;
     case 1:
+        $parent = $zero;
         $toClean[0] = COMPANY_STRUCTURE_LEVEL . 1;
         $toClean[1] = COMPANY_STRUCTURE_LEVEL . 2;
         $toClean[2] = COMPANY_STRUCTURE_LEVEL . 3;
@@ -119,12 +152,13 @@ switch ($level) {
             }//if_parent
         }else {
             if ($myLevelOne) {
-                $myLevelAccess = implode(',',$myLevelOne);
+                $myLevelAccess = $myLevelOne;
             }//if_myLevelZero
         }
 
         break;
     case 2:
+        $parent = $one;
         $toClean[0] = COMPANY_STRUCTURE_LEVEL . 2;
         $toClean[1] = COMPANY_STRUCTURE_LEVEL . 3;
         $toClean[2] = REPORT_MANAGER_EMPLOYEE_LIST;
@@ -136,12 +170,13 @@ switch ($level) {
             }//if_parent
         }else {
             if ($myLevelTwo) {
-                $myLevelAccess = implode(',',$myLevelTwo);
+                $myLevelAccess = $myLevelTwo;
             }//if_myLevelZero
         }
 
         break;
     case 3:
+        $parent = $two;
         $toClean[0] = REPORT_MANAGER_EMPLOYEE_LIST;
 
         /* Companies Connected with */
@@ -151,7 +186,7 @@ switch ($level) {
             }//if_parent
         }else {
             if ($myLevelThree) {
-                $myLevelAccess = implode(',',$myLevelThree);
+                $myLevelAccess = $myLevelThree;
             }//if_myLevelZero
         }
 
@@ -159,27 +194,26 @@ switch ($level) {
 }//switch
 $data['clean'] = $toClean;
 
-/* Get Companies List   */
+// Company list
 if ($parent) {
-    $options = CompetenceManager::GetCompanies_LevelList($level,$parent,$myLevelAccess);
+    $options = CompetenceManager::get_companies_level_list($level,$parent,$myLevelAccess);
 }else {
     // First element of the list
     $options[0] = get_string('select_level_list','report_manager');
 }//if_parent
 
-foreach ($options as $companyId => $company) {
+if ($options) {
+    foreach ($options as $companyId => $company) {
 
-    /* Info Company */
-    $info            = new stdClass;
-    $info->id        = $companyId;
-    $info->name      = $company;
+        /* Info Company */
+        $info            = new stdClass;
+        $info->id        = $companyId;
+        $info->name      = $company;
 
-    /* Add Company*/
-    $data['items'][$info->name] = $info;
+        /* Add Company*/
+        $data['items'][$info->name] = $info;
+    }
 }
-
-$extra = CompetenceManager::get_extra_info_company($parent);
-$data['extra'] = $extra;
 
 /* Encode and Send */
 $json[] = $data;

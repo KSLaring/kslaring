@@ -13,5 +13,5 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2016030700;                     // The current plugin version (Date: YYYYMMDDXX)
+$plugin->version   = 2017111600;                     // The current plugin version (Date: YYYYMMDDXX)
 $plugin->component = 'local_courses_site';           // Full name of the plugin (used for diagnostics)

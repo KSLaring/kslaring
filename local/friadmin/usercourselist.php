@@ -28,6 +28,20 @@ require_once(__DIR__ . '/../../config.php');
 
 // Don't autologin guests.
 //require_login(null, false);
+global $USER,$PAGE,$OUTPUT,$CFG;
+
+// Checking access
+require_login();
+if (isguestuser($USER)) {
+    require_logout();
+
+    echo $OUTPUT->header();
+    echo $OUTPUT->notification(get_string('guestsarenotallowed','error'), 'notifysuccess');
+    echo $OUTPUT->continue_button($CFG->wwwroot);
+    echo $OUTPUT->footer();
+
+    die();
+}
 
 $friadmin = new local_friadmin\friadmin();
 

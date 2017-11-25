@@ -103,12 +103,22 @@ class first_access_form extends moodleform {
             $formfield->edit_field($form);
         }//if_muniProfile
 
+        // Buttons
+        $buttons = array();
+        $buttons[] = $form->createElement('submit','submitbutton',get_string('btn_save_course', 'local_first_access'));
+        $buttons[] = $form->createElement('submit','submitbutton2',get_string('btn_save_competence', 'local_first_access'));
+        //$buttons[] = $form->createElement('cancel');
+
+        $form->addGroup($buttons, 'buttonar', '', array(' '), false);
+        $form->setType('buttonar', PARAM_RAW);
+        $form->closeHeaderBefore('buttonar');
+
         $form->addElement('hidden', 'id');
         $form->setType('id', PARAM_INT);
         $form->setDefault('id',$userId);
 
         // Action buttons
-        $this->add_action_buttons(false, get_string('btn_save','local_first_access'));
+        //$this->add_action_buttons(false, get_string('btn_save','local_first_access'));
     }//definition
 
     /**

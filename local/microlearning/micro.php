@@ -9,7 +9,7 @@
 
 require_once('../../config.php');
 
-require_login();
+global $PAGE,$CFG,$USER,$OUTPUT,$SITE;
 
 $PAGE->set_context(CONTEXT_SYSTEM::instance());
 $PAGE->set_heading($SITE->fullname);
@@ -18,6 +18,19 @@ $PAGE->set_url('/local/microlearning/micro.php');
 
 require_once('mode/calendar/calendarcronlib.php');
 require_once('mode/activity/activitycronlib.php');
+
+// Checking access
+require_login();
+if (isguestuser($USER)) {
+    require_logout();
+
+    echo $OUTPUT->header();
+    echo $OUTPUT->notification(get_string('guestsarenotallowed','error'), 'notifysuccess');
+    echo $OUTPUT->continue_button($CFG->wwwroot);
+    echo $OUTPUT->footer();
+
+    die();
+}
 
 /* Print Header */
 echo $OUTPUT->header();

@@ -50,7 +50,18 @@ $employeeTracker    = null;
 $company            = null;
 $out                = '';
 
+// Checking access
 require_login();
+if (isguestuser($USER)) {
+    require_logout();
+
+    echo $OUTPUT->header();
+    echo $OUTPUT->notification(get_string('guestsarenotallowed','error'), 'notifysuccess');
+    echo $OUTPUT->continue_button($CFG->wwwroot);
+    echo $OUTPUT->footer();
+
+    die();
+}
 
 // Settings page
 $site_context = context_system::instance();
@@ -63,7 +74,7 @@ $PAGE->set_heading($SITE->fullname);
 $PAGE->navbar->add(get_string('report_manager','local_tracker_manager'),$return);
 $PAGE->navbar->add(get_string('employee_report_link','report_manager'),$url);
 
-$IsReporter = CompetenceManager::IsReporter($USER->id);
+$IsReporter = CompetenceManager::is_reporter($USER->id);
 if (!$IsReporter) {
     require_capability('report/manager:viewlevel4', $site_context,$USER->id);
 }
@@ -122,7 +133,7 @@ if (!empty($out)) {
     $form->display();
 
     // Initialise Organization Structure
-    CompetenceManager::Init_Organization_Structure(COMPANY_STRUCTURE_LEVEL,null,REPORT_MANAGER_OUTCOME_LIST,0,null,false);
+    CompetenceManager::init_organization_structure(COMPANY_STRUCTURE_LEVEL,null,REPORT_MANAGER_OUTCOME_LIST,0,null,false);
 }//if_out
 
 // Footer

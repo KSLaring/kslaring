@@ -26,10 +26,22 @@
 
 require_once(__DIR__ . '/../../config.php');
 
+global $USER,$PAGE,$OUTPUT,$CFG;
+
 $courseid = required_param('id', PARAM_INT);
 
+// Checking access
 require_login();
+if (isguestuser($USER)) {
+    require_logout();
 
+    echo $OUTPUT->header();
+    echo $OUTPUT->notification(get_string('guestsarenotallowed','error'), 'notifysuccess');
+    echo $OUTPUT->continue_button($CFG->wwwroot);
+    echo $OUTPUT->footer();
+
+    die();
+}
 $friadmin = new local_friadmin\friadmin();
 
 // Basic page init - set context and pagelayout

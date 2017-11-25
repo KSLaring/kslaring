@@ -15,7 +15,9 @@ require_once('../../microlearninglib.php');
 require_once('calendar_form.php');
 require_once('calendarmodelib.php');
 
-/* PARAMS   */
+global $PAGE,$USER,$OUTPUT,$SITE,$SESSION,$CFG;
+
+// Params
 $course_id      = required_param('id',PARAM_INT);
 $mode_learning  = required_param('mode',PARAM_INT);
 $campaign_id    = required_param('cp',PARAM_INT);
@@ -30,7 +32,18 @@ $url_deliveries = new moodle_url('/local/microlearning/mode/calendar/calendar_de
 $return_url     = new moodle_url('/local/microlearning/index.php',array('id'=>$course_id));
 $delivery_info  = null;
 
-/* check right permissions */
+// Checking access
+require_login();
+if (isguestuser($USER)) {
+    require_logout();
+
+    echo $OUTPUT->header();
+    echo $OUTPUT->notification(get_string('guestsarenotallowed','error'), 'notifysuccess');
+    echo $OUTPUT->continue_button($CFG->wwwroot);
+    echo $OUTPUT->footer();
+
+    die();
+}
 if (!has_capability('local/microlearning:manage',$context)) {
     if (!Micro_Learning::HasPermissions($course_id,$USER->id)) {
         print_error('nopermissions', 'error', '', 'local/microlearning:manage');
@@ -38,7 +51,7 @@ if (!has_capability('local/microlearning:manage',$context)) {
 }
 require_login($course);
 
-/* Get the details of the delivery */
+// Get the details of the delivery
 if ($delivery_id) {
     $url->param('cm',$delivery_id);
     $delivery_info = Calendar_Mode::GetDeliveryInfo_CalendarMode($campaign_id,$delivery_id);
@@ -48,6 +61,7 @@ if ($delivery_id) {
     $delivery_info->bodyformat      = FORMAT_HTML;
 }//if_delivery_id
 
+// Page settigns
 $PAGE->set_url($url);
 $PAGE->set_context($context_course);
 $PAGE->set_pagelayout('course');
@@ -65,17 +79,16 @@ if (!isset($SESSION->removeActivities)) {
     $SESSION->removeActivities = array();
 }
 
-/* Editor Options */
+// Editor
 $edit_options   = array('maxfiles' => 0, 'maxbytes'=>$CFG->maxbytes, 'trusttext'=>false, 'noclean'=>true, 'context' => $context_course);
-/* Prepare the editor   */
 $delivery_info = file_prepare_standard_editor($delivery_info, 'body', $edit_options,$context_course, 'course', 'calendar_mode',0);
 
-/* Get the users            */
+// Get users
 $users_campaign = Micro_Learning::GetUsers_Campaign($campaign_id);
-/* Get Activities Course    */
+// Get course activities
 $activities = Micro_Learning::Get_ActivitiesList($course_id);
 
-/* Form */
+// Form
 $form = new calendar_mode_form(null,array($course_id,$mode_learning,$users_campaign,$campaign_id,$delivery_info,$edit_options));
 if ($form->is_cancelled()) {
     unset($SESSION->activities);
@@ -87,18 +100,18 @@ if ($form->is_cancelled()) {
     if ((isset($data->submitbutton) && ($data->submitbutton))
         ||
         (isset($data->submitbutton2) && ($data->submitbutton2))) {
-        /* New Calendar Mode Options - Instance */
+        // New calendar mode options - instance
         $calendar_mode = new stdClass();
         $calendar_mode->microid     = $campaign_id;
         $calendar_mode->subject     = $data->subject;
-        /* Get the eMail Body   from the editor */
+        // Get email body
         $editor = new stdClass();
         $editor->body_editor = $data->body_editor;
         $editor->body = '';
         $editor = file_postupdate_standard_editor($editor, 'body', $edit_options, $context_course, 'course', 'calendar_mode', 0);
         $calendar_mode->body   = $editor->body;
 
-        /* Send Options */
+        // Send Options
         switch ($data->sel_date) {
             case CALENDAR_DATE_TO_SEND:
                 $calendar_mode->datesend        = $data->date_send;
@@ -116,30 +129,29 @@ if ($form->is_cancelled()) {
                 break;
         }//switch_options
 
-        /* Get the type of activities   */
+        // Get the type of activities
         $activities_type = Micro_Learning::Get_ActivitiesType($data->id);
 
-        /* Create New Delivery or Update delivery */
+        // Create New Delivery or Update delivery
         if ($delivery_id) {
-            /* Update it        */
+            // Update
             $calendar_mode->id = $delivery_id;
             $bool = Calendar_Mode::UpdateDelivery_CalendarMode($calendar_mode,$users_campaign,$SESSION->activities,$activities_type);
         }else {
-            /* Create New One   */
+            // Create
             $bool = Calendar_Mode::CreateDelivery_CalendarMode($calendar_mode,$users_campaign,$SESSION->activities,$activities_type);
         }//if_delivery_id
 
-        /* Clean    */
+        // Clean
         $_POST = array();
         unset($SESSION->activities);
         unset($SESSION->removeActivities);
         if ($bool) {
-            /* Get the correct place to return */
+            // Get the correct place to return
             if (isset($data->submitbutton2) && ($data->submitbutton2)) {
                 $url_deliveries = new moodle_url('/course/view.php',array('id' => $data->id));
             }//if_save_return_course
 
-            /* Return to the correct place */
             redirect($url_deliveries);
         }else {
             echo $OUTPUT->header();

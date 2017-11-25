@@ -65,25 +65,25 @@ $myCompetence = null;
 if (!$manual) {
     $myCompetence = enrol_waitinglist\method\manual\enrolmethodmanual::GetCompetenceData($USER->id);
 }
-
+$options = array();
 if ($parent) {
     if ($myCompetence) {
         switch ($level) {
             case 1:
-                $options    = CompetenceManager::GetCompanies_LevelList($level,$parent,$myCompetence->levelone);
+                $options    = CompetenceManager::get_companies_level_list($level,$parent,$myCompetence->levelone);
 
                 break;
             case 2:
-                $options    = CompetenceManager::GetCompanies_LevelList($level,$parent,$myCompetence->leveltwo);
+                $options    = CompetenceManager::get_companies_level_list($level,$parent,$myCompetence->leveltwo);
 
                 break;
             case 3:
-                $options    = CompetenceManager::GetCompanies_LevelList($level,$parent,$myCompetence->levelthree);
+                $options    = CompetenceManager::get_companies_level_list($level,$parent,$myCompetence->levelthree);
 
                 break;
         }
     }else {
-        $options = CompetenceManager::GetCompanies_LevelList($level,$parent);
+        $options = CompetenceManager::get_companies_level_list($level,$parent);
     }
 }else {
     $options[0] = get_string('select_level_list','report_manager');

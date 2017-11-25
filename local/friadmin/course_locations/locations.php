@@ -34,9 +34,22 @@
 require_once('../../../config.php');
 require_once('locationslib.php');
 
-require_login();
+global $USER,$PAGE,$SITE,$OUTPUT,$CFG,$SESSION;
 
-/* PARAMS   */
+// Checking access
+require_login();
+if (isguestuser($USER)) {
+    require_logout();
+
+    echo $OUTPUT->header();
+    echo $OUTPUT->notification(get_string('guestsarenotallowed','error'), 'notifysuccess');
+    echo $OUTPUT->continue_button($CFG->wwwroot);
+    echo $OUTPUT->footer();
+
+    die();
+}
+
+// Params
 $page           = optional_param('page', 0, PARAM_INT);
 $perpage        = optional_param('perpage', 20, PARAM_INT);        // how many per page
 $sort           = optional_param('sort','ASC',PARAM_TEXT);
@@ -65,6 +78,7 @@ if (!has_capability('local/friadmin:course_locations_manage',$context)) {
     }//if_superuser
 }
 
+// Page settings
 $PAGE->set_url($url);
 $PAGE->set_context($context);
 $PAGE->set_pagelayout('report');
@@ -74,7 +88,7 @@ $PAGE->navbar->add(get_string('plugin_course_locations','local_friadmin'));
 $PAGE->navbar->add(get_string('lst_locations','local_friadmin'), $return_url);
 $PAGE->requires->js('/local/friadmin/course_locations/js/locations.js');
 
-/* Filter   */
+// Filter
 $filter['county']   = $SESSION->county;
 $filter['muni']     = $SESSION->muni;
 $filter['activate'] = $SESSION->act;

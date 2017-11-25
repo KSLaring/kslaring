@@ -17,20 +17,17 @@
 require( '../../config.php' );
 require_once ('lib/wsdoskomlib.php');
 
-/* PARAMS   */
-global $SESSION;
-global $PAGE;
-global $CFG;
-global $OUTPUT;
+global $SESSION,$USER,$PAGE,$CFG,$OUTPUT;
 
+// Params
 // User Id
-$id             = $SESSION->user;
+$id             = (isset($SESSION->user) ? $SESSION->user : 0);
 // User token
-$key            = $SESSION->ticket;
+$key            = (isset($SESSION->ticket) ? $SESSION->ticket : 0);
 // Where the user will be redirected
-$RedirectPage   = $SESSION->RedirectPage;
+$RedirectPage   = (isset($SESSION->RedirectPage) ? $SESSION->RedirectPage : 0);
 // Where the user will be redirected after logging out
-$LogoutUrl      = $SESSION->LogoutUrl;
+$LogoutUrl      = (isset($SESSION->LogoutUrl) ? $SESSION->LogoutUrl : 0);
 $url            = new moodle_url('/local/doskom/login.php');
 $return         = new moodle_url($CFG->wwwroot);
 
@@ -38,6 +35,7 @@ $return         = new moodle_url($CFG->wwwroot);
 unset($SESSION->user);
 unset($SESSION->ticket);
 unset($SESSION->RedirectPage);
+
 
 // Start PAGE
 $PAGE->https_required();
@@ -48,6 +46,28 @@ $PAGE->set_context($context);
 $PAGE->verify_https_required();
 $PAGE->set_pagelayout('login');
 
+// Checking access
+if (isguestuser($USER)) {
+    require_logout();
+
+    echo $OUTPUT->header();
+    echo $OUTPUT->notification(get_string('guestsarenotallowed','error'), 'notifysuccess');
+    echo $OUTPUT->continue_button($CFG->wwwroot);
+    echo $OUTPUT->footer();
+
+    die();
+}
+
+if (!$id || !$key || !$RedirectPage || !$LogoutUrl) {
+    // Print Header
+    echo $OUTPUT->header();
+
+    echo $OUTPUT->notification(get_string('err_authenticate','local_doskom'), 'notifysuccess');
+    echo $OUTPUT->continue_button($return);
+
+    // Print Footer
+    echo $OUTPUT->footer();
+}else {
 // Authenticate the user to log in
 $authenticated = wsdoskom::authenticate_user($id,$key);
 
@@ -70,4 +90,6 @@ if ($authenticated) {
 
     // Print Footer
     echo $OUTPUT->footer();
-}//if_else_authenticated
+    }//if_else_authenticated
+}
+

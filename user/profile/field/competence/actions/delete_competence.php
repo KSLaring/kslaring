@@ -28,26 +28,29 @@
  * @author          eFaktor     (fbv)
  *
  */
+global $CFG,$USER,$PAGE,$SITE,$OUTPUT;
 
 require_once('../../../../../config.php');
 require_once('../competencelib.php');
 require_once($CFG->libdir . '/adminlib.php');
 
+// Checking access
 require_login();
+if (isguestuser($USER)) {
+    require_logout();
 
-// Guest can not edit.
-if (isguestuser()) {
-    print_error('guestnoeditprofile');
+    echo $OUTPUT->header();
+    echo $OUTPUT->notification(get_string('guestsarenotallowed','error'), 'notifysuccess');
+    echo $OUTPUT->continue_button($CFG->wwwroot);
+    echo $OUTPUT->footer();
+
+    die();
 }
-
-/* PARAMS */
+// Params
 $user_id            = optional_param('id',0,PARAM_INT);
-/* Competence Date ID   */
 $competence_data    = optional_param('icd',0,PARAM_INT);
-/* Competence Data      */
 $competence         = optional_param('ic',0,PARAM_INT);
 $confirmed          = optional_param('confirm', false, PARAM_BOOL);
-
 $my_competence  = null;
 $my_hierarchy   = null;
 $confirmed      = optional_param('confirm', false, PARAM_BOOL);
@@ -55,7 +58,7 @@ $url            = new moodle_url('/user/profile/field/competence/actions/delete_
 $confirm_url    = new moodle_url('/user/profile/field/competence/actions/delete_competence.php',array('id' =>$user_id,'icd' => $competence_data,'ic' => $competence,'confirm' => true));
 $return_url     = new moodle_url('/user/profile/field/competence/competence.php',array('id' =>$user_id));
 
-/* Settings Page    */
+// Page settings
 $PAGE->https_required();
 $PAGE->set_context(context_user::instance($user_id));
 $PAGE->set_course($SITE);
@@ -72,14 +75,14 @@ if (empty($CFG->loginhttps)) {
 
 $PAGE->verify_https_required();
 
-/* Get My Competence    */
+// Get my competnece
     $my_competence = Competence::get_competence_data($user_id,$competence_data,$competence);
     $my_hierarchy  = $my_competence[$competence_data];
 
 
-/* First Confirm    */
+// First confirm
 if (!$confirmed) {
-    /* Print Header */
+    // Header
     echo $OUTPUT->header();
 
         $a = new stdClass();
@@ -88,7 +91,7 @@ if (!$confirmed) {
 
         echo $OUTPUT->confirm(get_string('delete_competence_are_sure','profilefield_competence',$a),$confirm_url,$return_url);
 
-    /* Print Footer */
+    // Footer
     echo $OUTPUT->footer();
 }else {
     Competence::delete_competence($user_id,$competence_data,$competence);

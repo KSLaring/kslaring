@@ -36,7 +36,7 @@ require_once( '../../managerlib.php');
 require_once('manager_form.php');
 require_once($CFG->libdir . '/adminlib.php');
 
-/* PARAMS */
+// Params
 $level          = optional_param('le',0,PARAM_INT);
 $addSearch      = optional_param('addselect_searchtext', '', PARAM_RAW);
 $removeSearch   = optional_param('removeselect_searchtext', '', PARAM_RAW);
@@ -45,11 +45,9 @@ $returnUrl      = new moodle_url('/report/manager/company_structure/company_stru
 $parents        = $SESSION->parents;
 $params         = array();
 $superUser      = false;
-
-/* Start the page */
 $siteContext = context_system::instance();
 
-//HTTPS is required in this page when $CFG->loginhttps enabled
+// Page settings
 $PAGE->https_required();
 $PAGE->set_context($siteContext);
 $PAGE->set_pagelayout('report');
@@ -57,16 +55,26 @@ $PAGE->set_url($url);
 $PAGE->set_title($SITE->fullname);
 $PAGE->set_heading($SITE->fullname);
 $PAGE->navbar->add(get_string('title_managers','report_manager'));
-
 $PAGE->verify_https_required();
 
-/* ADD require_capability */
-$superUser  = CompetenceManager::IsSuperUser($USER->id);
+// Checking access
+require_login();
+if (isguestuser($USER)) {
+    require_logout();
+
+    echo $OUTPUT->header();
+    echo $OUTPUT->notification(get_string('guestsarenotallowed','error'), 'notifysuccess');
+    echo $OUTPUT->continue_button($CFG->wwwroot);
+    echo $OUTPUT->footer();
+
+    die();
+}
+$superUser  = CompetenceManager::is_super_user($USER->id);
 if (!$superUser) {
     require_capability('report/manager:edit', $siteContext);
 }
 
-/* Return Url   */
+// Return url
 $levelZero  = 'level_' . 0;
 $levelOne   = 'level_' . 1;
 $levelTwo   = 'level_' . 2;
@@ -85,7 +93,7 @@ if (isset($parents[3]) && $parents[3]) {
 }
 $returnUrl      = new moodle_url('/report/manager/company_structure/company_structure.php',$params);
 
-/* Show Form */
+// Form
 $form       = new report_manager_managers_form(null,array($level,$parents,$addSearch,$removeSearch));
 if ($form->is_cancelled()) {
     $_POST = array();
@@ -93,14 +101,14 @@ if ($form->is_cancelled()) {
 }else if($data = $form->get_data()) {
     $parents = $SESSION->parents;
 
-    /* Add Managers     */
+    // Add managers
     if (!empty($data->add_sel)) {
         if (isset($data->addselect)) {
             Managers::AddManagers($data->le,$parents,$data->addselect);
         }//if_addselect
     }//if_add
 
-    /* Remove Managers  */
+    // Remove managers
     if (!empty($data->remove_sel)) {
         if (isset($data->removeselect)) {
             Managers::RemoveManagers($data->le,$parents,implode(',',$data->removeselect));
@@ -108,16 +116,14 @@ if ($form->is_cancelled()) {
     }//if_remove
 }//if_else
 
-/* Print Header */
+// Header
 echo $OUTPUT->header();
-
-/* Print Title */
 echo $OUTPUT->heading(get_string('title_managers', 'report_manager'));
 
 $form->display();
 
-/* Initialise Selectors */
+// Initialise selectors
 Managers::Init_Managers_Selectors($addSearch,$removeSearch,$level,$parents);
 
-/* Print Footer */
+// Footer
 echo $OUTPUT->footer();

@@ -34,9 +34,22 @@
 require_once('../../../config.php');
 require_once('locationslib.php');
 
-require_login();
+global $USER,$PAGE,$SITE,$OUTPUT,$CFG;
 
-/* PARAMS   */
+// Checking access
+require_login();
+if (isguestuser($USER)) {
+    require_logout();
+
+    echo $OUTPUT->header();
+    echo $OUTPUT->notification(get_string('guestsarenotallowed','error'), 'notifysuccess');
+    echo $OUTPUT->continue_button($CFG->wwwroot);
+    echo $OUTPUT->footer();
+
+    die();
+}
+
+// Params
 $locationId     = optional_param('id',0,PARAM_INT);
 $page           = optional_param('page', 0, PARAM_INT);
 $perpage        = optional_param('perpage', 20, PARAM_INT);        // how many per page
@@ -61,6 +74,7 @@ if (!has_capability('local/friadmin:course_locations_manage',$context)) {
     }//if_superuser
 }
 
+// Page settings
 $PAGE->set_url($url);
 $PAGE->set_context($context);
 $PAGE->set_pagelayout('admin');
@@ -70,25 +84,24 @@ $PAGE->navbar->add(get_string('plugin_course_locations','local_friadmin'),$index
 $PAGE->navbar->add(get_string('lst_locations','local_friadmin'),$return);
 $PAGE->navbar->add(get_string('del_location','local_friadmin'));
 
-
-/* Header   */
+// Header
 echo $OUTPUT->header();
 
 if ($confirmed) {
-    /* Check if the location can be removed */
+    // Check if the location can be removed
     if (CourseLocations::Has_CoursesConnected($locationId)) {
-        /* Not Remove */
+        // Not remove
         echo $OUTPUT->notification(get_string('error_deleting_location','local_friadmin'), 'notifysuccess');
         echo $OUTPUT->continue_button($return);
     }else {
-        /* Deleted  */
+        // Deletes
         if (CourseLocations::Delete_Location($locationId)) {
             echo $OUTPUT->notification(get_string('deleted_location','local_friadmin'), 'notifysuccess');
             echo $OUTPUT->continue_button($return);
         }
     }
 }else {
-    /* First Confirm    */
+    // First confirm
     $location   = CourseLocations::Get_LocationDetail($locationId);
     $a = new stdClass();
     $a->muni = $location->muni;
@@ -98,5 +111,5 @@ if ($confirmed) {
     echo $OUTPUT->confirm(get_string('delete_location_are_you_sure','local_friadmin',$a),$confirm_url,$return);
 }//if_confirmed
 
-/* Footer   */
+// Footer
 echo $OUTPUT->footer();

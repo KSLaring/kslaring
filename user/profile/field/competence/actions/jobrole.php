@@ -34,12 +34,13 @@ define('AJAX_SCRIPT', true);
 require_once('../../../../../config.php');
 require_once('../competencelib.php');
 
-/* PARAMS   */
+global $PAGE,$USER,$OUTPUT;
+
+// Params
 $levelZero      = required_param('levelZero',PARAM_INT);
 $levelOne       = optional_param('levelOne',0,PARAM_INT);
 $levelTwo       = optional_param('levelTwo',0,PARAM_INT);
 $levelThree     = optional_param('levelThree',0,PARAM_INT);
-
 $json           = array();
 $data           = array();
 $options        = array();
@@ -53,21 +54,29 @@ $url            = new moodle_url('/user/profile/field/competence/actions/jobrole
 $PAGE->set_context($context);
 $PAGE->set_url($url);
 
-/* Check the correct access */
+// Checking access
 require_login();
+if (isguestuser($USER)) {
+    require_logout();
+
+    echo $OUTPUT->header();
+    echo $OUTPUT->notification(get_string('guestsarenotallowed','error'), 'notifysuccess');
+    echo $OUTPUT->continue_button($CFG->wwwroot);
+    echo $OUTPUT->footer();
+
+    die();
+}
 require_sesskey();
 
 echo $OUTPUT->header();
 
-/* Get Data */
+// Get data
 $data       = array('jr' => array(),'toApprove' => 0);
-
-/* Get Job Roles    */
+// Job roles
 $options[0] = get_string('select_level_list','report_manager');
-
-/* Level Three  */
+// Level three
 if ($levelThree) {
-    /* Add Generics --> Only Public Job Roles   */
+    // Add generics --> only public job roles
     if (Competence::is_public($levelThree)) {
         Competence::get_jobroles_generics($options);
     }//if_isPublic
@@ -80,6 +89,7 @@ if ($levelThree) {
     }
 }//if_level_three
 
+if ($options) {
 foreach ($options as $id => $jr) {
     /* Info Company */
     $infoJR            = new stdClass;
@@ -89,6 +99,8 @@ foreach ($options as $id => $jr) {
     /* Add Company*/
     $jobRoles[$infoJR->name] = $infoJR;
 }
+}
+
 
 $data['jr'] = $jobRoles;
 $json[]     = $data;

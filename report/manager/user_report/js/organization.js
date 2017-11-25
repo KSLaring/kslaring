@@ -95,39 +95,39 @@ M.core_user.init_organization = function (Y,name) {
             this.hOne.set('value',0);
             this.hTwo.set('value',0);
 
-            var parent  = this.zero.get('value');
             var level   = 1;
             //  Trigger an ajax search after a delay.
             this.cancel_timeout();
-            this.timeoutid  = Y.later(this.querydelay * 1000, e, function(obj){obj.send_query(false,parent,level)}, this);
+            this.timeoutid  = Y.later(this.querydelay * 1000, e, function(obj){obj.send_query(false,level)}, this);
         },
 
         ActivateTwo : function(e) {
             this.hOne.set('value',this.one.get('value'));
             this.hTwo.set('value',0);
 
-            var parent      = this.one.get('value');
             var level       = 2;
             //  Trigger an ajax search after a delay.
             this.cancel_timeout();
-            this.timeoutid = Y.later(this.querydelay * 1000, e, function(obj){obj.send_query(false,parent,level)}, this);
+            this.timeoutid = Y.later(this.querydelay * 1000, e, function(obj){obj.send_query(false,level)}, this);
         },
 
         ActivateThree : function(e) {
             this.hTwo.set('value',this.two.get('value'));
 
-            var parent  = this.two.get('value');
             var level   = 3;
             //  Trigger an ajax search after a delay.
             this.cancel_timeout();
-            this.timeoutid = Y.later(this.querydelay * 1000, e, function(obj){obj.send_query(false,parent,level)}, this);
+            this.timeoutid = Y.later(this.querydelay * 1000, e, function(obj){obj.send_query(false,level)}, this);
         },
 
         /**
          * Fires off the ajax search request.
          */
-        send_query : function(forceresearch,parent,level) {
-            var levelZero = this.zero.get('value');
+        send_query : function(forceresearch,level) {
+            var zero;
+            var one;
+            var two;
+
             // Cancel any pending timeout.
             this.cancel_timeout();
 
@@ -136,10 +136,16 @@ M.core_user.init_organization = function (Y,name) {
                 trans.abort();
             });
 
+            // Get selectors
+            zero = this.zero.get('value');
+            one  = this.one.get('value');
+            two  = this.two.get('value');
+
+
             var iotrans = Y.io(M.cfg.wwwroot + '/report/manager/user_report/organization.php',
                 {
                     method: 'POST',
-                    data: 'parent=' + parent + '&levelZero=' + levelZero + '&level' + '=' + level  + '&sesskey=' + M.cfg.sesskey,
+                    data: 'level' + '=' + level + '&zero=' + zero + '&one=' + one + '&two=' + two + '&sesskey=' + M.cfg.sesskey,
                     on: {
                         complete: this.handle_response
                     },

@@ -90,7 +90,7 @@ class manager_outcome_report_level_form extends moodleform {
         $form->setExpanded('report',true);
         $form->addElement('html', '<div class="level-wrapper">');
             /* Completed List   */
-            $options = CompetenceManager::GetCompletedList();
+            $options = CompetenceManager::get_completed_list();
             $form->addElement('select',REPORT_MANAGER_COMPLETED_LIST,get_string('expired_next', 'report_manager'),$options);
             $form->setDefault(REPORT_MANAGER_COMPLETED_LIST, 4);
 
@@ -228,40 +228,35 @@ class manager_outcome_report_level_form extends moodleform {
         $options        = array();
         $parentZero     = null;
         $parent         = null;
+        $hierarchy      = null;
 
         /* Get My Companies by Level    */
         if ($IsReporter) {
-            $levelZero  = array_keys($myHierarchy->competence);
+            $hierarchy = null;
+            switch ($report_level) {
+                case 0:
+                    $hierarchy  = $myHierarchy->competence->hierarchyzero;
+                    $levelZero  = implode(',',$hierarchy->zero);
 
-            /* Get the right companies based on the report level access */
-            $aux = array();
-            foreach ($levelZero as $zero) {
-                if ($myHierarchy->competence[$zero]->level <= $report_level) {
-                    $aux[$zero] = $zero;
-                }
-            }//for_each
-            if ($aux) {
-                $levelZero = $aux;
-            }//if_aux
+                    break;
+                case 1:
+                    $hierarchy  = $myHierarchy->competence->hierarchyone;
+                    $levelZero  = implode(',',$hierarchy->zero);
 
-            /* If only one company */
+                    break;
+                case 2:
+                    $hierarchy = $myHierarchy->competence->hierarchytwo;
+                    $levelZero  = implode(',',$hierarchy->zero);
 
-            if (count($levelZero) == 1) {
-                $parentZero = implode(',',$levelZero);
-            }else {
-                $parentZero = optional_param(MANAGER_OUTCOME_STRUCTURE_LEVEL . 0, 0, PARAM_INT);
-                if ((!$parentZero) && isset($SESSION->selection)) {
-                    $parentZero = $SESSION->selection[MANAGER_OUTCOME_STRUCTURE_LEVEL . 0];
-                }
-            }//if_onlyOne
+                    break;
+                case 3:
+                    $hierarchy = $myHierarchy->competence->hierarchythree;
+                    $levelZero  = implode(',',$hierarchy->zero);
 
-            if ($parentZero) {
-                $levelOne   = $myHierarchy->competence[$parentZero]->levelOne;
-                $levelTwo   = $myHierarchy->competence[$parentZero]->levelTwo;
-                $levelThree = $myHierarchy->competence[$parentZero]->levelThree;
-            }
+                    break;
+            }//switch_report_level
         }else {
-            list($levelZero,$levelOne,$levelTwo,$levelThree) = CompetenceManager::GetMyCompanies_By_Level($myHierarchy->competence,$myHierarchy->my_level);
+            list($levelZero,$levelOne,$levelTwo,$levelThree) = CompetenceManager::get_my_companies_by_Level($myHierarchy->competence);
         }//if_IsReporter
 
         /* Parent*/
@@ -274,43 +269,28 @@ class manager_outcome_report_level_form extends moodleform {
 
         switch ($level) {
             case 0:
-                /* Only My Companies    */
-                if ($levelZero) {
-                    $companies_in = implode(',',$levelZero);
-                }//if_level_zero
-                $options = CompetenceManager::GetCompanies_LevelList($level,null,$companies_in);
+                $options = CompetenceManager::get_companies_level_list($level,null,$levelZero);
 
                 break;
             case 1:
-                /* Only My Companies    */
-                if ($levelOne) {
-                    $companies_in = implode(',',$levelOne);
-                }//if_level_One
-
                 if ($parent) {
-                    $options = CompetenceManager::GetCompanies_LevelList($level,$parent,$companies_in);
+                    $options = CompetenceManager::get_companies_level_list($level,$parent,$levelOne);
                 }else {
-                    /* If there is only one company */
+                    // If only one company
                     if (isset($SESSION->onlyCompany)) {
-                        $options = CompetenceManager::GetCompanies_LevelList($level,$SESSION->onlyCompany[$level-1],$companies_in);
+                        $options = CompetenceManager::get_companies_level_list($level,$SESSION->onlyCompany[$level-1],$levelOne);
                     }else {
                         $options[0] = get_string('select_level_list','report_manager');
                     }
                 }//if_parent
-
                 break;
             case 2:
-                /* Only My Companies    */
-                if ($levelTwo) {
-                    $companies_in = implode(',',$levelTwo);
-                }//if_level_Two
-
                 if ($parent) {
-                    $options = CompetenceManager::GetCompanies_LevelList($level,$parent,$companies_in);
+                    $options = CompetenceManager::get_companies_level_list($level,$parent,$levelTwo);
                 }else {
-                    /* If there is only one company */
+                    // If only one company
                     if (isset($SESSION->onlyCompany)) {
-                        $options = CompetenceManager::GetCompanies_LevelList($level,$SESSION->onlyCompany[$level-1],$companies_in);
+                        $options = CompetenceManager::get_companies_level_list($level,$SESSION->onlyCompany[$level-1],$levelTwo);
                     }else {
                         $options[0] = get_string('select_level_list','report_manager');
                     }
@@ -318,16 +298,12 @@ class manager_outcome_report_level_form extends moodleform {
 
                 break;
             case 3:
-                if ($levelThree) {
-                    $companies_in = implode(',',$levelThree);
-                }//if_level_Two
-
                 if ($parent) {
-                    $options = CompetenceManager::GetCompanies_LevelList($level,$parent,$companies_in);
+                    $options = CompetenceManager::get_companies_level_list($level,$parent,$levelThree);
                 }else {
-                    /* If there is only one company */
+                    // Only one company
                     if (isset($SESSION->onlyCompany)) {
-                        $options = CompetenceManager::GetCompanies_LevelList($level,$SESSION->onlyCompany[$level-1],$companies_in);
+                        $options = CompetenceManager::get_companies_level_list($level,$SESSION->onlyCompany[$level-1],$levelThree);
                     }else {
                         $options[0] = get_string('select_level_list','report_manager');
                     }
@@ -342,8 +318,6 @@ class manager_outcome_report_level_form extends moodleform {
     /**
      * @param           $form
      * @param           $level
-     *
-     * @return          string
      *
      * @creationDate    26/03/2015
      * @author          eFaktor     (fbv)
@@ -445,11 +419,11 @@ class manager_outcome_report_level_form extends moodleform {
                 /* Job Roles connected with level   */
                 if ($levelZero) {
                     /* Add Generics --> Only Public Job Roles   */
-                    if (CompetenceManager::IsPublic($levelZero)) {
-                        CompetenceManager::GetJobRoles_Generics($options);
+                    if (CompetenceManager::is_public($levelZero)) {
+                        CompetenceManager::get_jobroles_generics($options);
                     }//if_isPublic
 
-                    CompetenceManager::GetJobRoles_Hierarchy($options,$level,$levelZero);
+                    CompetenceManager::get_jobroles_hierarchy($options,$level,$levelZero);
                 }//if_level_Zero
 
                 break;
@@ -479,14 +453,14 @@ class manager_outcome_report_level_form extends moodleform {
                 }//if_session
 
                 /* Add Generics --> Only Public Job Roles   */
-                if (CompetenceManager::IsPublic($levelZero)) {
-                    CompetenceManager::GetJobRoles_Generics($options);
+                if (CompetenceManager::is_public($levelZero)) {
+                    CompetenceManager::get_jobroles_generics($options);
                 }//if_isPublic
 
                 /* Job Roles connected with level   */
                 if ($levelOne) {
-                    CompetenceManager::GetJobRoles_Hierarchy($options,$level-1,$levelZero);
-                    CompetenceManager::GetJobRoles_Hierarchy($options,$level,$levelZero,$levelOne);
+                    CompetenceManager::get_jobroles_hierarchy($options,$level-1,$levelZero);
+                    CompetenceManager::get_jobroles_hierarchy($options,$level,$levelZero,$levelOne);
                 }//if_level_One
 
                 break;
@@ -526,15 +500,15 @@ class manager_outcome_report_level_form extends moodleform {
                 }//if_session
 
                 /* Add Generics --> Only Public Job Roles   */
-                if (CompetenceManager::IsPublic($levelOne)) {
-                    CompetenceManager::GetJobRoles_Generics($options);
+                if (CompetenceManager::is_public($levelOne)) {
+                    CompetenceManager::get_jobroles_generics($options);
                 }//if_isPublic
 
                 /* Job Roles connected with level   */
                 if ($levelTwo) {
-                    CompetenceManager::GetJobRoles_Hierarchy($options,$level-2,$levelZero);
-                    CompetenceManager::GetJobRoles_Hierarchy($options,$level-1,$levelZero,$levelOne);
-                    CompetenceManager::GetJobRoles_Hierarchy($options,$level,$levelZero,$levelOne,$levelTwo);
+                    CompetenceManager::get_jobroles_hierarchy($options,$level-2,$levelZero);
+                    CompetenceManager::get_jobroles_hierarchy($options,$level-1,$levelZero,$levelOne);
+                    CompetenceManager::get_jobroles_hierarchy($options,$level,$levelZero,$levelOne,$levelTwo);
                 }//if_level_Two
 
                 break;
@@ -590,23 +564,23 @@ class manager_outcome_report_level_form extends moodleform {
                 }//if_session
 
                 /* Add Generics --> Only Public Job Roles   */
-                if (CompetenceManager::IsPublic($levelTwo)) {
-                    CompetenceManager::GetJobRoles_Generics($options);
+                if (CompetenceManager::is_public($levelTwo)) {
+                    CompetenceManager::get_jobroles_generics($options);
                 }//if_isPublic
 
                 if (is_array($levelThree)) {
                     if (!in_array('0',$levelThree)) {
                         $levelThree = implode(',',$levelThree);
-                        CompetenceManager::GetJobRoles_Hierarchy($options,$level,$levelZero,$levelOne,$levelTwo,$levelThree);
+                        CompetenceManager::get_jobroles_hierarchy($options,$level,$levelZero,$levelOne,$levelTwo,$levelThree);
                     }else {
-                        CompetenceManager::GetJobRoles_Hierarchy($options,$level-3,$levelZero);
-                        CompetenceManager::GetJobRoles_Hierarchy($options,$level-2,$levelZero,$levelOne);
-                        CompetenceManager::GetJobRoles_Hierarchy($options,$level-1,$levelZero,$levelOne,$levelTwo);
+                        CompetenceManager::get_jobroles_hierarchy($options,$level-3,$levelZero);
+                        CompetenceManager::get_jobroles_hierarchy($options,$level-2,$levelZero,$levelOne);
+                        CompetenceManager::get_jobroles_hierarchy($options,$level-1,$levelZero,$levelOne,$levelTwo);
                     }//if_level_Three
                 }else {
-                    CompetenceManager::GetJobRoles_Hierarchy($options,$level-3,$levelZero);
-                    CompetenceManager::GetJobRoles_Hierarchy($options,$level-2,$levelZero,$levelOne);
-                    CompetenceManager::GetJobRoles_Hierarchy($options,$level-1,$levelZero,$levelOne,$levelTwo);
+                    CompetenceManager::get_jobroles_hierarchy($options,$level-3,$levelZero);
+                    CompetenceManager::get_jobroles_hierarchy($options,$level-2,$levelZero,$levelOne);
+                    CompetenceManager::get_jobroles_hierarchy($options,$level-1,$levelZero,$levelOne,$levelTwo);
                 }
 
                 break;

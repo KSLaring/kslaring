@@ -35,8 +35,6 @@ require_once('competencylib.php');
 require_once('match_form.php');
 require_once($CFG->libdir . '/adminlib.php');
 
-require_login();
-
 // PARAMS
 $return         = new moodle_url('/report/manager/index.php');
 $url            = new moodle_url('/report/manager/import_competence/matchwk.php');
@@ -44,23 +42,31 @@ $urlImport      = new moodle_url('/report/manager/import_competence/import.php')
 $nonExisting    = null;
 $start          = 0;
 $step           = 2;
+$siteContext    = context_system::instance();
 
-/* Start the page */
-$siteContext = context_system::instance();
+// Checking access
+require_login();
+if (isguestuser($USER)) {
+    require_logout();
 
-//HTTPS is required in this page when $CFG->loginhttps enabled
+    echo $OUTPUT->header();
+    echo $OUTPUT->notification(get_string('guestsarenotallowed','error'), 'notifysuccess');
+    echo $OUTPUT->continue_button($CFG->wwwroot);
+    echo $OUTPUT->footer();
+
+    die();
+}
+if (!has_capability('report/manager:edit', $siteContext)) {
+    print_error('nopermissions', 'error', '', 'report/manager:edit');
+}
+
+// Page settings
 $PAGE->https_required();
-
 $PAGE->set_pagelayout('admin');
 $PAGE->set_url($urlImport);
 $PAGE->set_context($siteContext);
 $PAGE->set_title($SITE->fullname);
 $PAGE->set_heading($SITE->fullname);
-
-// ADD require_capability
-if (!has_capability('report/manager:edit', $siteContext)) {
-    print_error('nopermissions', 'error', '', 'report/manager:edit');
-}
 
 if (empty($CFG->loginhttps)) {
     $secure_www_root = $CFG->wwwroot;

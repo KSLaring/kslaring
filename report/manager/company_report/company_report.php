@@ -59,11 +59,22 @@ if (!isset($SESSION->bulk_users)) {
     $SESSION->bulk_users = array();
 }
 
+// Checking access
 require_login();
+if (isguestuser($USER)) {
+    require_logout();
+
+    echo $OUTPUT->header();
+    echo $OUTPUT->notification(get_string('guestsarenotallowed','error'), 'notifysuccess');
+    echo $OUTPUT->continue_button($CFG->wwwroot);
+    echo $OUTPUT->footer();
+
+    die();
+}
 
 // Start page
 $site_context = context_system::instance();
-$IsReporter = CompetenceManager::IsReporter($USER->id);
+$IsReporter = CompetenceManager::is_reporter($USER->id);
 if (!$IsReporter) {
     require_capability('report/manager:viewlevel4', $site_context,$USER->id);
 }
@@ -97,18 +108,21 @@ $user_filter = new company_report_filtering(null,$url,null);
 if ($my_hierarchy->competence) {
     if ($IsReporter) {
         $myLevelThree = null;
-        foreach($my_hierarchy->competence as $key => $competence) {
-            if ($myLevelThree) {
-                $myLevelThree .= ',' . implode(',',$competence->levelThree);
-            }else {
-                $myLevelThree = implode(',',$competence->levelThree);
-            }//if_lvelThree
-        }//for_competence
+        if ($my_hierarchy->competence->levelthree) {
+
+            foreach ($my_hierarchy->competence->levelthree as $key => $three) {
+                if ($myLevelThree) {
+                    $myLevelThree .= "," . implode(',',$three);
+                }else {
+                    $myLevelThree = implode(',',$three);
+                }
+            }
+        }
 
         $user_filter->set_MyCompanies($myLevelThree);
     }else {
-        $myCompanies = CompanyReport::Get_MyCompanies($my_hierarchy->competence,$my_hierarchy->my_level);
-        $user_filter->set_MyCompanies(implode(',',array_keys($myCompanies)));
+        list($levelZero,$levelOne,$levelTwo,$levelThree) = CompetenceManager::get_my_companies_by_Level($my_hierarchy->competence);
+        $user_filter->set_MyCompanies($levelThree);
     }//if_IsReporter
 }else {
     $user_filter->set_MyCompanies(null);

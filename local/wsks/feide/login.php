@@ -10,6 +10,8 @@
  * @author          eFaktor     (fbv)
  */
 
+global $CFG,$PAGE,$SESSION,$OUTPUT,$USER;
+
 include_once('../../../config.php');
 require_once('feidelib.php');
 
@@ -17,16 +19,23 @@ $PAGE->set_url("$CFG->httpswwwroot/login/index.php");
 $PAGE->set_context(CONTEXT_SYSTEM::instance());
 $PAGE->set_pagelayout('login');
 
-/* PARAMS   */
+// Params
 $action         = new moodle_url('/local/wsks/feide/index.php');
 $errUrl         = null;
 $args           = null;
 $relativePath   = null;
 
-/* Guess USer -- Logout */
+// Checking access
 if (isguestuser($USER)) {
     require_logout();
-}//if_guestuser
+
+    echo $OUTPUT->header();
+    echo $OUTPUT->notification(get_string('guestsarenotallowed','error'), 'notifysuccess');
+    echo $OUTPUT->continue_button($CFG->wwwroot);
+    echo $OUTPUT->footer();
+
+    die();
+}
 
 $relativePath = get_file_argument();
 //extract relative path components

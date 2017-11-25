@@ -66,7 +66,7 @@ class report_manager_managers_form extends moodleform {
         $mForm->setExpanded('users',true);
         $mForm->addElement('html','<div class="userselector" id="addselect_wrapper">');
             /* Left.    Existing Users(Managers)   */
-            $schoices   = Managers::FindManagers_Selector($removeSearch,$parents,$level);
+            list($schoices,$tardis)   = Managers::FindManagers_Selector($removeSearch,$parents,$level);
 
             $mForm->addElement('html','<div class="sel_users_left">');
                 $mForm->addElement('selectgroups','removeselect', '',$schoices,'multiple size="20" id="removeselect"');
@@ -89,7 +89,7 @@ class report_manager_managers_form extends moodleform {
             $mForm->addElement('html','</div>');//sel_users_buttons
 
             /* Right.   Potential Users(Managers) */
-            $achoices   = Managers::FindPotentialManagers_Selector($addSearch,$parents,$level);
+            list($achoices,$tardis)   = Managers::FindPotentialManagers_Selector($addSearch,$parents,$level);
             $mForm->addElement('html','<div class="sel_users_right">');
                 $mForm->addElement('selectgroups','addselect', '',$achoices,'multiple size="20" id="addselect"');
                 $mForm->addElement('text','addselect_searchtext',get_string('search'),'id="addselect_searchtext"');

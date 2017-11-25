@@ -122,24 +122,24 @@ class UserReport {
             //Search criteria
             $params = array();
             $params['zero'] = $data[USER_REPORT_STRUCTURE_LEVEL . '0'];
-            $report->zero = CompetenceManager::GetCompany_Name($data[USER_REPORT_STRUCTURE_LEVEL . '0']);
+            $report->zero = CompetenceManager::get_company_name($data[USER_REPORT_STRUCTURE_LEVEL . '0']);
             // Criteria - level one
             if ($data[USER_REPORT_STRUCTURE_LEVEL . '1']) {
                 $params['one'] = $data[USER_REPORT_STRUCTURE_LEVEL . '1'];
                 $sqlWhere .= " AND one = :one ";
-                $report->one = CompetenceManager::GetCompany_Name($data[USER_REPORT_STRUCTURE_LEVEL . '1']);
+                $report->one = CompetenceManager::get_company_name($data[USER_REPORT_STRUCTURE_LEVEL . '1']);
             }//if_one
             // Criteria - level two
             if ($data[USER_REPORT_STRUCTURE_LEVEL . '2']) {
                 $params['two'] = $data[USER_REPORT_STRUCTURE_LEVEL . '2'];
                 $sqlWhere .= " AND two = :two ";
-                $report->two = CompetenceManager::GetCompany_Name($data[USER_REPORT_STRUCTURE_LEVEL . '2']);
+                $report->two = CompetenceManager::get_company_name($data[USER_REPORT_STRUCTURE_LEVEL . '2']);
             }//if_two
             // Criteria - level three
             if ($data[USER_REPORT_STRUCTURE_LEVEL . '3']) {
                 $params['three'] = $data[USER_REPORT_STRUCTURE_LEVEL . '3'];
                 $sqlWhere .= " AND three = :three ";
-                $report->three = CompetenceManager::GetCompany_Name($data[USER_REPORT_STRUCTURE_LEVEL . '3']);
+                $report->three = CompetenceManager::get_company_name($data[USER_REPORT_STRUCTURE_LEVEL . '3']);
             }//if_three
 
             // SQL Instruction

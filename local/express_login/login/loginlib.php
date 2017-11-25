@@ -86,9 +86,9 @@ class Express_Link {
     public static function LoginUser($user_id) {
         try {
             $user = get_complete_user_data('id', $user_id);
-            complete_user_login($user,true);
+            complete_user_login($user);
 
-            return true;
+            return $user;
         }catch (Exception $ex) {
             return false;
         }//try_catch
@@ -96,7 +96,7 @@ class Express_Link {
 
     /**
      * @param           $user
-     * @return          bool
+     * @return          bool|array
      *
      * @creationDate    01/12/2014
      * @author          eFaktor     (fbv)

@@ -40,6 +40,7 @@ $context        = context_system::instance();
 $url            = new moodle_url('/local/first_access/first_access.php');
 $user_context   = context_user::instance($userId);
 $redirect       = new moodle_url('/user/profile.php',array('id'=>$userId));
+$urlcourses     = new moodle_url('/local/course_search/search.php');
 
 // Start Page
 $PAGE->set_url($url);
@@ -56,26 +57,52 @@ $PAGE->requires->strings_for_js(array_keys($strings), 'local_first_access');
 $strings = $stringman->load_component_strings('local_first_access', 'no');
 $PAGE->requires->strings_for_js(array_keys($strings), 'local_first_access');
 
+// Checking access
+require_login();
+if (isguestuser($USER)) {
+    require_logout();
+
+    echo $OUTPUT->header();
+    echo $OUTPUT->notification(get_string('guestsarenotallowed','error'), 'notifysuccess');
+    echo $OUTPUT->continue_button($CFG->wwwroot);
+    echo $OUTPUT->footer();
+
+    die();
+}
+require_login();
+
 // Show form
 $form = new first_access_form(null,$userId);
 if ($form->is_cancelled()) {
     $_POST = array();
     redirect($CFG->wwwroot);
 }else if ($data = $form->get_data()){
+
     // Generic data
     FirstAccess::update_user_profile($data);
     // Save custom profile fields data.
     profile_save_data($data);
 
     // Check if it still remains to update competence profile
-    if (!FirstAccess::has_completed_competence_profile($data->id)) {
-        $redirect = new moodle_url('/user/profile/field/competence/competence.php',array('id' => $data->id));
-    }//if_CompletedCompetenceProfile
+    //if (!FirstAccess::has_completed_competence_profile($data->id)) {
+    //    $redirect = new moodle_url('/user/profile/field/competence/competence.php',array('id' => $data->id));
+    //}//if_CompletedCompetenceProfile
 
     $user = get_complete_user_data('id',$data->id);
     complete_user_login($user);
 
-    redirect($redirect);
+    if (isset($data->submitbutton)) {
+        if (($data->submitbutton)) {
+            redirect($urlcourses);
+        }
+    }else if (isset($data->submitbutton2)) {
+        if (($data->submitbutton2)) {
+            $redirect = new moodle_url('/user/profile/field/competence/competence.php',array('id' => $data->id));
+            redirect($redirect);
+        }
+    }else {
+        redirect($redirect);
+    }
 }//if_else
 
 echo $OUTPUT->header();

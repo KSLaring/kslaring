@@ -130,7 +130,7 @@ class CompanyReport {
             switch ($my_level) {
                 case 0:
                     /* Level Three  */
-                    $myCompanies = CompetenceManager::GetCompanies_LevelList(3);
+                    $myCompanies = CompetenceManager::get_companies_level_list(3);
                     unset($myCompanies[0]);
 
                     break;
@@ -138,16 +138,16 @@ class CompanyReport {
                     /* Level Zero   */
                     $parents = implode(',',array_keys($levelZero));
                     /* Level One    */
-                    $levelOne = CompetenceManager::GetCompanies_LevelList(1,$parents);
+                    $levelOne = CompetenceManager::get_companies_level_list(1,$parents);
                     unset($levelOne[0]);
                     $levelOne = implode(',',array_keys($levelOne));
                     /* Level Two    */
-                    $levelTwo = CompetenceManager::GetCompanies_LevelList(2,$levelOne);
+                    $levelTwo = CompetenceManager::get_companies_level_list(2,$levelOne);
                     unset($levelTwo[0]);
                     $parents = implode(',',array_keys($levelTwo));
 
                     /* Level Three  */
-                    $myCompanies = CompetenceManager::GetCompanies_LevelList(3,$parents);
+                    $myCompanies = CompetenceManager::get_companies_level_list(3,$parents);
                     unset($myCompanies[0]);
 
                     break;
@@ -155,12 +155,12 @@ class CompanyReport {
                     /* Level One    */
                     $parents = implode(',',array_keys($levelOne));
                     /* Level Two    */
-                    $levelTwo = CompetenceManager::GetCompanies_LevelList(2,$parents);
+                    $levelTwo = CompetenceManager::get_companies_level_list(2,$parents);
                     unset($levelTwo[0]);
                     $parents = implode(',',array_keys($levelTwo));
 
                     /* Level Three  */
-                    $myCompanies = CompetenceManager::GetCompanies_LevelList(3,$parents);
+                    $myCompanies = CompetenceManager::get_companies_level_list(3,$parents);
                     unset($myCompanies[0]);
 
                     break;
@@ -169,7 +169,7 @@ class CompanyReport {
                     $parents = implode(',',array_keys($levelTwo));
 
                     /* Level Three  */
-                    $myCompanies = CompetenceManager::GetCompanies_LevelList(3,$parents);
+                    $myCompanies = CompetenceManager::get_companies_level_list(3,$parents);
                     unset($myCompanies[0]);
 
                     break;
@@ -238,15 +238,15 @@ class CompanyReport {
             /* Company Tracker Info */
             $companyTracker = new stdClass();
             $companyTracker->levelThree         = $company->levelThree;
-            $companyTracker->name               = CompetenceManager::GetCompany_Name($company->levelThree);
+            $companyTracker->name               = CompetenceManager::get_company_name($company->levelThree);
             $companyTracker->users              = null;
             $companyTracker->outcomes           = null;
 
             /* Job Roles connected to the level Three    */
-            if (CompetenceManager::IsPublic($company->levelThree)) {
-                CompetenceManager::GetJobRoles_Generics($job_roles);
+            if (CompetenceManager::is_public($company->levelThree)) {
+                CompetenceManager::get_jobroles_generics($job_roles);
             }//if_isPublic
-            CompetenceManager::GetJobRoles_Hierarchy($job_roles,3,$company->levelZero,$company->levelOne,$company->levelTwo,$company->levelThree);
+            CompetenceManager::get_jobroles_hierarchy($job_roles,3,$company->levelZero,$company->levelOne,$company->levelTwo,$company->levelThree);
 
             /* Outcome Courses  */
             if ($job_roles) {

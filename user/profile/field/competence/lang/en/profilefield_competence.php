@@ -49,6 +49,7 @@ $string['jr_generics']  = 'Roles generics';
 
 $string['lnk_add']      = 'Add New';
 $string['lnk_back']     = 'Back to My profile';
+$string['lnk_startpage']    = 'Go to my startpage';
 
 $string['delete_competence']            = 'Delete competence';
 $string['delete_competence_are_sure']   = '<p> You are going to delete from your profile the next: </p>

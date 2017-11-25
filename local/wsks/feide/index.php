@@ -13,12 +13,24 @@
 include_once('../../../config.php');
 require_once('feidelib.php');
 
+global $CFG,$PAGE,$SESSION,$OUTPUT,$USER;
+
 $PAGE->set_url("$CFG->httpswwwroot/login/index.php");
 $PAGE->set_context(CONTEXT_SYSTEM::instance());
 $PAGE->set_pagelayout('login');
 
+// Checking access
+if (isguestuser($USER)) {
+    require_logout();
 
-/* PARAMS   */
+    echo $OUTPUT->header();
+    echo $OUTPUT->notification(get_string('guestsarenotallowed','error'), 'notifysuccess');
+    echo $OUTPUT->continue_button($CFG->wwwroot);
+    echo $OUTPUT->footer();
+
+    die();
+}
+// Params
 $userInfo   = null;
 $userId     = null;
 $errURL     = new moodle_url('/local/wsks/feide/error.php',array('er' => FEIDE_ERR_PROCESS));
@@ -32,7 +44,6 @@ if (!isset($_SESSION['user'])) {
 
 $login = KS_FEIDE::LoginUser($userInfo);
 if ($login) {
-    $user = get_complete_user_data('username', $userInfo['username']);
     $SESSION->ksSource = 'Feide';
 
     /**
@@ -44,9 +55,9 @@ if ($login) {
      */
     require_once('../../first_access/locallib.php');
 
-    if (!isguestuser($user)) {
-        if (FirstAccess::has_to_update_profile($USER->id)) {
-            redirect(new moodle_url('/local/first_access/index.php',array('id'=>$USER->id)));
+    if (!isguestuser($login) && !is_siteadmin($login->id)) {
+        if (FirstAccess::has_to_update_profile($login->id)) {
+            redirect(new moodle_url('/local/first_access/index.php',array('id'=>$login->id)));
             die();
         }else {
             /**
@@ -57,9 +68,9 @@ if ($login) {
              * Check if the user has to update his/her profile
              */
             require_once('../../force_profile/forceprofilelib.php');
-            if (ForceProfile::ForceProfile_HasToUpdateProfile($USER->id)) {
+            if (ForceProfile::ForceProfile_HasToUpdateProfile($login->id)) {
                 echo $OUTPUT->header();
-                $url = new moodle_url('/local/force_profile/confirm_profile.php',array('id' => $USER->id));
+                $url = new moodle_url('/local/force_profile/confirm_profile.php',array('id' => $login->id));
                 echo $OUTPUT->notification(get_string('msg_force_update','local_force_profile'), 'notifysuccess');
                 echo $OUTPUT->continue_button($url);
                 echo $OUTPUT->footer();
@@ -71,7 +82,10 @@ if ($login) {
         }//if_first_access
     } else {
         require_logout();
-        redirect($CFG->wwwroot);
+        echo $OUTPUT->header();
+        echo $OUTPUT->notification(get_string('guestsarenotallowed','error'), 'notifysuccess');
+        echo $OUTPUT->continue_button($CFG->wwwroot);
+        echo $OUTPUT->footer();
     }//if_guest_user
 }else {
     redirect($errURL);

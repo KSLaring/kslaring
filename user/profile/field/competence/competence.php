@@ -28,25 +28,32 @@
  *
  */
 
+global $CFG,$PAGE,$OUTPUT,$SITE,$USER;
+
 require_once('../../../../config.php');
 require_once('competencelib.php');
 require_once($CFG->libdir . '/adminlib.php');
 
+// Checking access
 require_login();
+if (isguestuser($USER)) {
+    require_logout();
 
-// Guest can not edit.
-if (isguestuser()) {
-    print_error('guestnoeditprofile');
+    echo $OUTPUT->header();
+    echo $OUTPUT->notification(get_string('guestsarenotallowed','error'), 'notifysuccess');
+    echo $OUTPUT->continue_button($CFG->wwwroot);
+    echo $OUTPUT->footer();
+
+    die();
 }
-
-/* PARAMS */
+// PARAMS
 $user_id        = required_param('id',PARAM_INT);
 $my_competence  = null;
 $out            = '';
 $url            = new moodle_url('/user/profile/field/competence/competence.php',array('id' =>$user_id));
 
 
-/* Settings Page    */
+// Settings page
 $PAGE->https_required();
 $PAGE->set_context(context_user::instance($user_id));
 $PAGE->set_course($SITE);
@@ -62,10 +69,10 @@ if (empty($CFG->loginhttps)) {
 
 $PAGE->verify_https_required();
 
-/* Get My Competence Data   */
+// Get competence data connected with the user
 $my_competence  = Competence::get_competence_data($user_id);
 
 echo $OUTPUT->header();
-    /* Display the Competence and the actions */
+    // Display competence
     echo Competence::get_competence_table($my_competence,$user_id);
 echo $OUTPUT->footer();

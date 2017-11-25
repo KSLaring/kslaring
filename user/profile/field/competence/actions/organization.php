@@ -33,13 +33,13 @@ define('AJAX_SCRIPT', true);
 require_once('../../../../../config.php');
 require_once('../competencelib.php');
 
-/* PARAMS   */
+global $PAGE,$USER,$OUTPUT;
+
+// Params
 $parent         = optional_param('parent',0,PARAM_INT);
 $level          = required_param('level',PARAM_INT);
 $userId         = required_param('id',PARAM_INT);
-
 $myCompanies    = null;
-
 $json           = array();
 $data           = array();
 $infoCompany    = null;
@@ -50,16 +50,26 @@ $url            = new moodle_url('/user/profile/field/competence/actions/organiz
 $PAGE->set_context($context);
 $PAGE->set_url($url);
 
-/* Check the correct access */
+// Checking access
 require_login();
+if (isguestuser($USER)) {
+    require_logout();
+
+    echo $OUTPUT->header();
+    echo $OUTPUT->notification(get_string('guestsarenotallowed','error'), 'notifysuccess');
+    echo $OUTPUT->continue_button($CFG->wwwroot);
+    echo $OUTPUT->footer();
+
+    die();
+}
 require_sesskey();
 
 echo $OUTPUT->header();
 
-/* Get Data */
+// Get data
 $data       = array('name' => 'level_' . $level, 'items' => array(),'clean' => array());
 $toClean    = array();
-/* To Clean */
+// Data to clean
 switch ($level) {
     case 0:
         $toClean[0] = 'level_' . 0;
@@ -92,13 +102,14 @@ switch ($level) {
 }//switch
 $data['clean'] = $toClean;
 
-/* Get Companies List   */
+// companies
 if ($parent) {
     $options = Competence::get_companies_level($level,$parent,$myCompanies);
 }else {
     $options[0] = get_string('select_level_list','report_manager');
 }//if_parent
 
+if ($options) {
 foreach ($options as $companyId => $company) {
     /* Info Company */
     $infoCompany            = new stdClass;
@@ -108,8 +119,9 @@ foreach ($options as $companyId => $company) {
     /* Add Company*/
     $data['items'][$infoCompany->name] = $infoCompany;
 }
+}
 
-/* Encode and Send */
+// Send data
 $json[] = $data;
 echo json_encode(array('results' => $json));
 

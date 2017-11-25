@@ -13,12 +13,12 @@
  *
  */
 
+global $PAGE,$SITE,$CFG,$USER,$COURSE,$OUTPUT;
+
 require_once( '../../config.php');
 require_once('myuserslib.php');
 require_once($CFG->dirroot.'/local/myusers/filter/lib.php');
 require_once($CFG->dirroot.'/user/lib.php');
-
-require_login($COURSE);
 
 /* PARAMS   */
 $cat_id         = required_param('id',PARAM_INT);
@@ -34,6 +34,20 @@ $unsuspend      = optional_param('unsuspend', 0, PARAM_INT);
 $site_context   = context_system::instance();
 $site           = get_site();
 $context_cat    = context_coursecat::instance($cat_id);
+
+// Checking access
+require_login();
+if (isguestuser($USER)) {
+    require_logout();
+
+    echo $OUTPUT->header();
+    echo $OUTPUT->notification(get_string('guestsarenotallowed','error'), 'notifysuccess');
+    echo $OUTPUT->continue_button($CFG->wwwroot);
+    echo $OUTPUT->footer();
+
+    die();
+}
+require_login($COURSE);
 require_capability('moodle/category:manage', $context_cat);
 
 /* Labels   */

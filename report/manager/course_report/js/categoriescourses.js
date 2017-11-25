@@ -52,6 +52,9 @@ M.core_user.init_managercourse_report = function (Y, parent, category, course,de
         // depth
         depth: Y.one('#id_' + depth),
 
+        // clean button
+        clean: Y.one('#id_submitbutton2'),
+
         timeoutid : null,
 
         iotransactions : {},
@@ -62,16 +65,32 @@ M.core_user.init_managercourse_report = function (Y, parent, category, course,de
 
             // Course change
             this.course.on('change',this.get_data_course,this);
+
+            if (this.clean) {
+                this.clean.on('click',this.clean_data,this);
+            }
+
         },
 
+
         get_data_course : function (e) {
-            this.hcourse.set('value',this.course.get('value'));
+            // Get course selected
+            var course = this.course.get('value');
+            if (course.indexOf('#') != -1) {
+                course = course.substr(course.indexOf('#') +1);
+            }//if_else
+
+            this.hcourse.set('value',course);
         },
 
         get_data_report : function(e) {
             // First get sub-categories
             this.timeoutid  = Y.later(this.querydelay * 1000, e, function(obj){obj.send_query_cat(false)}, this);
 
+        },
+
+        clean_data: function(e) {
+            this.timeoutid  = Y.later(this.querydelay * 1000, e, function(obj){obj.send_query_cat(true)}, this);
         },
 
         send_query_courses : function() {
@@ -87,6 +106,9 @@ M.core_user.init_managercourse_report = function (Y, parent, category, course,de
 
             // Get category selected
             cat = Y.one('#id_parentcat').get('value');
+            if (cat.indexOf('#') != -1) {
+                cat = cat.substr(cat.indexOf('#') +1);
+            }//if_else
 
             var iotrans = Y.io(M.cfg.wwwroot + '/report/manager/course_report/categoriescourses.php',
                 {
@@ -125,7 +147,6 @@ M.core_user.init_managercourse_report = function (Y, parent, category, course,de
             var result;
             var index;
             var indexcourse;
-            var info;
             var selected;
             var marked = 0;
 
@@ -135,22 +156,18 @@ M.core_user.init_managercourse_report = function (Y, parent, category, course,de
                 option.remove();
             });
 
-
             // Load Courses
             for (index in data.results) {
                 result      = data.results[index];
                 courses     = result.mycourses;
                 for (indexcourse in courses) {
-                    info = courses[indexcourse];
-
-                    var option = Y.Node.create('<option value="' + info.id + '">' + info.name + '</option>');
-
+                    var option = Y.Node.create('<option value="' + indexcourse + '">' + courses[indexcourse] + '</option>');
                     this.course.append(option);
 
                     // Mark selected
                     if (selected != 0) {
-                        if (info.id == selected) {
-                            this.course.set('selectedIndex',info.id);
+                        if (indexcourse == selected) {
+                            this.course.set('selectedIndex',indexcourse);
                             marked = 1;
                         }
                     }else {
@@ -167,6 +184,10 @@ M.core_user.init_managercourse_report = function (Y, parent, category, course,de
 
         send_query_cat : function(toclean) {
             var parent;
+            var depth;
+            var node;
+            var allspan;
+            var allbr;
 
             // Cancel any pending timeout.
             this.cancel_timeout();
@@ -177,20 +198,23 @@ M.core_user.init_managercourse_report = function (Y, parent, category, course,de
             });
 
             // Remove error messages
-            var node = Y.one('#fitem_id_parent');
+            node = Y.one('#fitem_id_course_list');
             // clean span error
-            var allspan = node.all('span');
+            allspan = node.all('span');
             allspan.each(function (snode) {
                 snode.remove();
             });
             // clean br
-            var allbr = node.all('br');
+            allbr = node.all('br');
             allbr.each(function (snode) {
                 snode.remove();
             });
 
             if (toclean) {
                 parent = 0;
+                depth  = 1;
+                this.parentcat.set('value',0);
+                this.depth.set('value',1);
                 // Clean courses selector
                 if (this.course) {
                     this.course.all('option').each(function(option){
@@ -200,13 +224,18 @@ M.core_user.init_managercourse_report = function (Y, parent, category, course,de
 
                     });
                     this.course.set('selectedIndex',0);
+                    this.depth.set('value',1);
                 }//if_this_Course
             }else {
                 // Get category selected
                 parent = this.category.get('value');
-            }
+                if (parent.indexOf('#') != -1) {
+                    parent = parent.substr(parent.indexOf('#') +1);
+                }//if_else
 
-            var depth = parseInt(this.depth.get('value')) + 1;
+                depth  = parseInt(this.depth.get('value')) + 1;
+                this.depth.set('value',depth);
+            }
 
             var iotrans = Y.io(M.cfg.wwwroot + '/report/manager/course_report/categoriescourses.php',
                 {
@@ -245,7 +274,6 @@ M.core_user.init_managercourse_report = function (Y, parent, category, course,de
             var result;
             var index;
             var indexcat;
-            var info;
             var selected;
             var marked = 0;
             var parentname;
@@ -256,22 +284,19 @@ M.core_user.init_managercourse_report = function (Y, parent, category, course,de
                 option.remove();
             });
 
-
             // Load Categories/Subcategories
             for (index in data.results) {
                 result      = data.results[index];
                 categories  = result.categories;
+
                 for (indexcat in categories) {
-                    info = categories[indexcat];
-
-                    var option = Y.Node.create('<option value="' + info.id + '">' + info.name + '</option>');
-
+                    var option = Y.Node.create('<option value="' + indexcat + '">' + categories[indexcat] + '</option>');
                     this.category.append(option);
 
                     // Mark selected
                     if (selected != 0) {
-                        if (info.id == selected) {
-                            this.category.set('selectedIndex',info.id);
+                        if (indexcat == selected) {
+                            this.category.set('selectedIndex',indexcat);
                             marked = 1;
                         }
                     }else {
@@ -279,6 +304,7 @@ M.core_user.init_managercourse_report = function (Y, parent, category, course,de
                     }
 
                 }//for_categories
+
 
                 // Add parent information to the form
                 if (result.parentcat.id == 0) {

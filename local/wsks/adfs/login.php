@@ -10,20 +10,26 @@
  * @author          eFaktor     (fbv)
  *
  */
-
+global $PAGE,$USER,$OUTPUT,$SESSION,$CFG;
 require( '../../../config.php' );
 require_once ('../wsadfslib.php');
 
-/* PARMAS   */
-/* User ID      */
-$id             = $SESSION->user;
-
+// Params
 $url            = new moodle_url('/local/wsks/adfs/login.php');
 $redirect       = new moodle_url('/index.php');
 $errUrl         = new moodle_url('/local/wsks/adfs/error.php');
 
-/* Clean SESSION Variables  */
-unset($SESSION->user);
+// Checking access
+if (isguestuser($USER)) {
+    require_logout();
+
+    echo $OUTPUT->header();
+    echo $OUTPUT->notification(get_string('guestsarenotallowed','error'), 'notifysuccess');
+    echo $OUTPUT->continue_button($CFG->wwwroot);
+    echo $OUTPUT->footer();
+
+    die();
+}
 
 /* Start PAGE   */
 $PAGE->https_required();
@@ -34,9 +40,15 @@ $PAGE->set_context($context);
 $PAGE->verify_https_required();
 $PAGE->set_pagelayout('login');
 
+/* User ID      */
+$id             = $SESSION->user;
+
+/* Clean SESSION Variables  */
+unset($SESSION->user);
+
 try {
     $user = get_complete_user_data('id',$id);
-    complete_user_login($user,true);
+    complete_user_login($user);
     
     /**
      * @updateDate  10/11/2014
@@ -47,9 +59,9 @@ try {
      */
     require_once('../../first_access/locallib.php');
 
-    if (!isguestuser($user)) {
-        if (FirstAccess::has_to_update_profile($USER->id)) {
-            redirect(new moodle_url('/local/first_access/index.php',array('id'=>$USER->id)));
+    if (!isguestuser($user) && !is_siteadmin($user->id)) {
+        if (FirstAccess::has_to_update_profile($user->id)) {
+            redirect(new moodle_url('/local/first_access/index.php',array('id'=>$user->id)));
             die();
         }else {
             /**
@@ -60,9 +72,9 @@ try {
              * Check if the user has to update his/her profile
              */
             require_once('../../force_profile/forceprofilelib.php');
-            if (ForceProfile::ForceProfile_HasToUpdateProfile($USER->id)) {
+            if (ForceProfile::ForceProfile_HasToUpdateProfile($user->id)) {
                 echo $OUTPUT->header();
-                $url = new moodle_url('/local/force_profile/confirm_profile.php',array('id' => $USER->id));
+                $url = new moodle_url('/local/force_profile/confirm_profile.php',array('id' => $user->id));
                 echo $OUTPUT->notification(get_string('msg_force_update','local_force_profile'), 'notifysuccess');
                 echo $OUTPUT->continue_button($url);
                 echo $OUTPUT->footer();
@@ -90,7 +102,10 @@ try {
         }//if_first_access
     } else {
         require_logout();
-        redirect($redirect);
+        echo $OUTPUT->header();
+        echo $OUTPUT->notification(get_string('guestsarenotallowed','error'), 'notifysuccess');
+        echo $OUTPUT->continue_button($CFG->wwwroot);
+        echo $OUTPUT->footer();
     }//if_guest_user
 
 }catch (Exception $ex) {

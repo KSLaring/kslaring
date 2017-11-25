@@ -113,17 +113,20 @@ Class Reporters {
         $extra                  = null;
         $groupName              = null;
         $total                  = null;
+        $tardis                 = null;
 
         try {
             // Search criteria
             $params = array();
             $params['level']    = $level;
 
-            /* SQL Instruction */
-            $sql = " SELECT	u.id,
+            // SQL Instruction
+            $sql = " SELECT	DISTINCT
+                              u.id,
                             u.firstname,
                             u.lastname,
-                            u.email
+                              u.email,
+                              IF(cr.mapped='TARDIS',1,0) as 'tardis'
                      FROM 		{report_gen_company_reporter}	cr
                         JOIN	{user}						    u	ON 	u.id 		= cr.reporterid
                                                                     AND	u.deleted 	= 0
@@ -208,8 +211,12 @@ Class Reporters {
                         $groupName = get_string('current_users', 'report_manager');
                     }//if_serach
 
-                    /* Get Users    */
+                    // Get users
+                    $tardis = array();
                     foreach ($rdo as $instance) {
+                        if ($instance->tardis) {
+                            $tardis[$instance->id] = $instance->id;
+                        }
                         $reporters[$instance->id] = $instance->firstname . " " . $instance->lastname . "(" . $instance->email . ")";
                     }//for_Rdo
 
@@ -222,7 +229,7 @@ Class Reporters {
                 $availableReporters[$groupName]  = array('');
             }//if_rdo
 
-            return $availableReporters;
+            return array($availableReporters,$tardis);
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -255,14 +262,16 @@ Class Reporters {
         $extra                  = null;
         $groupName              = null;
         $total                  = null;
+        $tardis                 = null;
 
         try {
             // Search criteria
             $params = array();
             $params['level']    = $level;
 
-            /* SQL Instruction */
-            $sql = " SELECT		u.id,
+            // SQL Instruction
+            $sql = " SELECT	DISTINCT	
+                                  u.id,
                                 u.firstname,
                                 u.lastname,
                                 u.email
@@ -364,7 +373,7 @@ Class Reporters {
                 }//if_tooMany
             }//if_Rdo
 
-            return $availableReporters;
+            return array($availableReporters,$tardis);
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
@@ -440,6 +449,7 @@ Class Reporters {
                     $infoReporter->levelthree        = $levelThree;
                     $infoReporter->hierarchylevel    = $level;
                     $infoReporter->timecreated       = $time;
+                    $infoReporter->mapped            = 'MANUAL';
 
                     // Execute
                     $DB->insert_record('report_gen_company_reporter',$infoReporter);
@@ -488,6 +498,7 @@ Class Reporters {
             // Search criteria
             $params = array();
             $params['level']    = $level;
+            $params['mapped']   = 'TARDIS';
 
             // Get companies level
             switch ($level) {
@@ -538,6 +549,7 @@ Class Reporters {
             // SQL Instruction
             $sql = " DELETE FROM {report_gen_company_reporter}
                      WHERE  hierarchylevel  = :level
+                        AND mapped          != :mapped
                         AND reporterid IN ($reportersLst) ";
 
             // Execute

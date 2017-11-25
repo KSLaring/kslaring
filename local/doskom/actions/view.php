@@ -27,7 +27,7 @@
 require( '../../../config.php' );
 require('../lib/actionslib.php');
 
-global $SESSION,$OUTPUT,$PAGE,$CFG,$SITE;
+global $SESSION,$OUTPUT,$PAGE,$CFG,$SITE,$USER;
 
 // Params
 $type           = required_param('t',PARAM_INT);
@@ -39,7 +39,18 @@ $lstcompanies   = null;
 $out            = null;
 $strbar         = null;
 
+// Checking access
 require_login();
+if (isguestuser($USER)) {
+    require_logout();
+
+    echo $OUTPUT->header();
+    echo $OUTPUT->notification(get_string('guestsarenotallowed','error'), 'notifysuccess');
+    echo $OUTPUT->continue_button($CFG->wwwroot);
+    echo $OUTPUT->footer();
+
+    die();
+}
 if (isloggedin()) {
     if (!has_capability('local/doskom:manage', $context)) {
         print_error('nopermissions', 'error', '', 'local/doskom:manage');

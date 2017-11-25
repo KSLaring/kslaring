@@ -30,25 +30,25 @@
  *
  */
 
+global $CFG,$SESSION,$PAGE,$USER,$SITE,$OUTPUT;
+
 require_once('../../../config.php');
 require_once( 'outcomelib.php');
 require_once('edit_outcome_form.php');
 require_once($CFG->libdir . '/adminlib.php');
 
-/* Params */
+// Params
 $outcome_id     = required_param('id', PARAM_INT);
 $expiration_id  = optional_param('expid', 0, PARAM_INT);
 $removeSelected = optional_param_array('removeselect',0,PARAM_INT);
 $addSearch      = optional_param('addselect_searchtext', '', PARAM_RAW);
 $removeSearch   = optional_param('removeselect_searchtext', '', PARAM_RAW);
-
 $url        = new moodle_url('/report/manager/outcome/edit_outcome.php',array('id' => $outcome_id));
 $return     = new moodle_url('/report/manager/index.php');
 $return_url = new moodle_url('/report/manager/outcome/outcome.php');
+$site_context   = CONTEXT_SYSTEM::instance();
 
-/* Start the page */
-$site_context = CONTEXT_SYSTEM::instance();
-//HTTPS is required in this page when $CFG->loginhttps enabled
+// Page settings
 $PAGE->https_required();
 $PAGE->set_pagelayout('report');
 $PAGE->set_url($url);
@@ -59,7 +59,18 @@ $PAGE->navbar->add(get_string('report_manager','local_tracker_manager'),$return_
 $PAGE->navbar->add(get_string('outcome', 'report_manager'),$return);
 $PAGE->navbar->add(get_string('edit_outcome', 'report_manager'));
 
-/* ADD require_capability */
+// Checking access
+require_login();
+if (isguestuser($USER)) {
+    require_logout();
+
+    echo $OUTPUT->header();
+    echo $OUTPUT->notification(get_string('guestsarenotallowed','error'), 'notifysuccess');
+    echo $OUTPUT->continue_button($CFG->wwwroot);
+    echo $OUTPUT->footer();
+
+    die();
+}
 if (!has_capability('report/manager:edit', $site_context)) {
     print_error('nopermissions', 'error', '', 'report/manager:edit');
 }
@@ -70,28 +81,26 @@ if (empty($CFG->loginhttps)) {
     $secure_www_root = str_replace('http:','https:',$CFG->wwwroot);
 }//if_security
 
-/* Show Form */
+// Form
 $form = new manager_edit_outcome_form(null,array($outcome_id,$expiration_id,$addSearch,$removeSearch,$removeSelected));
-
 if ($form->is_cancelled()) {
     $_POST = array();
     redirect($return_url);
 }else if($data = $form->get_data()) {
     if (!empty($data->add_sel)) {
         if (isset($data->addselect)) {
-            /* Add Jobroles */
-            /* Get Data */
+            // get data
             $infoOutcome = new stdClass();
             $infoOutcome->outcomeid         = $data->id;
             $infoOutcome->expirationperiod  = $data->expiration_period;
             $infoOutcome->modified          = time();
 
             if ($data->expid) {
-                /* Update Outcome */
+                // Update
                 $infoOutcome->id = $data->expid;
                 outcome::Update_Outcome($infoOutcome,$data->addselect);
             }else {
-                /* Insert */
+                // ad
                 outcome::Insert_Outcome($infoOutcome,$data->addselect);
             }//if_else
         }//if_addselect
@@ -102,18 +111,18 @@ if ($form->is_cancelled()) {
     }
 
     if ((isset($data->submitbutton) && $data->submitbutton)) {
-        /* Get Data */
+        // Get data
         $outcome = new stdClass();
         $outcome->outcomeid         = $data->id;
         $outcome->expirationperiod  = $data->expiration_period;
         $outcome->modified          = time();
 
         if ($expiration_id) {
-            /* Update Outcome */
+            // Update
             $outcome->id = $data->expid;
             outcome::Update_Outcome($outcome,null);
         }else {
-            /* Insert */
+            // Add
             outcome::Insert_Outcome($outcome,null);
         }//if_else
 
@@ -126,13 +135,13 @@ if ($form->is_cancelled()) {
 
 $PAGE->verify_https_required();
 
-/* Print Header */
+// Header
 echo $OUTPUT->header();
 
 $form->display();
 
-/* Initialise Selectors */
+// Initialise selectors
 outcome::Init_JobRoles_Selectors($outcome_id,$addSearch,$removeSearch,$removeSelected);
 
-/* Print Footer */
+// Footer
 echo $OUTPUT->footer();

@@ -10,18 +10,25 @@
  * @author          eFaktor     (fbv)
  *
  */
+global $PAGE,$SITE,$OUTPUT,$CFG,$USER,$SESSION;
+
 require_once('../../../config.php');
 require_once($CFG->libdir.'/adminlib.php');
 require_once($CFG->dirroot.'/'.$CFG->admin.'/user/lib.php');
 require_once('../expressloginlib.php');
 
 require_login();
+// Checking access
+if (isguestuser($USER)) {
+    require_logout();
+}
 admin_externalpage_setup('userbulk');
 
-/* PARAMS */
+// Params
 $context    = context_system::instance();
 $url        = new moodle_url('/local/express_login/bulk_express/user_bulk_express_login.php');
 $return     = new moodle_url('/admin/user/user_bulk.php');
+
 
 if (isset($SESSION->bulk_users)) {
     $users = implode(',',$SESSION->bulk_users);
@@ -33,7 +40,7 @@ if (!isset($SESSION->fields)) {
     $SESSION->fields = array();
 }
 
-/* Capability   */
+// Capability
 require_capability('moodle/user:update', $context);
 
 if (empty($users)) {

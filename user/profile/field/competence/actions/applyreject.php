@@ -29,7 +29,7 @@
  */
 require_once('../../../../../config.php');
 
-global $PAGE,$CFG,$OUTPUT,$SITE;
+global $PAGE,$CFG,$OUTPUT,$SITE,$USER;
 
 $act1 = required_param('t',PARAM_RAW);
 $act2 = required_param('m',PARAM_RAW);
@@ -45,6 +45,18 @@ $PAGE->set_pagelayout('standard');
 $PAGE->set_title($SITE->fullname);
 $PAGE->set_heading($SITE->fullname);
 
+// Checking access
+require_login();
+if (isguestuser($USER)) {
+    require_logout();
+
+    echo $OUTPUT->header();
+    echo $OUTPUT->notification(get_string('guestsarenotallowed','error'), 'notifysuccess');
+    echo $OUTPUT->continue_button($CFG->wwwroot);
+    echo $OUTPUT->footer();
+
+    die();
+}
 // Header
 echo $OUTPUT->header();
 $relativePath = $CFG->wwwroot . '/user/profile/field/competence/actions/reject.php/1/' . $act1 . "/" . $act2;

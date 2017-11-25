@@ -60,7 +60,7 @@ class manager_employee_report_form extends moodleform {
             $this->Add_OutcomesList($form);
 
             /* Completed List   */
-            $options = CompetenceManager::GetCompletedList();
+            $options = CompetenceManager::get_completed_list();
             $form->addElement('select',REPORT_MANAGER_COMPLETED_LIST,get_string('expired_next', 'report_manager'),$options);
             $form->setDefault(REPORT_MANAGER_COMPLETED_LIST, 4);
         $form->addElement('html', '</div>');
@@ -174,24 +174,9 @@ class manager_employee_report_form extends moodleform {
 
         /* Get My Companies by Level    */
         if ($IsReporter) {
-            $levelZero  = array_keys($myHierarchy->competence);
-
-            if (count($levelZero) == 1) {
-                $parentZero = implode(',',$levelZero);
-            }else {
-                $parentZero = optional_param(EMPLOYEE_REPORT_STRUCTURE_LEVEL . 0, 0, PARAM_INT);
-                if ((!$parentZero) && isset($SESSION->selection)) {
-                    $parentZero = $SESSION->selection[EMPLOYEE_REPORT_STRUCTURE_LEVEL . 0];
-                }
-            }//if_onlyOne
-
-            if ($parentZero) {
-                $levelOne   = $myHierarchy->competence[$parentZero]->levelOne;
-                $levelTwo   = $myHierarchy->competence[$parentZero]->levelTwo;
-                $levelThree = $myHierarchy->competence[$parentZero]->levelThree;
-            }
+            $levelZero  = implode(',',$myHierarchy->competence->levelzero);
         }else {
-            list($levelZero,$levelOne,$levelTwo,$levelThree) = CompetenceManager::GetMyCompanies_By_Level($myHierarchy->competence,$myHierarchy->my_level);
+            list($levelZero,$levelOne,$levelTwo,$levelThree) = CompetenceManager::get_my_companies_by_Level($myHierarchy->competence);
         }//if_IsReporter
 
         /* Parent*/
@@ -205,43 +190,29 @@ class manager_employee_report_form extends moodleform {
 
         switch ($level) {
             case 0:
-                /* Only My Companies    */
-                if ($levelZero) {
-                    $companies_in = implode(',',$levelZero);
-                }//if_level_zero
-
-                $options = CompetenceManager::GetCompanies_LevelList($level,null,$companies_in);
+                $options = CompetenceManager::get_companies_level_list($level,null,$levelZero);
 
                 break;
             case 1:
-                /* Only My Companies    */
-                if ($levelOne) {
-                    $companies_in = implode(',',$levelOne);
-                }//if_level_One
 
                 if ($parent) {
-                    $options = CompetenceManager::GetCompanies_LevelList($level,$parent,$companies_in);
+                    $options = CompetenceManager::get_companies_level_list($level,$parent,$levelOne);
                 }else {
                     /* If there is only one company */
                     if (isset($SESSION->onlyCompany)) {
-                        $options = CompetenceManager::GetCompanies_LevelList($level,$SESSION->onlyCompany[$level-1],$companies_in);
+                        $options = CompetenceManager::get_companies_level_list($level,$SESSION->onlyCompany[$level-1],$levelOne);
                     }else {
                         $options[0] = get_string('select_level_list','report_manager');
                     }
                 }//IF_COOKIE
                 break;
             case 2:
-                /* Only My Companies    */
-                if ($levelTwo) {
-                    $companies_in = implode(',',$levelTwo);
-                }//if_level_Two
-
                 if ($parent) {
-                    $options = CompetenceManager::GetCompanies_LevelList($level,$parent,$companies_in);
+                    $options = CompetenceManager::get_companies_level_list($level,$parent,$levelTwo);
                 }else {
                     /* If there is only one company */
                     if (isset($SESSION->onlyCompany)) {
-                        $options = CompetenceManager::GetCompanies_LevelList($level,$SESSION->onlyCompany[$level-1],$companies_in);
+                        $options = CompetenceManager::get_companies_level_list($level,$SESSION->onlyCompany[$level-1],$levelTwo);
                     }else {
                         $options[0] = get_string('select_level_list','report_manager');
                     }
@@ -249,16 +220,12 @@ class manager_employee_report_form extends moodleform {
 
                 break;
             case 3:
-                if ($levelThree) {
-                    $companies_in = implode(',',$levelThree);
-                }//if_level_Two
-
                 if ($parent) {
-                    $options = CompetenceManager::GetCompanies_LevelList($level,$parent,$companies_in);
+                    $options = CompetenceManager::get_companies_level_list($level,$parent,$levelThree);
                 }else {
                     /* If there is only one company */
                     if (isset($SESSION->onlyCompany)) {
-                        $options = CompetenceManager::GetCompanies_LevelList($level,$SESSION->onlyCompany[$level-1],$companies_in);
+                        $options = CompetenceManager::get_companies_level_list($level,$SESSION->onlyCompany[$level-1],$levelThree);
                     }else {
                         $options[0] = get_string('select_level_list','report_manager');
                     }

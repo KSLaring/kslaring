@@ -46,7 +46,7 @@ class KS_FEIDE {
 
     /**
      * @param           $userFeide
-     * @return          bool|int
+     * @return          int|mixed
      *
      * @creationDate    22/09/2015
      * @author          eFaktor     (fbv)
@@ -72,9 +72,9 @@ class KS_FEIDE {
             }//if_userId
 
             $user = get_complete_user_data('id', $userId);
-            complete_user_login($user,true);
+            complete_user_login($user);
 
-            return true;
+            return $user;
         }catch (Exception $ex) {
             return FEIDE_ERR_PROCESS;
         }//try_catch

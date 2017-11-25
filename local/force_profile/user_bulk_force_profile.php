@@ -13,6 +13,8 @@
  *
  */
 
+global $CFG,$SESSION,$PAGE,$DB,$SITE,$OUTPUT,$USER;
+
 require_once('../../config.php');
 require_once($CFG->libdir.'/adminlib.php');
 require_once($CFG->dirroot.'/'.$CFG->admin.'/user/lib.php');
@@ -20,10 +22,22 @@ require_once($CFG->dirroot.'/'.$CFG->admin.'/user/lib.php');
 require_once('forceprofilelib.php');
 require_once('force_profile_form.php');
 
+// Checking access
 require_login();
+if (isguestuser($USER)) {
+    require_logout();
+
+    echo $OUTPUT->header();
+    echo $OUTPUT->notification(get_string('guestsarenotallowed','error'), 'notifysuccess');
+    echo $OUTPUT->continue_button($CFG->wwwroot);
+    echo $OUTPUT->footer();
+
+    die();
+}
+
 admin_externalpage_setup('userbulk');
 
-/* PARAMS */
+// Params
 $context    = context_system::instance();
 $url        = new moodle_url('/local/force_profile/user_bulk_force_profile.php');
 $return     = new moodle_url('/admin/user/user_bulk.php');
@@ -37,7 +51,7 @@ if (!isset($SESSION->fields)) {
     $SESSION->fields = array();
 }
 
-/* Capability   */
+// Capability
 require_capability('moodle/user:update', $context);
 
 if (empty($users)) {
@@ -47,7 +61,7 @@ if (empty($users)) {
 $PAGE->set_url($url);
 $PAGE->set_context($context);
 
-/* FORM */
+// Form
 $add_sel    = ForceProfile::ForceProfile_GetChoicesProfile();
 
 $form       = new force_profile_form(null,array($users,$add_sel));

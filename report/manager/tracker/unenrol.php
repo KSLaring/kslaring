@@ -25,14 +25,13 @@
  * @author          eFaktor     (fbv)
  *
  */
+global $CFG,$SITE,$PAGE,$OUTPUT,$USER;
 
 require_once('../../../config.php');
 require_once('trackerlib.php');
 require_once($CFG->libdir . '/adminlib.php');
 
-require_login();
-
-/* PARAMS */
+// Params
 $courseID       = required_param('id',PARAM_INT);
 $unWait         = optional_param('w',0,PARAM_INT);
 
@@ -43,33 +42,43 @@ $returnUrl      = new moodle_url($CFG->wwwroot . '/index.php');
 $siteContext    = context_system::instance();
 $message        = null;
 
-/* Start the page */
+// Page settings
 $PAGE->https_required();
-
 $PAGE->set_pagelayout('report');
 $PAGE->set_url($url);
 $PAGE->set_context($siteContext);
 $PAGE->set_title($SITE->fullname);
 $PAGE->set_heading($SITE->fullname);
 $PAGE->navbar->add(get_string('report_manager','local_tracker_manager'),$returnUrl);
-
 $PAGE->verify_https_required();
 
+// Checking access
+require_login();
+if (isguestuser($USER)) {
+    require_logout();
 
-/* Print Header */
+    echo $OUTPUT->header();
+    echo $OUTPUT->notification(get_string('guestsarenotallowed','error'), 'notifysuccess');
+    echo $OUTPUT->continue_button($CFG->wwwroot);
+    echo $OUTPUT->footer();
+
+    die();
+}
+
+// Header
 echo $OUTPUT->header();
 
 if ($confirmed) {
     if ($unWait) {
-        /* Remove from waiting list */
-        /* Unenrol */
+        // Remove from waiting list
+        // Unrol
         if(TrackerManager::unwait_from_course($courseID,$USER->id)) {
             $message = get_string('exit_unwait','report_manager');
         }else {
             $message = get_string('err_unenrol','report_manager');
         }//if_else
     }else {
-        /* Unenrol */
+        //Unrol
         if(TrackerManager::unenrol_from_course($courseID,$USER->id)) {
             $message = get_string('exit_unenrol','report_manager');
         }else {
@@ -80,10 +89,10 @@ if ($confirmed) {
     echo $OUTPUT->notification($message, 'notifysuccess');
     echo $OUTPUT->continue_button($returnUrl);
 }else {
-    /* First Confirm    */
+    // First confirm
     $course = get_course($courseID);
     if ($unWait) {
-        /* Remove from waiting list*/
+        // Remove from waiting list
         $message = get_string('unwaitconfirm', 'report_manager', array('user'=>fullname($USER, true), 'course'=>format_string($course->fullname)));
     }else {
         $message = get_string('unenrolconfirm', 'core_enrol', array('user'=>fullname($USER, true), 'course'=>format_string($course->fullname)));    
@@ -92,5 +101,5 @@ if ($confirmed) {
     echo $OUTPUT->confirm($message,$confirmUrl,$returnUrl);
 }//if_else
 
-/* Print Footer */
+// Footer
 echo $OUTPUT->footer();

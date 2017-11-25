@@ -991,7 +991,7 @@ class enrolmethodself extends \enrol_waitinglist\method\enrolmethodbase{
                            $ret = array(true,$out);
                         }//if_onlist
                     }else {
-                        $company = \CompetenceManager::GetCompany_Name($data->level_3);
+                        $company = \CompetenceManager::get_company_name($data->level_3);
 
                         $redirect = $CFG->wwwroot . '/index.php';
                         $out = '<div>';

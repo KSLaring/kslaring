@@ -12,16 +12,26 @@
 require_once('../../../config.php');
 require_once('loginlib.php');
 
+global $PAGE,$SITE,$OUTPUT,$CFG,$USER;
+
 $PAGE->set_url("$CFG->httpswwwroot/login/index.php");
 $PAGE->set_context(CONTEXT_SYSTEM::instance());
 $PAGE->set_pagelayout('login');
 
-/* Params   */
+// Params
 $valid      = null;
 $err_code   = null;
 $err_url    = null;
 
-/* Get Data */
+// Checking access
+if (isguestuser($USER)) {
+    $err_url = new moodle_url('/local/express_login/login/loginError.php');
+    redirect($err_url);
+    die();
+}
+
+
+// GET Data
 if (isloggedin()) {
     $login          = true;
     $microSession   = $_SESSION['micro'];
@@ -51,20 +61,20 @@ if (isloggedin()) {
         redirect($err_url);
     }//if_else_valid
 
-    /* Reset Attempts User  */
+    // Reset attempts user
     Express_Link::Update_Attempts($frm->UserName);
-    /* Login User   */
+    // Login user
     $login = Express_Link::LoginUser($frm->UserName);
 }//if_isloggedin
 
 if ($login) {
-    /* REDIRECT TO THE CORRECT PAGE */
+    // Redirect to the right page
     if ($microSession) {
-        /* Check That the delivery and module exists    */
+        // Check That the delivery and module exists
         $micro_learning = explode('/', ltrim($microSession, '/'));
-        $microURL = Express_Link::LoginMicroLearning($micro_learning,$USER->id);
+        $microURL = Express_Link::LoginMicroLearning($micro_learning,$login->id);
 
-        /* Redirect user to the correct activity into the course    */
+        // Redirect user to the correct activity into the course
         if ($microURL) {
             redirect($microURL);
             die();

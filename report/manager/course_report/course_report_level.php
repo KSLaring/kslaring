@@ -36,8 +36,9 @@ require_once( 'courserptlib.php');
 require_once( '../managerlib.php');
 require_once('course_report_level_form.php');
 
+global $PAGE,$CFG,$SESSION,$SITE,$USER,$OUTPUT;
+
 // Params
-global $PAGE,$CFG,$SESSION,$SITE,$USER;
 $report_level           = optional_param('rpt',0,PARAM_INT);
 $company_id             = optional_param('co',0,PARAM_INT);
 $parentTwo              = optional_param('lt',0,PARAM_INT);
@@ -56,7 +57,18 @@ $site = get_site();
 // Report
 $out     = '';
 
+// Checking access
 require_login();
+if (isguestuser($USER)) {
+    require_logout();
+
+    echo $OUTPUT->header();
+    echo $OUTPUT->notification(get_string('guestsarenotallowed','error'), 'notifysuccess');
+    echo $OUTPUT->continue_button($CFG->wwwroot);
+    echo $OUTPUT->footer();
+
+    die();
+}
 
 $PAGE->requires->js(new moodle_url('/report/manager/js/tracker.js'));
 $PAGE->https_required();
@@ -72,41 +84,8 @@ $PAGE->navbar->add(get_string('course_report', 'report_manager'),$return_url);
 $PAGE->navbar->add(get_string('level_report','report_manager',$report_level),$url);
 
 // Require capabilty
-$IsReporter = CompetenceManager::IsReporter($USER->id);
-switch ($report_level) {
-    case 0:
-        if (!has_capability('report/manager:viewlevel0', $site_context)) {
-            if (!$IsReporter) {
-                print_error('nopermissions', 'error', '', 'report/manager:viewlevel0');
-            }//ifReporter
-        }
-
-        break;
-    case 1:
-        if (!has_capability('report/manager:viewlevel1', $site_context)) {
-            if (!$IsReporter) {
-                print_error('nopermissions', 'error', '', 'report/manager:viewlevel1');
-            }//ifReporter
-        }
-
-        break;
-    case 2:
-        if (!has_capability('report/manager:viewlevel2', $site_context)) {
-            if (!$IsReporter) {
-                print_error('nopermissions', 'error', '', 'report/manager:viewlevel2');
-            }//ifReporter
-        }
-
-        break;
-    case 3:
-        if (!has_capability('report/manager:viewlevel3', $site_context)) {
-            if (!$IsReporter) {
-                print_error('nopermissions', 'error', '', 'report/manager:viewlevel3');
-            }//ifReporter
-        }
-
-        break;
-}//switch
+$IsReporter = CompetenceManager::is_reporter($USER->id);
+CompetenceManager::check_capability_reports($IsReporter,$report_level,$site_context);
 
 if (empty($CFG->loginhttps)) {
     $secure_www_root = $CFG->wwwroot;
@@ -139,7 +118,7 @@ if ($company_id) {
     $data_form[REPORT_MANAGER_COURSE_LIST]          = $USER->courseReport;
     $data_form[REPORT_MANAGER_COMPLETED_LIST]       = $completed_option;
 
-    /* Keep selection data --> when it returns to the main page */
+    // Keep selection data --> when it returns to the main page
     $SESSION->selection = array();
     $SESSION->selection[MANAGER_COURSE_STRUCTURE_LEVEL . '0']   = $USER->levelZero;
     $SESSION->selection[MANAGER_COURSE_STRUCTURE_LEVEL . '1']   = $parentOne;
@@ -147,7 +126,7 @@ if ($company_id) {
     $SESSION->selection[MANAGER_COURSE_STRUCTURE_LEVEL . '3']   = array($company_id => $company_id);
     $SESSION->selection[REPORT_MANAGER_COURSE_LIST]             = $USER->courseReport;
 
-    /* Get the data to the report   */
+    // Get data report
     $course_report = course_report::Get_CourseReportLevel($data_form,$myHierarchy,$IsReporter);
     $out = course_report::Print_CourseReport_Screen($course_report,$data_form[REPORT_MANAGER_COMPLETED_LIST]);
 }else {
@@ -215,29 +194,29 @@ if ($form->is_cancelled()) {
         $out     = '</h3>' . get_string('no_data', 'report_manager') . '</h3>';
         $out    .=  '<br/>' . $return;
     }//if_outcome_report
-
 }//if_form
 
-/* Print Header */
+// Header
 echo $OUTPUT->header();
+
 
 if (!empty($out)) {
     echo $OUTPUT->heading($out);
 }else {
-    /* Print tabs at the top */
+    // Add tabs on the top
     $current_tab = 'manager_reports';
     $show_roles = 1;
     require('../tabs.php');
 
-    /* Add Levels Links */
+    // Add level links
     $linkLevels = '<a href="' . $return_url . '">' . get_string('select_report_levels','report_manager') . '</a>';
     echo $OUTPUT->action_link($return_url,get_string('select_report_levels','report_manager'));
 
     $form->display();
 
-    /* Initialise Organization Structure    */
-    CompetenceManager::Init_OrganizationStructure_CourseReport(COMPANY_STRUCTURE_LEVEL,REPORT_MANAGER_JOB_ROLE_LIST,$report_level);
+    // Initialise Organization structure
+    CompetenceManager::init_organization_structure_coursereport(COMPANY_STRUCTURE_LEVEL,REPORT_MANAGER_JOB_ROLE_LIST,$report_level);
 }//if_else
 
-/* Print Footer */
+// Footer
 echo $OUTPUT->footer();

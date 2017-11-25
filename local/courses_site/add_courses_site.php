@@ -9,16 +9,30 @@
  * @creationDate    23/05/2014
  * @author          efaktor     (fbv)
  */
+global $CFG,$USER,$PAGE,$OUTPUT,$SITE;
 
 require_once('../../config.php');
 require_once($CFG->libdir . '/adminlib.php');
 require_once('courses_site.php');
 
-/* PARAMS */
+// Checking access
+require_login();
+if (isguestuser($USER)) {
+    require_logout();
+
+    echo $OUTPUT->header();
+    echo $OUTPUT->notification(get_string('guestsarenotallowed','error'), 'notifysuccess');
+    echo $OUTPUT->continue_button($CFG->wwwroot);
+    echo $OUTPUT->footer();
+
+    die();
+}
+
+// Params
 $site_context = context_system::instance();
 $url          = new moodle_url('/local/courses_site/add_courses_site.php');
 
-/* SET PAGE */
+// Page settings
 $PAGE->set_url($url);
 $PAGE->set_context($site_context);
 $PAGE->set_pagelayout('admin');
@@ -28,7 +42,7 @@ $PAGE->navbar->add(get_string('name','block_courses_site'));
 $PAGE->navbar->add(get_string('title_add','local_courses_site'),$url);
 $PAGE->requires->js('/local/courses_site/js/courses_site.js');
 
-/* SET FORM */
+// Form
 setcookie('parentCategory',0);
 $form = new add_course_site_form(null);
 if ($form->is_cancelled()) {
@@ -36,16 +50,16 @@ if ($form->is_cancelled()) {
     $_POST = array();
     redirect($CFG->wwwroot);
 }else if ($data = $form->get_data()) {
-    /* Add a new Instance   */
+    // New course
     courses_site::courses_site_AddCourseToBlockSite($data);
 
     redirect($url);
 }//if_else_form
 
-/* Print Header */
+// Header
 echo $OUTPUT->header();
 
 echo $form->display();
 
-/* Print Footer */
+// Footer
 echo $OUTPUT->footer();

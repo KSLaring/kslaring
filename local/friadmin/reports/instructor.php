@@ -26,14 +26,25 @@
  *
  */
 
+global $USER,$PAGE,$SITE,$OUTPUT,$CFG;
+
 require_once( '../../../config.php');
 require_once( 'forms/rpt_forms.php');
 require_once( 'lib/categoryrptlib.php');
 require_once($CFG->dirroot . '/lib/excellib.class.php');
 
+// Checking access
 require_login();
+if (isguestuser($USER)) {
+    require_logout();
 
-global $CFG,$PAGE,$OUTPUT,$USER;
+    echo $OUTPUT->header();
+    echo $OUTPUT->notification(get_string('guestsarenotallowed','error'), 'notifysuccess');
+    echo $OUTPUT->continue_button($CFG->wwwroot);
+    echo $OUTPUT->footer();
+
+    die();
+}
 
 // Params
 $parent             = optional_param('parentcat', 0,PARAM_INT);

@@ -28,24 +28,22 @@
  *
  */
 
+global $CFG,$SESSION,$PAGE,$USER,$SITE,$OUTPUT;
+
 require_once('../../config.php');
 require_once( 'managerlib.php');
 require_once($CFG->libdir . '/adminlib.php');
 require_once($CFG->libdir . '/gradelib.php');
 
-require_login();
-
-/* PARAMS */
+// Params
 $url        = new moodle_url('/report/manager/index.php');
 $return_url = new moodle_url('/report/manager/index.php');
 $IsReporter = false;
-
-/* Start the page */
 $site_context = CONTEXT_SYSTEM::instance();
-//HTTPS is required in this page when $CFG->loginhttps enabled
+
+// Page settings
 $PAGE->https_required();
 $PAGE->set_context($site_context);
-
 $PAGE->set_pagelayout('report');
 $PAGE->set_url($url);
 $PAGE->set_title($SITE->fullname);
@@ -55,10 +53,21 @@ $PAGE->navbar->add(get_string('company_report','report_manager'),$url);
 unset($SESSION->parents);
 unset($SESSION->selection);
 
-/* ADD require_capability */
+// Checking access
+require_login();
+if (isguestuser($USER)) {
+    require_logout();
+
+    echo $OUTPUT->header();
+    echo $OUTPUT->notification(get_string('guestsarenotallowed','error'), 'notifysuccess');
+    echo $OUTPUT->continue_button($CFG->wwwroot);
+    echo $OUTPUT->footer();
+
+    die();
+}
 $site_context = CONTEXT_SYSTEM::instance();
 if (!is_siteadmin($USER->id)) {
-    $IsReporter = CompetenceManager::IsReporter($USER->id);
+    $IsReporter = CompetenceManager::is_reporter($USER->id);
     if (!$IsReporter) {
         require_capability('report/manager:viewlevel4', $site_context,$USER->id);
     }
@@ -72,24 +81,23 @@ if (empty($CFG->loginhttps)) {
 
 $PAGE->verify_https_required();
 
-/* Print Header */
+// Header
 echo $OUTPUT->header();
-/* Print tabs at the top */
+// Tabs
 $current_tab = 'manager_reports';
 $show_roles = 1;
 require('tabs.php');
 
-/* Competence Manager Reports   */
-echo $OUTPUT->heading(get_string('reports_manager', 'report_manager'));
 
-/* Reports  */
+echo $OUTPUT->heading(get_string('reports_manager', 'report_manager'));
+// Competence reports
 $urlUser        = new moodle_url('/report/manager/user_report/user_report.php');
 $urlCompany     = new moodle_url('/report/manager/company_report/company_report.php');
 $urlEmployee    = new moodle_url('/report/manager/employee_report/employee_report.php');
 $courseReport   = new moodle_url('/report/manager/course_report/course_report.php');
 $outcomeReport  = new moodle_url('/report/manager/outcome_report/outcome_report.php');
 
-/* Add Reports */
+// Add reports links
 echo '<p class="note">' . get_string('company_report_note', 'report_manager') . '</p>';
 
 echo '<ul class="unlist report-selection">' . "\n";
@@ -121,5 +129,5 @@ echo '<ul class="unlist report-selection">' . "\n";
     }//if_capability
 echo '</ul>' . "\n" . "</br>";
 
-/* Print Footer */
+// Footer
 echo $OUTPUT->footer();
