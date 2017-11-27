@@ -52,3 +52,7 @@ $string['actualCourseCount'] = 'Søkeresultat: <span id="actualCourseCount"></sp
 $string['searchtext'] = 'Søk tekst: ';
 $string['datefrom'] = 'Dato fra';
 $string['dateto'] = 'Dato til';
+$string['none'] = 'None';
+$string['courseformatgroup'] = 'Grouptag selection';
+$string['courseformatgroupdesc'] = 'Select a group tag. If a user may not have tags preselected, all tags in this group 
+will be preselected for the user.';
