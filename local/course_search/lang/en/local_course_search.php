@@ -52,3 +52,7 @@ $string['actualCourseCount'] = 'Viewing <span id="actualCourseCount"></span> res
 $string['searchtext'] = 'Search text: ';
 $string['datefrom'] = 'Date from';
 $string['dateto'] = 'Date to';
+$string['none'] = 'None';
+$string['courseformatgroup'] = 'Grouptag selection';
+$string['courseformatgroupdesc'] = 'Select a group tag. If a user may not have tags preselected, all tags in this group 
+will be preselected for the user.';

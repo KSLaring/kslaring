@@ -132,7 +132,7 @@ class coursesearch extends external_api {
 
             $data->userid = $USER->id;
             //if (!empty($data->tags)) {
-            self::save_user_search_criteria($USER, $data->tags);
+            \local_course_search\util::save_user_search_criteria($USER, $data->tags);
             //}
         } else {
             $data = array('success' => false);
@@ -167,35 +167,6 @@ class coursesearch extends external_api {
                 VALUE_OPTIONAL)
         ]);
     }
-
-    /**
-     * Save the user preselected tags.
-     *
-     * Delete all existing user entries and save the transmitted ones.
-     *
-     * @param object $user The user object
-     * @param array  $tags The selected tag ids
-     */
-    protected static function save_user_search_criteria($user, $tags) {
-        global $DB;
-
-        $DB->delete_records('local_course_search_presel', array('user' => $user->id));
-
-        if (!empty($tags)) {
-            $dataobjects = array();
-
-            foreach ($tags as $tagid) {
-                $dataobjects[] = (object)array(
-                    'user' => $user->id,
-                    'itemtype' => 'tag',
-                    'itemid' => $tagid
-                );
-            }
-
-            $DB->insert_records('local_course_search_presel', $dataobjects);
-        }
-    }
-
 
     /**
      * Get the structured user search criteria.
