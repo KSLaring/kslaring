@@ -710,46 +710,36 @@ class CompetenceManager {
         $sql        = null;
         $rdo        = null;
         $companies  = null;
-        $sqltwo     = null;
-        $sqlone     = null;
 
         try {
             // Search criteria
             $params = array();
             $params['zero'] = $levelZero;
 
-            // Extra criterias by level
-            $sqltwo = ($levelTwo ? " AND co_two.id IN ($levelTwo) " : '');
-            $sqlone = ($levelOne ? " AND co_one.id IN ($levelOne) " : '');
+            // SQL Instruction
+            $sql = " SELECT	co.levelzero  	as 'levelzero',
+                            GROUP_CONCAT(DISTINCT co.levelone  	 ORDER BY co.levelone 	SEPARATOR ',') 	as 'levelone',
+                            GROUP_CONCAT(DISTINCT co.leveltwo  	 ORDER BY co.leveltwo 	SEPARATOR ',') 	as 'leveltwo',
+                            GROUP_CONCAT(DISTINCT co.levelthree  ORDER BY co.levelthree SEPARATOR ',') 	as 'levelthree'
+                     FROM	companies_with_users co
+                     WHERE	co.levelzero = :zero
+                     ";
 
-            // SQL Isntruction - Get only companies with employees
-            $sql = " SELECT		GROUP_CONCAT(DISTINCT uicd.companyid  	ORDER BY uicd.companyid SEPARATOR ',') 		as 'levelthree',
-                                GROUP_CONCAT(DISTINCT cr_two.parentid  	ORDER BY cr_two.parentid SEPARATOR ',') 	as 'leveltwo',
-                                GROUP_CONCAT(DISTINCT cr_one.parentid  	ORDER BY cr_one.parentid SEPARATOR ',') 	as 'levelone',
-                                GROUP_CONCAT(DISTINCT cr_zero.parentid  ORDER BY cr_zero.parentid SEPARATOR ',') 	as 'levelzero'
-                     FROM		{user_info_competence_data} 		uicd
-                        -- LEVEL TWO
-                        JOIN	{report_gen_company_relation}   	cr_two	ON 	cr_two.companyid 		= uicd.companyid
-                        JOIN	{report_gen_companydata}			co_two	ON 	co_two.id 				= cr_two.parentid
-                                                                            AND co_two.hierarchylevel 	= 2
-                                                                            $sqltwo
-                        -- LEVEL ONE
-                        JOIN	{report_gen_company_relation}   	cr_one	ON 	cr_one.companyid 		= cr_two.parentid
-                        JOIN	{report_gen_companydata}			co_one	ON 	co_one.id 				= cr_one.parentid
-                                                                            AND co_one.hierarchylevel 	= 1
-                                                                            $sqlone
-                        -- LEVEL ZERO
-                        JOIN	{report_gen_company_relation} 	    cr_zero	ON 	cr_zero.companyid 		= cr_one.parentid
-                        JOIN	{report_gen_companydata}			co_zero	ON 	co_zero.id 				= cr_zero.parentid
-                                                                            AND co_zero.hierarchylevel 	= 0
-                                                                            AND co_zero.id = :zero ";
-
-            // Filter level three
+            // Criteria level one
+            if ($levelOne) {
+                $sql .= " AND co.levelone IN ($levelOne) ";
+            }
+            // Criteria level two
+            if ($levelTwo) {
+                $sql .= " AND co.leveltwo IN ($levelTwo) ";
+            }
+            // Criteria level three
             if ($levelThree) {
-                $sql .= " WHERE uicd.companyid IN ($levelThree) ";
+                $sql .= " AND co.levelthree IN ($levelThree) ";
             }//if_levelThree
 
-            // Execute 
+            // Execute
+            $sql .= " GROUP BY co.levelzero ";
             $rdo = $DB->get_record_sql($sql,$params);
 
             return $rdo;

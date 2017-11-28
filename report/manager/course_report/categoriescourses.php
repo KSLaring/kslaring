@@ -72,11 +72,13 @@ switch ($type) {
         $data   = array('categories' => array(),'parentcat' => null);
         if ($categories) {
             foreach ($categories as $id => $category) {
-                $info       = new stdClass();
-                $info->id   = $id;
-                $info->name = $category;
+                if ($id != 0) {
+                    $key = "'" . $category . "'#" . $id;
+                }else {
+                    $key = $id;
+                }
+                $data['categories'][$key] = $category;
 
-                $data['categories'][$info->id] = $info;
             }
         }//if_lstcategories
 
@@ -95,11 +97,13 @@ switch ($type) {
         $data   = array('mycourses' => array());
         if ($courses) {
             foreach ($courses as $id => $course) {
-                $info       = new stdClass();
-                $info->id   = $id;
-                $info->name = $course;
+                if ($id != 0) {
+                    $key = "'" . $course . "'#" . $id;
+                }else {
+                    $key = $id;
+                }
+                $data['mycourses'][$key] = $course;
 
-                $data['mycourses'][$info->id] = $info;
             }
         }//if_lstcategories
 

@@ -19,7 +19,6 @@ $PAGE->set_context(context_system::instance());
 $PAGE->set_url("$CFG->httpswwwroot/login/index.php");
 
 // Checking access
-require_login();
 if (isguestuser($USER)) {
     require_logout();
 

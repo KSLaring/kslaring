@@ -40,10 +40,15 @@ global $PAGE,$CFG,$SESSION,$SITE,$USER,$OUTPUT;
 
 // Params
 $report_level           = optional_param('rpt',0,PARAM_INT);
+$course                 = optional_param('c',0,PARAM_INT);
 $company_id             = optional_param('co',0,PARAM_INT);
 $parentTwo              = optional_param('lt',0,PARAM_INT);
 $parentOne              = optional_param('lo',0,PARAM_INT);
+$parentZero             = optional_param('lz',0,PARAM_INT);
 $completed_option       = optional_param('opt',0,PARAM_INT);
+$parentcat              = optional_param('parentcat', 0,PARAM_INT);
+$depth                  = optional_param('depth', 1,PARAM_INT);
+$back                   = optional_param('re',0,PARAM_INT);
 $return_url             = new moodle_url('/report/manager/course_report/course_report.php',array('rpt' => $report_level));
 $url                    = new moodle_url('/report/manager/course_report/course_report_level.php',array('rpt' => $report_level));
 $course_report          = null;
@@ -111,30 +116,27 @@ if ($company_id) {
 
     $data_form['rpt']                               = $report_level;
     $data_form[COURSE_REPORT_FORMAT_LIST]           = COURSE_REPORT_FORMAT_SCREEN;
-    $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'0'] = $USER->levelZero;
+    $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'0'] = $parentZero;
     $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'1'] = $parentOne;
     $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'2'] = $parentTwo;
     $data_form[MANAGER_COURSE_STRUCTURE_LEVEL .'3'] = array($company_id => $company_id);
-    $data_form[REPORT_MANAGER_COURSE_LIST]          = $USER->courseReport;
     $data_form[REPORT_MANAGER_COMPLETED_LIST]       = $completed_option;
+    $data_form[REPORT_MANAGER_COURSE_LIST]          = $course;
 
     // Keep selection data --> when it returns to the main page
     $SESSION->selection = array();
-    $SESSION->selection[MANAGER_COURSE_STRUCTURE_LEVEL . '0']   = $USER->levelZero;
-    $SESSION->selection[MANAGER_COURSE_STRUCTURE_LEVEL . '1']   = $parentOne;
+    $SESSION->selection[MANAGER_COURSE_STRUCTURE_LEVEL . '0']   = $parentZero;
+    $SESSION->selection[MANAGER_COURSE_STRUCTURE_LEVEL . '1']   = $parentZero;
     $SESSION->selection[MANAGER_COURSE_STRUCTURE_LEVEL . '2']   = $parentTwo;
-    $SESSION->selection[MANAGER_COURSE_STRUCTURE_LEVEL . '3']   = array($company_id => $company_id);
-    $SESSION->selection[REPORT_MANAGER_COURSE_LIST]             = $USER->courseReport;
+    $SESSION->selection[MANAGER_COURSE_STRUCTURE_LEVEL . '3']   = $company_id;
+    $SESSION->selection[REPORT_MANAGER_COURSE_LIST]             = $course;
 
-    // Get data report
+    // Get the data to the report
     $course_report = course_report::Get_CourseReportLevel($data_form,$myHierarchy,$IsReporter);
     $out = course_report::Print_CourseReport_Screen($course_report,$data_form[REPORT_MANAGER_COMPLETED_LIST]);
-}else {
-    // Clean temporary
-    course_report::CleanTemporary();
 }
 
-$form = new manager_course_report_level_form(null,array($report_level,$myHierarchy,$IsReporter));
+$form = new manager_course_report_level_form(null,array($report_level,$myHierarchy,$IsReporter,$parentcat,$depth));
 if ($form->is_cancelled()) {
     unset($SESSION->selection);
 
@@ -157,6 +159,7 @@ if ($form->is_cancelled()) {
     $data_form['h3']                                 = $three;
     
     // Report data
+    $data_form[REPORT_MANAGER_COURSE_LIST] = $data_form['hcourse'];
     $course_report = course_report::Get_CourseReportLevel($data_form,$myHierarchy,$IsReporter);
 
     if (isset($data_form[REPORT_MANAGER_JOB_ROLE_LIST]) && $data_form[REPORT_MANAGER_JOB_ROLE_LIST]) {
@@ -203,12 +206,12 @@ echo $OUTPUT->header();
 if (!empty($out)) {
     echo $OUTPUT->heading($out);
 }else {
-    // Add tabs on the top
+    // Print tabs at the top
     $current_tab = 'manager_reports';
     $show_roles = 1;
     require('../tabs.php');
 
-    // Add level links
+    // Add levels links
     $linkLevels = '<a href="' . $return_url . '">' . get_string('select_report_levels','report_manager') . '</a>';
     echo $OUTPUT->action_link($return_url,get_string('select_report_levels','report_manager'));
 
@@ -216,6 +219,9 @@ if (!empty($out)) {
 
     // Initialise Organization structure
     CompetenceManager::init_organization_structure_coursereport(COMPANY_STRUCTURE_LEVEL,REPORT_MANAGER_JOB_ROLE_LIST,$report_level);
+    
+    // Javascript to et categories and courses
+    course_report::ini_data_reports('parent','category',REPORT_MANAGER_COURSE_LIST,'depth');
 }//if_else
 
 // Footer
