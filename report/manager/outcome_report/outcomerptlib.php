@@ -2161,8 +2161,7 @@ class outcome_report {
             // Col two
             $header_company .= html_writer::start_div('header_col_two');
                 if ($url_levelThree) {
-                    echo $url_levelThree . "</br>";
-                    $header_company .= '<a href="' . $url_levelThree . '">' . '<h5>' . $company . '</h5>' . '</a>';
+                    //$header_company .= '<a href="' . $url_levelThree . '">' . '<h5>' . $company . '</h5>' . '</a>';
                 }else {
                     $header_company .= '<h5>' . $company . '</h5>';
                 }//if_levelThree
