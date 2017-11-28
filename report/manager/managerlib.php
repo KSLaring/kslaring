@@ -426,113 +426,6 @@ class CompetenceManager {
 
     /**
      * Description
-     * Initialize the organization structure selectors for course report
-     *
-     * @param           $selector
-     * @param           $jrSelector
-     * @param           $rptLevel
-     *
-     * @throws          Exception
-     *
-     * @creationDate    27/10/2015
-     * @author          eFaktor     (fbv)
-     */
-    public static function init_organization_structure_coursereport($selector,$jrSelector,$rptLevel) {
-        /* Variables    */
-        global $PAGE;
-        $options    = null;
-        $hash       = null;
-        $jsModule   = null;
-        $name       = null;
-        $path       = null;
-        $requires   = null;
-        $strings    = null;
-        $grpOne     = null;
-        $grpTwo     = null;
-        $grpThree   = null;
-        $sp         = null;
-
-        try {
-            // Initialise variables
-            $name       = 'level_structure';
-            $path       = '/report/manager/course_report/js/organization.js';
-            $requires   = array('node', 'event-custom', 'datasource', 'json', 'moodle-core-notification');
-            $grpThree   = array('none', 'moodle');
-            $strings    = array($grpThree);
-
-            // Initialise js module
-            $jsModule = array('name'        => $name,
-                              'fullpath'    => $path,
-                              'requires'    => $requires,
-                              'strings'     => $strings
-                             );
-
-            $PAGE->requires->js_init_call('M.core_user.init_organization',
-                                          array($selector,$jrSelector,$rptLevel),
-                                          false,
-                                          $jsModule
-                                         );
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//init_organization_structure_coursereport
-
-    /**
-     * Description
-     * Initialize the organization structure selectors for outcome report
-     *
-     * @param           $selector
-     * @param           $jrSelector
-     * @param           $outSelector
-     * @param           $rptLevel
-     *
-     * @throws          Exception
-     *
-     * @creationDate    27/10/2015
-     * @author          eFaktor     (fbv)
-     */
-    public static function init_organization_structure_outcome_report($selector,$jrSelector,$outSelector,$rptLevel) {
-        /* Variables    */
-        global $PAGE;
-        $options    = null;
-        $hash       = null;
-        $jsModule   = null;
-        $name       = null;
-        $path       = null;
-        $requires   = null;
-        $strings    = null;
-        $grpOne     = null;
-        $grpTwo     = null;
-        $grpThree   = null;
-        $sp         = null;
-
-        try {
-            // Initialise variables
-            $name       = 'level_structure';
-            $path       = '/report/manager/outcome_report/js/organization.js';
-            $requires   = array('node', 'event-custom', 'datasource', 'json', 'moodle-core-notification');
-            $grpThree   = array('none', 'moodle');
-            $strings    = array($grpThree);
-
-            // Initialise js module
-            $jsModule = array('name'        => $name,
-                              'fullpath'    => $path,
-                              'requires'    => $requires,
-                              'strings'     => $strings
-                             );
-
-            $PAGE->requires->js_init_call('M.core_user.init_organization',
-                                          array($selector,$jrSelector,$outSelector,$rptLevel),
-                                          false,
-                                          $jsModule
-                                         );
-        }catch (Exception $ex) {
-            throw $ex;
-        }//try_catch
-    }//init_organization_structure_outcome_report
-
-    /**
-     * Description
      * Get the Level links to the main page
      *
      * @param           $tab
@@ -1444,7 +1337,7 @@ class CompetenceManager {
                     }
 
                     $mythree    = ($mythree ? implode(',',$mythree) : 0);
-                    
+
                     break;
                 case 3:
 

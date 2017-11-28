@@ -45,29 +45,24 @@ class manager_course_report_level_form extends moodleform {
                                   );
 
         $form = $this->_form;
-        list($report_level,$myHierarchy,$IsReporter,$parentcat,$depth) = $this->_customdata;
-
-        // Parent Category name
-        $form->addElement('text','parent',get_string('cat_selected','report_manager'),'readonly style="width:100%;border:0px;outline:0 none;"');
-        $form->setType('parent',PARAM_TEXT);
-        $form->setDefault('parent', '');
-        $form->addRule('parent', get_string('cat_required','report_manager'), 'required');
-
-        // Category.
-        $categorylist = course_report::get_my_categories_by_depth($depth,$parentcat);
-        $form->addElement('select', 'category', get_string('category', 'local_friadmin'), $categorylist);
-        $form->setDefault('category',$parentcat);
+        list($report_level,$myHierarchy,$IsReporter,$search) = $this->_customdata;
 
         // Course list
         $form->addElement('header', 'course', get_string('course'));
         $form->addElement('html', '<div class="level-wrapper">');
-            $options[0] = get_string('selectone', 'report_manager');
-            $options = course_report::get_my_categories_by_parent($parentcat);
+            $options = course_report::Get_CoursesList($search);
             $form->addElement('select',REPORT_MANAGER_COURSE_LIST,get_string('select_course_to_report', 'report_manager'),$options);
-
+            if (isset($SESSION->selection)) {
+                $default = $SESSION->selection[REPORT_MANAGER_COURSE_LIST];
+            }//if_selection
+            $form->setDefault(REPORT_MANAGER_COURSE_LIST,$default);
             $form->addRule(REPORT_MANAGER_COURSE_LIST, get_string('required','report_manager'), 'required', 'nonzero', 'client');
-            //$form->addRule(REPORT_MANAGER_COURSE_LIST, get_string('required','report_manager'), 'nonzero', null, 'client');
+            $form->addRule(REPORT_MANAGER_COURSE_LIST, get_string('required','report_manager'), 'nonzero', null, 'client');
 
+            // Search field
+            $form->addElement('static', 'search-notification', '', get_string('search_notification', 'report_manager'));
+            $form->addElement('text','search',null,'id="id_search"');
+            $form->setType('search',PARAM_TEXT);
         $form->addElement('html', '</div>');
 
         // Company hierarchy levels
@@ -111,17 +106,8 @@ class manager_course_report_level_form extends moodleform {
         $form->setDefault('rpt',$report_level);
         $form->setType('rpt',PARAM_INT);
 
-        // Buttons
-        $buttons = array();
-        $buttons[] = $form->createElement('submit','submitbutton',get_string('create_report', 'report_manager'));
-        $buttons[] = $form->createElement('button','submitbutton2',get_string('clean', 'report_manager'));
-        $buttons[] = $form->createElement('cancel');
 
-        $form->addGroup($buttons, 'buttonar', '', array(' '), false);
-        $form->setType('buttonar', PARAM_RAW);
-        $form->closeHeaderBefore('buttonar');
-
-        //$this->add_action_buttons(true, get_string('create_report', 'report_manager'));
+        $this->add_action_buttons(true, get_string('create_report', 'report_manager'));
 
         // Add selected levels
         // Level Zero
@@ -133,33 +119,12 @@ class manager_course_report_level_form extends moodleform {
         // Level three
         self::add_hide_selection($form,3);
 
-        // Parent Category id
-        $form->addElement('text','parentcat',null,'style=visibility:hidden;height:0px;');
-        $form->setType('parentcat',PARAM_INT);
-        $form->setDefault('parentcat',0);
-
-        $form->addElement('text','depth',null,'style=visibility:hidden;height:0px;');
-        $form->setType('depth',PARAM_INT);
-        $form->setDefault('depth',$depth);
-
         // Hide course selected
         $form->addElement('text','hcourse',null,'style=visibility:hidden;height:0px;');
         $form->setType('hcourse',PARAM_INT);
         $form->setDefault('hcourse',0);
     }//definition
 
-    /**
-    public function validation($data, $files) {
-        $errors = parent::validation($data, $files);
-
-        // Checks the data.
-        if ($data[REPORT_MANAGER_COURSE_LIST] == 0) {
-            $errors[REPORT_MANAGER_COURSE_LIST] = 'required';
-        }
-
-
-        return $errors;
-    } **/
     /**
      * @param           $form
      * @param           $level

@@ -37,9 +37,12 @@ global $PAGE,$CFG,$SESSION,$SITE,$USER,$OUTPUT;
 
 // Params
 $report_level           = optional_param('rpt',0, PARAM_INT);
+$outcome                = optional_param('ot',0,PARAM_INT);
 $company_id             = optional_param('co',0,PARAM_INT);
 $parentTwo              = optional_param('lt',0,PARAM_INT);
 $parentOne              = optional_param('lo',0,PARAM_INT);
+$parentZero             = optional_param('lz',0,PARAM_INT);
+
 $completed_option       = optional_param('opt',0,PARAM_INT);
 $return_url             = new moodle_url('/report/manager/outcome_report/outcome_report.php',array('rpt' => $report_level));
 $url                    = new moodle_url('/report/manager/outcome_report/outcome_report_level.php',array('rpt' => $report_level));
@@ -103,20 +106,20 @@ if ($company_id) {
 
     $data_form['rpt']                                   = $report_level;
     $data_form[OUTCOME_REPORT_FORMAT_LIST]              = OUTCOME_REPORT_FORMAT_SCREEN;
-    $data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'0']    = $USER->levelZero;
+    $data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'0']    = $parentZero;
     $data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'1']    = $parentOne;
     $data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'2']    = $parentTwo;
     $data_form[MANAGER_OUTCOME_STRUCTURE_LEVEL .'3']    = array($company_id => $company_id);
-    $data_form[REPORT_MANAGER_OUTCOME_LIST]             = $USER->outcomeReport;
+    $data_form[REPORT_MANAGER_OUTCOME_LIST]             = $outcome;
     $data_form[REPORT_MANAGER_COMPLETED_LIST]           = $completed_option;
 
     // Keep selection data --> when it returns to the main page
     $SESSION->selection = array();
-    $SESSION->selection[MANAGER_OUTCOME_STRUCTURE_LEVEL . '0']   = $USER->levelZero;
+    $SESSION->selection[MANAGER_OUTCOME_STRUCTURE_LEVEL . '0']   = $parentZero;
     $SESSION->selection[MANAGER_OUTCOME_STRUCTURE_LEVEL . '1']   = $parentOne;
     $SESSION->selection[MANAGER_OUTCOME_STRUCTURE_LEVEL . '2']   = $parentTwo;
     $SESSION->selection[MANAGER_OUTCOME_STRUCTURE_LEVEL . '3']   = array($company_id => $company_id);
-    $SESSION->selection[REPORT_MANAGER_OUTCOME_LIST]             = $USER->outcomeReport;
+    $SESSION->selection[REPORT_MANAGER_OUTCOME_LIST]             = $outcome;
 
     // Get the data to the report
     $outcome_report = outcome_report::Get_OutcomeReportLevel($data_form,$my_hierarchy,$IsReporter);
@@ -199,7 +202,7 @@ if (!empty($out)) {
     $form->display();
 
     // Initialise Organization Structure
-    CompetenceManager::init_organization_structure_outcome_report(COMPANY_STRUCTURE_LEVEL,REPORT_MANAGER_JOB_ROLE_LIST,REPORT_MANAGER_OUTCOME_LIST,$report_level);
+    outcome_report::init_organization_structure_outcome_report(COMPANY_STRUCTURE_LEVEL,REPORT_MANAGER_JOB_ROLE_LIST,REPORT_MANAGER_OUTCOME_LIST,$report_level);
 }//if_else
 
 // Footer

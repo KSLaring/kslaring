@@ -44,19 +44,68 @@ class course_report {
 
     /**
      * Description
-     * Initialize javascript
+     * Initialize the organization structure selectors for course report
      *
-     * @param           $parent
-     * @param           $category
-     * @param           $course
-     * @param           $depth
+     * @param           $selector
+     * @param           $jrSelector
+     * @param           $rptLevel
      *
      * @throws          Exception
      *
-     * @creationDate    26/09/2017
+     * @creationDate    27/10/2015
      * @author          eFaktor     (fbv)
      */
-    public static function ini_data_reports($parent,$category,$course,$depth) {
+    public static function init_organization_structure_coursereport($selector,$jrSelector,$rptLevel) {
+        /* Variables    */
+        global $PAGE;
+        $options    = null;
+        $hash       = null;
+        $jsModule   = null;
+        $name       = null;
+        $path       = null;
+        $requires   = null;
+        $strings    = null;
+        $grpOne     = null;
+        $grpTwo     = null;
+        $grpThree   = null;
+        $sp         = null;
+
+        try {
+            // Initialise variables
+            $name       = 'level_structure';
+            $path       = '/report/manager/course_report/js/organization.js';
+            $requires   = array('node', 'event-custom', 'datasource', 'json', 'moodle-core-notification');
+            $grpThree   = array('none', 'moodle');
+            $strings    = array($grpThree);
+
+            // Initialise js module
+            $jsModule = array('name'        => $name,
+                'fullpath'    => $path,
+                'requires'    => $requires,
+                'strings'     => $strings
+            );
+
+            $PAGE->requires->js_init_call('M.core_user.init_organization',
+                array($selector,$jrSelector,$rptLevel),
+                false,
+                $jsModule
+            );
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//init_organization_structure_coursereport
+
+    /**
+     * Description
+     * Initialize javascript
+     * @param           $search
+     *
+     * @throws          Exception
+     *
+     * @creationDate    28/11/2017
+     * @author          eFaktor     (fbv)
+     */
+    public static function ini_course_search($search) {
         /* Variables */
         global $PAGE;
         $name       = null;
@@ -66,8 +115,8 @@ class course_report {
 
         try {
             // Initialise variables
-            $name       = 'data_rpt';
-            $path       = '/report/manager/course_report/js/categoriescourses.js';
+            $name       = 'cosearch';
+            $path       = '/report/manager/course_report/js/searchcourse.js';
             $requires   = array('node', 'event-custom', 'datasource', 'json', 'moodle-core-notification','datatype-number','arraysort');
 
             // Initialise js module
@@ -77,15 +126,15 @@ class course_report {
             );
 
             // Javascript
-            $PAGE->requires->js_init_call('M.core_user.init_managercourse_report',
-                array($parent,$category,$course,$depth),
+            $PAGE->requires->js_init_call('M.core_user.init_cosearch',
+                array($search),
                 false,
                 $jsmodule
             );
         }catch (Exception $ex) {
             throw $ex;
         }//try_catch
-    }//ini_data_reports
+    }//ini_course_search
 
     /**
      * Description
@@ -232,13 +281,16 @@ class course_report {
      * Description
      * Get all the courses available
      *
+     * @param           $search
+     *
      * @return          array
      * @throws          Exception
      *
      * @creationDate    17/03/2015
      * @author          eFaktor     (fbv)
      */
-    public static function Get_CoursesList($category=null) {
+
+    public static function Get_CoursesList($search=null) {
         /* Variables    */
         global $DB;
         $lstcourses = array();
@@ -250,29 +302,21 @@ class course_report {
             // First element
             $lstcourses[0] = get_string('selectone', 'report_manager');
 
-
-            // SQL Instrution - category part
-            if ($category) {
-                $sqlcat = "  JOIN  {course_categories}	cat ON  cat.id = c.category
-                                                            AND (cat.path like '%/$category%' OR cat.path like '%/$category/%')";
-            }else {
-                $sqlcat = '';
-
-            }
-
             // SQL Instruction
             $sql = " SELECT   c.id,
                               c.fullname
                      FROM	  {course}    c
-                              $sqlcat
                      WHERE	  c.visible = 1 
                         AND   c.id != 1 ";
+
+            if ($search) {
+                $sql .= " AND c.fullname LIKE '%$search%'";
+            }
 
             // Get courses
             $rdo = $DB->get_records_sql($sql);
             if ($rdo) {
                 foreach ($rdo as $course) {
-
                     $lstcourses[$course->id] =  $course->fullname;
                 }//for_rdo
             }//if_Rdo
@@ -1442,6 +1486,7 @@ class course_report {
         $id_toggle_one      = null;
         $id_toggle_level    = null;
         $return_url         = null;
+        $indexUrl           = null;
         $outcomes           = null;
         $str_outcomes       = array();
         $levelOne           = null;

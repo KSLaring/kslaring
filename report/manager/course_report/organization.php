@@ -32,7 +32,7 @@ define('AJAX_SCRIPT', true);
 require_once('../../../config.php');
 require_once('../managerlib.php');
 
-global $PAGE,$USER,$OUTPUT;
+global $PAGE,$USER,$OUTPUT,$CFG;
 
 // Params
 $zero           = required_param('zero',PARAM_INT);
