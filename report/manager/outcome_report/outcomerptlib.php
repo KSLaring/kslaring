@@ -1597,18 +1597,11 @@ class outcome_report {
 
                                                         // Header company
                                                         $urlthree->remove_params();
-                                                        $urlthree->params(array('rpt' => '3','co' => $id_Three,'lt' => $idTwo,'lo'=>$idOne,'lz' =>$outcome_report->levelzero, 'ot' => $outcome_report->id,'opt' => $completed_option));
+                                                        $urlthree->params(array('rpt' => '3','co' => $id_Three,'lt' => $idTwo,'lo'=>$idOne,
+                                                                                'lz' =>$outcome_report->levelzero, 'ot' => $outcome_report->id,
+                                                                                'opt' => $completed_option));
 
-                                                        echo "REport : " . 3 . "</br>";
-                                                        echo "Co: " . $id_Three . "</br>";
-                                                        echo "lt; " . $idTwo . "</br>";
-                                                        echo "lo: " . $idOne . "</br>";
-                                                        echo "lz: " . $outcome_report->levelzero . "</br>";
-                                                        echo "ot : " . $outcome_report->id . "</br>";
-                                                        echo "opt: " . $completed_option . "</br>";
-                                                        echo "</br>-----</br>";
-
-                                                        $out_report .= self::Add_CompanyHeader_Screen($company->name,$id_toggleThree,$url_img,null);
+                                                        $out_report .= self::Add_CompanyHeader_Screen($company->name,$id_toggleThree,$url_img,$urlthree);
 
                                                         // Info company courses
                                                         $out_report .= html_writer::start_tag('div',array('class' => 'course_list','id'=> $id_toggleThree . '_div'));
