@@ -1410,7 +1410,10 @@ class CompetenceManager {
                     // Get two
                     $myzero = $zero;
                     $myones = $one;
-                    $mytwo  = ($hierarchy->two ? $hierarchy->two[$one] : null);
+                    if ($hierarchy->two && isset($hierarchy->two[$one])) {
+                        $mytwo  = $hierarchy->two[$one];
+                    }
+
 
                     // Get three
                     if ($mytwo) {
@@ -1436,10 +1439,12 @@ class CompetenceManager {
                     $myzero = $zero;
                     $myones = $one;
                     $mytwo  = $two;
-                    $mythree = ($hierarchy->three ? $hierarchy->three[$two] : null);
+                    if ($hierarchy->three && isset($hierarchy->three[$two])) {
+                        $mythree = $hierarchy->three[$two];
+                    }
 
                     $mythree    = ($mythree ? implode(',',$mythree) : 0);
-
+                    
                     break;
                 case 3:
 
