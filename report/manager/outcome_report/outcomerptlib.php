@@ -799,7 +799,7 @@ class outcome_report {
             foreach ($three as $infothree) {
                 // Company info
                 $company = new stdClass();
-                $company->name       = $company;
+                $company->name       = $infothree->name;
                 $company->id         = $infothree->id;
                 $company->courses    = array();
                 $coinfo              = null;
@@ -844,7 +844,7 @@ class outcome_report {
             foreach ($three as $infothree) {
                 // Company info
                 $company = new stdClass();
-                $company->name       = $company;
+                $company->name       = $infothree->name;
                 $company->id         = $infothree->id;
                 $company->courses    = array();
                 $coinfo              = null;
