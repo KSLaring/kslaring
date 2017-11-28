@@ -1597,9 +1597,7 @@ class outcome_report {
 
                                                         // Header company
                                                         $urlthree->remove_params();
-                                                        $urlthree->params(array('rpt' => '3','co' => $id_Three,'lt' => $idTwo,'lo'=>$idOne,
-                                                                                'lz' =>$outcome_report->levelzero, 'ot' => $outcome_report->id,
-                                                                                'opt' => $completed_option));
+                                                        $urlthree->params(array('rpt' => '3','co' => $id_Three,'lt' => $idTwo,'lo'=>$idOne,'lz' =>$outcome_report->levelzero, 'ot' => $outcome_report->id,'opt' => $completed_option));
                                                         $out_report .= self::Add_CompanyHeader_Screen($company->name,$id_toggleThree,$url_img,$urlthree);
 
                                                         // Info company courses
@@ -2161,7 +2159,7 @@ class outcome_report {
             // Col two
             $header_company .= html_writer::start_div('header_col_two');
                 if ($url_levelThree) {
-                    //$header_company .= '<a href="' . $url_levelThree . '">' . '<h5>' . $company . '</h5>' . '</a>';
+                    $header_company .= '<a href="' . $url_levelThree . '">' . '<h5>' . $company . '</h5>' . '</a>';
                 }else {
                     $header_company .= '<h5>' . $company . '</h5>';
                 }//if_levelThree
