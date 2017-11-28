@@ -802,7 +802,7 @@ class outcome_report {
                 $coinfo              = null;
 
                 // Get info courses
-                foreach ($outcomerpt->coursed as $id_course=>$course) {
+                foreach ($outcomerpt->courses as $id_course=>$course) {
                     // Course info
                     $coinfo = new stdClass();
                     $coinfo->name            = $course;
@@ -847,7 +847,7 @@ class outcome_report {
                 $coinfo              = null;
 
                 // Get info courses
-                foreach ($outcomerpt->coursed as $id_course=>$course) {
+                foreach ($outcomerpt->courses as $id_course=>$course) {
                     // Course info
                     $coinfo = new stdClass();
                     $coinfo->name            = $course;
