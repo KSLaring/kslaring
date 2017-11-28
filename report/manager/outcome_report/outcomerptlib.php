@@ -32,6 +32,9 @@ define('OUTCOME_REPORT_FORMAT_SCREEN', 0);
 define('OUTCOME_REPORT_FORMAT_SCREEN_EXCEL', 1);
 define('OUTCOME_REPORT_FORMAT_LIST', 'report_format_list');
 define('MANAGER_OUTCOME_STRUCTURE_LEVEL','level_');
+define('CO_COMPLETED',1);
+define('CO_NOT_COMPLETED',2);
+
 
 class outcome_report {
     /********************/
