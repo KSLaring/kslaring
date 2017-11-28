@@ -316,13 +316,22 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
 
                         tl = $tags.length - 1;
                         if ($tags.length) {
+                            var taggroupcollection = {},
+                                taglabels = [];
                             $tags.each(function (j) {
-                                taglist += $(this).data('id');
-                                tagarray.push($(this).data('id'));
+                                var $el = $(this);
+                                taglist += $el.data('id');
+                                tagarray.push($el.data('id'));
+                                taglabels.push($el.data('name'));
+                                taggroupcollection[$el.data('name')] = $el;
 
                                 if (j < tl) {
                                     taglist += ',';
                                 }
+                            });
+                            taglabels = sortDanish(taglabels);
+                            taglabels.forEach(function(item) {
+                                $group.append(taggroupcollection[item]);
                             });
                         }
 
@@ -767,7 +776,7 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
 
                 // Check if the course dates match the chosen dates.
                 if (fromDate !== "0" || toDate !== "0") {
-                    console.log(fromDate, toDate);
+                    // console.log(fromDate, toDate);
                     fromDateInt = parseInt(fromDate.replace(/-/g, ''), 10);
                     toDateInt = parseInt(toDate.replace(/-/g, ''), 10);
                     filtered = courseIDsFiltered.filter(function (id) {
@@ -981,8 +990,8 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                         $resultarea.find('.alert-info').remove();
                     }
 
-                    console.log('courses', courses);
-                    console.log('courseids', courseids.slice());
+                    // console.log('courses', courses);
+                    // console.log('courseids', courseids.slice());
 
                     resolve(true);
                 });
@@ -1462,6 +1471,16 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
             if (!ismobile) {
                 where.tooltip({delay: {show: 300, hide: 100}});
             }
+        };
+
+        /**
+         * Sort an array in the Danish sortorder.
+         *
+         * @param {array) ar The original array
+         * @return {array} The sorted array
+         */
+        var sortDanish = function (ar) {
+            return ar.sort(function (a, b) { return a.localeCompare(b, 'da', {sensitivity: 'accent'});});
         };
 
         /**
