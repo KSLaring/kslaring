@@ -40,13 +40,16 @@
   margin-top: 0;
 }
 #page-course-search #search-area .collapse-group {
-  margin-bottom: 1em;
+  margin-bottom: 0;
 }
 #page-course-search #search-area .collapse-group .btn {
   padding-left: 0;
 }
 #page-course-search #search-area .fieldset-hidden {
   display: none;
+}
+#page-course-search #search-area .group-link {
+  cursor: pointer;
 }
 #page-course-search #search-area #course-search {
   border-radius: 0;

@@ -1,7 +1,7 @@
 {{^showdate}}
-    <fieldset class="{{#type}}{{{.}}}-group {{/type}}collapse-group{{#hidden}} fieldset-hidden{{/hidden}}"
+    <fieldset class="{{#type}}{{{.}}}-group {{/type}}collapse-group{{#hiddenOff}} fieldset-hidden{{/hiddenOff}}"
               data-group="{{{group}}}">
-        <h4>{{{title}}}</h4>
+        <h4><a class="group-link" data-group="{{{group}}}">{{{title}}}</a></h4>
         <div class="tags">
             {{#shown}}
                 {{> local_course_search/course_search_region_search_groups_item }}

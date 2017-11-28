@@ -361,7 +361,7 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                         $(this).click();
                     });
 
-                $coursesearchform.find('.fieldset-hidden').removeClass('fieldset-hidden');
+                // $coursesearchform.find('.fieldset-hidden').removeClass('fieldset-hidden');
 
                 $resultarea.toggleClass('section-hidden');
                 $tagpreselectarea.toggleClass('section-hidden');
@@ -446,6 +446,27 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                     changeCheckbox('.tag-group', id, 1);
                     viewState.setTag(id.toString(), 'add');
                 }
+            }
+        };
+
+        /**
+         * Process the click on the tag group title.
+         *
+         * Show the »Select interests« area and open the related group tab..
+         */
+        var groupSelectHandler = function (e) {
+            var $clicked = $(e.target),
+                group = $clicked.data('group'),
+                $releatedTags = $tagpreselectarea.find('#collapse-' + group);
+
+            if ($releatedTags.length) {
+                // Show the »Select interests« area if not active.
+                if (!showtagliststate) {
+                    $switchDisplayBtn.trigger('click');
+                }
+
+                // Open the related tag list.
+                $tagpreselectarea.find('#collapse-' + group).collapse('show');
             }
         };
 
@@ -999,9 +1020,9 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                         $courselisttable.children('tbody').html('');
                     }
 
-                    $coursesearchform.find('.tag-group')
-                        .not(':has(label.checkbox)')
-                        .addClass('fieldset-hidden');
+                    // $coursesearchform.find('.tag-group')
+                    //     .not(':has(label.checkbox)')
+                    //     .addClass('fieldset-hidden');
 
                     $resultarea.toggleClass('section-hidden');
                     $tagpreselectarea.toggleClass('section-hidden');
@@ -1489,6 +1510,7 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                 $coursesearchform.on('submit', textSearchHandler);
                 $searcharea.on('change', '[type="checkbox"]', checkboxChangeHandler);
                 $searcharea.on('change', '#select-sort', sortSelectHandler);
+                $searcharea.on('click', '.group-link', groupSelectHandler);
 
                 $resultarea.on('shown', 'a[data-toggle="tab"]', tabChangeHandler);
                 $resultarea.on('click', 'th.coltitle', colTitleClickHandler);
