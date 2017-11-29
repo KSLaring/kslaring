@@ -113,12 +113,6 @@ function xmldb_report_manager_upgrade($old_version) {
             }//if_exists
         }
 
-        // Create views
-        if ($old_version < 2017100100) {
-            CompetenceManager_Update::view_companies_with_users();
-            CompetenceManager_Update::view_course_company_user_enrol();
-        }
-
         // Add mapped with (source) field
         if ($old_version < 2017110800) {
             $tblCompanyData = new xmldb_table('report_gen_companydata');
@@ -147,6 +141,13 @@ function xmldb_report_manager_upgrade($old_version) {
                 $db_man->add_field($tbl, $fieldMapped);
             }//if_exists
         }//2017111300
+
+        // Create views
+        if ($old_version < 2017112800) {
+            CompetenceManager_Update::view_companies_with_users();
+            CompetenceManager_Update::view_course_company_user_enrol();
+        }
+
 
         return true;
     }catch (Exception $ex) {

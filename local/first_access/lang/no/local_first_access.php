@@ -39,5 +39,6 @@ $string['header_muni']      = 'Kommune';
 $string['btn_save']         = 'Lagre';
 
 $string['completeprofile']  = 'Du må fylle inn din profil';
+
 $string['btn_save_course']      = 'Lagre og søk etter kurs';
 $string['btn_save_competence']  = 'Lagre og gå til Arbeidsforhold';

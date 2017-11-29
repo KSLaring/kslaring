@@ -71,8 +71,7 @@ if (isguestuser($USER)) {
 }
 
 
-echo $OUTPUT->header();
-echo $OUTPUT->heading(get_string('welcome_title','local_first_access',$SITE->shortname));
+
 
 //Check if it only remains to update the competence profile
 if (FirstAccess::has_completed_all_user_profile($userId) && FirstAccess::has_completed_all_extra_profile($userId)) {
@@ -95,5 +94,7 @@ if (FirstAccess::has_completed_all_user_profile($userId) && FirstAccess::has_com
 //    echo html_writer::end_div();//buttons
 //echo html_writer::end_div();
 
-echo $OUTPUT->footer();
+//echo $OUTPUT->header();
+//echo $OUTPUT->heading(get_string('welcome_title','local_first_access',$SITE->shortname));
+//echo $OUTPUT->footer();
 

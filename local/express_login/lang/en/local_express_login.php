@@ -99,3 +99,4 @@ $string['bulk_action']      = 'Generated Express Login';
 $string['bulk_succesful']   = 'The Express Login will be generated during the next 30 minutes.';
 
 $string['crontask']             = 'Express login cron task';
+$string['express_disable'] = 'Express login is disable';

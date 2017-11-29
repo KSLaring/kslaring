@@ -105,3 +105,4 @@ $string['bulk_action']      = 'Generer hurtigtilgang';
 $string['bulk_succesful']   = 'Hurtigtilgangen vil genereres i løpet av de neste 30 minuttene.';
 
 $string['crontask']         = 'Express login cron task';
+$string['express_disable'] = 'Express login is disable';

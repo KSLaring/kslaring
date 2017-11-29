@@ -35,30 +35,34 @@ function local_express_login_myprofile_navigation(core_user\output\myprofile\tre
         return false;
     }
 
-    // Add new category
-    $category = new core_user\output\myprofile\category('express', get_string('pluginname', 'local_express_login'),'contact');
-    $tree->add_category($category);
+    require_once('expressloginlib.php');
+    if (Express_Login::IsActivate()) {
+        // Add new category
+        $category = new core_user\output\myprofile\category('express', get_string('pluginname', 'local_express_login'),'contact');
+        $tree->add_category($category);
 
-    // Index - Express login
-    $node = new core_user\output\myprofile\node('express', 'express_index',
-                                                get_string('pluginname', 'local_express_login'),
-                                                null,
-                                                new moodle_url('/local/express_login/index.php'));
-    $tree->add_node($node);
+        // Index - Express login
+        $node = new core_user\output\myprofile\node('express', 'express_index',
+            get_string('pluginname', 'local_express_login'),
+            null,
+            new moodle_url('/local/express_login/index.php'));
+        $tree->add_node($node);
 
-    // Change pin code
-    $node = new core_user\output\myprofile\node('express', 'express_pin_code',
-                                                get_string('btn_change_pin_code','local_express_login'),
-                                                'express_index',
-                                                new moodle_url('/local/express_login/change_express.php'));
-    $tree->add_node($node);
+        // Change pin code
+        $node = new core_user\output\myprofile\node('express', 'express_pin_code',
+            get_string('btn_change_pin_code','local_express_login'),
+            'express_index',
+            new moodle_url('/local/express_login/change_express.php'));
+        $tree->add_node($node);
 
-    // Regenerate code
-    $node = new core_user\output\myprofile\node('express', 'express_regenerate_link',
-                                                get_string('btn_regenerate_link','local_express_login'),
-                                                'express_pin_code',
-                                                new moodle_url('/local/express_login/regenerate_express.php'));
-    $tree->add_node($node);
+        // Regenerate code
+        $node = new core_user\output\myprofile\node('express', 'express_regenerate_link',
+            get_string('btn_regenerate_link','local_express_login'),
+            'express_pin_code',
+            new moodle_url('/local/express_login/regenerate_express.php'));
+        $tree->add_node($node);
+    }
+
 
     return true;
 }//local_express_login_myprofile_navigation
