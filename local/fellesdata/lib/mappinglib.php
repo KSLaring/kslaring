@@ -902,7 +902,7 @@ class FS_MAPPING {
         }//
     }//getLevelsMapping
 
-    public static function fs_companies_to_map($level,$parent,$fsparents,$sector,$notin,$start,$length) {
+    public static function fs_companies_to_map($level,$parent,$fsparents,$sector,$start,$length) {
         /* Variables */
         $fscompanies    = null;
         $total          = null;
@@ -914,9 +914,9 @@ class FS_MAPPING {
             $plugin     = get_config('local_fellesdata');
 
             // Get Companies to Map
-            $fscompanies = self::get_fscompanies_to_map($plugin,$level,$parent,$fsparents,$sector,$notin,$start,$length);
+            $fscompanies = self::get_fscompanies_to_map($plugin,$level,$parent,$fsparents,$sector,$start,$length);
             // Get Total
-            $total = self::get_total_fscompanies_to_map($plugin,$level,$fsparents,$sector,$notin);
+            $total = self::get_total_fscompanies_to_map($plugin,$level,$fsparents,$sector);
 
             return array($fscompanies,$total);
         }catch (Exception $ex) {
@@ -1368,7 +1368,6 @@ class FS_MAPPING {
      * @param           $parent
      * @param           $fsparents
      * @param           $sector
-     * @param           $notin
      * @param           $start
      * @param           $length
      *
@@ -1378,7 +1377,7 @@ class FS_MAPPING {
      * @updateDate      02/10/2017
      * @author          eFaktor     (fbv)
      */
-    private static function get_fscompanies_to_map($plugin,$level,$parent,$fsparents,$sector,$notin,$start,$length) {
+    private static function get_fscompanies_to_map($plugin,$level,$parent,$fsparents,$sector,$start,$length) {
         /* Variables */
         global $DB;
         $rdo         = null;
@@ -1442,13 +1441,8 @@ class FS_MAPPING {
 
             // Parent criteria
             if ($fsparents) {
-                $sql .= " AND	  fs_imp.org_enhet_over IN ($fsparents)";
+                $sql .= " AND	  fs_imp.org_enhet_over IN ('". $fsparents . "')";
             }
-
-            // Add notIn criteria
-            if ($notin) {
-                $sql .= " AND fs_imp.org_enhet_id NOT IN ($notin) ";
-            }//if_notIn
 
             if ($sector) {
                 $sqlMatch = null;
@@ -1536,7 +1530,6 @@ class FS_MAPPING {
      * @param               $level
      * @param               $fsparents
      * @param               $sector
-     * @param               $notIn
      *
      * @return              int
      * @throws              Exception
@@ -1547,7 +1540,7 @@ class FS_MAPPING {
      * Description
      * Get total companies to map
      */
-    private static function get_total_fscompanies_to_map($plugin,$level,$fsparents,$sector,$notIn) {
+    private static function get_total_fscompanies_to_map($plugin,$level,$fsparents,$sector) {
         /* Variables    */
         global $DB;
         $sql            = null;
@@ -1587,13 +1580,8 @@ class FS_MAPPING {
 
             // Parent criteria
             if ($fsparents) {
-                $sql .= " AND	  fs_imp.org_enhet_over IN (" . $fsparents . ") ";
+                $sql .= " AND	  fs_imp.org_enhet_over IN ('" . $fsparents . "') ";
             }
-
-            // Add notIn criteria
-            if ($notIn) {
-                $sql .= " AND fs_imp.org_enhet_id NOT IN ($notIn) ";
-            }//if_notIn
 
             // Sector
             if ($sector) {
