@@ -272,7 +272,7 @@ global $CFG, $USER, $SAML_COURSE_INFO, $SESSION, $err, $DB, $PAGE,$OUTPUT;
          */
         require_once('../../local/first_access/locallib.php');
         if (FirstAccess::has_to_update_profile($user->id)) {
-            redirect(new moodle_url('/local/first_access/index.php',array('id'=>$user->id)));
+            redirect(new moodle_url('/local/first_access/first_access.php',array('id'=>$user->id)));
             die();
         }else {
             /**
