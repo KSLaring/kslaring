@@ -275,7 +275,7 @@ if ($frm and isset($frm->username)) {                             // Login WITH 
 
         if (!isguestuser($USER)) {
             if (FirstAccess::has_to_update_profile($USER->id)) {
-                redirect(new moodle_url('/local/first_access/first_access.php',array('id'=>$USER->id)));
+                redirect(new moodle_url('/local/first_access/index.php',array('id'=>$USER->id)));
                 die();
             }else {
                 /**
