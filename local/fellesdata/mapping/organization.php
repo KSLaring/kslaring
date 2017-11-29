@@ -77,11 +77,6 @@ if (isset($SESSION->pattern)) {
     $pattern = $SESSION->pattern;
 }//if_pattern
 
-// Get companies to map
-$notin      = 0;
-if (isset($SESSION->notIn) && count($SESSION->notIn)) {
-    $notin = implode(',',$SESSION->notIn);
-}
 
 // Get info parent
 if (($level > 1) && (!$parentid)) {
@@ -98,7 +93,7 @@ if (($level > 1) && (!$parentid)) {
     }
 
     $parent = FS_MAPPING::get_company_ks_info($parentid);
-    list($fstomap,$total) = FS_MAPPING::fs_companies_to_map($level,$parent,$fsparents,$pattern,$notin,$start,$step);
+    list($fstomap,$total) = FS_MAPPING::fs_companies_to_map($level,$parent,$fsparents,$pattern,$start,$step);
 
     $form    = new organization_map_form(null,array($level,$parent,$pattern,$fstomap,$total));
     if ($form->is_cancelled()) {
