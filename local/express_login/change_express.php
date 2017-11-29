@@ -17,19 +17,6 @@ require_once($CFG->dirroot . '/my/lib.php');
 require_once('expressloginlib.php');
 require_once('index_form.php');
 
-// Checking access
-require_login();
-if (isguestuser($USER)) {
-    require_logout();
-
-    echo $OUTPUT->header();
-    echo $OUTPUT->notification(get_string('guestsarenotallowed','error'), 'notifysuccess');
-    echo $OUTPUT->continue_button($CFG->wwwroot);
-    echo $OUTPUT->footer();
-
-    die();
-}
-
 // Params
 $id              = optional_param('id',0,PARAM_INT);
 $user_id         = $USER->id;
@@ -51,6 +38,25 @@ if (!$current_page = my_get_page($user_id, MY_PAGE_PUBLIC)) {
 // Start setting up the page.
 $PAGE->set_subpage($current_page->id);
 $PAGE->navbar->add(get_string('pluginname','local_express_login'));
+
+// Checking access
+require_login();
+if (isguestuser($USER)) {
+    require_logout();
+
+    echo $OUTPUT->header();
+    echo $OUTPUT->notification(get_string('guestsarenotallowed','error'), 'notifysuccess');
+    echo $OUTPUT->continue_button($CFG->wwwroot);
+    echo $OUTPUT->footer();
+
+    die();
+}else if (!Express_Login::IsActivate()) {
+    echo $OUTPUT->header();
+    echo $OUTPUT->notification(get_string('express_disable','local_express_login'), 'notifysuccess');
+    echo $OUTPUT->continue_button($CFG->wwwroot);
+    echo $OUTPUT->footer();
+    die();
+}
 
 // Check user
 if ($id && ($user_id != $id)) {
