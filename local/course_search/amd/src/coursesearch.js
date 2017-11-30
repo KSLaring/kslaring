@@ -330,7 +330,7 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                                 }
                             });
                             taglabels = sortDanish(taglabels);
-                            taglabels.forEach(function(item) {
+                            taglabels.forEach(function (item) {
                                 $group.append(taggroupcollection[item]);
                             });
                         }
@@ -464,8 +464,8 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
          * Show the »Select interests« area and open the related group tab..
          */
         var groupSelectHandler = function (e) {
-            var $clicked = $(e.target),
-                group = $clicked.data('group'),
+            var $clickedEle = $(e.target),
+                group = $clickedEle.data('group'),
                 $releatedTags = $tagpreselectarea.find('#collapse-' + group);
 
             if ($releatedTags.length) {
@@ -475,7 +475,7 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                 }
 
                 // Open the related tag list.
-                $tagpreselectarea.find('#collapse-' + group).collapse('show');
+                openDefinedTagGroupCloseOthers(group);
             }
         };
 
@@ -647,6 +647,20 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                     .find('.accordion-body')
                     .collapse('hide');
             }
+        };
+
+        /**
+         * Handler for the accordion click event.
+         *
+         * When a title is clicked close all other open accordions.
+         *
+         * @param {object} e The event object
+         */
+        var groupTitleClickHandler = function (e) {
+            var $clickedEle = $(e.target),
+                group = $clickedEle.data('group');
+
+            openDefinedTagGroupCloseOthers(group);
         };
 
         /**
@@ -1474,13 +1488,39 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
         };
 
         /**
+         * Open the defined tag group by name, close other open groups.
+         *
+         * @param {string} group The tag group name
+         */
+        var openDefinedTagGroupCloseOthers = function (group) {
+            // Open the related tag list.
+            var $toOpen = $tagpreselectarea.find('#collapse-' + group),
+                toOpenIsOpen = false;
+            $tagpreselectarea.find('.accordion-body.in').each(function () {
+                var $thisEl = $(this);
+
+                if ($thisEl === $toOpen) {
+                    toOpenIsOpen = true;
+                    return false;
+                } else {
+                    $thisEl.collapse('hide');
+                }
+            });
+            if (!toOpenIsOpen) {
+                $toOpen.collapse('show');
+            }
+        };
+
+        /**
          * Sort an array in the Danish sortorder.
          *
          * @param {array) ar The original array
          * @return {array} The sorted array
          */
         var sortDanish = function (ar) {
-            return ar.sort(function (a, b) { return a.localeCompare(b, 'da', {sensitivity: 'accent'});});
+            return ar.sort(function (a, b) {
+                return a.localeCompare(b, 'da', {sensitivity: 'accent'});
+            });
         };
 
         /**
@@ -1538,6 +1578,7 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
 
                 $tagpreselectarea.on('change', '[type="checkbox"]', preselectedCheckboxChangeHandler);
                 $tagpreselectarea.on('keyup', '#tagFilter', tagFilterTextHandler);
+                $tagpreselectarea.on('click', '.accordion-toggle', groupTitleClickHandler);
 
                 $switchDisplayBtn.on('click', toggleTagPreselectPageHandler);
 
