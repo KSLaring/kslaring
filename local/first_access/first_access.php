@@ -69,7 +69,6 @@ if (isguestuser($USER)) {
 
     die();
 }
-require_login();
 
 // Show form
 $form = new first_access_form(null,$userId);
