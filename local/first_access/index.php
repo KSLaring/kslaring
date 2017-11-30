@@ -44,13 +44,13 @@ $user_context   = context_user::instance($userId);
 
 // Start page
 $PAGE->set_url($url);
-$PAGE->set_context($context);
+$PAGE->set_context($user_context);
 $PAGE->set_heading($SITE->fullname);
 $PAGE->set_title($SITE->fullname);
 $PAGE->set_pagelayout('standard');
 
 // Checking access
-//require_login();
+require_login();
 if (isguestuser($USER)) {
     require_logout();
 
@@ -61,19 +61,15 @@ if (isguestuser($USER)) {
 
     die();
 }else {
-    echo "1" . "</br>";
     //Check if it only remains to update the competence profile
-    if (FirstAccess::has_completed_all_user_profile($userId) && FirstAccess::has_completed_all_extra_profile($userId)) {
-        if (!FirstAccess::has_completed_competence_profile($userId)) {
-            //$urlProfile = $urlCompetence;
-        }//if_CompletedCompetenceProfile
 
-        //redirect($urlProfile);
-        echo "1.1" . "</br>";
-    }else {
-        echo "1.2" . "</br>";
-        //redirect($CFG->wwwroot);
-    }
+    //if (FirstAccess::has_completed_all_user_profile($userId) && FirstAccess::has_completed_all_extra_profile($userId)) {
+    //    if (!FirstAccess::has_completed_competence_profile($userId)) {
+    //        //$urlProfile = $urlCompetence;
+    //    }//if_CompletedCompetenceProfile
+    //}
+
+    redirect($urlProfile);
 }
 
 
