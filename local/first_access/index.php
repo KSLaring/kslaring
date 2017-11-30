@@ -61,15 +61,16 @@ if (isguestuser($USER)) {
 
     die();
 }else {
+    echo "1";
     //Check if it only remains to update the competence profile
     if (FirstAccess::has_completed_all_user_profile($userId) && FirstAccess::has_completed_all_extra_profile($userId)) {
         if (!FirstAccess::has_completed_competence_profile($userId)) {
             //$urlProfile = $urlCompetence;
         }//if_CompletedCompetenceProfile
 
-        redirect($urlProfile);
+        //redirect($urlProfile);
     }else {
-        redirect($CFG->wwwroot);
+        //redirect($CFG->wwwroot);
     }
 }
 
