@@ -50,7 +50,7 @@ $PAGE->set_title($SITE->fullname);
 $PAGE->set_pagelayout('standard');
 
 // Checking access
-require_login();
+//require_login();
 if (isguestuser($USER)) {
     require_logout();
 
