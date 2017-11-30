@@ -58,7 +58,6 @@ $strings = $stringman->load_component_strings('local_first_access', 'no');
 $PAGE->requires->strings_for_js(array_keys($strings), 'local_first_access');
 
 // Checking access
-require_login();
 if (isguestuser($USER)) {
     require_logout();
 

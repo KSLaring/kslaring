@@ -50,7 +50,6 @@ $PAGE->set_title($SITE->fullname);
 $PAGE->set_pagelayout('standard');
 
 // Checking access
-require_login();
 if (isguestuser($USER)) {
     require_logout();
 
@@ -69,8 +68,7 @@ if (isguestuser($USER)) {
     //    }//if_CompletedCompetenceProfile
     //}
 
-    echo "1" . "</br>";
-    //redirect($urlProfile);
+    redirect($urlProfile);
 }
 
 
