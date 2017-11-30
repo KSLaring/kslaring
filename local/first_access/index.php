@@ -48,17 +48,8 @@ $PAGE->set_context($user_context);
 $PAGE->set_heading($SITE->fullname);
 $PAGE->set_title($SITE->fullname);
 $PAGE->set_pagelayout('standard');
-$PAGE->requires->js(new moodle_url('/local/first_access/js/firstaccess.js'));
-
-$stringman = get_string_manager();
-$strings = $stringman->load_component_strings('local_first_access', 'en');
-$PAGE->requires->strings_for_js(array_keys($strings), 'local_first_access');
-
-$strings = $stringman->load_component_strings('local_first_access', 'no');
-$PAGE->requires->strings_for_js(array_keys($strings), 'local_first_access');
 
 // Checking access
-require_login();
 if (isguestuser($USER)) {
     require_logout();
 
@@ -68,19 +59,22 @@ if (isguestuser($USER)) {
     echo $OUTPUT->footer();
 
     die();
-}
+}else {
+    //Check if it only remains to update the competence profile
 
-
-
-
-//Check if it only remains to update the competence profile
 if (FirstAccess::has_completed_all_user_profile($userId) && FirstAccess::has_completed_all_extra_profile($userId)) {
     if (!FirstAccess::has_completed_competence_profile($userId)) {
         $urlProfile = $urlCompetence;
     }//if_CompletedCompetenceProfile
+    }
 
     redirect($urlProfile);
 }
+
+
+
+
+
 
 //echo html_writer::start_div();
 //    echo "</br>";
