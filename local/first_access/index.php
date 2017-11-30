@@ -69,7 +69,8 @@ if (isguestuser($USER)) {
     //    }//if_CompletedCompetenceProfile
     //}
 
-    redirect($urlProfile);
+    echo "1" . "</br>";
+    //redirect($urlProfile);
 }
 
 
