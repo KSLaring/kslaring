@@ -316,13 +316,22 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
 
                         tl = $tags.length - 1;
                         if ($tags.length) {
+                            var taggroupcollection = {},
+                                taglabels = [];
                             $tags.each(function (j) {
-                                taglist += $(this).data('id');
-                                tagarray.push($(this).data('id'));
+                                var $el = $(this);
+                                taglist += $el.data('id');
+                                tagarray.push($el.data('id'));
+                                taglabels.push($el.data('name'));
+                                taggroupcollection[$el.data('name')] = $el;
 
                                 if (j < tl) {
                                     taglist += ',';
                                 }
+                            });
+                            taglabels = sortDanish(taglabels);
+                            taglabels.forEach(function (item) {
+                                $group.append(taggroupcollection[item]);
                             });
                         }
 
@@ -361,7 +370,7 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                         $(this).click();
                     });
 
-                $coursesearchform.find('.fieldset-hidden').removeClass('fieldset-hidden');
+                // $coursesearchform.find('.fieldset-hidden').removeClass('fieldset-hidden');
 
                 $resultarea.toggleClass('section-hidden');
                 $tagpreselectarea.toggleClass('section-hidden');
@@ -446,6 +455,27 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                     changeCheckbox('.tag-group', id, 1);
                     viewState.setTag(id.toString(), 'add');
                 }
+            }
+        };
+
+        /**
+         * Process the click on the tag group title.
+         *
+         * Show the »Select interests« area and open the related group tab..
+         */
+        var groupSelectHandler = function (e) {
+            var $clickedEle = $(e.target),
+                group = $clickedEle.data('group'),
+                $releatedTags = $tagpreselectarea.find('#collapse-' + group);
+
+            if ($releatedTags.length) {
+                // Show the »Select interests« area if not active.
+                if (!showtagliststate) {
+                    $switchDisplayBtn.trigger('click');
+                }
+
+                // Open the related tag list.
+                openDefinedTagGroupCloseOthers(group);
             }
         };
 
@@ -620,6 +650,20 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
         };
 
         /**
+         * Handler for the accordion click event.
+         *
+         * When a title is clicked close all other open accordions.
+         *
+         * @param {object} e The event object
+         */
+        var groupTitleClickHandler = function (e) {
+            var $clickedEle = $(e.target),
+                group = $clickedEle.data('group');
+
+            openDefinedTagGroupCloseOthers(group);
+        };
+
+        /**
          * Handle the submit event on the course search form.
          */
         var textSearchHandler = function (e) {
@@ -746,7 +790,7 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
 
                 // Check if the course dates match the chosen dates.
                 if (fromDate !== "0" || toDate !== "0") {
-                    console.log(fromDate, toDate);
+                    // console.log(fromDate, toDate);
                     fromDateInt = parseInt(fromDate.replace(/-/g, ''), 10);
                     toDateInt = parseInt(toDate.replace(/-/g, ''), 10);
                     filtered = courseIDsFiltered.filter(function (id) {
@@ -960,8 +1004,8 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                         $resultarea.find('.alert-info').remove();
                     }
 
-                    console.log('courses', courses);
-                    console.log('courseids', courseids.slice());
+                    // console.log('courses', courses);
+                    // console.log('courseids', courseids.slice());
 
                     resolve(true);
                 });
@@ -999,9 +1043,9 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                         $courselisttable.children('tbody').html('');
                     }
 
-                    $coursesearchform.find('.tag-group')
-                        .not(':has(label.checkbox)')
-                        .addClass('fieldset-hidden');
+                    // $coursesearchform.find('.tag-group')
+                    //     .not(':has(label.checkbox)')
+                    //     .addClass('fieldset-hidden');
 
                     $resultarea.toggleClass('section-hidden');
                     $tagpreselectarea.toggleClass('section-hidden');
@@ -1444,6 +1488,42 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
         };
 
         /**
+         * Open the defined tag group by name, close other open groups.
+         *
+         * @param {string} group The tag group name
+         */
+        var openDefinedTagGroupCloseOthers = function (group) {
+            // Open the related tag list.
+            var $toOpen = $tagpreselectarea.find('#collapse-' + group),
+                toOpenIsOpen = false;
+            $tagpreselectarea.find('.accordion-body.in').each(function () {
+                var $thisEl = $(this);
+
+                if ($thisEl === $toOpen) {
+                    toOpenIsOpen = true;
+                    return false;
+                } else {
+                    $thisEl.collapse('hide');
+                }
+            });
+            if (!toOpenIsOpen) {
+                $toOpen.collapse('show');
+            }
+        };
+
+        /**
+         * Sort an array in the Danish sortorder.
+         *
+         * @param {array) ar The original array
+         * @return {array} The sorted array
+         */
+        var sortDanish = function (ar) {
+            return ar.sort(function (a, b) {
+                return a.localeCompare(b, 'da', {sensitivity: 'accent'});
+            });
+        };
+
+        /**
          * Initialize function, called with the PHP requires->js_call_amd command.
          */
         return {
@@ -1489,6 +1569,7 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                 $coursesearchform.on('submit', textSearchHandler);
                 $searcharea.on('change', '[type="checkbox"]', checkboxChangeHandler);
                 $searcharea.on('change', '#select-sort', sortSelectHandler);
+                $searcharea.on('click', '.group-link', groupSelectHandler);
 
                 $resultarea.on('shown', 'a[data-toggle="tab"]', tabChangeHandler);
                 $resultarea.on('click', 'th.coltitle', colTitleClickHandler);
@@ -1497,6 +1578,7 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
 
                 $tagpreselectarea.on('change', '[type="checkbox"]', preselectedCheckboxChangeHandler);
                 $tagpreselectarea.on('keyup', '#tagFilter', tagFilterTextHandler);
+                $tagpreselectarea.on('click', '.accordion-toggle', groupTitleClickHandler);
 
                 $switchDisplayBtn.on('click', toggleTagPreselectPageHandler);
 

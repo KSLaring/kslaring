@@ -29,6 +29,19 @@
 @bodyBackground: @white;
 @textColor: @grayDark;
 
+// Font sizes
+// -------------------------
+@baseFontSize:          16px;
+@fontSizeLarge:         @baseFontSize * 1.126;
+@fontSizeSmall:         @baseFontSize * 0.844;
+@fontSizeMini:          @baseFontSize * 0.75;
+@fontSizeH1:            @baseFontSize * 2;
+@fontSizeH2:            @baseFontSize * 1.77;
+@fontSizeH3:            @baseFontSize * 1.5;
+@fontSizeH4:            @baseFontSize * 1.333;
+@fontSizeH5:            @baseFontSize * 1.126;
+@fontSizeH6:            @baseFontSize;
+
 // Links
 // -------------------------
 @linkColor: @kommitBlueDark;
@@ -101,7 +114,7 @@
             }
         }
         .collapse-group {
-            margin-bottom: 1em;
+            margin-bottom: 0;
 
             .btn {
                 padding-left: 0;
@@ -109,6 +122,9 @@
         }
         .fieldset-hidden {
             display: none;
+        }
+        .group-link {
+            cursor: pointer;
         }
         #course-search {
             border-radius: 0;
@@ -383,8 +399,10 @@
                 }
             }
             .course-title {
+                font-size: @fontSizeH5;
                 line-height: 1.3;
-                min-height: 2.5em;
+                height: 3.5em;
+                overflow: hidden;
             }
             .course-desc {
                 max-height: 9em;

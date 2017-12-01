@@ -156,6 +156,16 @@ class util {
 
         // Get the tag ids from the saved tags table.
         $savedtags = $DB->get_records('local_course_search_presel', array('user' => $userid));
+
+        // If user has now tags preselected, then select the course format tags and clear the cache to be sure that
+        // no data may be cached.
+        if (empty($savedtags)) {
+            static::preset_tags($userid);
+            $cache = \cache::make('local_course_search', 'courses');
+            $cache->delete($userid); // Delete the cached data for the user.
+            $savedtags = $DB->get_records('local_course_search_presel', array('user' => $userid));
+        }
+
         foreach ($savedtags as $tag) {
             if ($tag->itemtype === 'tag') {
                 $savedtagsids[] = $tag->itemid;
@@ -218,6 +228,58 @@ class util {
         );
 
         return $groups;
+    }
+
+    /**
+     * Set preselected tags for the user.
+     *
+     * Save all tags in the meta group to the user's preselected tags.
+     * Use the meta group selected in the course search settings.
+     *
+     * @param int $userid The userid
+     */
+    public static function preset_tags($userid) {
+        $user = (object) array(
+            'id' => $userid
+        );
+
+        $selectedmetagroupid = get_config('local_course_search', 'selected_tag_group');
+
+        if ($selectedmetagroupid) {
+            $tagcollid = \core_tag_area::get_collection('core', 'course');
+            $grouptags = \local_tag\collection::get_group_tags($tagcollid, $selectedmetagroupid);
+            $tags = array_keys($grouptags);
+
+            static::save_user_search_criteria($user, $tags);
+        }
+    }
+
+    /**
+     * Save the user preselected tags.
+     *
+     * Delete all existing user entries and save the transmitted ones.
+     *
+     * @param object $user The user object
+     * @param array  $tags The selected tag ids
+     */
+    public static function save_user_search_criteria($user, $tags) {
+        global $DB;
+
+        $DB->delete_records('local_course_search_presel', array('user' => $user->id));
+
+        if (!empty($tags)) {
+            $dataobjects = array();
+
+            foreach ($tags as $tagid) {
+                $dataobjects[] = (object)array(
+                    'user' => $user->id,
+                    'itemtype' => 'tag',
+                    'itemid' => $tagid
+                );
+            }
+
+            $DB->insert_records('local_course_search_presel', $dataobjects);
+        }
     }
 
     /**
