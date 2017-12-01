@@ -508,4 +508,5 @@ $string['cat_required']         = 'The category is required. You have to select 
 
 $string['selectone']            = 'Select one...';
 $string['clean']                = 'Clean';
+
 $string['search_notification'] = 'You can use the search field to find your course in list';

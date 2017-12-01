@@ -1661,7 +1661,7 @@ class outcome_report {
 
         try {
             // Return
-            $return_url = new moodle_url('/report/manager/course_report/outcome_report_level.php');
+            $return_url = new moodle_url('/report/manager/outcome_report/outcome_report_level.php');
             $indexUrl   = new moodle_url('/report/manager/index.php');
 
             // Outcome report
@@ -1804,7 +1804,7 @@ class outcome_report {
 
         try {
             // Return
-            $return_url = new moodle_url('/report/manager/course_report/outcome_report_level.php');
+            $return_url = new moodle_url('/report/manager/outcome_report/outcome_report_level.php');
             $indexUrl   = new moodle_url('/report/manager/index.php');
 
             // Outcome report
@@ -1943,7 +1943,7 @@ class outcome_report {
 
         try {
             // Return
-            $return_url = new moodle_url('/report/manager/course_report/outcome_report_level.php');
+            $return_url = new moodle_url('/report/manager/outcome_report/outcome_report_level.php');
             $indexUrl   = new moodle_url('/report/manager/index.php');
 
             // Outcome report
