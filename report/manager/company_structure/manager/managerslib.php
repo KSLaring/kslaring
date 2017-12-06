@@ -554,7 +554,9 @@ Class Managers {
             // Sql instruction
             $sql = " DELETE FROM {report_gen_company_manager}
                      WHERE  hierarchylevel  = :level
-                        AND mapped          != : mapped
+                        AND (mapped          != :mapped
+                             OR 
+                             mapped         IS NULL)
                         AND managerid IN ($managersLst) ";
 
             // Execute
