@@ -41,7 +41,7 @@ Class Unenrol_Waiting {
             $unenrolInfo = self::Generate_UnenrolInstance($userId,$courseId,$waitingId);
             
             /* Generate link    */
-            $lnkUnenrol = $CFG->wwwroot . '/enrol/waitinglist/unenrol/unenrol.php';
+            $lnkUnenrol = $CFG->wwwroot . '/enrol/waitinglist/unenrol/unenrol.php/0';
             $lnkUnenrol .= '/' . $unenrolInfo->userid . '/' . $unenrolInfo->tokenus;
             $lnkUnenrol .= '/' . $unenrolInfo->courseid . '/' . $unenrolInfo->tokenco;
 
@@ -52,6 +52,9 @@ Class Unenrol_Waiting {
     }//UnenrolLink
 
     /**
+     * Description
+     * Check unenrol link
+     *
      * @param           $lnkUnenrol
      *
      * @return          bool
@@ -59,9 +62,6 @@ Class Unenrol_Waiting {
      *
      * @creationDate    02/10/2016
      * @author          eFaktor     (fbv)
-     *
-     * Description
-     * Check unenrol link
      */
     public static function Check_UnenrolLink($lnkUnenrol) {
         /* Variables */
@@ -71,14 +71,14 @@ Class Unenrol_Waiting {
         $params = null;
 
         try {
-            /* Search Criteria  */
+            // Search criteria
             $params = array();
-            $params['user']         = $lnkUnenrol[0];
-            $params['tkn_user']     = $lnkUnenrol[1];
-            $params['course']       = $lnkUnenrol[2];
-            $params['tkn_course']   = $lnkUnenrol[3];
+            $params['user']         = $lnkUnenrol[1];
+            $params['tkn_user']     = $lnkUnenrol[2];
+            $params['course']       = $lnkUnenrol[3];
+            $params['tkn_course']   = $lnkUnenrol[4];
 
-            /* SQL Instruction  */
+            // SQL Instruction
             $sql = " SELECT		ewu.id,
                                 ewu.waitingid,
                                 ewu.courseid,
@@ -92,7 +92,7 @@ Class Unenrol_Waiting {
                         AND	  ewu.courseid 	= :course
                         AND   ewu.tokenco 	= :tkn_course ";
 
-            /* Execute */
+            // Execute
             $rdo = $DB->get_record_sql($sql,$params);
             if ($rdo) {
                 return $rdo;
@@ -115,9 +115,9 @@ Class Unenrol_Waiting {
         $context = null;
         
         try {
-            $context = context_course::instance($lnkUnenrol[2]);
+            $context = context_course::instance($lnkUnenrol[3]);
             
-            if (is_enrolled($context,$lnkUnenrol[0])) {
+            if (is_enrolled($context,$lnkUnenrol[1])) {
                 return false;
             }else {
                 return true;
@@ -152,21 +152,21 @@ Class Unenrol_Waiting {
 
             /* Instance Plugins */
             $params = array();
-            $params['courseid'] = $lnkUnenrol[2];
+            $params['courseid'] = $lnkUnenrol[3];
             $params['enrol']    = 'waitinglist';
             /* Execute */
             $instance = $DB->get_record('enrol',$params);
             
             /* Unenrol User */
             if ($instance) {
-                $wlPlugin->unenrol_user($instance,$lnkUnenrol[0]);
+                $wlPlugin->unenrol_user($instance,$lnkUnenrol[1]);
 
                 /* Delete UnEnrol Action */
                 $params = array();
-                $params['userid']   = $lnkUnenrol[0];
-                $params['tokenus']  = $lnkUnenrol[1];
-                $params['courseid'] = $lnkUnenrol[2];
-                $params['tokenco']  = $lnkUnenrol[3];
+                $params['userid']   = $lnkUnenrol[1];
+                $params['tokenus']  = $lnkUnenrol[2];
+                $params['courseid'] = $lnkUnenrol[3];
+                $params['tokenco']  = $lnkUnenrol[4];
                 /* Execute */
                 $DB->delete_records('enrol_waitinglist_unenrol',$params);
 

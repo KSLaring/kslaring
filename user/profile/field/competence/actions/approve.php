@@ -54,7 +54,6 @@ $PAGE->set_title($SITE->fullname);
 $PAGE->set_heading($SITE->fullname);
 
 // Checking access
-require_login();
 if (isguestuser($USER)) {
     require_logout();
 

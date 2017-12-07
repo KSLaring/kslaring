@@ -549,7 +549,9 @@ Class Reporters {
             // SQL Instruction
             $sql = " DELETE FROM {report_gen_company_reporter}
                      WHERE  hierarchylevel  = :level
-                        AND mapped          != :mapped
+                        AND (mapped          != :mapped
+                             OR 
+                             mapped         IS NULL)
                         AND reporterid IN ($reportersLst) ";
 
             // Execute

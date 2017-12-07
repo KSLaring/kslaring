@@ -290,7 +290,7 @@ $string['please_use_filter']    = " Vennligst bruk filteret";
 $string['unenrol_link']         = '<p>Hvis du ønsker å melde deg av kurset, vennligst klikk på følgende lenke <strong>{$a}</strong></p>';
 $string['unenrol_me']           = 'Meld meg ut';
 $string['user_unenrolled']      = 'Du har blitt meldt ut av kurset';
-$string['user_not_enrolled']    = 'Beklager, du kan ikke melde deg ut fordi du ikke er meldt på kurset.';
+$string['user_not_enrolled']    = 'OOPS! Du har visst allerede meldt deg ut av dette kurset. Hvis du ønsker å ta kurset, må du melde deg på en gang til.';
 
 $string['unenrol_subject'] = 'Avmeldingsbekreftelse for kurset {$a}.';
 $string['unenrol_body']    = 'Dette er en bekreftelse på at du er blitt utmeldt fra kurset <strong>{$a}</strong>. 
@@ -319,7 +319,9 @@ $string['rpt_by']           = 'By';
 $string['rpt_when']         = 'When';
 
 
-$string['confirm_approve'] = 'Are you sure that you want to approve the request for <strong>{$a->user}</strong> user and <strong>{$a->course}</strong> course?' ;
-$string['confirm_reject'] = ' Are you sure that you want to reject the request for <strong>{$a->user}</strong> user and <strong>{$a->course}</strong> course?';
+$string['confirm_approve'] = 'Er du sikker på at du ønsker å godkjenne søknaden fra <strong>{$a->user}</strong> om påmelding til kurset:  <strong>{$a->course}</strong>?' ;
+$string['confirm_reject'] = ' Er du sikker på at du vil avslå søknaden fra <strong>{$a->user}</strong> om påmelding til kurset: <strong>{$a->course}</strong>?';
 
-$string['myreservations'] = 'My bulk reservations';
+$string['myreservations'] = 'Mine bulk-reservasjoner';
+
+$string['confirm_unrol'] = ' Er du sikker på at du ønsker å melde deg ut av kurset: <strong>{$a->course}</strong>?';
