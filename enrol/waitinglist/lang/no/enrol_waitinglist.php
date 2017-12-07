@@ -324,4 +324,4 @@ $string['confirm_reject'] = ' Er du sikker på at du vil avslå søknaden fra <s
 
 $string['myreservations'] = 'Mine bulk-reservasjoner';
 
-$string['confirm_unrol'] = ' Er du sikker på at du ønsker å melde det ut av kurset: <strong>{$a->course}</strong>?';
+$string['confirm_unrol'] = ' Er du sikker på at du ønsker å melde deg ut av kurset: <strong>{$a->course}</strong>?';
