@@ -319,9 +319,9 @@ $string['rpt_by']           = 'By';
 $string['rpt_when']         = 'When';
 
 
-$string['confirm_approve'] = 'Are you sure that you want to approve the request for <strong>{$a->user}</strong> user and <strong>{$a->course}</strong> course?' ;
-$string['confirm_reject'] = ' Are you sure that you want to reject the request for <strong>{$a->user}</strong> user and <strong>{$a->course}</strong> course?';
+$string['confirm_approve'] = 'Er du sikker på at du ønsker å godkjenne søknaden fra <strong>{$a->user}</strong> om påmelding til kurset:  <strong>{$a->course}</strong>?' ;
+$string['confirm_reject'] = ' Er du sikker på at du vil avslå søknaden fra <strong>{$a->user}</strong> om påmelding til kurset: <strong>{$a->course}</strong>?';
 
-$string['myreservations'] = 'My bulk reservations';
+$string['myreservations'] = 'Mine bulk-reservasjoner';
 
-$string['confirm_unrol'] = ' Are you sure that you want to unrol from the <strong>{$a->course}</strong> course?';
+$string['confirm_unrol'] = ' Er du sikker på at du ønsker å melde det ut av kurset: <strong>{$a->course}</strong>?';
