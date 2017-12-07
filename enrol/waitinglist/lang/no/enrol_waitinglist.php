@@ -323,3 +323,5 @@ $string['confirm_approve'] = 'Are you sure that you want to approve the request 
 $string['confirm_reject'] = ' Are you sure that you want to reject the request for <strong>{$a->user}</strong> user and <strong>{$a->course}</strong> course?';
 
 $string['myreservations'] = 'My bulk reservations';
+
+$string['confirm_unrol'] = ' Are you sure that you want to unrol from the <strong>{$a->course}</strong> course?';
