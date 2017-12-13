@@ -371,6 +371,15 @@ Class Reporters {
                     // Add users
                     $availableReporters[$groupName] = $reporters;
                 }//if_tooMany
+            }else {
+                if ($search) {
+                    $groupName = get_string('pot_users_matching', 'report_manager', $search);
+                }else {
+                    $groupName = get_string('pot_users', 'report_manager');
+                }//if_serach
+
+                // Add users
+                $availableReporters[$groupName] = array('');
             }//if_Rdo
 
             return array($availableReporters,$tardis);

@@ -75,7 +75,7 @@ M.core_user.init_reporters_selector = function (Y, name, hash, level, companies,
             // Define our custom event.
             this.selectionempty = this.is_selection_empty();
 
-            this.send_query(true);
+            //this.send_query(true);
         },
 
         /**
