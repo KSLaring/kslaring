@@ -809,9 +809,9 @@ class outcome_report {
                     // Course info
                     $coinfo = new stdClass();
                     $coinfo->name            = $course;
-                    $coinfo->completed       = self::get_total_users_course_company($infothree->id,$course,CO_COMPLETED,$outcomerpt->completed_before,$outcomerpt->expiration);
-                    $coinfo->not_completed   = self::get_total_users_course_company($infothree->id,$course,CO_NOT_COMPLETED,$outcomerpt->completed_before,$outcomerpt->expiration);
-                    $coinfo->not_enrol       = self::get_total_users_noenrol_course_company($infothree->id,$course);
+                    $coinfo->completed       = self::get_total_users_course_company($infothree->id,$id_course,CO_COMPLETED,$outcomerpt->completed_before,$outcomerpt->expiration);
+                    $coinfo->not_completed   = self::get_total_users_course_company($infothree->id,$id_course,CO_NOT_COMPLETED,$outcomerpt->completed_before,$outcomerpt->expiration);
+                    $coinfo->not_enrol       = self::get_total_users_noenrol_course_company($infothree->id,$id_course);
 
                     // Add course info
                     if ($coinfo->completed || $coinfo->not_completed || $coinfo->not_enrol) {
@@ -854,9 +854,9 @@ class outcome_report {
                     // Course info
                     $coinfo = new stdClass();
                     $coinfo->name            = $course;
-                    $coinfo->completed       = self::get_users_course_company($infothree->id,$course,CO_COMPLETED,$outcomerpt->completed_before,$outcomerpt->expiration);
-                    $coinfo->not_completed   = self::get_users_course_company($infothree->id,$course,CO_NOT_COMPLETED,$outcomerpt->completed_before,$outcomerpt->expiration);
-                    $coinfo->not_enrol       = self::get_users_noenrol_course_company($infothree->id,$course);
+                    $coinfo->completed       = self::get_users_course_company($infothree->id,$id_course,CO_COMPLETED,$outcomerpt->completed_before,$outcomerpt->expiration);
+                    $coinfo->not_completed   = self::get_users_course_company($infothree->id,$id_course,CO_NOT_COMPLETED,$outcomerpt->completed_before,$outcomerpt->expiration);
+                    $coinfo->not_enrol       = self::get_users_noenrol_course_company($infothree->id,$id_course);
 
                     // Add course info
                     if ($coinfo->completed || $coinfo->not_completed || $coinfo->not_enrol) {
