@@ -71,13 +71,8 @@ class FirstAccess {
                         // Completed all extra user profile
                         if (self::has_completed_all_extra_profile($user_id)) {
                             // Completed competence profile
-                            if (self::has_completed_competence_profile($user_id)) {
-                                // no to update
-                                $updateProfile = false;
-                            }else {
-                                // to update
-                                $updateProfile = true;
-                            }//if_competenceProfile
+                            // to update
+                            $updateProfile = false;
                         }else {
                             // to update
                             $updateProfile = true;

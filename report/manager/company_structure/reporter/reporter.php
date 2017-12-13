@@ -116,6 +116,8 @@ if ($form->is_cancelled()) {
             Reporters::RemoveReporters($data->le,$parents,implode(',',$data->removeselect));
         }//if_removeselect
     }//if_remove
+
+    $form       = new report_manager_reporters_form(null,array($data->le,$parents,$addSearch,$removeSearch));
 }//if_else
 
 /* Print Header */

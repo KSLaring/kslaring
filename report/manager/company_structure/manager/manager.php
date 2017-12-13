@@ -114,6 +114,8 @@ if ($form->is_cancelled()) {
             Managers::RemoveManagers($data->le,$parents,implode(',',$data->removeselect));
         }//if_removeselect
     }//if_remove
+
+    $form       = new report_manager_managers_form(null,array($data->le,$parents,$addSearch,$removeSearch));
 }//if_else
 
 // Header
