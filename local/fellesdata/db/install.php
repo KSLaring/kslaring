@@ -1365,8 +1365,6 @@ class Fellesdata_Install {
 
             // Keys
             $tbl->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
-            $tbl->add_key('companyid',XMLDB_KEY_FOREIGN,array('companyid'), 'fs_company', array('companyid'));
-            $tbl->add_key('personalnumber',XMLDB_KEY_FOREIGN,array('personalnumber'), 'user', array('username'));
             // Index
             $tbl->add_index('companyid', XMLDB_INDEX_NOTUNIQUE, array('companyid'));
             $tbl->add_index('pnumber', XMLDB_INDEX_NOTUNIQUE, array('personalnumber'));
@@ -1594,8 +1592,6 @@ class Fellesdata_Install {
 
             // Keys
             $tbl->add_key('primary', XMLDB_KEY_PRIMARY, array('id'));
-            $tbl->add_key('companyid',XMLDB_KEY_FOREIGN,array('companyid'), 'fs_company', array('companyid'));
-            $tbl->add_key('personalnumber',XMLDB_KEY_FOREIGN,array('personalnumber'), 'user', array('username'));
             // Index
             $tbl->add_index('companyid',XMLDB_INDEX_UNIQUE,array('companyid'));
             $tbl->add_index('pnumber',XMLDB_INDEX_UNIQUE,array('personalnumber'));
