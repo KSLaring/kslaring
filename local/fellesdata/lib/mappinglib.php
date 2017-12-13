@@ -511,6 +511,7 @@ class FS_MAPPING {
 
             // Search criteria
             $params = array();
+            $params['action'] = ACT_DELETE;
             $ini    = null;
             $nivaa  = null;
             $diff   = null;
@@ -558,6 +559,7 @@ class FS_MAPPING {
                         JOIN	  {fs_imp_company}  fs_imp  ON  fs_imp.org_enhet_over = fs.companyid
 							 							    AND fs_imp.org_nivaa      IN  (". $params['nivaa'] .")
                                                             AND fs_imp.imported       = 0
+                                                            AND fs_imp.action        != :action
 						-- Already synchronized
 						LEFT JOIN {fs_company}	    syc	  	ON  syc.companyid 		= fs_imp.org_enhet_id
                                                             AND syc.level 			= fs_imp.org_nivaa
