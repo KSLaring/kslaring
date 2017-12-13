@@ -361,6 +361,14 @@ class SuperUser {
                     /* Add Users */
                     $availableUsers[$groupName] = $users;
                 }//if_tooMany
+            }else {
+                if ($search) {
+                    $groupName = get_string('pot_users_matching', 'report_manager', $search);
+                }else {
+                    $groupName = get_string('pot_users', 'report_manager');
+                }//if_serach
+
+                $availableUsers[$groupName] = array('');
             }//if_rdo
 
             return $availableUsers;

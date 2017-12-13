@@ -161,7 +161,7 @@ echo $OUTPUT->heading(get_string('company_structure', 'report_manager'));
 $form->display();
 
 // Initialise Organization Structure
-CompetenceManager::init_company_structure(COMPANY_STRUCTURE_LEVEL,REPORT_MANAGER_EMPLOYEE_LIST,null,$superUser,$myAccess,true);
+CompetenceManager::init_company_structure(COMPANY_STRUCTURE_LEVEL,REPORT_MANAGER_EMPLOYEE_LIST,$superUser,$myAccess,true);
 
 /* Print Footer */
 echo $OUTPUT->footer();

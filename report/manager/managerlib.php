@@ -368,14 +368,13 @@ class CompetenceManager {
      *
      * @param           $selector
      * @param           $employeeSel
-     * @param           $outcomeSel
      * @param           $superUser
      * @param           $myAccess
      * @param           $btnActions
      *
      * @throws          Exception
      */
-    public static function init_company_structure($selector,$employeeSel,$outcomeSel,$superUser,$myAccess,$btnActions) {
+    public static function init_company_structure($selector,$employeeSel,$superUser,$myAccess,$btnActions) {
         /* Variables    */
         global $PAGE;
         $options        = null;
@@ -415,7 +414,7 @@ class CompetenceManager {
             $delEmployees['yes']        = get_string('del_yes','report_manager');
             $delEmployees['no']         = get_string('del_no','report_manager');
             $PAGE->requires->js_init_call('M.core_user.init_organization',
-                array($selector,$employeeSel,$outcomeSel,$sp,$myAccess,$btnActions,$delEmployees),
+                array($selector,$employeeSel,$sp,$myAccess,$btnActions,$delEmployees),
                 false,
                 $jsModule
             );
