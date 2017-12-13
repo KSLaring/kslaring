@@ -88,7 +88,7 @@ M.core_user.init_super_user_selector = function (Y, name, level, hash, extrafiel
             // Define our custom event.
             this.selectionempty = this.is_selection_empty();
 
-            this.send_query(true);
+            //this.send_query(true);
         },
 
         /**

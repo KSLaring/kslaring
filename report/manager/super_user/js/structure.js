@@ -81,7 +81,12 @@ var organization = {
         /* Level Three  */
         this.levelThree.on('change', this.Reload_Search, this);
 
-        this.Reload_Search();
+        if ((this.levelZero.get('value') != 0) || (this.levelOne.get('value') != 0)
+            ||
+            (this.levelTwo.get('value') != 0) || (this.levelThree.get('value') != 0)) {
+            this.Reload_Search();
+        }
+
     },
 
     Activate_LevelOne : function(e) {
