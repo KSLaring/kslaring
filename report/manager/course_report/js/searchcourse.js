@@ -37,7 +37,7 @@ M.core_user.init_cosearch = function (Y,name,lastsearch) {
          *  handle_selection_change to track when this status changes. */
         selectionempty : true,
 
-
+        hcourse :  Y.one('#id_hcourse') || null,
         
         /**
          * Initialises the user manager object
@@ -71,6 +71,8 @@ M.core_user.init_cosearch = function (Y,name,lastsearch) {
         send_query : function(forceresearch) {
             // Cancel any pending timeout.
             this.cancel_timeout();
+
+            this.hcourse.set('value',Y.one('#id_course_list').get('value'));
 
             var value   = this.get_search_text();
             this.searchfield.set('class', '');
