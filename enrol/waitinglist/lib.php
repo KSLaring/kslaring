@@ -514,7 +514,7 @@ class enrol_waitinglist_plugin extends enrol_plugin {
      */
     public function unenrol_user(stdClass $instance, $userid) {
         /* Variables */
-        global $CFG;
+        global $CFG,$SITE;
         global $DB;
         $user        = null;
         $course      = null;
@@ -553,7 +553,10 @@ class enrol_waitinglist_plugin extends enrol_plugin {
                 $subject    = (string)new lang_string('unenrol_subject','enrol_waitinglist',$course->fullname,$user->lang);
 
                 /* Body Message */
-                $messagetext = (string)new lang_string('unenrol_body','enrol_waitinglist',$course->fullname,$user->lang) . "</br></br>";
+                $a = new stdClass();
+                $a->name = $course->fullname;
+                $a->site = $SITE->shortname;
+                $messagetext = (string)new lang_string('unenrol_body','enrol_waitinglist',$a,$user->lang) . "</br></br>";
                 $messagehtml = text_to_html($messagetext, null, false, true);
 
                 /* Sencd confirmation message   */

@@ -293,7 +293,7 @@ $string['user_unenrolled']      = 'Du har blitt meldt ut av kurset';
 $string['user_not_enrolled']    = 'OOPS! Du har visst allerede meldt deg ut av dette kurset. Hvis du ønsker å ta kurset, må du melde deg på en gang til.';
 
 $string['unenrol_subject'] = 'Avmeldingsbekreftelse for kurset {$a}.';
-$string['unenrol_body']    = 'Dette er en bekreftelse på at du er blitt utmeldt fra kurset <strong>{$a}</strong>. 
+$string['unenrol_body']    = 'Dette er en bekreftelse på at du er blitt utmeldt fra kurset <strong>{$a->name}</strong>. 
 	
 	Dette er en automatisk generert e-post fra {$a->site} og du kan ikke svare på e-posten.';
 
