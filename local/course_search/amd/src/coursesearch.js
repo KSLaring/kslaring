@@ -1000,9 +1000,10 @@ define(['jquery', 'core/notification', 'core/log', 'core/ajax', 'core/templates'
                     $actualCourseCount.text(actualCourseCount);
                     $actualCourseCountInfo.show();
 
-                    if (actualCourseCount) {
-                        $resultarea.find('.alert-info').remove();
-                    }
+                    // Don't hide the initial info.
+                    // if (actualCourseCount) {
+                    //     $resultarea.find('.alert-info').remove();
+                    // }
 
                     // console.log('courses', courses);
                     // console.log('courseids', courseids.slice());
