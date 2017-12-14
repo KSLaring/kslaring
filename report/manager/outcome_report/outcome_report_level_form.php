@@ -255,6 +255,16 @@ class manager_outcome_report_level_form extends moodleform {
 
                     break;
             }//switch_report_level
+
+            if (count($hierarchy->zero) == 1) {
+                $levelOne = implode(',',$hierarchy->one[$levelZero]);
+                if (count($hierarchy->one[$levelZero]) == 1) {
+                    $levelTwo = implode(',',$hierarchy->two[$levelOne]);
+                    if (count($hierarchy->two[$levelOne]) == 1) {
+                        $levelThree = implode(',',$hierarchy->three[$levelTwo]);
+                    }
+                }
+            }
         }else {
             list($levelZero,$levelOne,$levelTwo,$levelThree) = CompetenceManager::get_my_companies_by_Level($myHierarchy->competence);
         }//if_IsReporter
