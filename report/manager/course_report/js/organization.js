@@ -57,6 +57,8 @@ var level_structure = {
     levelThree  : Y.one('#id_' + name + '3') || null,
     hThree      : Y.one('#id_h3') || null,
 
+    hcourse :  Y.one('#id_hcourse') || null,
+
     // Job roles selector
     jobRoleLst : Y.one('#id_' + jr_selector),
 
@@ -91,7 +93,13 @@ var level_structure = {
             this.levelThree.on('change', this.Load_JobRoles, this);
         }
 
+        Y.one('#id_course_list').on('change', this.Load_Course, this);
+
         this.ini_default_values();
+    },
+
+    Load_Course: function (e) {
+        this.hcourse.set('value',Y.one('#id_course_list').get('value'));
     },
 
     ini_default_values: function (e) {
@@ -118,6 +126,8 @@ var level_structure = {
         }//if_levleThree
 
         this.hThree.set('value',valueThree);
+
+        this.hcourse.set('value',Y.one('#id_course_list').get('value'));
     },
 
     Activate_LevelOne : function(e) {
@@ -176,6 +186,9 @@ var level_structure = {
         var zero;
         var one;
         var two;
+
+        
+        this.hcourse.set('value',Y.one('#id_course_list').get('value'));
 
         // Cancel any pending timeout.
         this.cancel_timeout();
