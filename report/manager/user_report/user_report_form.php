@@ -210,6 +210,16 @@ class manager_user_report_form extends moodleform {
         // My companies by level
         if ($IsReporter) {
             $levelZero  = implode(',',$myHierarchy->competence->levelzero);
+
+            if (count($myHierarchy->competence->levelzero) == 1) {
+                $levelOne = implode(',',$myHierarchy->competence->levelone[$levelZero]);
+                if (count($myHierarchy->competence->levelone[$levelZero]) == 1) {
+                    $levelTwo = implode(',',$myHierarchy->competence->leveltwo[$levelOne]);
+                    if (count($myHierarchy->competence->leveltwo[$levelOne]) == 1) {
+                        $levelThree = implode(',',$myHierarchy->competence->levelthree[$levelTwo]);
+                    }
+                }
+            }
         }else {
             list($levelZero,$levelOne,$levelTwo,$levelThree) = CompetenceManager::get_my_companies_by_Level($myHierarchy->competence);
         }//if_IsReporter
