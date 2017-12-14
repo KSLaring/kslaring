@@ -22,15 +22,14 @@
     </aside>
 
     <section id="display-area" class="span9 pull-right">
+        <div class="alert alert-info">
+            <p>{{#str}} nocoursesshowninfo, local_course_search {{/str}}</p>
+        </div>
         <h4 id="actualCourseCountInfo">{{#str}} actualCourseCount, local_course_search {{/str}}</h4>
-
         <section id="tag-area" class="row-fluid">
             {{> local_course_search/course_search_selected_tags}}
         </section>
         <section id="result-area" class="row-fluid">
-            <div class="alert alert-info">
-                <p>{{#str}} nocoursesshowninfo, local_course_search {{/str}}</p>
-            </div>
             {{> local_course_search/course_search_result_area}}
         </section>
         <section id="tag-preselect-area" class="row-fluid section-hidden"></section>
