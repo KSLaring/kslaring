@@ -316,12 +316,13 @@ abstract class enrolmethodbase  {
      * @return void
      */
     protected function email_waitlist_message($waitinglist, $entry, $user, $messagekey='',$changed=null) {
-        global $CFG, $DB;
+        global $CFG, $DB,$SITE;
 
         $course = $DB->get_record('course', array('id'=>$waitinglist->courseid), '*', MUST_EXIST);
         $context =  \context_course::instance($course->id);
 
         $a = new  \stdClass();
+        $a->site = $SITE->shortname;
         $a->coursename = format_string($course->fullname, true, array('context'=>$context));
         $a->courseurl = $CFG->wwwroot . '/course/view.php?id=' . $waitinglist->courseid;
         $a->editenrolurl = $CFG->wwwroot . '/enrol/waitinglist/edit_enrolform.php?id=' . 

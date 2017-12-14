@@ -1887,7 +1887,7 @@ class enrol_waitinglist_plugin extends enrol_plugin {
      */
     protected function email_welcome_message($instance, $user) {
         /* Variables */
-        global $CFG, $DB;
+        global $CFG, $DB,$SITE;
         $unEnrolURL     = null;
         $unenrolLnk     = null;
         $unenrolStr     = null;
@@ -1909,6 +1909,7 @@ class enrol_waitinglist_plugin extends enrol_plugin {
             $context = context_course::instance($course->id);
 
             $a = new stdClass();
+            $a->site = $SITE->shortname;
             $a->coursename = format_string($course->fullname, true, array('context'=>$context));
             $a->profileurl = "$CFG->wwwroot/user/view.php?id=$user->id&course=$course->id";
 
