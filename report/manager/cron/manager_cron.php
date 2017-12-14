@@ -139,7 +139,7 @@ class Manager_Cron {
         $sql        = null;
 
         try {
-            // SQL for view
+            // SQL for view - OLD
             $sql = " SELECT       CONCAT(e.courseid,'_',uic.companyid,'_',u.id) AS 'id',
                                   e.courseid                                    AS 'courseid',
                                   uic.companyid                                 AS 'companyid',
@@ -157,6 +157,20 @@ class Manager_Cron {
                         LEFT JOIN {course_completions}	      cc  ON  cc.userid 	= uic.userid
                                                                   AND cc.course 	= e.courseid
                      ORDER BY e.courseid , uic.companyid , u.id ";
+
+            // SQL for view
+            $sql = " SELECT	  cc.id,
+                              cc.course 									AS 'courseid',
+                              uic.companyid                                 AS 'companyid',
+                              u.id                                          AS 'user',
+                              CONCAT(u.firstname, ' ', u.lastname)          AS 'name',
+                              uic.jobroles                                  AS 'jobroles',
+                              IF(cc.timecompleted,cc.timecompleted,0)       AS 'timecompleted'
+                     FROM	  {course_completions} 			cc
+                        JOIN  {user}						u   	ON  u.id 	 		= cc.userid
+                                                                    AND u.deleted 		= 0
+                        JOIN  {user_info_competence_data} 	uic 	ON  uic.userid  	= u.id
+                        JOIN  companies_with_users 		  	co  	ON  co.levelthree 	= uic.companyid ";
 
             // Create view
             $view = " CREATE OR REPLACE VIEW course_company_user_enrol 
