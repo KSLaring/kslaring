@@ -28,10 +28,17 @@ require_once(__DIR__ . '/../../config.php');
 
 global $USER,$PAGE,$OUTPUT,$CFG;
 
-// Checking access
+// Checking access.
 require_login();
+
+$friadmin = new local_friadmin\friadmin();
+
+// Basic page init - set context and pagelayout.
+$friadmin->init_page();
+
 if (isguestuser($USER)) {
-    require_logout();
+    //require_logout();
+    $PAGE->set_url('/local/friadmin/mysettings.php');
 
     echo $OUTPUT->header();
     echo $OUTPUT->notification(get_string('guestsarenotallowed','error'), 'notifysuccess');
@@ -40,10 +47,6 @@ if (isguestuser($USER)) {
 
     die();
 }
-$friadmin = new local_friadmin\friadmin();
-
-// Basic page init - set context and pagelayout.
-$friadmin->init_page();
 
 //Check if the user has the capability to view the page.
 if (!$friadmin->__get('superuser')) {

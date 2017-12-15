@@ -29,7 +29,7 @@ require_once($CFG->dirroot . '/lib/formslib.php');
  */
 class local_friadmin_mysettings_select_form extends \moodleform {
     function definition() {
-        global $CFG;
+        global $CFG, $DB, $USER;
 
         $mform = $this->_form;
         $customdata = $this->_customdata;
