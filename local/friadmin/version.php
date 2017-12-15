@@ -33,8 +33,8 @@
  */
 defined('MOODLE_INTERNAL') || die;
 
-$plugin->version = 2017111600;       /* The current plugin version (Date: YYYYMMDDXX)  */
-$plugin->requires = 2014051205;       /* Requires this Moodle version                   */
+$plugin->version = 2017121500;        /* The current plugin version (Date: YYYYMMDDXX)  */
+$plugin->requires = 2014051205;        /* Requires this Moodle version                   */
 $plugin->component = 'local_friadmin'; /* Full name of the plugin (used for diagnostics) */
 
 /* Dependencies */

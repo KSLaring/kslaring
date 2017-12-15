@@ -293,6 +293,12 @@ class local_friadmin_helper {
 
         if ($record = $DB->get_record('friadmin_local_templates', array('userid' => $USER->id))) {
             $categoryid = $record->categoryid;
+
+            // Always check if the selected category still exists because the category may have been deleted.
+            if (!$DB->record_exists('course_categories', array('id' => $categoryid))) {
+                $DB->delete_records('friadmin_local_templates', array('userid' => $USER->id));
+                $categoryid = 0;
+            }
         }
 
         return $categoryid;
