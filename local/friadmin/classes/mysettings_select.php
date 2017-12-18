@@ -119,15 +119,23 @@ class local_friadmin_mysettings_select extends local_friadmin_widget implements 
         $record->categoryid = $this->fromform->selcategory;
         $record->timemodified = time();
 
-        if ($DB->record_exists('friadmin_local_templates', array('userid' => $USER->id))) {
-            // Update the record.
-            $recordid = $DB->get_field('friadmin_local_templates', 'id',
-                array('userid' => $USER->id));
-            $record->id = $recordid;
-            $DB->update_record('friadmin_local_templates', $record);
+        // Check if the category still exists.
+        // If not check if there is a DB entry of the local templates category. If so delete it.
+        if (!$record->categoryid || !$DB->record_exists('course_categories', array('id' => $record->categoryid))) {
+            if ($DB->record_exists('friadmin_local_templates', array('userid' => $USER->id))) {
+                $DB->delete_records('friadmin_local_templates', array('userid' => $USER->id));
+            }
         } else {
-            // Insert a new record.
-            $DB->insert_record('friadmin_local_templates', $record);
+            if ($DB->record_exists('friadmin_local_templates', array('userid' => $USER->id))) {
+                // Update the record.
+                $recordid = $DB->get_field('friadmin_local_templates', 'id',
+                    array('userid' => $USER->id));
+                $record->id = $recordid;
+                $DB->update_record('friadmin_local_templates', $record);
+            } else {
+                // Insert a new record.
+                $DB->insert_record('friadmin_local_templates', $record);
+            }
         }
     }
 
@@ -135,10 +143,14 @@ class local_friadmin_mysettings_select extends local_friadmin_widget implements 
      * Save or update the user's local template selctions.
      */
     protected function save_preftemplate_selection() {
-        $this->save_preftemplate_type($this->fromform->selpreftemplate,
-            TEMPLATE_TYPE_EVENT);
-        $this->save_preftemplate_type($this->fromform->selprefnetcoursetemplate,
-            TEMPLATE_TYPE_NETCOURSE);
+        if (!empty($this->fromform->selpreftemplate)) {
+            $this->save_preftemplate_type($this->fromform->selpreftemplate,
+                TEMPLATE_TYPE_EVENT);
+        }
+        if (!empty($this->fromform->selprefnetcoursetemplate)) {
+            $this->save_preftemplate_type($this->fromform->selprefnetcoursetemplate,
+                TEMPLATE_TYPE_NETCOURSE);
+        }
     }
 
     /**
@@ -146,6 +158,8 @@ class local_friadmin_mysettings_select extends local_friadmin_widget implements 
      *
      * @param int $courseid The template course id
      * @param int $type     The template type
+     *
+     * @throws dml_exception
      */
     protected function save_preftemplate_type($courseid, $type) {
         global $DB, $USER;
@@ -156,17 +170,23 @@ class local_friadmin_mysettings_select extends local_friadmin_widget implements 
         $record->type = $type;
         $record->timemodified = time();
 
-        if ($DB->record_exists('friadmin_preferred_template',
-            array('userid' => $USER->id, 'type' => $type))
-        ) {
-            // Update the record.
-            $recordid = $DB->get_field('friadmin_preferred_template', 'id',
-                array('userid' => $USER->id, 'type' => $type));
-            $record->id = $recordid;
-            $DB->update_record('friadmin_preferred_template', $record);
+        // Check if the course still exists.
+        // If not check if there is a DB entry of the templates. If so delete it.
+        if (!$record->courseid || !$DB->record_exists('course', array('id' => $record->courseid))) {
+            if ($DB->record_exists('friadmin_preferred_template', array('userid' => $USER->id, 'type' => $type))) {
+                $DB->delete_records('friadmin_preferred_template', array('userid' => $USER->id, 'type' => $type));
+            }
         } else {
-            // Insert a new record.
-            $DB->insert_record('friadmin_preferred_template', $record);
+            if ($DB->record_exists('friadmin_preferred_template', array('userid' => $USER->id, 'type' => $type))) {
+                // Update the record.
+                $recordid = $DB->get_field('friadmin_preferred_template', 'id',
+                    array('userid' => $USER->id, 'type' => $type));
+                $record->id = $recordid;
+                $DB->update_record('friadmin_preferred_template', $record);
+            } else {
+                // Insert a new record.
+                $DB->insert_record('friadmin_preferred_template', $record);
+            }
         }
     }
 }
