@@ -191,6 +191,134 @@ class CompetenceManager {
         }
     }//is_reporter
 
+    public static function is_reporter_in($user,$level,$zero,$one=null,$two=null,$three=null) {
+        /* Variables */
+        global $DB;
+        $rdo    = null;
+        $sql    = null;
+        $params = null;
+
+        try {
+            // Search criteria
+            $params = array();
+            $params['reporter'] = $user;
+            $params['manager']  = $user;
+            $params['malevel']  = $level;
+            $params['relevel']  = $level;
+
+            switch ($level) {
+                case 0:
+                    // Criteria
+                    $params['mazero']  = $zero;
+                    $params['rezero']  = $zero;
+
+                    $sql = " SELECT ma.id
+                             FROM	{report_gen_company_manager}	ma
+                             WHERE	ma.managerid 		= :manager
+                                AND	ma.levelzero 		= :mazero
+                                AND ma.hierarchylevel 	= :malevel
+                             UNION ALL
+                             SELECT re.id
+                             FROM	{report_gen_company_reporter}	re
+                             WHERE	re.reporterid 		= :reporter
+                                AND	re.levelzero 		= :rezero
+                                AND re.hierarchylevel 	= :relevel ";
+
+                    break;
+
+                case 1:
+                    // Criteria
+                    $params['mazero'] = $zero;
+                    $params['rezero'] = $zero;
+                    $params['maone']  = $one;
+                    $params['reone']  = $one;
+
+                    $sql = " SELECT ma.id
+                             FROM	{report_gen_company_manager}	ma
+                             WHERE	ma.managerid 		= :manager
+                                AND	ma.levelzero 		= :mazero
+                                AND	ma.levelone 		= :maone
+                                AND ma.hierarchylevel 	= :malevel
+                             UNION ALL
+                             SELECT re.id
+                             FROM	{report_gen_company_reporter}	re
+                             WHERE	re.reporterid 		= :reporter
+                                AND	re.levelzero 		= :rezero
+                                AND	re.levelone 		= :reone
+                                AND re.hierarchylevel 	= :relevel ";
+
+                    break;
+
+                case 2:
+                    // Criteria
+                    $params['mazero'] = $zero;
+                    $params['rezero'] = $zero;
+                    $params['maone']  = $one;
+                    $params['reone']  = $one;
+                    $params['matwo']  = $two;
+                    $params['retwo']  = $two;
+
+                    $sql = " SELECT ma.id
+                             FROM	{report_gen_company_manager}	ma
+                             WHERE	ma.managerid 		= :manager
+                                AND	ma.levelzero 		= :mazero
+                                AND	ma.levelone 		= :maone
+                                AND	ma.leveltwo 		= :matwo
+                                AND ma.hierarchylevel 	= :malevel
+                             UNION ALL
+                             SELECT re.id
+                             FROM	{report_gen_company_reporter}	re
+                             WHERE	re.reporterid 		= :reporter
+                                AND	re.levelzero 		= :rezero
+                                AND	re.levelone 		= :reone
+                                AND	re.leveltwo 		= :retwo
+                                AND re.hierarchylevel 	= :relevel ";
+
+                    break;
+                case 3:
+                    // Criteria
+                    $params['mazero'] = $zero;
+                    $params['rezero'] = $zero;
+                    $params['maone']  = $one;
+                    $params['reone']  = $one;
+                    $params['matwo']  = $two;
+                    $params['retwo']  = $two;
+                    $params['matre']  = $three;
+                    $params['retre']  = $three;
+
+                    $sql = " SELECT ma.id
+                             FROM	{report_gen_company_manager}	ma
+                             WHERE	ma.managerid 		= :manager
+                                AND	ma.levelzero 		= :mazero
+                                AND	ma.levelone 		= :maone
+                                AND	ma.leveltwo 		= :matwo
+                                AND	ma.levelthree 		= :matre
+                                AND ma.hierarchylevel 	= :malevel
+                             UNION ALL
+                             SELECT re.id
+                             FROM	{report_gen_company_reporter}	re
+                             WHERE	re.reporterid 		= :reporter
+                                AND	re.levelzero 		= :rezero
+                                AND	re.levelone 		= :reone
+                                AND	re.leveltwo 		= :retwo
+                                AND	re.levelthree 		= :retre
+                                AND re.hierarchylevel 	= :relevel ";
+
+                    break;
+            }//switch
+
+            // Execute
+            $rdo = $DB->get_records_sql($sql,$params);
+            if ($rdo) {
+                return true;
+            }else {
+                return false;
+            }
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//is_reporter_in
+
 
     /**
      * Description

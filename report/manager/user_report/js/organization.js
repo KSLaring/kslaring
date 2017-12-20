@@ -88,6 +88,8 @@ M.core_user.init_organization = function (Y,name) {
             this.hZero.set('value',this.zero.get('value'));
             this.hOne.set('value',this.one.get('value'));
             this.hTwo.set('value',this.two.get('value'));
+
+            this.activate_button();
         },
 
         ActivateOne : function(e) {
@@ -147,7 +149,8 @@ M.core_user.init_organization = function (Y,name) {
                     method: 'POST',
                     data: 'level' + '=' + level + '&zero=' + zero + '&one=' + one + '&two=' + two + '&sesskey=' + M.cfg.sesskey,
                     on: {
-                        complete: this.handle_response
+                        complete: this.handle_response,
+                        end: this.activate_button,
                     },
                     context:this
                 }
@@ -244,6 +247,80 @@ M.core_user.init_organization = function (Y,name) {
                     }
                 });
             }//for_level
+        },
+
+        activate_button : function() {
+            var zero;
+            var one;
+            var two;
+            var three;
+
+            // Cancel any pending timeout.
+            this.cancel_timeout();
+
+            // Try to cancel existing transactions.
+            Y.Object.each(this.iotransactions, function(trans) {
+                trans.abort();
+            });
+
+            // Get selectors
+            zero    = this.zero.get('value');
+            one     = this.one.get('value');
+            two     = this.two.get('value');
+            three   = this.three.get('value');
+
+            var iotrans = Y.io(M.cfg.wwwroot + '/report/manager/user_report/activate.php',
+                {
+                    method: 'POST',
+                    data: 'zero=' + zero + '&one=' + one + '&two=' + two + '&three=' + three +'&sesskey=' + M.cfg.sesskey,
+                    on: {
+                        complete: this.handle_button_response
+                    },
+                    context:this
+                }
+            );
+            this.iotransactions[iotrans.id] = iotrans;
+        },
+
+        handle_button_response : function(requestid, response) {
+            try {
+                delete this.iotransactions[requestid];
+                if (!Y.Object.isEmpty(this.iotransactions)) {
+                    // More searches pending. Wait until they are all done.
+                    return;
+                }
+                var data = Y.JSON.parse(response.responseText);
+                if (data.error) {
+                    this.zero.addClass('error');
+                    return new M.core.ajaxException(data);
+                }
+                this.button_report(data);
+            } catch (e) {
+                this.zero.addClass('error');
+                return new M.core.exception(e);
+            }
+        },
+
+        button_report : function (data) {
+            var dtoresult;
+            var activebutton;
+            var index;
+
+            // Clear out the existing options, keeping any ones that are already selected.
+            for (index in data.results) {
+
+                // result
+                dtoresult = data.results[index];
+
+                // Check if the user has to have the button active
+                activebutton       = dtoresult.active;
+
+                if (activebutton == 1) {
+                    Y.one('#id_submitbutton').removeAttribute('disabled');
+                }else {
+                    Y.one('#id_submitbutton').setAttribute('disabled','disabled');
+                }
+            }//for_results
         },
 
         /**
