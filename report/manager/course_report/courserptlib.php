@@ -492,7 +492,7 @@ class course_report {
                             if ($coemployees->leveltwo) {
                                 $levelTwo = CompetenceManager::get_companies_info($coemployees->leveltwo);
                                 if ($levelTwo) {
-                                    $levelOne->leveltwo = self::get_reportinfo_leveltwo($rptcourse->id,$levelTwo,$coemployees->levelthree);
+                                    $levelOne->leveltwo = self::get_reportinfo_leveltwo($rptcourse->id,$levelTwo,$coemployees->levelthree,$rptcourse->completed_before);
 
                                     if ($levelOne->leveltwo) {
                                         $rptcourse->levelone[$levelOne->id] = $levelOne;
@@ -513,7 +513,7 @@ class course_report {
                                 $levelthree = self::get_companies_by_level(3,$levelTwo->id ,$coemployees->levelthree);
 
                                 if ($levelthree) {
-                                    $levelTwo->levelthree      = self::get_reportinfo_levelthree_by_two($rptcourse->id,$levelthree);
+                                    $levelTwo->levelthree      = self::get_reportinfo_levelthree_by_two($rptcourse->id,$levelthree,$rptcourse->completed_before);
                                     if ($levelTwo->levelthree) {
                                         $rptcourse->leveltwo[$levelTwo->id] = $levelTwo;
                                     }else {
@@ -536,7 +536,7 @@ class course_report {
                                 $levelthree = self::get_companies_by_level(3,$levelTwo->id ,$coemployees->levelthree);
 
                                 if ($levelthree) {
-                                    $three     = self::get_reportinfo_levelthree($rptcourse->id,$levelthree);
+                                    $three     = self::get_reportinfo_levelthree($rptcourse->id,$levelthree,$rptcourse->completed_before);
                                     if ($three) {
                                         $rptcourse->levelthree = $three;
                                     }else {
@@ -865,7 +865,7 @@ class course_report {
                 $two   = self::get_companies_by_level(2,$company->id,$coemployees->leveltwo);
 
                 if ($two) {
-                    $two       = self::get_reportinfo_leveltwo($courserpt->id,$two,$coemployees->levelthree);
+                    $two       = self::get_reportinfo_leveltwo($courserpt->id,$two,$coemployees->levelthree,$courserpt->completed_before);
                     if ($two) {
                         // Info level two
                         $company->leveltwo = $two;
@@ -887,6 +887,7 @@ class course_report {
      * @param           $course
      * @param           $two
      * @param           $in
+     * @param           $completedbefore
      *
      * @return          mixed
      * @throws          Exception
@@ -897,7 +898,7 @@ class course_report {
      * @updateDate      20/09/2017
      * @author          eFaktor     (fbv)
      */
-    private static function get_reportinfo_leveltwo($course,$two,$in) {
+    private static function get_reportinfo_leveltwo($course,$two,$in,$completedbefore) {
         /* Variables    */
         $leveltwo       = null;
         $levelthree     = null;
@@ -910,7 +911,7 @@ class course_report {
 
                 // Level three
                 if ($three) {
-                    $levelthree = self::get_reportinfo_levelthree_by_two($course,$three);
+                    $levelthree = self::get_reportinfo_levelthree_by_two($course,$three,$completedbefore);
 
                     // Add level two
                     if ($levelthree) {
@@ -935,6 +936,7 @@ class course_report {
      *
      * @param           $course
      * @param           $three
+     * @param           $completedbefore
      *
      * @return          array|null
      * @throws          Exception
@@ -942,7 +944,7 @@ class course_report {
      * @creationDate    22/09/2017
      * @author          eFaktor     (fbv)
      */
-    private static function get_reportinfo_levelthree_by_two($course,$three) {
+    private static function get_reportinfo_levelthree_by_two($course,$three,$completedbefore) {
         /* variables */
         $levelthree = null;
         $infothree  = null;
@@ -953,7 +955,7 @@ class course_report {
 
             // Get info level three for level two
             foreach ($three as $infothree) {
-                $infothree->completed       = self::get_total_users_course_company($infothree->id,$course,CO_COMPLETED);
+                $infothree->completed       = self::get_total_users_course_company($infothree->id,$course,CO_COMPLETED,$completedbefore);
                 $infothree->not_completed   = self::get_total_users_course_company($infothree->id,$course,CO_NOT_COMPLETED);
                 $infothree->not_enrol       = self::get_total_users_noenrol_course_company($infothree->id,$course);
 
@@ -975,6 +977,7 @@ class course_report {
      *
      * @param           $course
      * @param           $three
+     * @param           $completedbefore
      *
      * @return          array|null
      * @throws          Exception
@@ -982,7 +985,7 @@ class course_report {
      * @creationDate    22/09/2017
      * @author          eFaktor     (fbv)
      */
-    private static function get_reportinfo_levelthree($course,$three) {
+    private static function get_reportinfo_levelthree($course,$three,$completedbefore) {
         /* variables */
         $levelthree = null;
         $infothree  = null;
@@ -993,7 +996,7 @@ class course_report {
 
             // Get info level three for level two
             foreach ($three as $infothree) {
-                $infothree->completed       = self::get_users_course_company($infothree->id,$course,CO_COMPLETED);
+                $infothree->completed       = self::get_users_course_company($infothree->id,$course,CO_COMPLETED,$completedbefore);
                 $infothree->not_completed   = self::get_users_course_company($infothree->id,$course,CO_NOT_COMPLETED);
                 $infothree->not_enrol       = self::get_users_noenrol_course_company($infothree->id,$course);
 
@@ -1016,6 +1019,7 @@ class course_report {
      * @param           $company
      * @param           $course
      * @param           $type
+     * @param           $completedbefore
      *
      * @return          null
      * @throws          Exception
@@ -1023,12 +1027,13 @@ class course_report {
      * @creationDate    20/09/2017
      * @author          eFaktor     (fbv)
      */
-    private static function get_total_users_course_company($company,$course,$type) {
+    private static function get_total_users_course_company($company,$course,$type,$completedbefore = null) {
         /* Variables    */
         global $DB;
         $rdo            = null;
         $sql            = null;
         $params         = null;
+        $timecompleted  = null;
 
         try {
             // Search criteria
@@ -1045,8 +1050,13 @@ class course_report {
             // Completed or not completed
             switch ($type) {
                 case CO_COMPLETED:
+                    $timecompleted      = CompetenceManager::get_completed_date_timestamp($completedbefore);
+                    $params['today']    = time();
+                    $params['last']     = $timecompleted;
+
                     $sql .= " AND cue.timecompleted IS NOT NULL 
-                              AND cue.timecompleted != 0 ";
+                              AND cue.timecompleted != 0 
+                              AND cue.timecompleted BETWEEN :last AND :today  ";
 
                     break;
                 case CO_NOT_COMPLETED:
@@ -1074,6 +1084,7 @@ class course_report {
      * @param           $company
      * @param           $course
      * @param           $type
+     * @param           $completedbefore
      *
      * @return          mixed|null
      * @throws          Exception
@@ -1081,12 +1092,13 @@ class course_report {
      * @creationDate    22/09/2017
      * @author          eFaktor     (fbv)
      */
-    private static function get_users_course_company($company,$course,$type) {
+    private static function get_users_course_company($company,$course,$type,$completedbefore=null) {
         /* Variables    */
         global $DB;
-        $rdo    = null;
-        $sql    = null;
-        $params = null;
+        $rdo            = null;
+        $sql            = null;
+        $params         = null;
+        $timecompleted  = null;
 
         try {
             // Search criteria
@@ -1105,8 +1117,13 @@ class course_report {
             // Completed or not completed
             switch ($type) {
                 case CO_COMPLETED:
+                    $timecompleted      = CompetenceManager::get_completed_date_timestamp($completedbefore);
+                    $params['today']    = time();
+                    $params['last']     = $timecompleted;
+
                     $sql .= " AND cue.timecompleted IS NOT NULL 
-                              AND cue.timecompleted != 0 ";
+                              AND cue.timecompleted != 0
+                              AND cue.timecompleted BETWEEN :last AND :today ";
 
                     break;
                 case CO_NOT_COMPLETED:
@@ -1116,7 +1133,7 @@ class course_report {
             }//switch_type
 
             // Execute
-            $rdo = $DB->get_record_sql($sql,$params);
+            $rdo = $DB->get_records_sql($sql,$params);
 
             return $rdo;
         }catch (Exception $ex) {

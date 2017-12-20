@@ -91,10 +91,7 @@ require('tabs.php');
 
 echo $OUTPUT->heading(get_string('reports_manager', 'report_manager'));
 // Competence reports
-// Commented out by @amj 15122017
-/*
 $urlUser        = new moodle_url('/report/manager/user_report/user_report.php');
-*/
 $urlCompany     = new moodle_url('/report/manager/company_report/company_report.php');
 $urlEmployee    = new moodle_url('/report/manager/employee_report/employee_report.php');
 $courseReport   = new moodle_url('/report/manager/course_report/course_report.php');
@@ -105,12 +102,10 @@ echo '<p class="note">' . get_string('company_report_note', 'report_manager') . 
 
 echo '<ul class="unlist report-selection">' . "\n";
     // User report
-	// Commented out by @amj 15122017
-	/*
     echo '<li class="first last">' . "\n";
         echo '<a href="' . $urlUser . '">' . get_string('user_report_link', 'report_manager') . '</a>';
     echo '</li>' . "\n";
-*/
+
     // Employee Report
     echo '<li class="first last">' . "\n";
         echo '<a href="' . $urlEmployee . '">' . get_string('employee_report_link', 'report_manager') . '</a>';
