@@ -939,8 +939,11 @@ class suspicious {
             $rdo = $DB->get_record('fs_suspicious',$params);
             if ($rdo) {
                 echo "APPLY 1" . "</br>";
+
                 // Build file
                 $pathFile = $rdo->path . '/' . $rdo->file;
+                echo $pathFile . "</br>";
+                
                 if (file_exists($pathFile)) {
                     // Get content
                     $content = file($pathFile);
