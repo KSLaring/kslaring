@@ -701,13 +701,16 @@ class FELLESDATA_CRON {
             // Get total
             $total = count($content);
 
+            echo "1" . "</br>";
             // Split the process if it is too big
             if ($total > MAX_IMP_FS) {
+                echo "1.1" . "</br>";
                 for($i=0;$i<=$total;$i=$i+MAX_IMP_FS) {
                     $data = array_slice($content,$i,MAX_IMP_FS,true);
                     FS::save_temporary_fellesdata($data,$type);
                 }
             }else {
+                echo "1.2" . "</br>";
                 FS::save_temporary_fellesdata($content,$type);
             }//if_max_imp
         }catch (Exception $ex) {
