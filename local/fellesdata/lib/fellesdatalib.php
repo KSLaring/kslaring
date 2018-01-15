@@ -63,7 +63,7 @@ define('IMP_COMPANIES',1);
 define('IMP_JOBROLES',2);
 define('IMP_MANAGERS_REPORTERS',3);
 define('IMP_COMPETENCE_JR',4);
-define('MAX_IMP_FS',5000);
+define('MAX_IMP_FS',2000);
 
 define('CLEAN_MANAGERS_REPORTERS',0);
 define('CLEAN_COMPETENCE',1);
@@ -3218,6 +3218,8 @@ class FS {
         $stop           = false;
         $service        = null;
         $plugin         = null;
+        $key = null;
+        $line = null;
 
         try {
             // Plugin info
