@@ -39,6 +39,8 @@ define('IMP_SUSP_JOBROLES','IMP_JOBROLES');
 define('IMP_SUSP_MANAGERS_REPORTERS','IMP_MANAGERS_REPORTERS');
 define('IMP_SUSP_COMPETENCE_JR','IMP_COMPETENCE_JR');
 
+define('MAX_SUS_IMP_FS',5000);
+
 class suspicious {
     /**********/
     /* PUBLIC */
@@ -428,7 +430,6 @@ class suspicious {
      */
     public static function apply_action($args,&$error) {
         /* Variables */
-
         try {
             // Apply action
             switch ($args[0]) {
@@ -939,28 +940,28 @@ class suspicious {
                 // Build file
                 $pathFile = $rdo->path . '/' . $rdo->file;
                 if (file_exists($pathFile)) {
-                    // Get content
-                    $content = file($pathFile);
+                    if (self::save_suspicious_temp_data($pathFile,$rdo->impfs)) {
 
-                    FS::save_temporary_fellesdata($content,$rdo->impfs);
+                        //Move file
+                        $backup = $CFG->dataroot . '/fellesdata/backup';
+                        if (!file_exists($backup)) {
+                            mkdir($backup);
+                        }
+                        $backup .= '/' . $rdo->file;
 
-                    //Move file
-                    $backup = $CFG->dataroot . '/fellesdata/backup';
-                    if (!file_exists($backup)) {
-                        mkdir($backup);
+                        copy($pathFile,$backup);
+                        unlink($pathFile);
+
+                        // Update
+                        $rdo->approved = 1;
+
+                        // Execute
+                        $DB->update_record('fs_suspicious',$rdo);
+
+                        $error = APPROVED;
+                    }else {
+                        $error = ERR_FILE;
                     }
-                    $backup .= '/' . $rdo->file;
-
-                    copy($pathFile,$backup);
-                    unlink($pathFile);
-
-                    // Update
-                    $rdo->approved = 1;
-
-                    // Execute
-                    $DB->update_record('fs_suspicious',$rdo);
-
-                    $error = APPROVED;
                 }else {
                     $error = ERR_FILE;
                 }//if_else_file
@@ -971,6 +972,76 @@ class suspicious {
             throw $ex;
         }//try_catch
     }//approve_data
+
+    /**
+     * Description
+     * Save data from suspicious file
+     *
+     * @param           $pathFile
+     * @param           $type
+     *
+     * @return          bool
+     * @throws          Exception
+     *
+     * @creationDate    15/01/2018
+     * @author          eFaktor     (fbv)
+     */
+    private static function save_suspicious_temp_data($pathFile,$type) {
+        /* Variables */
+        $data       = null;
+        $total      = null;
+        $i          = null;
+        $content    = null;
+        $blocks     = null;
+        $strblocks  = null;
+        $strprocess = null;
+        $a          = null;
+
+        try {
+            // Get content
+            $content = file($pathFile);
+
+            // Get total
+            $total = count($content);
+
+            // Split the process if it is too big
+            $a = new stdClass();
+            $a->blocks  = 0;
+            $a->i       = 0;
+            if ($total > MAX_SUS_IMP_FS) {
+                $index = 1;
+                // How many blocks are going to be processed
+                $a->blocks = round($total/MAX_IMP_FS);
+                $a->i      = 0;
+                $strblocks = get_string('totalblcoks','local_fellesdata',$a);
+                echo $strblocks . "</br></br>";
+
+                for($i=0;$i<=$total;$i=$i+MAX_SUS_IMP_FS) {
+                    // Which block is being processed
+                    $a->i  ++;
+                    $strprocess = get_string('processblock','local_fellesdata',$a);
+                    echo $strprocess . "</br>";
+
+                    $data = array_slice($content,$i,MAX_SUS_IMP_FS,true);
+                    FS::save_temporary_fellesdata($data,$type);
+                }
+            }else {
+                // Info about how many blocks are going to process
+                $a->blocks  = 1;
+                $a->i       = 1;
+                $strblocks = get_string('totalblcoks','local_fellesdata',$a);
+                $strprocess = get_string('processblock','local_fellesdata',$a);
+                echo $strblocks . "</br></br>";
+                echo $strprocess . "</br>";
+
+                FS::save_temporary_fellesdata($content,$type);
+            }//if_max_imp
+
+            return true;
+        }catch (Exception $ex) {
+            throw $ex;
+        }//try_catch
+    }//save_suspicious_temp_data
 
     /**
      * Description

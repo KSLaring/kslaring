@@ -216,3 +216,5 @@ $string['leveltomap']   = 'Level to map: {$a}';
 $string['errorpaernt']  = 'Please, you must select a parent to map level {$a}';
 
 $string['strback'] = 'Back';
+$string['totalblcoks']  = 'Total blocks to process : {$a->blocks}';
+$string['processblock'] = 'Processing block {$a->i}/{$a->blocks}';

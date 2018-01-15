@@ -3218,6 +3218,8 @@ class FS {
         $stop           = false;
         $service        = null;
         $plugin         = null;
+        $key = null;
+        $line = null;
 
         try {
             // Plugin info
