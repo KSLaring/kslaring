@@ -938,6 +938,7 @@ class suspicious {
 
             $rdo = $DB->get_record('fs_suspicious',$params);
             if ($rdo) {
+                echo "APPLY 1" . "</br>";
                 // Build file
                 $pathFile = $rdo->path . '/' . $rdo->file;
                 if (file_exists($pathFile)) {
@@ -964,9 +965,11 @@ class suspicious {
 
                     $error = APPROVED;
                 }else {
+                    echo "APPLY 2" . "</br>";
                     $error = ERR_FILE;
                 }//if_else_file
             }else {
+                echo "APPLY 3" . "</br>";
                 $error = ERR_FILE;
             }//if_rdo
         }catch (Exception $ex) {
