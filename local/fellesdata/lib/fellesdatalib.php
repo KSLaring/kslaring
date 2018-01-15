@@ -3315,7 +3315,7 @@ class FS {
                         $log->timereceived  = $time;
                         $toLog[$key]        = $log;
                     }
-                }//ifLineContent
+                }//ifLineContent **/
             }//for
 
             if (($toSave) && (!$stop)) {

@@ -63,6 +63,8 @@ try {
 
         echo $toDate . "</br>";
 
+        echo $CFG->dataroot . "</br>";
+
 
 /**
         $toMail = array();
