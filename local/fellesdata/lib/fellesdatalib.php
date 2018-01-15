@@ -63,7 +63,7 @@ define('IMP_COMPANIES',1);
 define('IMP_JOBROLES',2);
 define('IMP_MANAGERS_REPORTERS',3);
 define('IMP_COMPETENCE_JR',4);
-define('MAX_IMP_FS',2000);
+define('MAX_IMP_FS',5000);
 
 define('CLEAN_MANAGERS_REPORTERS',0);
 define('CLEAN_COMPETENCE',1);
@@ -3258,7 +3258,6 @@ class FS {
 
             // Each line file
             foreach($data as $key=>$line) {
-                echo $key . "</br>";
                 $lineContent    = json_decode($line);
 
                 // Get New Entry
@@ -3318,7 +3317,7 @@ class FS {
                         $log->timereceived  = $time;
                         $toLog[$key]        = $log;
                     }
-                }//ifLineContent **/
+                }//ifLineContent
             }//for
 
             if (($toSave) && (!$stop)) {

@@ -86,6 +86,9 @@ if ($csv) {
         $args[0] = $action;
         $args[1] = 0;
 
+        // Header
+        echo $OUTPUT->header();
+
         // Apply action
         suspicious::apply_action($args,$error);
         $name = suspicious::get_name($suspiciousId);
@@ -107,8 +110,6 @@ if ($csv) {
                 break;
         }//switch_error
 
-        // Header
-        echo $OUTPUT->header();
 
         echo $OUTPUT->notification($strMessage, 'notifysuccess');
         if ($date_from && $date_to) {
