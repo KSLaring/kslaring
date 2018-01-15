@@ -433,6 +433,7 @@ class suspicious {
             // Apply action
             switch ($args[0]) {
                 case '1':
+                    echo "APPLY ACTION " . "</br>";
                     // Approve file
                     self::approve_data($args[2],$error);
                     
@@ -445,6 +446,7 @@ class suspicious {
                     break;
                 
                 default:
+                    echo "ERROR" . "</br>";
                     $error = ERR_PROCESS;
 
                     break;
